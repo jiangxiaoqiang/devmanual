@@ -23,6 +23,10 @@
 \usepackage{ifthen}
 \usepackage{longtable}
 
+%%%% 下面的命令设置行间距与段落间距 %%%%
+\linespread{1.4}
+% \setlength{\parskip}{1ex}
+\setlength{\parskip}{0.5\baselineskip}
 
 %Set Code Format%
 \lstloadlanguages{C, csh, make,python,Java}
@@ -85,6 +89,26 @@ Create a Settings instance for the build.
 Evaluate the "settings.gradle" script, if present, against the Settings object to configure it.
 Use the configured Settings object to create the hierarchy of Project instances.
 Finally, evaluate each Project by executing its "build.gradle" file, if present, against the project. The projects are evaluated in breadth-wise order, such that a project is evaluated before its child projects. This order can be overridden by calling evaluationDependsOnChildren() or by adding an explicit evaluation dependency using evaluationDependsOn(String).
+
+\subsection{repositories}
+
+在Gradle构建标本build.gradle里，经常会看到如下脚本：
+
+\begin{lstlisting}[language=Java]
+repositories {
+	maven {
+		url 'http://www.eveoh.nl/files/maven2'
+	}
+	maven {
+		url 'http://repox.gtan.com:8078'
+	}
+	mavenCentral()
+	jcenter()
+	maven { url 'http://repo.spring.io/plugins-release' }
+}
+\end{lstlisting}
+
+总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{属性(Properties)}
 
