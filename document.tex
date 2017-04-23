@@ -23,6 +23,7 @@
 \usepackage{ifthen}
 \usepackage{longtable}
 
+
 %Set Code Format%
 \lstloadlanguages{C, csh, make,python,Java}
 \lstset{	  
@@ -78,14 +79,18 @@ dsasadsadsadsad年
 
 \subsection{执行流程}
 
+There is a one-to-one relationship between a Project and a "build.gradle" file. During build initialisation, Gradle assembles a Project object for each project which is to participate in the build, as follows:
+
+Create a Settings instance for the build.
+Evaluate the "settings.gradle" script, if present, against the Settings object to configure it.
+Use the configured Settings object to create the hierarchy of Project instances.
+Finally, evaluate each Project by executing its "build.gradle" file, if present, against the project. The projects are evaluated in breadth-wise order, such that a project is evaluated before its child projects. This order can be overridden by calling evaluationDependsOnChildren() or by adding an explicit evaluation dependency using evaluationDependsOn(String).
 
 \subsection{属性(Properties)}
 
 \subsubsection{Extra Properties}
 
-Extra Properties
-
-All extra properties must be defined through the "ext" namespace. Once an extra property has been defined, it is available directly on the owning object (in the below case the Project, Task, and sub-projects respectively) and can be read and updated. Only the initial declaration that needs to be done via the namespace.
+extra属性一般用于定义常量，All extra properties\footnote{\url{https://docs.gradle.org/current/javadoc/org/gradle/api/Project.html\#extraproperties}} must be defined through the "ext" namespace. Once an extra property has been defined, it is available directly on the owning object (in the below case the Project, Task, and sub-projects respectively) and can be read and updated. Only the initial declaration that needs to be done via the namespace.
 
 \begin{lstlisting}[language=Java]
 buildscript {
@@ -104,6 +109,14 @@ ext.isSnapshot = version.endsWith("-SNAPSHOT")
 if (isSnapshot) {
 	// do snapshot stuff
 }
+
+
+\section{LaTex}
+
+\subsection{字体}
+
+Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
+
 
 \end{document}
 \theend
