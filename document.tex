@@ -70,10 +70,35 @@
 
 \begin{document}
 
-\section*{Problem 1}
+\section*{Spring}
 
-\subsection*{Algorithm}
-dsasadsadsadsad年
+
+
+\subsection*{JDBC数据库重连}
+
+在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
+
+\begin{lstlisting}[language=Bash]
+# 使用Hikari pool时，是否允许连接池暂停，默认为: false
+spring.datasource.allow-pool-suspension
+\end{lstlisting}
+
+
+
+停止数据库：
+
+\begin{lstlisting}[language=Bash]
+/opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole
+\end{lstlisting}
+
+
+\subsection{jps}
+
+\begin{lstlisting}[language=Bash]
+java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties
+\end{lstlisting}
+
+
 \newpage
 \section*{Groovy}
 
