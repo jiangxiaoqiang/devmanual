@@ -83,7 +83,20 @@
 spring.datasource.allow-pool-suspension
 \end{lstlisting}
 
+可以将连接池到c3p0，c3p0连接池本身具有数据库重连机制。目前常见到连接池如下表所示：
 
+\begin{tabular}{|c|c|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c|}{名称}  
+	& \multicolumn{1}{c|}{协议} 
+	& \multicolumn{1}{c|}{备注}\\			
+	\cline{1-4}
+	1 & c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+	2 & Hikari & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
+	\hline
+\end{tabular}
 
 停止数据库：
 
