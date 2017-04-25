@@ -70,6 +70,8 @@
 
 \begin{document}
 
+<<<<<<< HEAD
+=======
 \section*{Spring}
 
 
@@ -112,6 +114,7 @@ java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=appli
 \end{lstlisting}
 
 
+>>>>>>> 456164b1cee6ba663c41ad817acc6ad6c6bcde68
 \newpage
 \section*{Groovy}
 
@@ -146,7 +149,7 @@ repositories {
 }
 \end{lstlisting}
 
-总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+总的来说，只有两个标准的library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{属性(Properties)}
 
