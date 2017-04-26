@@ -107,6 +107,8 @@ nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 \end{lstlisting}
 
 
+http://www.cnblogs.com/xingzc/p/6073730.html
+
 \subsection{jps}
 
 jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
@@ -211,6 +213,16 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 \begin{lstlisting}[language=Bash]
 curl 'http://59.214.215.6:3800/inapi/united/detail?param=%E8%B0%8A%E5%BE%B7%E5%AE%9E%E4%B8%9A&reds=&blacks=TS_F_HEIMINGDAN_C500033,TS_F_HEIMINGDAN' -H 'Pragma: no-cache' -H 'HL-APP-KEY: CreditChongqingSharePortal' -H 'DNT: 1' -H 'Accept-Encoding: gzip, deflate, sdch' -H 'Accept-Language: zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4' -H 'User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36' -H 'Accept: application/json, text/plain, */*' -H 'Cache-Control: no-cache' -H 'HL-CURRENT-URL: http://59.214.215.6:3800/main/search/unitedListQuery' -H 'Referer: http://59.214.215.6:3800/main/search/unitedListQuery' -H 'Cookie: UM_distinctid=15b667c97f65a-0afddd1bed9cb8-1421150f-15f900-15b667c97f737f; CNZZDATA1257579122=576897936-1492070602-http%253A%252F%252F59.214.215.6%253A8081%252F%7C1492393083; cc-o-t=ZnNoeEpnMXZUcklpRXAyTm9ReXhwWTdNSFFUMnptZ2NOdmFDWlhPajhlakRvYVk1eEtRem53enJMNVpzdU5HRURlejlRT3lqQ2VldHJUb2dETXZOVkIrcTZqZzR5M0xoUHZsL0V2TXZ1c3VYaVJkRE1NdEE5c0ZWMXI5dUVlV0g' -H 'Connection: keep-alive' --compressed
+\end{lstlisting}
+
+\section{Git}
+
+\subsection{merge}
+
+配置Meld为默认合并工具：
+
+\begin{lstlisting}[language=Bash]
+git config --global merge.tool meld
 \end{lstlisting}
 
 
