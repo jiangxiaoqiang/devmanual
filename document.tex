@@ -80,7 +80,7 @@
 
 \begin{lstlisting}[language=Bash]
 # 使用Hikari pool时，是否允许连接池暂停，默认为: false
-spring.datasource.allow-pool-suspension
+spring.datasource.allow-pool-suspension=true
 \end{lstlisting}
 
 可以将连接池到c3p0，c3p0连接池本身具有数据库重连机制。目前常见到连接池如下表所示：
@@ -96,19 +96,25 @@ spring.datasource.allow-pool-suspension
 	\hline
 	2 & Hikari & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
 	\hline
+	3 & Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
+	\hline
 \end{tabular}
 
 停止数据库：
 
 \begin{lstlisting}[language=Bash]
-/opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole
+nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 \end{lstlisting}
 
 
 \subsection{jps}
 
+jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
+
+java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
+
 \begin{lstlisting}[language=Bash]
-java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties
+nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
 
@@ -167,6 +173,8 @@ buildscript {
 \end{lstlisting}
 
 Reading extra properties is done through the "ext" or through the owning object.
+
+
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
 if (isSnapshot) {
 	// do snapshot stuff
@@ -174,6 +182,30 @@ if (isSnapshot) {
 
 
 \part{Tool}
+
+\section{ssh}
+
+\subsection{Session时间}
+
+在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
+
+\paragraph{ClientAliveInterval}
+
+修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
+
+\paragraph{ClientAliveCountMax}
+
+另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
+
+\paragraph{ControlPersist 4h}
+
+在./ssh/config中添加一行：
+
+\begin{lstlisting}[language=Bash]
+ControlPersist 4h
+\end{lstlisting}
+
+When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
 
 \section{Curl}
 
