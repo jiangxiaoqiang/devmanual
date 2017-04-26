@@ -130,7 +130,20 @@ java    20026   hl   50u  IPv4 2197536      0t0  TCP localhost:58238->localhost:
 spring.datasource.initial-size=5
 \end{lstlisting}
 
+在Spring中配置数据源类型如下：
 
+\begin{lstlisting}
+# 指定数据源类型
+spring.datasource.type=com.zaxxer.hikari.HikariDataSource
+\end{lstlisting}
+
+如果不配置数据源，Spring Boot默认的数据源是：
+
+\begin{lstlisting}
+org.apache.tomcat.jdbc.pool.DataSource
+\end{lstlisting}
+
+但是在实际开发中，可能需要使用自己是熟悉的数据源或者其他性能比较高的数据源。此时就可以通过制定Spring的数据源类型来实现。
 
 停止数据库：
 
