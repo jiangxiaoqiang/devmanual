@@ -72,8 +72,6 @@
 
 \section*{Spring}
 
-
-
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
@@ -94,9 +92,13 @@ spring.datasource.allow-pool-suspension=true
 	\cline{1-4}
 	1 & c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
 	\hline
-	2 & Hikari & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
+	2 & HikariCP & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
 	\hline
 	3 & Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
+	\hline
+	4 & DBCP & Apache 2.0 & DBCP(DataBase connection pool),是 apache 上的一个 java 连接池项目，也是 tomcat 使用的连接池组件。单独使用dbcp需要2个包：commons-dbcp.jar,commons-pool.jar \\
+	\hline
+	5 & BoneCP & Apache 2.0 & 使用HikariCP替代\\
 	\hline
 \end{tabular}
 
@@ -184,6 +186,10 @@ if (isSnapshot) {
 
 
 \part{Tool}
+
+\section{Ansible}
+
+
 
 \section{ssh}
 
