@@ -70,6 +70,8 @@
 
 \begin{document}
 
+\part{Framework}
+
 \section*{Spring}
 
 \subsection*{JDBC数据库重连}
@@ -124,7 +126,7 @@ java    20026   hl   49u  IPv4 2197182      0t0  TCP localhost:58236->localhost:
 java    20026   hl   50u  IPv4 2197536      0t0  TCP localhost:58238->localhost:padl2sim (ESTABLISHED)
 \end{lstlisting}
 
-在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设置连接池的数量为5个：
+在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设启连接池连接池时，初始建立的连接数量为5个：
 
 \begin{lstlisting}
 spring.datasource.initial-size=5
@@ -137,7 +139,7 @@ spring.datasource.initial-size=5
 spring.datasource.type=com.zaxxer.hikari.HikariDataSource
 \end{lstlisting}
 
-如果不配置数据源，Spring Boot默认的数据源是：
+Hikari默认的数据源默认的连接池数量为10个，默认的数量在HikariConfig类中进行的设置。为什么修改Spring的Initial Size数量会影响Hikari的连接数量呢？如果不配置数据源，Spring Boot默认的数据源是：
 
 \begin{lstlisting}
 org.apache.tomcat.jdbc.pool.DataSource
@@ -151,8 +153,65 @@ org.apache.tomcat.jdbc.pool.DataSource
 nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 \end{lstlisting}
 
+在反复研究后发现，程序并未使用HikariCP连接池，而是使用的Spring JDBC连接池，所以在初始化Datasource时指定连接池，如下代码片段所示：
 
-http://www.cnblogs.com/xingzc/p/6073730.html
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceConfig {
+
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+	
+	@Bean
+	@Primary
+	public DataSource primaryDataSource() {
+		HikariConfig hikariConfig = new HikariConfig();
+		hikariConfig.setDriverClassName(driverClassName);
+		hikariConfig.setJdbcUrl(jdbcUrl);
+		hikariConfig.setUsername(username);
+		hikariConfig.setPassword(password);
+		hikariConfig.setMaximumPoolSize(5);
+		hikariConfig.setConnectionTestQuery("SELECT 1");
+		hikariConfig.setPoolName("springHikariCP");
+		hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+		hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+		HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+		return dataSource;
+	}
+}
+\end{lstlisting}
+
+\subsection{读取properties属性}
+
+\subsubsection{读取自定义属性}
+
+有时需要读取自定义属性，以配置HikariCP连接池为例，在application.properties文件指定指定配置：
+
+\begin{lstlisting}
+spring.datasource.hikari.jdbc-url=jdbc:dm://dn4:5236/DMSERVER
+\end{lstlisting}
+
+在类中获取配置相应的值，注意需要添加Data注解，否则需要手写get和set方法：
+
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@ConfigurationProperties(prefix = "spring.datasource.hikari")
+public class DataSourceConfig {
+	private String jdbcUrl;
+}
+\end{lstlisting}
+
+由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
 \subsection{jps}
 
@@ -168,6 +227,7 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\part{Tool}
 
 \newpage
 \section*{Gradle}
@@ -228,7 +288,7 @@ if (isSnapshot) {
 }
 
 
-\part{Tool}
+
 
 \section{Ansible}
 
