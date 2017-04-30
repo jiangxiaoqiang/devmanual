@@ -273,13 +273,37 @@ netstat -nr
 
 \subsubsection{Fedora同时连接内外网}
 
-给有线网卡配置地址信息时，不要加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关；使用ip ro 命令查看路由信息，是否有与以下信息类似的内容（这是我机器上的信息，wlp6s0b1是无线网卡并连接外网）：
-default via 192.168.1.254 dev wlp6s0b1 proto static metric 1024
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走eth0:
 
+\begin{lstlisting}[language=Bash]
+route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
+\end{lstlisting}
 
-注意：两个网卡共存共用的前提是为两个网卡配置不同的网段，使内核知道去往某个网络该走哪个网卡出口。
+其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
+
+\begin{lstlisting}[language=Bash]
+vim /etc/rc.local
+\end{lstlisting}
+
+删除默认网关的命令如下：
+
+\begin{lstlisting}[language=Bash]
+route del default
+\end{lstlisting}
+
+重启网络服务：
+
+\begin{lstlisting}[language=Bash]
+/etc/init.d/networking restart
+\end{lstlisting}
 
 \subsubsection{Ubuntu同时连接内外网}
+
+\subsubsection{Windows同时连接内外网}
+
+\url{http://blog.csdn.net/jay329106193/article/details/8129374}
+
+\url{http://www.jianshu.com/p/b64da1d93e3d}
 
 \part{Tool}
 
