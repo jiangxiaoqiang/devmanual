@@ -74,6 +74,8 @@
 
 \section*{Spring}
 
+http://stackoverflow.com/questions/31045955/using-configurationproperties-to-fill-map-in-generic-way
+
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
@@ -287,6 +289,81 @@ if (isSnapshot) {
 	// do snapshot stuff
 }
 
+\subsection{同时连接内外网}
+
+在工作中，有时需要同时连接封闭的网络和互联网，开发环境需要依赖封闭的内网，与远程的同事交流需要依赖互联网，而封闭的内网与互联网切换是一大痛点，不仅影响效率，同时也影响心情，宝贵的时间就在这样无意义的开关中白白浪费掉了。制造障碍很容易，清除障碍很艰难。
+
+解决双网卡问题，既能保证内网访问的安全，又能避免频繁切换网卡带来的时间开销，可谓一举两得。一般的计算机有有线网卡，也有无线网卡。一般情况下要么使用有线网卡，要么使用无线网卡，在使用无线时，连接上了有线，因为有线网卡的优先级高，故此时仅有有线能够工作，无线网卡可连接但是无法传送数据。实现双网卡的基本思路是删除默认网关，配置各自的网关即可。
+
+\subsubsection{Mac同时连内网外网}
+
+输入如下命令查看Mac的所有网络连接方式：
+
+\begin{lstlisting}[language=Bash]
+networksetup -listallnetworkservices
+\end{lstlisting}
+
+输出的结果如下：
+
+\begin{lstlisting}
+An asterisk (*) denotes that a network service is disabled.
+Apple USB Ethernet Adapter
+Wi-Fi
+Bluetooth PAN
+Thunderbolt Bridge
+\end{lstlisting}
+
+可以看出Mac可以通过Wi-Fi联网，也可以通过USB有线联网。给指定的网络连接方式设定DNS服务器代码如下：
+
+\begin{lstlisting}[language=Bash]
+sudo networksetup -setdnsservers AirPort 192.168.10.200
+\end{lstlisting}
+
+清空DNS缓存代码如下：
+
+\begin{lstlisting}[language=Bash]
+dscacheutil –flushcache
+\end{lstlisting}
+
+输入如下命令查看MacBook的路由表：
+
+\begin{lstlisting}[language=Bash]
+netstat -nr
+\end{lstlisting}
+
+\subsubsection{Fedora同时连接内外网}
+
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走eth0:
+
+\begin{lstlisting}[language=Bash]
+route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
+\end{lstlisting}
+
+其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
+
+\begin{lstlisting}[language=Bash]
+vim /etc/rc.local
+\end{lstlisting}
+
+删除默认网关的命令如下：
+
+\begin{lstlisting}[language=Bash]
+route del default
+\end{lstlisting}
+
+重启网络服务：
+
+\begin{lstlisting}[language=Bash]
+/etc/init.d/networking restart
+\end{lstlisting}
+
+\subsubsection{Ubuntu同时连接内外网}
+
+\subsubsection{Windows同时连接内外网}
+
+\url{http://blog.csdn.net/jay329106193/article/details/8129374}
+
+\url{http://www.jianshu.com/p/b64da1d93e3d}
 
 
 
