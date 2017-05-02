@@ -66,7 +66,7 @@
 	texcl=true
 }
 
-
+\graphicspath{{./Image/common/}{./Image/Api/}{./Image/InterfaceDesign/}{./Image/Attachment/}}
 
 \begin{document}
 
@@ -333,10 +333,31 @@ netstat -nr
 
 \subsubsection{Fedora同时连接内外网}
 
-给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走eth0:
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{route-table.jpg}
+	\caption{查看Kernal路由表}
+	\label{fig:routetable}
+\end{figure}
+
+其中wlp3s0是无线网卡的名称，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。三删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
-route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
+sudo route del default
+\end{lstlisting}
+
+删除一条路由：
+
+\begin{lstlisting}[language=Bash]
+sudo route del -net 192.168.122.0 netmask 255.255.255.0
+\end{lstlisting}
+
+如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
+
+\begin{lstlisting}[language=Bash]
+sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
 \end{lstlisting}
 
 其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
@@ -345,10 +366,13 @@ route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
 vim /etc/rc.local
 \end{lstlisting}
 
-删除默认网关的命令如下：
+添加删除默认网关：
 
 \begin{lstlisting}[language=Bash]
-route del default
+#添加默认网关
+sudo route add default gw 10.55.10.1
+#删除默认网关
+sudo route del default gw 10.55.10.1
 \end{lstlisting}
 
 重启网络服务：
