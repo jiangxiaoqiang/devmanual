@@ -66,11 +66,15 @@
 	texcl=true
 }
 
-
+\graphicspath{{./Image/common/}{./Image/Api/}{./Image/InterfaceDesign/}{./Image/Attachment/}}
 
 \begin{document}
 
+
 \include{title}
+
+\part{Framework}
+
 
 \section*{Spring}
 
@@ -128,7 +132,7 @@ java    20026   hl   49u  IPv4 2197182      0t0  TCP localhost:58236->localhost:
 java    20026   hl   50u  IPv4 2197536      0t0  TCP localhost:58238->localhost:padl2sim (ESTABLISHED)
 \end{lstlisting}
 
-在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设置连接池的数量为5个：
+在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设启连接池连接池时，初始建立的连接数量为5个：
 
 \begin{lstlisting}
 spring.datasource.initial-size=5
@@ -141,7 +145,7 @@ spring.datasource.initial-size=5
 spring.datasource.type=com.zaxxer.hikari.HikariDataSource
 \end{lstlisting}
 
-如果不配置数据源，Spring Boot默认的数据源是：
+Hikari默认的数据源默认的连接池数量为10个，默认的数量在HikariConfig类中进行的设置。为什么修改Spring的Initial Size数量会影响Hikari的连接数量呢？如果不配置数据源，Spring Boot默认的数据源是：
 
 \begin{lstlisting}
 org.apache.tomcat.jdbc.pool.DataSource
@@ -155,8 +159,65 @@ org.apache.tomcat.jdbc.pool.DataSource
 nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 \end{lstlisting}
 
+在反复研究后发现，程序并未使用HikariCP连接池，而是使用的Spring JDBC连接池，所以在初始化Datasource时指定连接池，如下代码片段所示：
 
-http://www.cnblogs.com/xingzc/p/6073730.html
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceConfig {
+
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+	
+	@Bean
+	@Primary
+	public DataSource primaryDataSource() {
+		HikariConfig hikariConfig = new HikariConfig();
+		hikariConfig.setDriverClassName(driverClassName);
+		hikariConfig.setJdbcUrl(jdbcUrl);
+		hikariConfig.setUsername(username);
+		hikariConfig.setPassword(password);
+		hikariConfig.setMaximumPoolSize(5);
+		hikariConfig.setConnectionTestQuery("SELECT 1");
+		hikariConfig.setPoolName("springHikariCP");
+		hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+		hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+		HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+		return dataSource;
+	}
+}
+\end{lstlisting}
+
+\subsection{读取properties属性}
+
+\subsubsection{读取自定义属性}
+
+有时需要读取自定义属性，以配置HikariCP连接池为例，在application.properties文件指定指定配置：
+
+\begin{lstlisting}
+spring.datasource.hikari.jdbc-url=jdbc:dm://dn4:5236/DMSERVER
+\end{lstlisting}
+
+在类中获取配置相应的值，注意需要添加Data注解，否则需要手写get和set方法：
+
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@ConfigurationProperties(prefix = "spring.datasource.hikari")
+public class DataSourceConfig {
+	private String jdbcUrl;
+}
+\end{lstlisting}
+
+由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
 \subsection{jps}
 
@@ -172,6 +233,7 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\part{Tool}
 
 \newpage
 \section*{Gradle}
@@ -275,10 +337,31 @@ netstat -nr
 
 \subsubsection{Fedora同时连接内外网}
 
-给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走eth0:
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{route-table.jpg}
+	\caption{查看Kernal路由表}
+	\label{fig:routetable}
+\end{figure}
+
+其中wlp3s0是无线网卡的名称，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。三删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
-route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
+sudo route del default
+\end{lstlisting}
+
+删除一条路由：
+
+\begin{lstlisting}[language=Bash]
+sudo route del -net 192.168.122.0 netmask 255.255.255.0
+\end{lstlisting}
+
+如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
+
+\begin{lstlisting}[language=Bash]
+sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
 \end{lstlisting}
 
 其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
@@ -287,10 +370,13 @@ route add -net 59.214.0.0 netmask 255.255.0.0 gw 10.36.40.12 dev eth0
 vim /etc/rc.local
 \end{lstlisting}
 
-删除默认网关的命令如下：
+添加删除默认网关：
 
 \begin{lstlisting}[language=Bash]
-route del default
+#添加默认网关
+sudo route add default gw 10.55.10.1
+#删除默认网关
+sudo route del default gw 10.55.10.1
 \end{lstlisting}
 
 重启网络服务：
@@ -307,7 +393,7 @@ route del default
 
 \url{http://www.jianshu.com/p/b64da1d93e3d}
 
-\part{Tool}
+
 
 \section{Ansible}
 
