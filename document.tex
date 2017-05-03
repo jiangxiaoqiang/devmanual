@@ -419,7 +419,11 @@ sudo route del default gw 10.55.10.1
 
 \section{OpenVPN}
 
+<<<<<<< HEAD
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。
+=======
+此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。
+>>>>>>> 9f6d443f16487603f326089ab79ce6542abbab52
 
 \subsection{安装}
 
@@ -476,6 +480,7 @@ cp -R /etc/openvpn/easyrsa/ .
 
 \begin{lstlisting}[language=Bash]
 sudo openvpn server.conf
+<<<<<<< HEAD
 # Mac下启动OpenVPN
 sudo /usr/local/Cellar/openvpn/2.4.1/sbin/openvpn /usr/local/etc/openvpn/client.conf
 \end{lstlisting}
@@ -508,6 +513,10 @@ verb 3
 
 
 
+=======
+\end{lstlisting}
+
+>>>>>>> 9f6d443f16487603f326089ab79ce6542abbab52
 \subsection{常见错误}
 
 
