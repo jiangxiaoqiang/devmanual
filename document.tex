@@ -70,7 +70,11 @@
 
 \begin{document}
 
+
+\include{title}
+
 \part{Framework}
+
 
 \section*{Spring}
 
@@ -232,6 +236,19 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \part{Tool}
 
 \newpage
+
+\section{OS}
+
+\subsection{Linux}
+
+\subsubsection{查看Linux信息}
+
+\begin{lstlisting}[language=Bash]
+# Linux查看版本当前操作系统内核信息
+uname －a 
+\end{lstlisting}
+
+
 \section*{Gradle}
 
 \subsection{执行流程}
@@ -396,6 +413,10 @@ sudo route del default gw 10.55.10.1
 
 \section{Ansible}
 
+\section{Fiddler}
+
+\subsection{Fiddler替换Host}
+
 
 
 \section{ssh}
@@ -446,6 +467,60 @@ git config --global merge.tool meld
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+
+\part{Network}
+
+\section{PAC}
+
+\subsection{PAC简介}
+
+PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就是JavaScript文件。PAC最简单的格式就是包含一个叫FindProxyForURL的JavaScript函数，IE通过传入两个变量来调用这个函数。一个是用户流量的地址的URL全路径，一个是这个URL中的主机名host。在日常生活中浏览器中设置代理很简单，但是当你来回切换时总是觉得很烦，你可以使用pac脚本自动判断是否走代理，方便省去了来回手动切换的烦恼。
+
+\subsection{PAC实例}
+
+一个最简单的PAC脚本：
+
+\begin{lstlisting}[language=VBScript]
+function FindProxyForURL(url,host){
+	return "DIRECT";
+}
+\end{lstlisting}
+
+参数url是用户输入的url，参数host是url中的主机名。PAC文件返回值有三种类型：
+
+\begin{itemize}
+	\item{DIRECT直连不通过代理}
+	\item{PROXY www.lybbn.cn:8080 http通过8080端口代理上网，也可以使用ip:port的形式}
+	\item{SOCKS5 www.lybbn.cn:8080 socks通过8080端口代理上网，可以使用ip:port形式}
+\end{itemize}
+
+\begin{lstlisting}[language=VBScript]
+var FindProxyForURL = function(init, profiles) {
+	return function(url, host) {
+		"use strict";
+		var result = init, scheme = url.substr(0, url.indexOf(":"));
+		do {
+			result = profiles[result];
+			if (typeof result === "function") result = result(url, host, scheme);
+		} while (typeof result !== "string" || result.charCodeAt(0) === 43);
+		return result;
+	};
+}("+dolphin2", {
+	"+dolphin2": function(url, host, scheme) {
+		"use strict";
+		if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
+		if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
+		return "DIRECT";
+	},
+	"+dolphin-proxy": function(url, host, scheme) {
+		"use strict";
+		if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
+		return "PROXY 10.55.10.2:8888";
+	}
+});
+\end{lstlisting}
+
+以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
 
 \end{document}
 \theend
