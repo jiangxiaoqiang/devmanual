@@ -381,6 +381,9 @@ sudo route del default gw 10.55.10.1
 /etc/init.d/networking restart
 \end{lstlisting}
 
+此时可以同时访问互联网和局域网中的主机，但是无法访问A网络。访问A网络可通过局域网代理的方式访问，将局域网的一台主机作为代理服务器，本机访问局域网中的代理服务器，代理服务器再将请求转发给A网络。在本机只需要在浏览器中配置好代理服务器即可。以FireFox浏览器为例，在Preference->Advance->Network->Connection->Settings中，增加手动代理配置，地址填写代理主机的地址，端口填写8888，代理服务器运行的是Fiddler。以后，访问内网时就使用FireFox浏览器，访问外网时就使用Google Chrome浏览器。
+
+
 \subsubsection{Ubuntu同时连接内外网}
 
 \subsubsection{Windows同时连接内外网}
