@@ -417,6 +417,68 @@ sudo route del default gw 10.55.10.1
 
 \subsection{Fiddler替换Host}
 
+\section{OpenVPN}
+
+此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。
+
+\subsection{安装}
+
+\subsubsection{生成客户端证书}
+
+新建client文件夹，文件夹可随意命名，然后拷贝easy-ras文件夹到client文件夹,进入下列目录：
+
+\begin{lstlisting}[language=Bash]
+cp -R /etc/openvpn/easyrsa/ .
+\end{lstlisting}
+
+初始化:
+
+\begin{lstlisting}[language=Bash]
+./easyrsa init-pki.
+\end{lstlisting}
+
+服务端生成的文件有：
+
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c|}{名称}  \\			
+	\cline{1-2}
+	ca.crt  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+	reqs/server.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+	reqs/dolphin.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+	private/ca.key & \\
+	\hline
+	private/server.key & \\
+	issued/server.crt & \\
+	issued/dolphin.crt & \\
+	dh.pem & \\
+	\hline
+\end{tabular}
+
+客户端生成的文件有：
+
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c|}{名称}  \\			
+	\cline{1-2}
+	private/dolphinclient.key  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+	reqs/sdolphinclient.req & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\hline
+\end{tabular}
+
+启动OpenVPN：
+
+\begin{lstlisting}[language=Bash]
+sudo openvpn server.conf
+\end{lstlisting}
+
+\subsection{常见错误}
 
 
 \section{ssh}
