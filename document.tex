@@ -427,11 +427,16 @@ OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版�
 
 安装基础包：
 
-\begin{lstlisting}[language=Bash]
-sudo yum -y install openssl openssl-devel lzo openvpn easy-rsa -y
+\begin{lstlisting}[language=bash]
+sudo yum -y install openssl openssl-devel lzo openvpn easy-rsa --allowerasing
+#手动安装
+wget -c https://swupdate.openvpn.org/community/releases/openvpn-2.4.1.tar.gz
+tar -zxvf openvpn-2.4.1.tar.gz
+./configure
+make && make install
 \end{lstlisting}
 
-
+LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Oberhumer 的缩写。这个算法是无损算法，参考实现程序是线程安全的。 实现它的一个自由软件工具是lzop。最初的库是用 ANSI C 编写、并且遵从 GNU通用公共许可证发布的。现在 LZO 有用于 Perl、Python 以及 Java 的各种版本。代码版权的所有者是 Markus F. X. J. Oberhumer。
 
 \subsubsection{生成客户端证书}
 
@@ -444,6 +449,7 @@ cp -R /etc/openvpn/easyrsa/ .
 初始化:
 
 \begin{lstlisting}[language=Bash]
+#建立一个空的pki结构，生成一系列的文件和目录
 ./easyrsa init-pki
 \end{lstlisting}
 
@@ -467,23 +473,27 @@ Apache和*NIX服务器偏向于使用这种编码格式.签约：
 
 服务端生成的文件有：
 
-\begin{tabular}{|c|p{8cm}|c|}
+\begin{tabular}{|c|p{6cm}|c|}
 	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c|}{名称}  \\			
-	\cline{1-2}
-	ca.crt  & 根证书文件 	\\
+	\multirow{1}{*}{文件名称}
+	& \multicolumn{1}{c|}{说明(Purpose)} 
+	& \multicolumn{1}{c|}{位置} \\			
+	\cline{1-3}
+	ca.crt  & 根证书(Root CA certificate)件 & Server+All Clients	\\
 	\hline
-	reqs/server.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	reqs/server.req  & &\\
 	\hline
-	reqs/dolphin.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	reqs/dolphin.req  & &\\
 	\hline
-	private/ca.key & 根证书私钥文件 \\
+	private/ca.key & 根证书私钥(Root CA key) & key signing machine only\\
 	\hline
-	private/server.key & \\
-	issued/server.crt & \\
-	issued/dolphin.crt & \\
-	dh.pem & \\
+	private/server.key && \\
+	\hline
+	issued/server.crt & 服务器证书Server Certificate & server only\\
+	\hline
+	issued/dolphin.crt && \\
+	\hline
+	dh.pem & Diffie Hellman parameters & server only \\
 	\hline
 \end{tabular}
 
@@ -494,9 +504,9 @@ Apache和*NIX服务器偏向于使用这种编码格式.签约：
 	\multirow{1}{*}{序号}
 	& \multicolumn{1}{c|}{名称}  \\			
 	\cline{1-2}
-	private/dolphinclient.key  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	private/dolphinclient.key  & \\
 	\hline
-	reqs/sdolphinclient.req & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	reqs/sdolphinclient.req & \\
 	\hline
 \end{tabular}
 
@@ -545,9 +555,9 @@ verb 3
 
 
 
-
-
 \subsection{常见错误}
+
+得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
 
 \subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
