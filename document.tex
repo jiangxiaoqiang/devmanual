@@ -241,6 +241,16 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Linux}
 
+\subsubsection{screen}
+
+在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
+
+\begin{lstlisting}[language=Bash]
+screen sudo openvpn client.conf
+\end{lstlisting}
+
+接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。
+
 \subsubsection{查看Linux信息}
 
 \begin{lstlisting}[language=Bash]
@@ -563,6 +573,14 @@ verb 3
 
 
 \section{ssh}
+
+
+
+\subsection{免密登陆}
+
+\begin{lstlisting}[language=Bash]
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+\end{lstlisting}
 
 \subsection{Session时间}
 
