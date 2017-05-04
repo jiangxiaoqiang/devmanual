@@ -419,13 +419,19 @@ sudo route del default gw 10.55.10.1
 
 \section{OpenVPN}
 
-<<<<<<< HEAD
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。
-=======
-此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。
->>>>>>> 9f6d443f16487603f326089ab79ce6542abbab52
+
+OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。
+
 
 \subsection{安装}
+
+安装基础包：
+
+\begin{lstlisting}[language=Bash]
+sudo yum -y install openssl openssl-devel lzo openvpn easy-rsa -y
+\end{lstlisting}
+
+
 
 \subsubsection{生成客户端证书}
 
@@ -438,7 +444,25 @@ cp -R /etc/openvpn/easyrsa/ .
 初始化:
 
 \begin{lstlisting}[language=Bash]
-./easyrsa init-pki.
+./easyrsa init-pki
+\end{lstlisting}
+
+PKI：Public Key Infrastructure公钥基础设施。生成请求：
+
+\begin{lstlisting}[language=Bash]
+./easyrsa gen-req dolphinfedora
+\end{lstlisting}
+
+输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.
+查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout
+Apache和*NIX服务器偏向于使用这种编码格式.签约：
+
+\begin{lstlisting}[language=Bash]
+#切换到服务端生成rsa的目录
+#导入req
+./easyrsa import-req ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/reqs/dolphinfedora.req dolphinfedora
+#用户签约，根据提示输入服务端的ca密码
+./easyrsa sign client dolphinfedora
 \end{lstlisting}
 
 服务端生成的文件有：
@@ -448,13 +472,13 @@ cp -R /etc/openvpn/easyrsa/ .
 	\multirow{1}{*}{序号}
 	& \multicolumn{1}{c|}{名称}  \\			
 	\cline{1-2}
-	ca.crt  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	ca.crt  & 根证书文件 	\\
 	\hline
 	reqs/server.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
 	\hline
 	reqs/dolphin.req  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
 	\hline
-	private/ca.key & \\
+	private/ca.key & 根证书私钥文件 \\
 	\hline
 	private/server.key & \\
 	issued/server.crt & \\
@@ -475,6 +499,15 @@ cp -R /etc/openvpn/easyrsa/ .
 	reqs/sdolphinclient.req & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
 	\hline
 \end{tabular}
+
+拷贝出客户端证书文件：
+
+\begin{lstlisting}[language=Bash]
+cp easyrsa/easy-rsa-master/easyrsa3/pki/ca.crt ~/dolphinfedora/
+cp easyrsa/easy-rsa-master/easyrsa3/pki/issued/dolphinfedora.crt ~/dolphinfedora/
+cp ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/private/dolphinfedora.key ~/dolphinfedora/
+\end{lstlisting}
+
 
 启动OpenVPN：
 
@@ -515,6 +548,8 @@ verb 3
 
 
 \subsection{常见错误}
+
+\subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
 
 \section{ssh}
