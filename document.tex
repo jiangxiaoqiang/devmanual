@@ -420,7 +420,7 @@ sudo route del default gw 10.55.10.1
 \section{OpenVPN}
 
 
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。
+OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。
 
 
 \subsection{安装}
@@ -553,6 +553,11 @@ comp-lzo              #与服务器保持一致
 verb 3                
 \end{lstlisting}
 
+配置ns-cert-type(Netscape Cert Type)指定为server主要是防止中间人攻击(Man-in-the-Middle Attack)。在服务端做如下配置：
+
+\begin{lstlisting}[language=Bash]
+nsCertType server
+\end{lstlisting}
 
 
 \subsection{常见错误}
@@ -585,6 +590,10 @@ ControlPersist 4h
 \end{lstlisting}
 
 When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{rsync}
+
+在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
 
 \section{Curl}
 
