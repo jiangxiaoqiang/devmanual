@@ -577,6 +577,153 @@ nsCertType server
 \subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
 
+\section{Nmap(GNU General Public License)}
+
+Nmap(Network Mapper)，网络映射器，是一款开放源代码的网络探测和安全审核的工具。
+它的设计目标是快速地扫描大型网络，当然用它扫描单个主机也没有问题。
+Nmap以新颖的方式使用原始IP报文来发现网络上有哪些主机，
+那些主机提供什么服务(应用程序名和版本)，那些服务运行在什么操作系统(包括版本信息)，
+它们使用什么类型的报文过滤器/防火墙，以及一堆其它功能。虽然Nmap通常用于安全审核，
+许多系统管理员和网络管理员也用它来做一些日常的工作，比如查看整个网络的信息，
+管理服务升级计划，以及监视主机和服务的运行。
+Nmap脚本引擎(Nmap Script Engine)是Nmap最有力灵活的的一个特性。
+它允许用户撰写和分享一些简单的脚本来一些较大的网络进行扫描任务。
+基本上这些脚本是用Lua编程语言来完成的。通常Nmap的脚本引擎可以完成很多事情。
+
+\subsection{主机发现（Host Discovery）}
+
+主机发现顾名思义就是发现所要扫描的主机是否是正在运行的状态。
+输入如下命令开始主机扫描
+
+\begin{lstlisting}[language=Bash]
+nmap -F -sT -v nmap.org
+# 主机发现，生成存活主机列表
+nmap -sn -T4 -oG Discovery.gnmap 192.168.24.0/24
+grep "Status: Up" Discovery.gnmap | cut -f 2 -d ' ' > LiveHosts.txt
+\end{lstlisting}
+
+\begin{itemize}
+	\item{-F}扫描100个最有可能开放的端口,F表示快速模式(Fast Model)，
+	比默认模式扫描更少的端口（Scan fewer ports than the default scan），
+	如果需要扫描更多的端口，指定p参数，如下命令行片段所示：
+	
+	\begin{lstlisting}[language=Bash]
+	nmap -p 0-10000 -A -v <Host>
+	\end{lstlisting}
+	
+	端口号最好分段指定，否则扫描的速度会非常缓慢，
+	例如需要扫描0-65535端口，可以先扫描0-10000端口，
+	再扫描10001-20000，依次类推。
+	
+	\item{-v}获取扫描的信息
+	\item{-sT(Scan using TCP)}采用的是TCP扫描，不写也是可以的，默认采用的就是TCP扫描
+	\item{-sn参数表示ping扫描，禁用端口扫描}
+	\item{-oG表示输出Grepable格式}
+\end{itemize}
+
+Nmap输出的是扫描目标的列表，以及每个目标的补充信息，至于是哪些信息则依赖于所使用的选项。
+“所感兴趣的端口表格”是其中的关键。那张表列出端口号，协议，服务名称和状态。
+状态可能是 open(开放的)，filtered(被过滤的)， closed(关闭的)，或者unfiltered(未被过滤的)。
+Open(开放的)意味着目标机器上的应用程序正在该端口监听连接/报文。 
+filtered(被过滤的) 意味着防火墙，过滤器或者其它网络障碍阻止了该端口被访问，
+Nmap无法得知 它是 open(开放的) 还是 closed(关闭的)。 
+closed(关闭的) 端口没有应用程序在它上面监听，但是他们随时可能开放。 
+当端口对Nmap的探测做出响应，但是Nmap无法确定它们是关闭还是开放时，
+这些端口就被认为是 unfiltered(未被过滤的) 如果Nmap报告状态组合 
+open|filtered 和 closed|filtered时，那说明Nmap无法确定该端口处于两个状态中的哪一个状态。
+当要求进行版本探测时，端口表也可以包含软件的版本信息。
+当要求进行IP协议扫描时 (-sO)，Nmap提供关于所支持的IP协议而不是正在监听的端口的信息。
+获取远程主机的系统类型及开放端口：
+
+\begin{lstlisting}[language=Bash]
+nmap -sS -P0 -sV -O <target>
+\end{lstlisting}
+
+\subsection{端口扫描（Port Scanning）}
+
+端口扫描是Nmap最基本最核心的功能，用于确定目标主机的TCP/UDP端口的开放情况。
+端口扫描简单示例如下代码片段所示：
+
+\begin{lstlisting}[language=Bash]
+#服务扫描
+nmap-T4 -sV targetip 
+
+#扫描淘宝IP
+nmap -p 0-1000 -v 218.201.46.124
+nmap -T4 -A -v 218.201.46.124
+\end{lstlisting}
+
+通过扫描可以发现一些主机信息，比如淘宝的数字证书用的是GlobalSign，
+加密位数是2048，签名算法是sha256WithRSAEncryption，
+操作系统猜测是Linux系列的，内核版本可能是3.X或者2.6.X，
+具体信息如下。
+
+\begin{lstlisting}
+443/tcp open  ssl/http Tengine httpd
+|_http-server-header: Tengine
+|_http-title: 501 Not Implemented
+| ssl-cert: Subject: commonName=*.tmall.com/organizationName=Alibaba (China) Technology Co., Ltd./stateOrProvinceName=ZheJiang/countryName=CN
+| Issuer: commonName=GlobalSign Organization Validation CA - SHA256 - G2/organizationName=GlobalSign nv-sa/countryName=BE
+| Public Key type: rsa
+| Public Key bits: 2048
+| Signature Algorithm: sha256WithRSAEncryption
+| Not valid before: 2015-12-14T10:38:38
+| Not valid after:  2016-12-14T10:38:38
+| MD5:   5d67 3ca3 7f0e 2ab7 7b4f 59d5 0700 7223
+|_SHA-1: d048 e9cf 5487 5030 9f26 e638 7d3f 94ad a2b3 e6fa
+\end{lstlisting}
+
+默认情况下，Nmap会扫描1000个最有可能开放的TCP端口。
+
+1）公认端口(0～1023)，又称常用端口，为已经公认定义或为将要公认定义的软件保留的。
+这些端口紧密绑定一些服务且明确表示了某种服务协议。如80端口表示HTTP协议。
+2）注册端口(1024～49151)，又称保留端口,这些端口松散绑定一些服务。
+3）动态/私有端口（49152～65535)。理论上不应为服务器分配这些端口。
+按协议类型可以将端口划分为TCP和UDP端口。
+1）TCP端口是指传输控制协议端口，需要在客户端和服务器之间建立连接，
+提供可靠的数据传输。如Telnet服务的23端口。
+2）UDP端口是指用户数据包协议端口，不需要在客户端和服务器之间建立连接。
+常见的端口有DNS服务的53端口。
+有的服务器为了安全会修改默认端口，
+比如将ssh默认的22端口修改为50000，
+不过通过Nmap扫描也会很容易的发现。
+详细的扫描指令如下所示：
+
+\begin{lstlisting}[language=Bash]
+nmap -sS -sU -T4 -A -v -PE -PP -PS80,443 -PA3389 -PU40125 -PY -g 53 --script "default or (discovery and safe)" 12.26.32.14 
+\end{lstlisting}
+
+\begin{itemize}
+	\item{-sS参数(TCP SYN Scan)可以利用基本的SYN扫描方式探测其端口开放状态}
+	\item{-sU参数代表UDP Scan}
+	\item{-T<0-5>: Set timing template (higher is faster)}
+	\item{-A: Enable OS detection, version detection, script scanning, and traceroute}
+	\item{-v: Increase verbosity level (use -vv or more for greater effect)}
+	\item{-PE/PP/PM: ICMP echo, timestamp, and netmask request discovery probes}
+	\item{-PS/PA/PU/PY[portlist]: TCP SYN/ACK, UDP or SCTP discovery to given ports}
+	\item{-g/--source-port <portnum>: Use given port number}
+\end{itemize}
+
+
+\paragraph{"ppp0" is not an ethernet device}在使用nmap扫描时候，提示 
+
+\begin{lstlisting}
+Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an ethernet device. Use the --unprivileged option for this scan. QUITTING!
+\end{lstlisting}
+
+因为用Nmap扫描时，不能用pppoe的拨号口，只能用以太网口。
+根据提示带参数--unprivileged就可以了,注意扫描的命令不能带-A参数，
+否则会要求root权限，无法启动扫描。 
+
+
+\subsection{版本侦测（Version Detection）}
+
+版本侦测在后面添加sV(Service/Version)参数即可。
+
+\begin{lstlisting}[language=Bash]
+-sV: Probe open ports to determine service/version info
+\end{lstlisting}
+
 \section{ssh}
 
 
