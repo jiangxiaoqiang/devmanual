@@ -258,6 +258,17 @@ screen sudo openvpn client.conf
 uname －a 
 \end{lstlisting}
 
+\subsection{Fedora访问共享文件夹}
+
+在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
+
+\begin{lstlisting}[language=Bash]
+sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/data /home/dolphin/software
+\end{lstlisting}
+
+一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
+
+
 
 \section*{Gradle}
 
@@ -365,11 +376,28 @@ netstat -nr
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale=0.4]{route-table.jpg}
-	\caption{查看Kernal路由表}
+	\caption{查看Kernel路由表}
 	\label{fig:routetable}
 \end{figure}
 
-其中wlp3s0是无线网卡的名称，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。三删除默认网关的命令如下：
+其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如下：
+
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c}{名称}  \\
+	\hline			
+	U  & Up表示此路由当前为启动状态 \\	
+	H & Host，表示此网关为一主机 \\
+	G & Gateway，表示此网关为一路由器\\
+	R & Reinstate Route，使用动态路由重新初始化的路由\\
+	D & Dynamically,此路由是动态性地写入\\
+	M & Modified，此路由是由路由守护程序或导向器动态修改\\
+	! & 表示此路由当前为关闭状态\\
+	\hline
+\end{tabular}
+
+删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
 sudo route del default
@@ -553,6 +581,12 @@ verb 3
 nsCertType server
 \end{lstlisting}
 
+1.首页总数体现新增数据，总数和本月新入数量
+2.综合查询时要体验不同的数据来源，法人和自然人新增一个数据来源字段
+3.红黑名单详情中，添加来源字段，要在详情中显示
+4.倒出数据自动化功能
+5.打印出的界面需要添加来源字段
+6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
 \subsection{常见错误}
 
@@ -708,11 +742,57 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
 
+\section{tmux}
+
+tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
+
+
+\section{Widgets}
+
+\subsection{autojump}
+
+autojump可以让你一键跳转到目标目录，一般情况下，很难准确的记忆清楚目标目录的准确路径，特别是目录嵌套比较深的时候。不停的重复使用cd命令一级或多级跳转显得有点笨拙。此时就可以使用autojump命令，只需要输入路径的关键字即可，比如只记得路径中隐约包含有关键字“jiangxiaoqiang”，那么仅仅输入命令autojump jiang，就可以自动跳转到对应的路径下。安装autojump：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install autojump -y
+# 给autojump命令设置别名
+alias j='autojump'
+# 从源代码安装autojump
+git clone git://github.com/joelthelion/autojump.git
+chmod 755 install.py
+./install.py
+
+# 将当前路径添加到autojump的搜索库
+autojump -a 'pwd'
+\end{lstlisting}
+
+为了进一步简化目录跳转命令，可以直接添加命令autojump的别名：
+
+\begin{lstlisting}[language=Bash]
+alias j='autojump'
+\end{lstlisting}
+
+为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+
+\begin{lstlisting}[language=Bash]
+source /usr/share/autojump/autojump.sh on startup
+\end{lstlisting}
+
+为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
+
+\begin{lstlisting}[language=Bash]
+echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+\end{lstlisting}
+
+
+
+
+
 \section{ssh}
 
-
-
 \subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
@@ -768,6 +848,37 @@ git config --global merge.tool meld
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+
+
+
+\subsection{Ubuntu远程Raspberry}
+
+Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
 
 \part{Network}
 
