@@ -448,32 +448,14 @@ make && make install
 
 LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Oberhumer 的缩写。这个算法是无损算法，参考实现程序是线程安全的。 实现它的一个自由软件工具是lzop。最初的库是用 ANSI C 编写、并且遵从 GNU通用公共许可证发布的。现在 LZO 有用于 Perl、Python 以及 Java 的各种版本。代码版权的所有者是 Markus F. X. J. Oberhumer。
 
-\subsubsection{生成客户端证书}
+\subsection{生成客户端证书}
 
-新建client文件夹，文件夹可随意命名，然后拷贝easy-ras文件夹到client文件夹,进入下列目录：
-
-\begin{lstlisting}[language=Bash]
-cp -R /etc/openvpn/easyrsa/ .
-\end{lstlisting}
-
-初始化:
+生成客户端证书端步骤如下：
 
 \begin{lstlisting}[language=Bash]
 #建立一个空的pki结构，生成一系列的文件和目录
 ./easyrsa init-pki
-\end{lstlisting}
-
-PKI：Public Key Infrastructure公钥基础设施。生成请求：
-
-\begin{lstlisting}[language=Bash]
 ./easyrsa gen-req dolphinfedora
-\end{lstlisting}
-
-输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.
-查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout
-Apache和*NIX服务器偏向于使用这种编码格式.签约：
-
-\begin{lstlisting}[language=Bash]
 #切换到服务端生成rsa的目录
 #导入req
 ./easyrsa import-req ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/reqs/dolphinfedora.req dolphinfedora
@@ -481,9 +463,9 @@ Apache和*NIX服务器偏向于使用这种编码格式.签约：
 ./easyrsa sign client dolphinfedora
 \end{lstlisting}
 
-服务端生成的文件有：
+PKI：Public Key Infrastructure公钥基础设施。输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout。Apache和*NIX服务器偏向于使用这种编码格式.服务端生成的文件有：
 
-\begin{tabular}{|c|p{6cm}|c|}
+\begin{tabular}{|c|p{5cm}|c|}
 	\hline
 	\multirow{1}{*}{文件名称}
 	& \multicolumn{1}{c|}{说明(Purpose)} 
@@ -535,6 +517,8 @@ cp ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/private/dolphinfedora.key ~/dol
 sudo openvpn server.conf
 # Mac下启动OpenVPN
 sudo /usr/local/Cellar/openvpn/2.4.1/sbin/openvpn /usr/local/etc/openvpn/client.conf
+# 需要以后台交互方式启动时
+screen sudo openvpn client.conf
 \end{lstlisting}
 
 客户端端配置如下：
