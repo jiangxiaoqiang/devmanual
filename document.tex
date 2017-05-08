@@ -763,13 +763,52 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
 
+\section{Widgets}
+
+\subsection{autojump}
+
+autojump可以让你一键跳转到目标目录，一般情况下，很难准确的记忆清楚目标目录的准确路径，特别是目录嵌套比较深的时候。不停的重复使用cd命令一级或多级跳转显得有点笨拙。此时就可以使用autojump命令，只需要输入路径的关键字即可，比如只记得路径中隐约包含有关键字“jiangxiaoqiang”，那么仅仅输入命令autojump jiang，就可以自动跳转到对应的路径下。安装autojump：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install autojump -y
+# 给autojump命令设置别名
+alias j='autojump'
+# 从源代码安装autojump
+git clone git://github.com/joelthelion/autojump.git
+chmod 755 install.py
+./install.py
+
+# 将当前路径添加到autojump的搜索库
+autojump -a 'pwd'
+\end{lstlisting}
+
+为了进一步简化目录跳转命令，可以直接添加命令autojump的别名：
+
+\begin{lstlisting}[language=Bash]
+alias j='autojump'
+\end{lstlisting}
+
+为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+
+\begin{lstlisting}[language=Bash]
+source /usr/share/autojump/autojump.sh on startup
+\end{lstlisting}
+
+为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
+
+\begin{lstlisting}[language=Bash]
+echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+\end{lstlisting}
+
+
+
 
 
 \section{ssh}
 
-
-
 \subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
@@ -825,6 +864,37 @@ git config --global merge.tool meld
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+
+
+
+\subsection{Ubuntu远程Raspberry}
+
+Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
 
 \part{Network}
 
