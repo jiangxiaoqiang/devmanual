@@ -939,5 +939,14 @@ var FindProxyForURL = function(init, profiles) {
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
 
+\section{HTTP}
+
+
+\subsection{Cookie}
+
+\paragraph{Cookie Domain}Cookie Domain指定Cookie需要可以访问的范围，在默认情况下，只有和设置cookie的网页在同一个Web服务器的网页才能访问该网页创建的cookie，可以通过Cookie Domain来指定。Cookie Domain主要解决在不同虚拟目录中访问。子域名下可以访问主域名的Cookie，但是主域名不能访问子域名的Cookie。如果访问系统是通过不同的IP来访问，比如应用可以通过内网地址10.10.1.11和外网地址106.13.40.2，如果Cookie Domain设置成内网，那么将导致外网访问时无法获取Cookie，那么设置Cookie Domain就需要留心并保证2个IP都能够获得Cookie。
+
+
 \end{document}
+
 \theend
