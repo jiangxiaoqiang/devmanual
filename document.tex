@@ -747,6 +747,12 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
 
+\subsection{时间优化}
+
+时间优化的参数是(-T0~5)，最快的扫描速度为-T5,最慢的扫描速度为-T0,实现的原理：通过设置各个端口的扫描周期，从而来控制整个扫描的时间，比如说T0各个端口的扫描周期大约为5分钟，而T5各个端口的扫描周期为5ms，但是过快的扫描也是有缺点的，扫描的周期过快，会很容易被防火墙和IDS发现并记录，因为防火墙大多数会将端口周期过段识别为扫描从而屏蔽掉，如果不对其进行设置的话，默认值为T4。
+
+
+
 \section{tmux}
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
