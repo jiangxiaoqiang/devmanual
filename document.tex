@@ -237,6 +237,10 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \newpage
 
+\subsection{Intellij Idea远程调试}
+
+
+
 \section{OS}
 
 \subsection{Linux}
@@ -762,12 +766,33 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
+
+\section{Raspberry Pi}
+
+\subsection{Raspberry Pi远程}
+
+安装步骤：
+
+\begin{lstlisting}[language=Bash]
+＃　安装tightvncserver
+sudo apt-get install tightvncserver　－ｙ
+＃　设置密码
+vncpasswd
+\end{lstlisting}
 
 
 
 \section{ssh}
-
-
 
 \subsection{免密登陆}
 
