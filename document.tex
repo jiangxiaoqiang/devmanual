@@ -753,12 +753,6 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
 
-\subsection{时间优化}
-
-时间优化的参数是(-T0~5)，最快的扫描速度为-T5,最慢的扫描速度为-T0,实现的原理：通过设置各个端口的扫描周期，从而来控制整个扫描的时间，比如说T0各个端口的扫描周期大约为5分钟，而T5各个端口的扫描周期为5ms，但是过快的扫描也是有缺点的，扫描的周期过快，会很容易被防火墙和IDS发现并记录，因为防火墙大多数会将端口周期过段识别为扫描从而屏蔽掉，如果不对其进行设置的话，默认值为T4。
-
-
-
 \section{tmux}
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
@@ -962,14 +956,5 @@ var FindProxyForURL = function(init, profiles) {
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
 
-\section{HTTP}
-
-
-\subsection{Cookie}
-
-\paragraph{Cookie Domain}Cookie Domain指定Cookie需要可以访问的范围，在默认情况下，只有和设置cookie的网页在同一个Web服务器的网页才能访问该网页创建的cookie，可以通过Cookie Domain来指定。Cookie Domain主要解决在不同虚拟目录中访问。子域名下可以访问主域名的Cookie，但是主域名不能访问子域名的Cookie。如果访问系统是通过不同的IP来访问，比如应用可以通过内网地址10.10.1.11和外网地址106.13.40.2，如果Cookie Domain设置成内网，那么将导致外网访问时无法获取Cookie，那么设置Cookie Domain就需要留心并保证2个IP都能够获得Cookie。
-
-
 \end{document}
-
 \theend
