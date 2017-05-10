@@ -594,7 +594,7 @@ nsCertType server
 5.打印出的界面需要添加来源字段
 6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
-\subsection{常见错误}
+\subsection{常见问题}
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
 
@@ -602,9 +602,14 @@ nsCertType server
 在Mac中，连接好了并没有显示IP的变化。This computer's apparent public IP address was not different after connecting to client. It is still 45.76.205.201.This may mean that your VPN is not configured correctly.
 
 
+\paragraph{OpenVPN is connected to the server but your IP address does not change}
 
-\subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
+If OpenVPN connects to the server properly but your IP address does not change, you are probably missing the "--redirect-gateway" option. Add the following line:
+--redirect-gateway def1 to your configuration file.
 
+By default, OpenVPN only sends some traffic through the VPN — traffic that is specifically destined for the VPN network itself. The "--redirect-gateway" option tells OpenVPN to send all traffic through the VPN. (Leave out the "--" when it is put in the configuration file.)
+
+An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
 \section{Nmap(GNU General Public License)}
 
@@ -752,6 +757,16 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 \begin{lstlisting}[language=Bash]
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
+
+\subsection{Zenmap}
+
+Zenmap是Nmap的官方GUI，可以运行在Linux, Windows, Mac OS X, BSD等操作系统上。
+
+\begin{lstlisting}[language=Bash]
+# Mac下获取Zenmap安装文件
+wget -c https://nmap.org/dist/nmap-7.31.dmg
+\end{lstlisting}
+
 
 \section{tmux}
 
