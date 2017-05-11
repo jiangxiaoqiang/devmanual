@@ -484,8 +484,11 @@ sudo route del default gw 10.55.10.1
 \section{OpenVPN}
 
 
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。
+OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
+\begin{lstlisting}[language=bash]
+nmap -A -T4 10.0.0.*
+\end{lstlisting}
 
 \subsection{安装}
 
@@ -680,7 +683,7 @@ vncserver :2 -geometry 800x600 -depth 24
 ssh -X dolphin@10.0.0.10
 \end{lstlisting}
 
-直接在命令行中启动图形化界面，会在Mac上显示Linux主机上的软件原生GUI界面，就像软件在本机运行一样。
+直接在命令行中启动图形化界面，会在Mac上显示Linux主机上的软件原生GUI界面，就像软件在本机运行一样。X11是X Window System主版本11的缩写，它不光是一个基本的GUI软件，X11也被定义为一个网络协议，因为X11提供了非常灵活的网络访问接口。SSH 的 X11 forwarding 特性可以使 X client 和 X server 安全地通讯。使用 X11 forwarding 后，从 X client 到 X Server 方向的数据先被送至 SSH server，SSH server 利用和 SSH client 的安全通道转发给 SSH client，再由 SSH client 转发给 X server，从 X server 到 X client 的数据流同理。这里 SSH server 和 SSH client 充当了 X client 和 X server 间数据的转发器，由于 SSH server 和 X client、SSH client 和 X server 一般在同一台机器上，它们之间是一种安全的进程间通讯，而 SSH server 和 SSH client 间的通讯也是安全的，所以 X client 和 X server 间的通讯就是安全的。X在Unix-like系统上几乎完全占据统治地位。但是仍然有人尝试提供替代品和更多的选择，过去曾经有 Sun Microsystems 的 NeWS ，但它遭到市场失败；还有 NeXT 的 Display PostScript ，它最终转变为苹果电脑的 Quartz for Mac OS X 。
 
 \subsection{常见问题}
 
