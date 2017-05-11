@@ -614,6 +614,74 @@ nsCertType server
 5.打印出的界面需要添加来源字段
 6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
+\subsection{Mac Book客户端配置}
+
+在Mac下连接OpenVPN需要安装Tunnelblick，Tunnelblick是Mac OS X上的一个OpenVPN的图形化前端界面。Tunnelblick is free software licensed under the GNU General Public License, version 2 and may be distributed only in accordance with the terms of that license.安装好Tunnelblick之后，直接导入相应的设置即可。如下是Mac Book下一个OpenVPN客户端可用配置的示例。
+
+\begin{lstlisting}[language=Bash]
+# 定义一个客户端
+client
+# 和服务器保持一致
+dev tun
+# 用TCP协议
+proto tcp
+# 指定服务器的IP地址和端口，可以用多行指定多台服务器，实现负载均衡
+remote 106.14.30.1 1194
+;remote-random
+resolv-retry infinite
+# 客户端不需要绑定端口
+nobind
+persist-key
+persist-tun
+mute-replay-warnings
+comp-lzo
+verb 3
+;mute 20
+ca ca.crt
+cert dolphin.crt
+key dolphinclient.key
+\end{lstlisting}
+
+
+\subsection{Ubuntu远程Raspberry}
+
+OpenVPN的一个应用就是可以方便的在不同局域网之间的计算机进行远程。在Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
+
+\subsection{Mac Book远程Fedora}
+
+在Mac Book远程Linux主机选择的是XQuartz，安装好XQuartz后，直接在从XQuartz打开的终端中运行：
+
+\begin{lstlisting}[language=Bash]
+ssh -X dolphin@10.0.0.10
+\end{lstlisting}
+
+直接在命令行中启动图形化界面，会在Mac上显示Linux主机上的软件原生GUI界面，就像软件在本机运行一样。
+
 \subsection{常见问题}
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
@@ -908,34 +976,7 @@ pip install mycli
 
 
 
-\subsection{Ubuntu远程Raspberry}
 
-Raspberry安装VNC服务端：
-
-\begin{lstlisting}[language=Bash]
-sudo apt-get install tightvncserver
-\end{lstlisting}
-
-设置密码：
-
-\begin{lstlisting}[language=Bash]
-tightvncserver
-\end{lstlisting}
-
-启动：
-
-\begin{lstlisting}[language=Bash]
-vncserver :2 -geometry 800x600 -depth 24
-\end{lstlisting}
-
-在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
-	\caption{Ubuntu远程连接配置}
-	\label{fig:raspberryremtoeconfig}
-\end{figure}
 
 \part{Network}
 
