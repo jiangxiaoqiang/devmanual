@@ -237,6 +237,31 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Cookie}
 
+在Chrome中查看Cookie可以直接在Console中输入：
+
+\begin{lstlisting}[language=Bash]
+document.cookie
+\end{lstlisting}
+
+服务器端像客户端发送Cookie是通过HTTP响应报文实现的，在Set-Cookie中设置需要像客户端发送的cookie，cookie格式如下：
+
+\begin{lstlisting}
+Set-Cookie: “name=value;domain=.domain.com;path=/;expires=Sat, 11 Jun 2016 11:29:42 GMT;HttpOnly;secure”
+\end{lstlisting}
+
+其中name=value是必选项，其它都是可选项。如果在Cookie中设置了"HttpOnly"属性，那么通过程序(JS脚本、Applet等)将无法读取到Cookie信息，这样能有效的防止XSS攻击。当secure设置为true时，表示创建的 Cookie 会被以安全的形式向服务器传输，也就是只能在 HTTPS 连接中被浏览器传递到服务器端进行会话验证，如果是 HTTP 连接则不会传递该信息，所以不会被盗取到Cookie 的具体内容。Cookie的主要构成如下：
+
+\begin{lstlisting}
+name:一个唯一确定的cookie名称。通常来讲cookie的名称是不区分大小写的。
+value:存储在cookie中的字符串值。最好为cookie的name和value进行url编码
+domain:cookie对于哪个域是有效的。所有向该域发送的请求中都会包含这个cookie信息。这个值可以包含子域(如：yq.aliyun.com)，也可以不包含它(如：.aliyun.com，则对于aliyun.com的所有子域都有效).
+path: 表示这个cookie影响到的路径，浏览器跟会根据这项配置，像指定域中匹配的路径发送cookie。
+expires:失效时间，表示cookie何时应该被删除的时间戳(也就是，何时应该停止向服务器发送这个cookie)。如果不设置这个时间戳，浏览器会在页面关闭时即将删除所有cookie；不过也可以自己设置删除时间。这个值是GMT时间格式，如果客户端和服务器端时间不一致，使用expires就会存在偏差。
+max-age: 与expires作用相同，用来告诉浏览器此cookie多久过期（单位是秒），而不是一个固定的时间点。正常情况下，max-age的优先级高于expires。
+HttpOnly: 告知浏览器不允许通过脚本document.cookie去更改这个值，同样这个值在document.cookie中也不可见。但在http请求张仍然会携带这个cookie。注意这个值虽然在脚本中不可获取，但仍然在浏览器安装目录中以文件形式存在。这项设置通常在服务器端设置。
+secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到服务器，如果是http链接则不会传递该信息。就算设置了secure 属性也并不代表他人不能看到你机器本地保存的 cookie 信息，所以不要把重要信息放cookie就对了
+\end{lstlisting}
+
 
 
 \part{Tool}
@@ -251,15 +276,30 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Linux}
 
+\subsubsection{环境变量}
+
+Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
+
+\begin{lstlisting}[language=Bash]
+# 查看环境变量
+echo $http_proxy
+env
+# 删除环境变量
+unset http_proxy
+\end{lstlisting}
+
+set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+
 \subsubsection{screen}
 
-在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
+GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
 
 \begin{lstlisting}[language=Bash]
 screen sudo openvpn client.conf
 \end{lstlisting}
 
-接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。
+接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。
+
 
 \subsubsection{查看Linux信息}
 
@@ -468,8 +508,11 @@ sudo route del default gw 10.55.10.1
 \section{OpenVPN}
 
 
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。
+OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
+\begin{lstlisting}[language=bash]
+nmap -A -T4 10.0.0.*
+\end{lstlisting}
 
 \subsection{安装}
 
@@ -598,7 +641,75 @@ nsCertType server
 5.打印出的界面需要添加来源字段
 6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
-\subsection{常见错误}
+\subsection{Mac Book客户端配置}
+
+在Mac下连接OpenVPN需要安装Tunnelblick，Tunnelblick是Mac OS X上的一个OpenVPN的图形化前端界面。Tunnelblick is free software licensed under the GNU General Public License, version 2 and may be distributed only in accordance with the terms of that license.安装好Tunnelblick之后，直接导入相应的设置即可。如下是Mac Book下一个OpenVPN客户端可用配置的示例。
+
+\begin{lstlisting}[language=Bash]
+# 定义一个客户端
+client
+# 和服务器保持一致
+dev tun
+# 用TCP协议
+proto tcp
+# 指定服务器的IP地址和端口，可以用多行指定多台服务器，实现负载均衡
+remote 106.14.30.1 1194
+;remote-random
+resolv-retry infinite
+# 客户端不需要绑定端口
+nobind
+persist-key
+persist-tun
+mute-replay-warnings
+comp-lzo
+verb 3
+;mute 20
+ca ca.crt
+cert dolphin.crt
+key dolphinclient.key
+\end{lstlisting}
+
+
+\subsection{Ubuntu远程Raspberry}
+
+OpenVPN的一个应用就是可以方便的在不同局域网之间的计算机进行远程。在Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
+
+\subsection{Mac Book远程Fedora}
+
+在Mac Book远程Linux主机选择的是XQuartz，安装好XQuartz后，直接在从XQuartz打开的终端中运行：
+
+\begin{lstlisting}[language=Bash]
+ssh -X dolphin@10.0.0.10
+\end{lstlisting}
+
+直接在命令行中启动图形化界面，会在Mac上显示Linux主机上的软件原生GUI界面，就像软件在本机运行一样。X11是X Window System主版本11的缩写，它不光是一个基本的GUI软件，X11也被定义为一个网络协议，因为X11提供了非常灵活的网络访问接口。SSH 的 X11 forwarding 特性可以使 X client 和 X server 安全地通讯。使用 X11 forwarding 后，从 X client 到 X Server 方向的数据先被送至 SSH server，SSH server 利用和 SSH client 的安全通道转发给 SSH client，再由 SSH client 转发给 X server，从 X server 到 X client 的数据流同理。这里 SSH server 和 SSH client 充当了 X client 和 X server 间数据的转发器，由于 SSH server 和 X client、SSH client 和 X server 一般在同一台机器上，它们之间是一种安全的进程间通讯，而 SSH server 和 SSH client 间的通讯也是安全的，所以 X client 和 X server 间的通讯就是安全的。X在Unix-like系统上几乎完全占据统治地位。但是仍然有人尝试提供替代品和更多的选择，过去曾经有 Sun Microsystems 的 NeWS ，但它遭到市场失败；还有 NeXT 的 Display PostScript ，它最终转变为苹果电脑的 Quartz for Mac OS X 。
+
+\subsection{常见问题}
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
 
@@ -606,9 +717,14 @@ nsCertType server
 在Mac中，连接好了并没有显示IP的变化。This computer's apparent public IP address was not different after connecting to client. It is still 45.76.205.201.This may mean that your VPN is not configured correctly.
 
 
+\paragraph{OpenVPN is connected to the server but your IP address does not change}
 
-\subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
+If OpenVPN connects to the server properly but your IP address does not change, you are probably missing the "--redirect-gateway" option. Add the following line:
+--redirect-gateway def1 to your configuration file.
 
+By default, OpenVPN only sends some traffic through the VPN — traffic that is specifically destined for the VPN network itself. The "--redirect-gateway" option tells OpenVPN to send all traffic through the VPN. (Leave out the "--" when it is put in the configuration file.)
+
+An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
 \section{Nmap(GNU General Public License)}
 
@@ -756,6 +872,16 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 \begin{lstlisting}[language=Bash]
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
+
+\subsection{Zenmap}
+
+Zenmap是Nmap的官方GUI，可以运行在Linux, Windows, Mac OS X, BSD等操作系统上。
+
+\begin{lstlisting}[language=Bash]
+# Mac下获取Zenmap安装文件
+wget -c https://nmap.org/dist/nmap-7.31.dmg
+\end{lstlisting}
+
 
 \section{tmux}
 
@@ -905,34 +1031,7 @@ pip install mycli
 
 
 
-\subsection{Ubuntu远程Raspberry}
 
-Raspberry安装VNC服务端：
-
-\begin{lstlisting}[language=Bash]
-sudo apt-get install tightvncserver
-\end{lstlisting}
-
-设置密码：
-
-\begin{lstlisting}[language=Bash]
-tightvncserver
-\end{lstlisting}
-
-启动：
-
-\begin{lstlisting}[language=Bash]
-vncserver :2 -geometry 800x600 -depth 24
-\end{lstlisting}
-
-在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
-	\caption{Ubuntu远程连接配置}
-	\label{fig:raspberryremtoeconfig}
-\end{figure}
 
 \part{Network}
 
