@@ -237,6 +237,12 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Cookie}
 
+在Chrome中查看Cookie可以直接在Console中输入：
+
+\begin{lstlisting}[language=Bash]
+document.cookie
+\end{lstlisting}
+
 服务器端像客户端发送Cookie是通过HTTP响应报文实现的，在Set-Cookie中设置需要像客户端发送的cookie，cookie格式如下：
 
 \begin{lstlisting}
@@ -265,6 +271,15 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 \section{OS}
 
 \subsection{Linux}
+
+删除Linux环境变量：
+
+\begin{lstlisting}[language=Bash]
+# 查看环境变量
+echo $http_proxy
+# 删除环境变量
+unset http_proxy
+\end{lstlisting}
 
 \subsubsection{screen}
 
