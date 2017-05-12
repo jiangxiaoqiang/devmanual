@@ -233,6 +233,12 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{React}
+
+\subsection{Cookie}
+
+
+
 \part{Tool}
 
 \newpage
@@ -480,32 +486,14 @@ make && make install
 
 LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Oberhumer 的缩写。这个算法是无损算法，参考实现程序是线程安全的。 实现它的一个自由软件工具是lzop。最初的库是用 ANSI C 编写、并且遵从 GNU通用公共许可证发布的。现在 LZO 有用于 Perl、Python 以及 Java 的各种版本。代码版权的所有者是 Markus F. X. J. Oberhumer。
 
-\subsubsection{生成客户端证书}
+\subsection{生成客户端证书}
 
-新建client文件夹，文件夹可随意命名，然后拷贝easy-ras文件夹到client文件夹,进入下列目录：
-
-\begin{lstlisting}[language=Bash]
-cp -R /etc/openvpn/easyrsa/ .
-\end{lstlisting}
-
-初始化:
+生成客户端证书端步骤如下：
 
 \begin{lstlisting}[language=Bash]
 #建立一个空的pki结构，生成一系列的文件和目录
 ./easyrsa init-pki
-\end{lstlisting}
-
-PKI：Public Key Infrastructure公钥基础设施。生成请求：
-
-\begin{lstlisting}[language=Bash]
 ./easyrsa gen-req dolphinfedora
-\end{lstlisting}
-
-输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.
-查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout
-Apache和*NIX服务器偏向于使用这种编码格式.签约：
-
-\begin{lstlisting}[language=Bash]
 #切换到服务端生成rsa的目录
 #导入req
 ./easyrsa import-req ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/reqs/dolphinfedora.req dolphinfedora
@@ -513,9 +501,9 @@ Apache和*NIX服务器偏向于使用这种编码格式.签约：
 ./easyrsa sign client dolphinfedora
 \end{lstlisting}
 
-服务端生成的文件有：
+PKI：Public Key Infrastructure公钥基础设施。输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout。Apache和*NIX服务器偏向于使用这种编码格式.服务端生成的文件有：
 
-\begin{tabular}{|c|p{6cm}|c|}
+\begin{tabular}{|c|p{5cm}|c|}
 	\hline
 	\multirow{1}{*}{文件名称}
 	& \multicolumn{1}{c|}{说明(Purpose)} 
@@ -567,6 +555,8 @@ cp ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/private/dolphinfedora.key ~/dol
 sudo openvpn server.conf
 # Mac下启动OpenVPN
 sudo /usr/local/Cellar/openvpn/2.4.1/sbin/openvpn /usr/local/etc/openvpn/client.conf
+# 需要以后台交互方式启动时
+screen sudo openvpn client.conf
 \end{lstlisting}
 
 客户端端配置如下：
@@ -611,6 +601,11 @@ nsCertType server
 \subsection{常见错误}
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
+
+
+在Mac中，连接好了并没有显示IP的变化。This computer's apparent public IP address was not different after connecting to client. It is still 45.76.205.201.This may mean that your VPN is not configured correctly.
+
+
 
 \subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
@@ -777,6 +772,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 	\hline
 \end{tabular}
 
+
 \section{Raspberry Pi}
 
 \subsection{Raspberry Pi远程}
@@ -790,11 +786,56 @@ sudo apt-get install tightvncserver　－ｙ
 vncpasswd
 \end{lstlisting}
 
+\section{Widgets}
+
+\subsection{autojump}
+
+autojump可以让你一键跳转到目标目录，一般情况下，很难准确的记忆清楚目标目录的准确路径，特别是目录嵌套比较深的时候。不停的重复使用cd命令一级或多级跳转显得有点笨拙。此时就可以使用autojump命令，只需要输入路径的关键字即可，比如只记得路径中隐约包含有关键字“jiangxiaoqiang”，那么仅仅输入命令autojump jiang，就可以自动跳转到对应的路径下。安装autojump：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install autojump -y
+# 给autojump命令设置别名
+alias j='autojump'
+# 从源代码安装autojump
+git clone git://github.com/joelthelion/autojump.git
+chmod 755 install.py
+./install.py
+>>>>>>> 2b65cebcf5a65167679cd554b530f56298da4ad8
+
+# 将当前路径添加到autojump的搜索库
+autojump -a 'pwd'
+\end{lstlisting}
+
+为了进一步简化目录跳转命令，可以直接添加命令autojump的别名：
+
+\begin{lstlisting}[language=Bash]
+alias j='autojump'
+\end{lstlisting}
+
+为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+
+\begin{lstlisting}[language=Bash]
+source /usr/share/autojump/autojump.sh on startup
+\end{lstlisting}
+
+为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
+
+\begin{lstlisting}[language=Bash]
+echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+\end{lstlisting}
+
+
+
+
+
+\section{ssh}
 
 
 \section{ssh}
 
 \subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
@@ -850,6 +891,48 @@ git config --global merge.tool meld
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+\part{DB}
+
+\section{MySQL}
+
+\subsection{mycli}
+
+MyCli 是一个 MySQL 命令行工具，支持自动补全和语法高亮。也可用于 MariaDB 和 Percona。安装mycli：
+
+\begin{lstlisting}[language=Bash]
+pip install mycli
+\end{lstlisting}
+
+
+
+\subsection{Ubuntu远程Raspberry}
+
+Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
 
 \part{Network}
 
