@@ -237,6 +237,12 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Cookie}
 
+在Chrome中查看Cookie可以直接在Console中输入：
+
+\begin{lstlisting}[language=Bash]
+document.cookie
+\end{lstlisting}
+
 服务器端像客户端发送Cookie是通过HTTP响应报文实现的，在Set-Cookie中设置需要像客户端发送的cookie，cookie格式如下：
 
 \begin{lstlisting}
@@ -262,9 +268,27 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \newpage
 
+\subsection{Intellij Idea远程调试}
+
+
+
 \section{OS}
 
 \subsection{Linux}
+
+\subsubsection{环境变量}
+
+Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
+
+\begin{lstlisting}[language=Bash]
+# 查看环境变量
+echo $http_proxy
+env
+# 删除环境变量
+unset http_proxy
+\end{lstlisting}
+
+set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
 
 \subsubsection{screen}
 
@@ -863,6 +887,30 @@ wget -c https://nmap.org/dist/nmap-7.31.dmg
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
+
+
+\section{Raspberry Pi}
+
+\subsection{Raspberry Pi远程}
+
+安装步骤：
+
+\begin{lstlisting}[language=Bash]
+＃　安装tightvncserver
+sudo apt-get install tightvncserver　－ｙ
+＃　设置密码
+vncpasswd
+\end{lstlisting}
 
 \section{Widgets}
 
@@ -878,6 +926,7 @@ alias j='autojump'
 git clone git://github.com/joelthelion/autojump.git
 chmod 755 install.py
 ./install.py
+>>>>>>> 2b65cebcf5a65167679cd554b530f56298da4ad8
 
 # 将当前路径添加到autojump的搜索库
 autojump -a 'pwd'
@@ -903,6 +952,9 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 
 
 
+
+
+\section{ssh}
 
 
 \section{ssh}
