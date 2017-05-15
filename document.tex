@@ -947,16 +947,23 @@ autojump -a 'pwd'
 alias j='autojump'
 \end{lstlisting}
 
-为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+有时会出现如下的提示：Please source the correct autojump file in your shell's startup file. For more information, please reinstall autojump and read the post installation instructions.为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
 
 \begin{lstlisting}[language=Bash]
+# 在Linux系统下
 source /usr/share/autojump/autojump.sh on startup
+# 在Mac OS X下
+source ~/.autojump/etc/profile.d/autojump.sh
+# 也可运行如下命令
+[[ -s /Users/dolphin/.autojump/etc/profile.d/autojump.sh ]] && source /Users/dolphin/.autojump/etc/profile.d/autojump.sh
 \end{lstlisting}
 
 为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
 
 \begin{lstlisting}[language=Bash]
 echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+# 在Mac OS X下
+echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
 \section{Git}
