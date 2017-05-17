@@ -233,6 +233,20 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{Python}
+
+\subsection{基础}
+
+查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
+
+
+
+\subsection{Beautiful Soup}
+
+Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。
+
+
+
 \section{React}
 
 \subsection{Cookie}
@@ -1152,6 +1166,23 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\part{Engneering}
+
+\section{通用规范}
+
+\subsection{版本管理}
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+\begin{itemize}
+	\item{MAJOR version when you make incompatible API changes,}
+    \item{MINOR version when you add functionality in a backwards-compatible manner}
+	\item{PATCH version when you make backwards-compatible bug fixes.}
+\end{itemize}
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
 
 \end{document}
 \theend
