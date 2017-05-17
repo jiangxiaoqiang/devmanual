@@ -276,6 +276,14 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \subsection{Linux}
 
+在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get -f install 
+\end{lstlisting}
+
+f参数表示尝试修正系统依赖损坏处。
+
 \subsubsection{环境变量}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
@@ -289,6 +297,20 @@ unset http_proxy
 \end{lstlisting}
 
 set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c}{名称}  \\
+	\hline			
+	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\	
+	/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+	/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+	~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
+	\hline
+\end{tabular}
+
 
 \subsubsection{screen}
 
