@@ -527,6 +527,13 @@ sudo route del default gw 10.55.10.1
 
 \subsection{Fiddler替换Host}
 
+\section{Charles}
+
+Charles是Mac端的一款截取与分析网络请求的工具，在网络开发中使用其作分析，可以大大提高我们的开发效率。Charles是收费软件，一般可以试用三十天。Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information).
+
+\subsection{title}
+
+
 \section{OpenVPN}
 
 
@@ -806,6 +813,13 @@ open|filtered 和 closed|filtered时，那说明Nmap无法确定该端口处于�
 当要求进行IP协议扫描时 (-sO)，Nmap提供关于所支持的IP协议而不是正在监听的端口的信息。
 获取远程主机的系统类型及开放端口：
 
+http://localhost:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
+
+curl −H "APPID:hlb11529c136334gh2" −H "TIMESTAMP:2016-12-19 16:58:02" −H "ECHOSTR:sdsaasf" −H "TOKEN:34504e2a8ab71e586ec53ec6c1b70ba460ceacbd" http://127.0.0.1:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
+
+
+generating uniq	operation name 慢
+
 \begin{lstlisting}[language=Bash]
 nmap -sS -P0 -sV -O <target>
 \end{lstlisting}
@@ -951,7 +965,6 @@ alias j='autojump'
 git clone git://github.com/joelthelion/autojump.git
 chmod 755 install.py
 ./install.py
->>>>>>> 2b65cebcf5a65167679cd554b530f56298da4ad8
 
 # 将当前路径添加到autojump的搜索库
 autojump -a 'pwd'
@@ -963,16 +976,23 @@ autojump -a 'pwd'
 alias j='autojump'
 \end{lstlisting}
 
-为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+有时会出现如下的提示：Please source the correct autojump file in your shell's startup file. For more information, please reinstall autojump and read the post installation instructions.为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
 
 \begin{lstlisting}[language=Bash]
+# 在Linux系统下
 source /usr/share/autojump/autojump.sh on startup
+# 在Mac OS X下
+source ~/.autojump/etc/profile.d/autojump.sh
+# 也可运行如下命令
+[[ -s /Users/dolphin/.autojump/etc/profile.d/autojump.sh ]] && source /Users/dolphin/.autojump/etc/profile.d/autojump.sh
 \end{lstlisting}
 
 为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
 
 \begin{lstlisting}[language=Bash]
 echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+# 在Mac OS X下
+echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
 \section{Git}
