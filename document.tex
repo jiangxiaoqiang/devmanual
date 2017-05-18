@@ -311,6 +311,30 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\hline
 \end{tabular}
 
+有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
+
+\begin{lstlisting}[language=Bash]
+# 忽略[连续]重复命令
+HISTCONTROL=ignoredups
+# 清除重复命令
+# HISTCONTROL=erasedups
+# 忽略特定命令
+HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*"
+# 命令历史文件大小10M
+HISTFILESIZE=1000000000
+# 保存历史命令条数10W
+HISTSIZE=1000000
+\end{lstlisting}
+
+以上配置可以通过 set | grep HIST 查看可选项.当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里我们采用追加的方式避免命令历史文件 .bash\_history 文件被覆盖。 再次打开 ~/.bashrc 文件添加下面这一句.
+
+\begin{lstlisting}[language=Bash]
+shopt -s histappend
+\end{lstlisting}
+
+更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
+
+
 
 \subsubsection{screen}
 
