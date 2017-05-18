@@ -257,6 +257,19 @@ sudo pip install mysql-python
 
 Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。
 
+\subsection{sh: mysql\_config: command not found解决办法}
+
+首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
+
+\begin{lstlisting}[language=Bash]
+PATH="$PATH":/usr/local/mysql/bin
+\end{lstlisting}
+
+设置完成之后，输入如下语句安装MySQL Python：
+
+\begin{lstlisting}[language=Bash]
+sudo pip install mysql-python
+\end{lstlisting}
 
 
 \section{React}
@@ -294,7 +307,13 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \newpage
 
+\section{Intellij Idea}
+
 \subsection{Intellij Idea远程调试}
+
+\subsection{Intellij Idea调试慢}
+
+在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 
 
@@ -336,6 +355,30 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
 	\hline
 \end{tabular}
+
+有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
+
+\begin{lstlisting}[language=Bash]
+# 忽略[连续]重复命令
+HISTCONTROL=ignoredups
+# 清除重复命令
+# HISTCONTROL=erasedups
+# 忽略特定命令
+HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*"
+# 命令历史文件大小10M
+HISTFILESIZE=1000000000
+# 保存历史命令条数10W
+HISTSIZE=1000000
+\end{lstlisting}
+
+以上配置可以通过 set | grep HIST 查看可选项.当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里我们采用追加的方式避免命令历史文件 .bash\_history 文件被覆盖。 再次打开 ~/.bashrc 文件添加下面这一句.
+
+\begin{lstlisting}[language=Bash]
+shopt -s histappend
+\end{lstlisting}
+
+更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
+
 
 
 \subsubsection{screen}
@@ -1184,7 +1227,11 @@ brew install mycli
 
 \subsection{常见问题}
 
+\paragraph{ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock'}
 
+mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
+
+方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
 \part{Network}
 
