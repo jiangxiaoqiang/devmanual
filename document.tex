@@ -80,6 +80,15 @@
 
 http://stackoverflow.com/questions/31045955/using-configurationproperties-to-fill-map-in-generic-way
 
+\subsection{Spring Boot开发者工具}
+
+在build.gradle文件里添加开发工具：
+
+\begin{lstlisting}[language=Bash]
+compile "org.springframework.boot:spring-boot-devtools"
+\end{lstlisting}
+
+在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
@@ -233,6 +242,36 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{Python}
+
+\subsection{基础}
+
+查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
+
+\begin{lstlisting}[language=Bash]
+sudo pip install mysql-python
+\end{lstlisting}
+
+
+\subsection{Beautiful Soup}
+
+Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。
+
+\subsection{sh: mysql\_config: command not found解决办法}
+
+首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
+
+\begin{lstlisting}[language=Bash]
+PATH="$PATH":/usr/local/mysql/bin
+\end{lstlisting}
+
+设置完成之后，输入如下语句安装MySQL Python：
+
+\begin{lstlisting}[language=Bash]
+sudo pip install mysql-python
+\end{lstlisting}
+
+
 \section{React}
 
 \subsection{Cookie}
@@ -268,13 +307,25 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \newpage
 
+\section{Intellij Idea}
+
 \subsection{Intellij Idea远程调试}
 
+\subsection{Intellij Idea调试慢}
 
+在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 \section{OS}
 
 \subsection{Linux}
+
+在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get -f install 
+\end{lstlisting}
+
+f参数表示尝试修正系统依赖损坏处。
 
 \subsubsection{环境变量}
 
@@ -289,6 +340,44 @@ unset http_proxy
 \end{lstlisting}
 
 set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c}{名称}  \\
+	\hline			
+	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\	
+	/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+	/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+	~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
+	\hline
+\end{tabular}
+
+有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
+
+\begin{lstlisting}[language=Bash]
+# 忽略[连续]重复命令
+HISTCONTROL=ignoredups
+# 清除重复命令
+# HISTCONTROL=erasedups
+# 忽略特定命令
+HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*"
+# 命令历史文件大小10M
+HISTFILESIZE=1000000000
+# 保存历史命令条数10W
+HISTSIZE=1000000
+\end{lstlisting}
+
+以上配置可以通过 set | grep HIST 查看可选项.当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里我们采用追加的方式避免命令历史文件 .bash\_history 文件被覆盖。 再次打开 ~/.bashrc 文件添加下面这一句.
+
+\begin{lstlisting}[language=Bash]
+shopt -s histappend
+\end{lstlisting}
+
+更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
+
+
 
 \subsubsection{screen}
 
@@ -818,6 +907,13 @@ open|filtered 和 closed|filtered时，那说明Nmap无法确定该端口处于�
 当要求进行IP协议扫描时 (-sO)，Nmap提供关于所支持的IP协议而不是正在监听的端口的信息。
 获取远程主机的系统类型及开放端口：
 
+http://localhost:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
+
+curl −H "APPID:hlb11529c136334gh2" −H "TIMESTAMP:2016-12-19 16:58:02" −H "ECHOSTR:sdsaasf" −H "TOKEN:34504e2a8ab71e586ec53ec6c1b70ba460ceacbd" http://127.0.0.1:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
+
+
+generating uniq	operation name 慢
+
 \begin{lstlisting}[language=Bash]
 nmap -sS -P0 -sV -O <target>
 \end{lstlisting}
@@ -1037,9 +1133,41 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 \section{Curl}
 
+内部接口测试：
+
 \begin{lstlisting}[language=Bash]
-curl 'http://59.214.215.6:3800/inapi/united/detail?param=%E8%B0%8A%E5%BE%B7%E5%AE%9E%E4%B8%9A&reds=&blacks=TS_F_HEIMINGDAN_C500033,TS_F_HEIMINGDAN' -H 'Pragma: no-cache' -H 'HL-APP-KEY: CreditChongqingSharePortal' -H 'DNT: 1' -H 'Accept-Encoding: gzip, deflate, sdch' -H 'Accept-Language: zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4' -H 'User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36' -H 'Accept: application/json, text/plain, */*' -H 'Cache-Control: no-cache' -H 'HL-CURRENT-URL: http://59.214.215.6:3800/main/search/unitedListQuery' -H 'Referer: http://59.214.215.6:3800/main/search/unitedListQuery' -H 'Cookie: UM_distinctid=15b667c97f65a-0afddd1bed9cb8-1421150f-15f900-15b667c97f737f; CNZZDATA1257579122=576897936-1492070602-http%253A%252F%252F59.214.215.6%253A8081%252F%7C1492393083; cc-o-t=ZnNoeEpnMXZUcklpRXAyTm9ReXhwWTdNSFFUMnptZ2NOdmFDWlhPajhlakRvYVk1eEtRem53enJMNVpzdU5HRURlejlRT3lqQ2VldHJUb2dETXZOVkIrcTZqZzR5M0xoUHZsL0V2TXZ1c3VYaVJkRE1NdEE5c0ZWMXI5dUVlV0g' -H 'Connection: keep-alive' --compressed
+
 \end{lstlisting}
+
+外部接口测试：
+
+
+\begin{lstlisting}[language=Bash]
+
+curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/commondetail?xdr= | jq '.'
+
+curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/page?xdr= | jq '.'
+
+curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/commondetail?id=E8BFFE96203BC06E6CA5B11199262119&tableName=TS_F_HEIMINGDAN_C500039 | jq '.'
+
+curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/redlist/detail?id=E8BFFE96203BC06E6CA5B11199262119\&tableName=TS_F_HEIMINGDAN_C500039 | jq '.'
+
+2017-05-17 20:34:20.804  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_2
+2017-05-17 20:34:21.120  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findListUsingGET_2
+2017-05-17 20:34:21.406  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findPageUsingGET_7
+2017-05-17 20:34:21.589  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_3
+2017-05-17 20:34:21.771  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_1
+2017-05-17 20:34:21.959  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateStatusUsingPUT_1
+2017-05-17 20:34:22.340  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findListUsingGET_3
+2017-05-17 20:34:22.681  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findPageUsingGET_8
+2017-05-17 20:34:23.423  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_2
+2017-05-17 20:34:24.524  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findByIdUsingGET_3
+2017-05-17 20:34:24.779  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: pageUsingGET_1
+2017-05-17 20:34:25.364  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateWorkFlowUsingPUT_
+
+\end{lstlisting}
+
+
 
 \section{Git}
 
@@ -1125,7 +1253,11 @@ brew install mycli
 
 \subsection{常见问题}
 
+\paragraph{ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock'}
 
+mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
+
+方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
 \part{Network}
 
@@ -1180,6 +1312,49 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\part{Engneering}
+
+\section{通用规范}
+
+\subsection{版本管理}
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+\begin{itemize}
+	\item{MAJOR version when you make incompatible API changes,}
+    \item{MINOR version when you add functionality in a backwards-compatible manner}
+	\item{PATCH version when you make backwards-compatible bug fixes.}
+\end{itemize}
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.如果项目是采用Gradle打包，可以采用如下的版本管理策略：
+
+\begin{lstlisting}
+def gitVersionCode() {  
+	def cmd = 'git rev-list HEAD --first-parent --count'
+	cmd.execute().text.trim().toInteger()
+}
+
+def gitVersionTag() {  
+	def cmd = 'git describe --tags'
+	def version = cmd.execute().text.trim()
+	
+	def pattern = "-(\\d+)-g"
+	def matcher = version =~ pattern
+	
+	if (matcher) {
+		version = version.substring(0, matcher.start()) + "." + matcher[0][1]
+	} else {
+		version = version + ".0"
+	}
+	return version
+}
+\end{lstlisting}
+
+
+
+
+
 
 \end{document}
 \theend
