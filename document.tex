@@ -233,23 +233,73 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{React}
+
+\subsection{Cookie}
+
+在Chrome中查看Cookie可以直接在Console中输入：
+
+\begin{lstlisting}[language=Bash]
+document.cookie
+\end{lstlisting}
+
+服务器端像客户端发送Cookie是通过HTTP响应报文实现的，在Set-Cookie中设置需要像客户端发送的cookie，cookie格式如下：
+
+\begin{lstlisting}
+Set-Cookie: “name=value;domain=.domain.com;path=/;expires=Sat, 11 Jun 2016 11:29:42 GMT;HttpOnly;secure”
+\end{lstlisting}
+
+其中name=value是必选项，其它都是可选项。如果在Cookie中设置了"HttpOnly"属性，那么通过程序(JS脚本、Applet等)将无法读取到Cookie信息，这样能有效的防止XSS攻击。当secure设置为true时，表示创建的 Cookie 会被以安全的形式向服务器传输，也就是只能在 HTTPS 连接中被浏览器传递到服务器端进行会话验证，如果是 HTTP 连接则不会传递该信息，所以不会被盗取到Cookie 的具体内容。Cookie的主要构成如下：
+
+\begin{lstlisting}
+name:一个唯一确定的cookie名称。通常来讲cookie的名称是不区分大小写的。
+value:存储在cookie中的字符串值。最好为cookie的name和value进行url编码
+domain:cookie对于哪个域是有效的。所有向该域发送的请求中都会包含这个cookie信息。这个值可以包含子域(如：yq.aliyun.com)，也可以不包含它(如：.aliyun.com，则对于aliyun.com的所有子域都有效).
+path: 表示这个cookie影响到的路径，浏览器跟会根据这项配置，像指定域中匹配的路径发送cookie。
+expires:失效时间，表示cookie何时应该被删除的时间戳(也就是，何时应该停止向服务器发送这个cookie)。如果不设置这个时间戳，浏览器会在页面关闭时即将删除所有cookie；不过也可以自己设置删除时间。这个值是GMT时间格式，如果客户端和服务器端时间不一致，使用expires就会存在偏差。
+max-age: 与expires作用相同，用来告诉浏览器此cookie多久过期（单位是秒），而不是一个固定的时间点。正常情况下，max-age的优先级高于expires。
+HttpOnly: 告知浏览器不允许通过脚本document.cookie去更改这个值，同样这个值在document.cookie中也不可见。但在http请求张仍然会携带这个cookie。注意这个值虽然在脚本中不可获取，但仍然在浏览器安装目录中以文件形式存在。这项设置通常在服务器端设置。
+secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到服务器，如果是http链接则不会传递该信息。就算设置了secure 属性也并不代表他人不能看到你机器本地保存的 cookie 信息，所以不要把重要信息放cookie就对了
+\end{lstlisting}
+
+
+
 \part{Tool}
 
 \newpage
+
+\subsection{Intellij Idea远程调试}
+
+
 
 \section{OS}
 
 \subsection{Linux}
 
+\subsubsection{环境变量}
+
+Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
+
+\begin{lstlisting}[language=Bash]
+# 查看环境变量
+echo $http_proxy
+env
+# 删除环境变量
+unset http_proxy
+\end{lstlisting}
+
+set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+
 \subsubsection{screen}
 
-在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
+GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
 
 \begin{lstlisting}[language=Bash]
 screen sudo openvpn client.conf
 \end{lstlisting}
 
-接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。
+接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。
+
 
 \subsubsection{查看Linux信息}
 
@@ -455,11 +505,21 @@ sudo route del default gw 10.55.10.1
 
 \subsection{Fiddler替换Host}
 
+\section{Charles}
+
+Charles是Mac端的一款截取与分析网络请求的工具，在网络开发中使用其作分析，可以大大提高我们的开发效率。Charles是收费软件，一般可以试用三十天。Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information).
+
+\subsection{title}
+
+
 \section{OpenVPN}
 
 
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。
+OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
+\begin{lstlisting}[language=bash]
+nmap -A -T4 10.0.0.*
+\end{lstlisting}
 
 \subsection{安装}
 
@@ -476,15 +536,9 @@ make && make install
 
 LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Oberhumer 的缩写。这个算法是无损算法，参考实现程序是线程安全的。 实现它的一个自由软件工具是lzop。最初的库是用 ANSI C 编写、并且遵从 GNU通用公共许可证发布的。现在 LZO 有用于 Perl、Python 以及 Java 的各种版本。代码版权的所有者是 Markus F. X. J. Oberhumer。
 
-\subsubsection{生成客户端证书}
+\subsection{生成客户端证书}
 
-新建client文件夹，文件夹可随意命名，然后拷贝easy-ras文件夹到client文件夹,进入下列目录：
-
-\begin{lstlisting}[language=Bash]
-cp -R /etc/openvpn/easyrsa/ .
-\end{lstlisting}
-
-初始化:
+生成客户端证书端步骤如下：
 
 \begin{lstlisting}[language=Bash]
 #建立一个空的pki结构，生成一系列的文件和目录
@@ -509,9 +563,9 @@ Apache和*NIX服务器偏向于使用这种编码格式.签约：
 ./easyrsa sign client dolphinfedora
 \end{lstlisting}
 
-服务端生成的文件有：
+PKI：Public Key Infrastructure公钥基础设施。输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout。Apache和*NIX服务器偏向于使用这种编码格式.服务端生成的文件有：
 
-\begin{tabular}{|c|p{6cm}|c|}
+\begin{tabular}{|c|p{5cm}|c|}
 	\hline
 	\multirow{1}{*}{文件名称}
 	& \multicolumn{1}{c|}{说明(Purpose)} 
@@ -563,6 +617,8 @@ cp ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/private/dolphinfedora.key ~/dol
 sudo openvpn server.conf
 # Mac下启动OpenVPN
 sudo /usr/local/Cellar/openvpn/2.4.1/sbin/openvpn /usr/local/etc/openvpn/client.conf
+# 需要以后台交互方式启动时
+screen sudo openvpn client.conf
 \end{lstlisting}
 
 客户端端配置如下：
@@ -604,12 +660,105 @@ nsCertType server
 5.打印出的界面需要添加来源字段
 6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
-\subsection{常见错误}
+\subsection{Mac Book客户端配置}
+
+在Mac下连接OpenVPN需要安装Tunnelblick，Tunnelblick是Mac OS X上的一个OpenVPN的图形化前端界面。Tunnelblick is free software licensed under the GNU General Public License, version 2 and may be distributed only in accordance with the terms of that license.安装好Tunnelblick之后，直接导入相应的设置即可。如下是Mac Book下一个OpenVPN客户端可用配置的示例。
+
+\begin{lstlisting}[language=Bash]
+# 定义一个客户端
+client
+# 和服务器保持一致
+dev tun
+# 用TCP协议
+proto tcp
+# 指定服务器的IP地址和端口，可以用多行指定多台服务器，实现负载均衡
+remote 106.14.30.1 1194
+;remote-random
+resolv-retry infinite
+# 客户端不需要绑定端口
+nobind
+persist-key
+persist-tun
+mute-replay-warnings
+comp-lzo
+verb 3
+;mute 20
+ca ca.crt
+cert dolphin.crt
+key dolphinclient.key
+\end{lstlisting}
+
+
+\subsection{Ubuntu远程Raspberry}
+
+OpenVPN的一个应用就是可以方便的在不同局域网之间的计算机进行远程。在Raspberry安装VNC服务端：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install tightvncserver
+\end{lstlisting}
+
+设置密码：
+
+\begin{lstlisting}[language=Bash]
+tightvncserver
+\end{lstlisting}
+
+启动：
+
+\begin{lstlisting}[language=Bash]
+vncserver :2 -geometry 800x600 -depth 24
+\end{lstlisting}
+
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
+	\caption{Ubuntu远程连接配置}
+	\label{fig:raspberryremtoeconfig}
+\end{figure}
+
+\subsection{Ubuntu远程Ubuntu}
+
+被远程的机器上安装必须的组件：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install xrdp -y
+sudo apt-get install vnc4server tightvncserver -y
+sudo /etc/init.d/xrdp restart
+echo "gnome-session --session=gnome-classic" > ~/.xsession
+\end{lstlisting}
+
+
+
+
+\subsection{Mac Book远程Fedora}
+
+在Mac Book远程Linux主机选择的是XQuartz，安装好XQuartz后，直接在从XQuartz打开的终端中运行：
+
+\begin{lstlisting}[language=Bash]
+ssh -X dolphin@10.0.0.10
+\end{lstlisting}
+
+直接在命令行中启动图形化界面，会在Mac上显示Linux主机上的软件原生GUI界面，就像软件在本机运行一样。X11是X Window System主版本11的缩写，它不光是一个基本的GUI软件，X11也被定义为一个网络协议，因为X11提供了非常灵活的网络访问接口。SSH 的 X11 forwarding 特性可以使 X client 和 X server 安全地通讯。使用 X11 forwarding 后，从 X client 到 X Server 方向的数据先被送至 SSH server，SSH server 利用和 SSH client 的安全通道转发给 SSH client，再由 SSH client 转发给 X server，从 X server 到 X client 的数据流同理。这里 SSH server 和 SSH client 充当了 X client 和 X server 间数据的转发器，由于 SSH server 和 X client、SSH client 和 X server 一般在同一台机器上，它们之间是一种安全的进程间通讯，而 SSH server 和 SSH client 间的通讯也是安全的，所以 X client 和 X server 间的通讯就是安全的。X在Unix-like系统上几乎完全占据统治地位。但是仍然有人尝试提供替代品和更多的选择，过去曾经有 Sun Microsystems 的 NeWS ，但它遭到市场失败；还有 NeXT 的 Display PostScript ，它最终转变为苹果电脑的 Quartz for Mac OS X 。
+
+\subsection{常见问题}
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
 
 \subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
+在Mac中，连接好了并没有显示IP的变化。This computer's apparent public IP address was not different after connecting to client. It is still 45.76.205.201.This may mean that your VPN is not configured correctly.
+
+
+\paragraph{OpenVPN is connected to the server but your IP address does not change}
+
+If OpenVPN connects to the server properly but your IP address does not change, you are probably missing the "--redirect-gateway" option. Add the following line:
+--redirect-gateway def1 to your configuration file.
+
+By default, OpenVPN only sends some traffic through the VPN — traffic that is specifically destined for the VPN network itself. The "--redirect-gateway" option tells OpenVPN to send all traffic through the VPN. (Leave out the "--" when it is put in the configuration file.)
+
+An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
 \section{Nmap(GNU General Public License)}
 
@@ -685,6 +834,9 @@ nmap-T4 -sV targetip
 #扫描淘宝IP
 nmap -p 0-1000 -v 218.201.46.124
 nmap -T4 -A -v 218.201.46.124
+
+# 扫描指定主机的3306端口
+nmap -sS -p 3306 -v 192.168.31.25
 \end{lstlisting}
 
 通过扫描可以发现一些主机信息，比如淘宝的数字证书用的是GlobalSign，
@@ -758,15 +910,44 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
 
+\subsection{Zenmap}
+
+Zenmap是Nmap的官方GUI，可以运行在Linux, Windows, Mac OS X, BSD等操作系统上。
+
+\begin{lstlisting}[language=Bash]
+# Mac下获取Zenmap安装文件
+wget -c https://nmap.org/dist/nmap-7.31.dmg
+\end{lstlisting}
+
+
 \section{tmux}
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
-\section{Intellij Idea}
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
 
-\subsection{Plugin}
 
-有时在线网速可能较慢，有可能下载Intellij Idea的插件离线包进行安装，在下载Intellij Idea的插件之前，可以先搜索查看一下插件的版本，避免下载下来的插件出现不兼容(Imcompatiable)的现象。
+\section{Raspberry Pi}
+
+\subsection{Raspberry Pi远程}
+
+安装步骤：
+
+\begin{lstlisting}[language=Bash]
+＃　安装tightvncserver
+sudo apt-get install tightvncserver　－ｙ
+＃　设置密码
+vncpasswd
+\end{lstlisting}
 
 \section{Widgets}
 
@@ -793,19 +974,28 @@ autojump -a 'pwd'
 alias j='autojump'
 \end{lstlisting}
 
-为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
+有时会出现如下的提示：Please source the correct autojump file in your shell's startup file. For more information, please reinstall autojump and read the post installation instructions.为了暂时激活autojump应用，即直到你关闭当前会话或打开一个新的会话之前让autojump均有效，需要以常规用户身份运行下面的命令:
 
 \begin{lstlisting}[language=Bash]
+# 在Linux系统下
 source /usr/share/autojump/autojump.sh on startup
+# 在Mac OS X下
+source ~/.autojump/etc/profile.d/autojump.sh
+# 也可运行如下命令
+[[ -s /Users/dolphin/.autojump/etc/profile.d/autojump.sh ]] && source /Users/dolphin/.autojump/etc/profile.d/autojump.sh
 \end{lstlisting}
 
 为了使得autojump在BASH shell中永久有效，需要运行下面的命令。
 
 \begin{lstlisting}[language=Bash]
 echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
+# 在Mac OS X下
+echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
+\section{Git}
 
+\subsection{配置}
 
 
 
@@ -861,7 +1051,9 @@ curl 'http://59.214.215.6:3800/inapi/united/detail?param=%E8%B0%8A%E5%BE%B7%E5%A
 git config --global merge.tool meld
 \end{lstlisting}
 
+\section{Google Chrome}
 
+\subsection{Google Chrome SSH}
 
 \section{LaTex}
 
@@ -869,37 +1061,71 @@ git config --global merge.tool meld
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+\part{DB}
 
+\section{MySQL}
 
+\subsection{基础}
 
-\subsection{Ubuntu远程Raspberry}
-
-Raspberry安装VNC服务端：
+启动MySQL：
 
 \begin{lstlisting}[language=Bash]
-sudo apt-get install tightvncserver
+mysqld
+
+# 防火墙添加端口
+sudo iptables -A INPUT -p tcp --dport 3306 -j ACCEPT /*允许包从3306端口进入*/
+sudo iptables -A OUTPUT -p tcp --sport 3306 -m state --state ESTABLISHED -j ACCEPT /*允许从3306端口进入的包返回*/
+
+# 查看iptables
+sudo iptables --list
+SHOW DATABASES                                //列出 MySQL Server 数据库。
+SHOW TABLES [FROM db_name]                    //列出数据库数据表。
+SHOW TABLE STATUS [FROM db_name]              //列出数据表及表状态信息。
+SHOW COLUMNS FROM tbl_name [FROM db_name]     //列出资料表字段
+SHOW FIELDS FROM tbl_name [FROM db_name]，DESCRIBE tbl_name [col_name]。
+SHOW FULL COLUMNS FROM tbl_name [FROM db_name]//列出字段及详情
+SHOW FULL FIELDS FROM tbl_name [FROM db_name] //列出字段完整属性
+SHOW INDEX FROM tbl_name [FROM db_name]       //列出表索引。
+SHOW STATUS                                  //列出 DB Server 状态。
+SHOW VARIABLES                               //列出 MySQL 系统环境变量。
+SHOW PROCESSLIST                             //列出执行命令。
+SHOW GRANTS FOR user                         //列出某用户权限
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.31.25'IDENTIFIED BY 'dolphin' WITH GRANT OPTION;
 \end{lstlisting}
 
-设置密码：
+\subsection{MySQL远程连接}
+
+本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
 \begin{lstlisting}[language=Bash]
-tightvncserver
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = 192.168.31.25
 \end{lstlisting}
 
-启动：
+默认是127.0.0.1,是一个回环地址,只有本机请求本机,目标地址才会是127.0.0.1,此时需要在其他主机请求，需要将绑定IP改为网卡地址, 也就是外网IP, 因为远程连接数据库目标IP肯定是公网IP. 不过还可以改成0.0.0.0,这样就表示监听所有IP, 只要端口一样, 网卡都会把请求传给进程。如果不在配置文件中修改地址，则需要在启动时指定绑定地址：
 
 \begin{lstlisting}[language=Bash]
-vncserver :2 -geometry 800x600 -depth 24
+sudo mysqld --bind-address=192.168.31.25
+\end{lstlisting}
+
+绑定好地址后，使用命令sudo lsof:3306查看。
+
+
+\subsection{mycli}
+
+MyCli 是一个 MySQL 命令行工具，支持自动补全和语法高亮。也可用于 MariaDB 和 Percona。安装mycli：
+
+\begin{lstlisting}[language=Bash]
+pip install mycli
+brew install mycli
 \end{lstlisting}
 
 在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
 
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.4]{raspberryremtoeconfig.png}
-	\caption{Ubuntu远程连接配置}
-	\label{fig:raspberryremtoeconfig}
-\end{figure}
+\subsection{常见问题}
+
+
 
 \part{Network}
 
