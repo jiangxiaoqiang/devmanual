@@ -244,6 +244,8 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \section{Python}
 
+Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
+
 \subsection{基础}
 
 查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
@@ -252,10 +254,46 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 sudo pip install mysql-python
 \end{lstlisting}
 
-
 \subsection{Beautiful Soup}
 
-Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。
+Beautiful Soup 是用Python写的一个HTML/XML的解析器，它可以很好的处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。如下代码片段展示爬取豆瓣书籍详情页的书籍信息：
+
+\begin{lstlisting}[language=Bash]
+def get_single_book_detail_info(url):
+	try:
+		req = urllib2.Request(url, headers=hds[np.random.randint(0, len(hds))])
+		source_code = urllib2.urlopen(req).read()
+		plain_text = str(source_code)
+	except (urllib2.HTTPError, urllib2.URLError), e:
+		print e
+	soup = BeautifulSoup(plain_text)
+	list_soup = soup.find('div', {'id': 'info'}).findAll('span')
+	return list_soup
+\end{lstlisting}
+
+find方法直接返回结果，findAll方法返回符合条件的结果。
+
+\subsection{爬取豆瓣书籍}
+
+向数据库中保存数据：
+
+\begin{lstlisting}[language=Python]
+def save_to_mysql():
+	try:
+		conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
+		cur = conn.cursor()
+		conn.select_db('dolphin')
+		value = ['hi rollen']
+		cur.execute('insert into book(name) values(%s)', value)
+		conn.commit()
+		cur.close()
+		conn.close()
+	
+	except MySQLdb.Error, e:
+		print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+\end{lstlisting}
+
+在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
 
 \subsection{sh: mysql\_config: command not found解决办法}
 
@@ -1259,34 +1297,7 @@ step3.
 回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
 
 
-
-
 \subsection{mycli}
-周计划（2017-05-22到2017-05-26）
-
-
-报表打印效率问题	任毅、王灿	100%	请在周二下班之前完成
-日志统计修改	邵宇、钟祥云	100%	周二下班之前完成
-红黑名单批量查询返回问题	王灿、任毅	100%	
-添加USB Key登录后，无法查看报表	蒋小强	100%	周一下班前完成
-
-周总结（2017-05-15到2017-05-19）
-
-事中做好程序上做权限控制（密码试错容限）	任毅	100%	
-核查审计管理、日志管理响应慢和无法查出内容，搜索条件添加日期段	王灿、任毅	100%	
-用户登录、用户退出、增加用户、修改用户（要加上登录日志）	任毅	100%	
-落实tongweb对用户资源的控制	蒋小强	100%	
-根据日期查询给出单位和接口名和调用次数的报表	蒋小强	90%	暂未部署到测试环境
-栏目未订阅时给予提示	王灿	100%	
-添加USB Key登录后，无法查看报表	蒋小强	未开始	
-信源部门工作台、USB Key认证、联合惩戒管理交给测试，并发布版本	蒋小强	100%	
-自然人、企业查询报表打印慢	王灿、任毅	60%	
-红黑名单批量查询“未查询到数据”显示、全选框逻辑问题	王灿	100%	
-“信用重庆”新增红黑名单接口	蒋小强	100%	
-联合惩戒管理问题的处理（过滤市级部门、查询条件无效等）	钟祥云	100%	
-在线填报，报送统计中添加入库量列	邵宇、钟祥云	100%	
-工作绩效报表自动登陆	钟祥云	100%
-
 
 MyCli 是一个 MySQL 命令行工具，支持自动补全和语法高亮。也可用于 MariaDB 和 Percona。安装mycli：
 
