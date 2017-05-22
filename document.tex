@@ -89,6 +89,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
+
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
@@ -1243,6 +1244,9 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 \begin{lstlisting}[language=Bash]
 mysqld
 
+# Mac中启动MySQL，同理停止的参数为stop，重启的参数为restart
+sudo /usr/local/MySQL/support-files/mysql.server start
+
 # 防火墙添加端口
 sudo iptables -A INPUT -p tcp --dport 3306 -j ACCEPT /*允许包从3306端口进入*/
 sudo iptables -A OUTPUT -p tcp --sport 3306 -m state --state ESTABLISHED -j ACCEPT /*允许从3306端口进入的包返回*/
@@ -1263,6 +1267,26 @@ SHOW PROCESSLIST                             //列出执行命令。
 SHOW GRANTS FOR user                         //列出某用户权限
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.31.25'IDENTIFIED BY 'dolphin' WITH GRANT OPTION;
 \end{lstlisting}
+
+在使用MySQL会出现中文乱码问题，MySQL的字符集支持(Character Set Support)有两个方面：字符集(Character set)和排序方式(Collation)。对于字符集的支持细化到四个层次: 服务器(server)，数据库(database)，数据表(table)和连接(connection)。在Mac中，在etc目录下新建my.cnf文件，指定数据库编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+character-set-server=utf8
+init_connect='SET NAMES utf8'
+[mysql]
+default-character-set=utf8
+\end{lstlisting}
+
+修改后，重新启动数据库。但是以前新建的表有可能还是采用的原来的编码，使用如下语句进行修改：
+
+\begin{lstlisting}[language=SQL]
+#检查数据表所有字段的状态	
+show full columns from book; 
+#发现address字段的Collation项非utf8，改成utf8
+alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
+\end{lstlisting}
+
 
 \subsection{MySQL远程连接}
 
