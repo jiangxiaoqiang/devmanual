@@ -812,8 +812,12 @@ vncserver :2 -geometry 800x600 -depth 24
 被远程的机器上安装必须的组件：
 
 \begin{lstlisting}[language=Bash]
+#安装xrdp
 sudo apt-get install xrdp -y
+#安装vnc4server
 sudo apt-get install vnc4server tightvncserver -y
+#安装xfce4
+sudo apt-get install xubuntu-desktop -y
 sudo /etc/init.d/xrdp restart
 echo "gnome-session --session=gnome-classic" > ~/.xsession
 \end{lstlisting}
