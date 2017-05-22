@@ -847,7 +847,7 @@ vncserver :2 -geometry 800x600 -depth 24
 
 \subsection{Ubuntu远程Ubuntu}
 
-被远程的机器上安装必须的组件：
+xrdp支持不了13.10的GNOME了，解决办法是安装xfce界面。被远程的机器上安装必须的组件：
 
 \begin{lstlisting}[language=Bash]
 #安装xrdp
@@ -860,7 +860,7 @@ sudo /etc/init.d/xrdp restart
 echo "gnome-session --session=gnome-classic" > ~/.xsession
 \end{lstlisting}
 
-
+在Ubuntu上使用Remmina Remote Desktop Client即可链接远程桌面。
 
 
 \subsection{Mac Book远程Fedora}
