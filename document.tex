@@ -1431,7 +1431,7 @@ var FindProxyForURL = function(init, profiles) {
 
 \subsection{版本管理}
 
-Given a version number MAJOR.MINOR.PATCH, increment the:
+在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号，方便测试进行问题识别。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
 
 \begin{itemize}
 	\item{MAJOR version when you make incompatible API changes,}
@@ -1439,7 +1439,38 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 	\item{PATCH version when you make backwards-compatible bug fixes.}
 \end{itemize}
 
-Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.如果项目是采用Gradle打包，可以采用如下的版本管理策略：
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.在项目的根目录下新建version.properties文件，文件中定义版本号：
+
+\begin{lstlisting}
+VERSION_CODE=1.0.2
+\end{lstlisting}
+
+在Gradle中读取版本号：
+
+\begin{lstlisting}
+version = getVersionCode()
+
+def getVersionCode() {
+	def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
+	if (versionFile.canRead()) {
+		def Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		def versionCode = versionProps['VERSION_CODE'].toString()
+		/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
+		if ('assembleRelease' in runTasks) {
+			versionProps['VERSION_CODE'] = (++versionCode).toString()
+			versionProps.store(versionFile.newWriter(), null)
+		}*/
+		return versionCode
+	} else {
+		throw new GradleException("Could not find version.properties!")
+	}
+}
+
+\end{lstlisting}
+
+
+如果项目是采用Gradle打包，可以采用如下的版本管理策略：
 
 \begin{lstlisting}
 def gitVersionCode() {  
