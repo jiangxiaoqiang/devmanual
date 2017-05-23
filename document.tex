@@ -885,11 +885,11 @@ sudo apt-get install vnc4server tightvncserver -y
 #安装xfce4
 sudo apt-get install xubuntu-desktop -y
 sudo /etc/init.d/xrdp restart
+＃　指定桌面管理器
 echo "gnome-session --session=gnome-classic" > ~/.xsession
 \end{lstlisting}
 
-在Ubuntu上使用Remmina Remote Desktop Client即可链接远程桌面。
-
+最后一个命令的作用是由于安装了gnome桌面，ubuntu1６.04中同时存在unity、GNOME多个桌面管理器，需要启动的时候指定一个，不然即使远程登录验证成功以后，也只是背景。在Ubuntu上使用Remmina Remote Desktop Client即可链接远程桌面。
 
 \subsection{Mac Book远程Fedora}
 
