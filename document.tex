@@ -89,6 +89,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
+
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
@@ -244,6 +245,8 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \section{Python}
 
+Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
+
 \subsection{基础}
 
 查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
@@ -252,10 +255,46 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 sudo pip install mysql-python
 \end{lstlisting}
 
-
 \subsection{Beautiful Soup}
 
-Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。
+Beautiful Soup 是用Python写的一个HTML/XML的解析器，它可以很好的处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。如下代码片段展示爬取豆瓣书籍详情页的书籍信息：
+
+\begin{lstlisting}[language=Bash]
+def get_single_book_detail_info(url):
+	try:
+		req = urllib2.Request(url, headers=hds[np.random.randint(0, len(hds))])
+		source_code = urllib2.urlopen(req).read()
+		plain_text = str(source_code)
+	except (urllib2.HTTPError, urllib2.URLError), e:
+		print e
+	soup = BeautifulSoup(plain_text)
+	list_soup = soup.find('div', {'id': 'info'}).findAll('span')
+	return list_soup
+\end{lstlisting}
+
+find方法直接返回结果，findAll方法返回符合条件的结果。
+
+\subsection{爬取豆瓣书籍}
+
+向数据库中保存数据：
+
+\begin{lstlisting}[language=Python]
+def save_to_mysql():
+	try:
+		conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
+		cur = conn.cursor()
+		conn.select_db('dolphin')
+		value = ['hi rollen']
+		cur.execute('insert into book(name) values(%s)', value)
+		conn.commit()
+		cur.close()
+		conn.close()
+	
+	except MySQLdb.Error, e:
+		print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+\end{lstlisting}
+
+在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
 
 \subsection{sh: mysql\_config: command not found解决办法}
 
@@ -276,7 +315,7 @@ sudo pip install mysql-python
 
 \subsection{Cookie}
 
-在Chrome中查看Cookie可以直接在Console中输入：
+The browser is expected to support 20 cookies for each Web server, 300 cookies total, and may limit cookie size to 4 KB each.在Chrome中查看Cookie可以直接在Console中输入：
 
 \begin{lstlisting}[language=Bash]
 document.cookie
@@ -301,7 +340,7 @@ HttpOnly: 告知浏览器不允许通过脚本document.cookie去更改这个值�
 secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到服务器，如果是http链接则不会传递该信息。就算设置了secure 属性也并不代表他人不能看到你机器本地保存的 cookie 信息，所以不要把重要信息放cookie就对了
 \end{lstlisting}
 
-
+\paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
 \part{Tool}
 
@@ -396,6 +435,10 @@ screen sudo openvpn client.conf
 # Linux查看版本当前操作系统内核信息
 uname －a 
 \end{lstlisting}
+
+\subsection{XFCE桌面}
+
+占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
 
 \subsection{Fedora访问共享文件夹}
 
@@ -589,6 +632,30 @@ sudo route del default gw 10.55.10.1
 
 
 \section{Ansible}
+
+\section{Nginx}
+
+\subsection{Nginx获取真实IP}
+
+Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要编译http\_realip\_module。查看Nginx安装了哪些模块，使用如下命令：
+
+\begin{lstlisting}[language=bash]
+nginx -V
+\end{lstlisting}
+
+输出结果如下：
+
+\begin{lstlisting}[language=bash]
+nginx version: nginx/1.12.0
+built by gcc 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) 
+built with OpenSSL 1.0.2g-fips  1 Mar 2016 (running with OpenSSL 1.0.2g  1 Mar 2016)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
+\end{lstlisting}
+
+此处显示已经编译了http\_realip\_module模块。如果没有编译http\_realip\_module:
+
+
 
 \section{Fiddler}
 
@@ -808,16 +875,20 @@ vncserver :2 -geometry 800x600 -depth 24
 
 \subsection{Ubuntu远程Ubuntu}
 
-被远程的机器上安装必须的组件：
+xrdp支持不了13.10的GNOME了，解决办法是安装xfce界面。被远程的机器上安装必须的组件：
 
 \begin{lstlisting}[language=Bash]
+#安装xrdp
 sudo apt-get install xrdp -y
+#安装vnc4server
 sudo apt-get install vnc4server tightvncserver -y
+#安装xfce4
+sudo apt-get install xubuntu-desktop -y
 sudo /etc/init.d/xrdp restart
 echo "gnome-session --session=gnome-classic" > ~/.xsession
 \end{lstlisting}
 
-
+在Ubuntu上使用Remmina Remote Desktop Client即可链接远程桌面。
 
 
 \subsection{Mac Book远程Fedora}
@@ -1200,6 +1271,9 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 \begin{lstlisting}[language=Bash]
 mysqld
 
+# Mac中启动MySQL，同理停止的参数为stop，重启的参数为restart
+sudo /usr/local/MySQL/support-files/mysql.server start
+
 # 防火墙添加端口
 sudo iptables -A INPUT -p tcp --dport 3306 -j ACCEPT /*允许包从3306端口进入*/
 sudo iptables -A OUTPUT -p tcp --sport 3306 -m state --state ESTABLISHED -j ACCEPT /*允许从3306端口进入的包返回*/
@@ -1221,6 +1295,26 @@ SHOW GRANTS FOR user                         //列出某用户权限
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.31.25'IDENTIFIED BY 'dolphin' WITH GRANT OPTION;
 \end{lstlisting}
 
+在使用MySQL会出现中文乱码问题，MySQL的字符集支持(Character Set Support)有两个方面：字符集(Character set)和排序方式(Collation)。对于字符集的支持细化到四个层次: 服务器(server)，数据库(database)，数据表(table)和连接(connection)。在Mac中，在etc目录下新建my.cnf文件，指定数据库编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+character-set-server=utf8
+init_connect='SET NAMES utf8'
+[mysql]
+default-character-set=utf8
+\end{lstlisting}
+
+修改后，重新启动数据库。但是以前新建的表有可能还是采用的原来的编码，使用如下语句进行修改：
+
+\begin{lstlisting}[language=SQL]
+#检查数据表所有字段的状态	
+show full columns from book; 
+#发现address字段的Collation项非utf8，改成utf8
+alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
+\end{lstlisting}
+
+
 \subsection{MySQL远程连接}
 
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
@@ -1238,6 +1332,24 @@ sudo mysqld --bind-address=192.168.31.25
 \end{lstlisting}
 
 绑定好地址后，使用命令sudo lsof:3306查看。
+
+\subsection{Mac中MySQL初始密码}
+
+step1：
+
+苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
+
+step2：
+
+进入终端输入：cd /usr/local/mysql/bin/
+回车后 登录管理员权限 sudo su
+回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
+回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
+
+step3. 
+输入命令 ./mysql
+回车后，输入命令 FLUSH PRIVILEGES; 
+回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
 
 
 \subsection{mycli}
