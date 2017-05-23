@@ -315,7 +315,7 @@ sudo pip install mysql-python
 
 \subsection{Cookie}
 
-在Chrome中查看Cookie可以直接在Console中输入：
+The browser is expected to support 20 cookies for each Web server, 300 cookies total, and may limit cookie size to 4 KB each.在Chrome中查看Cookie可以直接在Console中输入：
 
 \begin{lstlisting}[language=Bash]
 document.cookie
@@ -340,7 +340,7 @@ HttpOnly: 告知浏览器不允许通过脚本document.cookie去更改这个值�
 secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到服务器，如果是http链接则不会传递该信息。就算设置了secure 属性也并不代表他人不能看到你机器本地保存的 cookie 信息，所以不要把重要信息放cookie就对了
 \end{lstlisting}
 
-
+\paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
 \part{Tool}
 
@@ -435,6 +435,10 @@ screen sudo openvpn client.conf
 # Linux查看版本当前操作系统内核信息
 uname －a 
 \end{lstlisting}
+
+\subsection{XFCE桌面}
+
+占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
 
 \subsection{Fedora访问共享文件夹}
 
@@ -651,7 +655,6 @@ configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-p
 
 此处显示已经编译了http\_realip\_module模块。如果没有编译http\_realip\_module:
 
-\begin{list
 
 
 \section{Fiddler}
