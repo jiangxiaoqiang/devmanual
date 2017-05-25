@@ -1273,7 +1273,11 @@ git config --global merge.tool meld
 
 \subsection{Source Map}
 
+截止目前几乎没有浏览器完全原生支持es6标准，对于这种情况，Chrome引入了source-map文件，标识es5代码对应的转码前的es6代码哪一行，唯一要做的就是配置webpack自动生成source-map文件，这也很简单，在webpack.config.js中增加一行配置即可（需要重新启动webpack-dev-server使配置生效）
 
+\subsection{Replay XHR}
+
+有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
 
 \subsection{Google Chrome SSH}
 
