@@ -354,9 +354,9 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
-\section{OS}
+\part{OS}
 
-\subsection{Linux}
+\section{Linux}
 
 在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
@@ -366,7 +366,20 @@ sudo apt-get -f install
 
 f参数表示尝试修正系统依赖损坏处。
 
-\subsubsection{环境变量}
+\subsection{shell}
+
+\paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
+
+\begin{lstlisting}[language=Bash]
+# version.properties文件中直接写VERSION\_CODE=1.0.2即可
+source /Users/dolphin/source/credit-system/gradle/version.properties
+# 输出1.0.2
+echo $VERSION_CODE
+\end{lstlisting}
+
+在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
+
+\subsection{环境变量}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
 
@@ -1196,6 +1209,12 @@ ControlPersist 4h
 \end{lstlisting}
 
 When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
+
+\paragraph{远程转发Remote Forward}
 
 \subsection{rsync}
 
