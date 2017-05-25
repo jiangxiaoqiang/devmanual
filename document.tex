@@ -47,7 +47,8 @@
 	numberstyle={\color[RGB]{0,192,192}\tiny} ,%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
 	numbersep=8pt,  %设置行号与代码的距离，默认是5pt  
 	basicstyle=\footnotesize, % 这句设置代码的大小  
-	showspaces=false, %  
+	showspaces=false, % 
+	escapechar=`,
 	flexiblecolumns=true, %  
 	breaklines=true, %对过长的代码自动换行  
 	breakautoindent=true,%  
@@ -57,7 +58,7 @@
 	showstringspaces=false, %不显示字符串中的空格  
 	backgroundcolor=\color[RGB]{245,245,244},   %代码背景色  
 	%backgroundcolor=\color[rgb]{0.91,0.91,0.91}    %添加背景色  
-	escapeinside=``,  %在``里显示中文  
+	escapeinside={``}{\_},  %在``里显示中文  
 	%% added by http://bbs.ctex.org/viewthread.php?tid=53451  
 	fontadjust,  
 	captionpos=t,  
@@ -379,6 +380,74 @@ echo $VERSION_CODE
 
 在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
 
+\subsection{自动部署}
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+#
+# 一键部署后端项目到远程1台或多台服务器
+# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 注：本机需要安装Ansible并与服务器做免密登录
+#
+# 2017-05-25 dolphin 增加动态读取版本号，根据版本自动发布程序
+#
+
+# 当使用未初始化的变量时，程序自动退出
+set -u
+
+# 当任何一行命令执行失败时，自动退出脚本
+set -e
+
+# send=`date '+%Y-%m-%d %H:%M:%S'`
+CURRENT\_TIME=`date '+%Y%m%d%H%M%S'`
+
+echo "$CURRENT_TIME"
+
+PROGRAM_PATH_INFORMATION_CENTER="/opt/app/backend"
+SERVER_IP="192.168.1.101"
+LOGIN_USER="root"
+LOCAL_PATH="./cc-web-boot/build/libs"
+
+# Read program version number
+source version.properties
+echo "$VERSION"
+
+PROGRAM_NAME="credit-system-web-boot-$VERSION.jar"
+echo "$PROGRAM_NAME"
+
+echo "开始构建..."
+# Build project
+./gradlew -p cc-web-boot -x test build
+./gradlew -p cc-etl-sechedule -x test build
+
+echo "开始拷贝..."
+# publish project
+scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
+scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+
+ansible webservers -m command -a "date"
+
+echo "停止站点..."
+ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
+
+echo "等待站点停止..."
+sleep 10
+
+echo "备份站点..."
+# 备份当前站点
+ansible webservers -m command -a "mv $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME-$CURRENT_TIME"
+
+echo "拷贝新文件..."
+ansible webservers -a "mv ~/app-soft/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "启动站点..."
+ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "部署完成"
+\end{lstlisting}
+
 \subsection{环境变量}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
@@ -646,6 +715,17 @@ sudo route del default gw 10.55.10.1
 
 \section{Ansible}
 
+\subsection{Ansible模块}
+
+\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
+
+\begin{lstlisting}[language=bash]
+ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+\end{lstlisting}
+
+如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
+
+
 \section{Nginx}
 
 \subsection{Nginx获取真实IP}
@@ -888,7 +968,7 @@ vncserver :2 -geometry 800x600 -depth 24
 
 \subsection{Ubuntu远程Ubuntu}
 
-xrdp支持不了13.10的GNOME了，解决办法是安装xfce界面。被远程的机器上安装必须的组件：
+这里的两台机器都是Ubuntu 16.04 LTS系统，xrdp支持不了13.10的GNOME了，解决办法是安装xfce界面。被远程的机器上安装必须的组件：
 
 \begin{lstlisting}[language=Bash]
 #安装xrdp
@@ -1493,7 +1573,6 @@ def getVersionCode() {
 		throw new GradleException("Could not find version.properties!")
 	}
 }
-
 \end{lstlisting}
 
 
