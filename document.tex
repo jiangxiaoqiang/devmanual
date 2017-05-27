@@ -1551,32 +1551,13 @@ def getVersionCode() {
 }
 \end{lstlisting}
 
-
-如果项目是采用Gradle打包，可以采用如下的版本管理策略：
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，所以写成相对路径会比较妥当。可以写成如下：
 
 \begin{lstlisting}
-def gitVersionCode() {  
-	def cmd = 'git rev-list HEAD --first-parent --count'
-	cmd.execute().text.trim().toInteger()
-}
-
-def gitVersionTag() {  
-	def cmd = 'git describe --tags'
-	def version = cmd.execute().text.trim()
-	
-	def pattern = "-(\\d+)-g"
-	def matcher = version =~ pattern
-	
-	if (matcher) {
-		version = version.substring(0, matcher.start()) + "." + matcher[0][1]
-	} else {
-		version = version + ".0"
-	}
-	return version
-}
+File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
 \end{lstlisting}
 
-
+其中\$rootDir表示项目的根目录，比如有一个叫做dolphin的项目，那么rootDir就是dolphin目录，另外还有一个projectDir的变量和buildDir的变量。projectDir就是dolphin/src目录，buildDir就是dolphin/src/build目录。如果是多个Project组成的项目，那么projectDir就是rootDir/projectName，buildDir就是dolphin/projectName/build。
 
 
 
