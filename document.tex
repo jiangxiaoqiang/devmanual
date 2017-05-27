@@ -730,7 +730,7 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 \subsection{Nginx获取真实IP}
 
-Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要编译http\_realip\_module。查看Nginx安装了哪些模块，使用如下命令：
+Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
 \begin{lstlisting}[language=bash]
 nginx -V
@@ -746,8 +746,37 @@ TLS SNI support enabled
 configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
 \end{lstlisting}
 
-此处显示已经编译了http\_realip\_module模块。如果没有编译http\_realip\_module:
+此处显示已经编译了http\_realip\_module模块。项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
 
+\begin{lstlisting}[language=bash]
+# 在Ubuntu 14.04 LTS下安装pcre依赖
+# pcre:Perl Compatible Regular Expressions
+sudo apt-get install libpcre3 libpcre3-dev
+# 指定预编译参数，仅仅指定路径
+sudo ./configure --prefix=/opt/tengine
+# 将realip模块编译进入
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module
+# 编译
+sudo make
+# 安装
+sudo make install
+./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
+\end{lstlisting}
+
+不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
+你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
+指定prefix，直接删掉一个文件夹就够了。编译完毕之后，输入如下命令：
+
+\begin{lstlisting}[language=bash]
+# 查看Tengine版本、模块信息
+./nginx -V
+\end{lstlisting}
+
+即可看到http\_realip\_module已经编译到nginx中了。Mac下的openssl路径是/Usr/local/Cellar/openssl/1.0.2k。注意在指定openssl时，应该指定的openssl的源码，而不是openssl的安装路径。
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/Users/dolphin/Downloads/tengine-2.1.2-bin --with-openssl=/Users/dolphin/source/openssl --with-cc-opt="-Wno-deprecated-declarations"
+\end{lstlisting}
 
 
 \section{Fiddler}
@@ -762,7 +791,6 @@ Charles是Mac端的一款截取与分析网络请求的工具，在网络开发�
 
 
 \section{OpenVPN}
-
 
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
