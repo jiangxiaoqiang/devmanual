@@ -380,6 +380,18 @@ echo $VERSION_CODE
 
 在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
 
+\paragraph{文件是否存在}
+
+Shell下判斷文件是否存在：
+
+\begin{lstlisting}[language=Bash]
+myFile="/opt/app/backend/app.pid"
+
+if [ -f "$myFile" ]; then
+	kill `cat /opt/app/backend/app.pid`
+fi
+\end{lstlisting}
+
 \subsection{自动部署}
 
 \begin{lstlisting}[language=Bash]
