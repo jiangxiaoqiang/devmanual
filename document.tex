@@ -789,11 +789,33 @@ sudo make install
 ./nginx -V
 \end{lstlisting}
 
-即可看到http\_realip\_module已经编译到nginx中了。Mac下的openssl路径是/Usr/local/Cellar/openssl/1.0.2k。注意在指定openssl时，应该指定的openssl的源码，而不是openssl的安装路径。
+即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
 
 \begin{lstlisting}[language=bash]
-./configure --prefix=/Users/dolphin/Downloads/tengine-2.1.2-bin --with-openssl=/Users/dolphin/source/openssl --with-cc-opt="-Wno-deprecated-declarations"
+set_real_ip_from 192.168.1.10;
+real_ip_header X-Real-IP;
 \end{lstlisting}
+
+其中set\_real\_ip\_from可以指定某个网段。这个指令指定信任的代理IP，它们将会以精确的替换IP转发。0.8.22后可以指定Unix sockets。real\_ip\_header设置需要使用哪个头来确定替换的IP地址。由于项目中使用的Nginx作为反向代理，所以配置如下：
+
+\begin{lstlisting}[language=bash]
+location /inapi {
+         proxy_pass http://localhost:28080;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_redirect off;
+     }
+\end{lstlisting}
+
+在另一台电脑上访问服务端，在后端根据新添加的Header获取到的IP地址如图\ref{fig:nginxgetrealip}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{nginxgetrealip.png}
+	\caption{Nginx获取用户真实访问IP}
+	\label{fig:nginxgetrealip}
+\end{figure}
+
+此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
 
 
 \section{Fiddler}
@@ -1409,6 +1431,10 @@ sudo apt-get install php7.0 -y
 \subsection{字体}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
+
+\subsection{版面}
+
+\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
 \part{DB}
 
