@@ -392,6 +392,16 @@ if [ -f "$myFile" ]; then
 fi
 \end{lstlisting}
 
+\paragraph{大小写不敏感}
+
+有时文件前缀是大写字母，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell大小写不敏感，就不需要再重复做一次大小写转换操作了：
+
+\begin{lstlisting}[language=Bash]
+echo "set completion-ignore-case on">>~/.inputrc
+\end{lstlisting}
+
+设置完毕后重新打开终端即可。
+
 \subsection{自动部署}
 
 \begin{lstlisting}[language=Bash]
@@ -1376,6 +1386,28 @@ git config --global merge.tool meld
 有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
 
 \subsection{Google Chrome SSH}
+
+\section{Zentao}
+
+\subsection{常见问题}
+
+运行禅道需要PHP环境，在Ubuntu 16.04上面安装PHP：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install php7.0 -y
+\end{lstlisting}
+
+由于80端口已经被占用，修改禅道的默认端口，在文件文件中。
+
+\begin{lstlisting}
+/opt/zbox/etc/apache/http.conf
+\end{lstlisting}
+
+由于以前电脑有安装MySQL，所以3306端口被占用了。所以在启动禅道是会提示MySQL端口已经被占用，执行如下命令修改禅道的MySQL端口即可：
+
+\begin{lstlisting}[language=Bash]
+/opt/zbox/zbox -mp 3307
+\end{lstlisting}
 
 \section{LaTex}
 
