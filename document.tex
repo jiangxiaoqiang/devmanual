@@ -810,12 +810,17 @@ sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/ro
 
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40  --without-http_gzip_module
 
+# 构建程序
+make
+
+#安装程序
+make install
 \end{lstlisting}
 
 其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
 
 \begin{lstlisting}[language=bash]
-# 查看Tengine版本、模块信息
+# 查看Tengine版本、模块信息，编译时所使用的参数
 ./nginx -V
 \end{lstlisting}
 
@@ -860,6 +865,44 @@ location /inapi {
 
 \paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
 
+有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
+
+\begin{lstlisting}[language=bash]
+ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
+ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
+\end{lstlisting}
+
+.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
+
+\begin{lstlisting}[language=bash]
+sudo apt-get install libssl1.0.0:amd64
+sudo apt-get install libssl1.0.0 libssl-dev
+
+#查看OpenSSL版本
+openssl version
+
+#查看系统中对libssl
+find ／ -name libssl.s0*
+
+# 列出openssl包
+yum list \*openssl\*
+\end{lstlisting}
+
+不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
+
+\begin{lstlisting}[language=bash]
+yum --showduplicates list openssl
+\end{lstlisting}
+
+寻找包含libssl.so.1.0.0的安装包：
+
+\begin{lstlisting}[language=bash]
+yum provides */libssl.so.1.0.0
+\end{lstlisting}
+
+在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
+
+\url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
 
 \section{Fiddler}
 
