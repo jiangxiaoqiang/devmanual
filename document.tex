@@ -297,6 +297,10 @@ def save_to_mysql():
 
 在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
 
+\subsection{防止IP被封}
+
+在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
+
 \subsection{sh: mysql\_config: command not found解决办法}
 
 首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
@@ -1438,6 +1442,21 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \part{DB}
 
+\section{Redis}
+
+\subsection{安装}
+
+这里是在Raspberry Pi上安装Redis：
+
+\begin{lstlisting}[language=Bash]
+# 下载源码
+wget -c http://download.redis.io/releases/redis-3.2.9.tar.gz
+# 编译安装
+make
+make test
+\end{lstlisting}
+
+
 \section{MySQL}
 
 \subsection{基础}
@@ -1526,6 +1545,30 @@ step3.
 输入命令 ./mysql
 回车后，输入命令 FLUSH PRIVILEGES; 
 回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
+
+\subsection{存储过程}
+
+\begin{lstlisting}[language=SQL]
+DELIMITER $$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `insert_initial_id`()
+BEGIN  
+
+DECLARE i INT DEFAULT 1;# can not be 0  
+DECLARE j INT DEFAULT 10000000;# can not be 0  
+
+
+WHILE i<99999999 && j < 10000050
+DO  
+	insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
+	SET i=i+1;  
+	set j=j+1;
+END WHILE ;  
+commit;  
+
+END$$
+DELIMITER ;
+\end{lstlisting}
 
 
 \subsection{mycli}
