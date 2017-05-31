@@ -1503,9 +1503,9 @@ default-character-set=utf8
 修改后，重新启动数据库。但是以前新建的表有可能还是采用的原来的编码，使用如下语句进行修改：
 
 \begin{lstlisting}[language=SQL]
-#检查数据表所有字段的状态	
+--检查数据表所有字段的状态	
 show full columns from book; 
-#发现address字段的Collation项非utf8，改成utf8
+--发现address字段的Collation项非utf8，改成utf8
 alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
 \end{lstlisting}
 
