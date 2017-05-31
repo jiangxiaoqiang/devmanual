@@ -347,18 +347,6 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
-\part{Tool}
-
-\newpage
-
-\section{Intellij Idea}
-
-\subsection{Intellij Idea远程调试}
-
-\subsection{Intellij Idea调试慢}
-
-在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
-
 \part{OS}
 
 \section{Linux}
@@ -392,7 +380,7 @@ Shell下判斷文件是否存在：
 myFile="/opt/app/backend/app.pid"
 
 if [ -f "$myFile" ]; then
-	kill `cat /opt/app/backend/app.pid`
+kill `cat /opt/app/backend/app.pid`
 fi
 \end{lstlisting}
 
@@ -558,6 +546,30 @@ sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/da
 
 一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
 
+
+\subsection{软件包管理}
+
+根据软件包的名称模糊匹配，查看系统已经安装了哪些软件包：
+
+\begin{lstlisting}[language=Bash]
+dpkg -l|grep pcre
+yum list installed|grep openssl
+# 查看openssl版本
+openssl version -a
+\end{lstlisting}
+
+
+\part{Tool}
+
+\newpage
+
+\section{Intellij Idea}
+
+\subsection{Intellij Idea远程调试}
+
+\subsection{Intellij Idea调试慢}
+
+在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 
 \section*{Gradle}
@@ -786,7 +798,21 @@ sudo make install
 
 不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
 你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
-指定prefix，直接删掉一个文件夹就够了。编译完毕之后，输入如下命令：
+指定prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+
+\begin{lstlisting}[language=bash]
+# 将realip模块编译进入，并指定pcre
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40 --with-openssl=/root/software/openssl-OpenSSL_1_1_0e --without-http_gzip_module
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
+
+#本机
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40  --without-http_gzip_module
+
+\end{lstlisting}
+
+其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
 
 \begin{lstlisting}[language=bash]
 # 查看Tengine版本、模块信息
@@ -820,6 +846,19 @@ location /inapi {
 \end{figure}
 
 此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
+
+\subsection{常见问题}
+
+\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
+
+找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
+
+\begin{lstlisting}[language=bash]
+/lib/i386-linux-gnu/libpcre.so.3
+/lib/x86_64-linux-gnu/libpcre.so.3
+\end{lstlisting}
+
+\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
 
 
 \section{Fiddler}
