@@ -47,7 +47,8 @@
 	numberstyle={\color[RGB]{0,192,192}\tiny} ,%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
 	numbersep=8pt,  %设置行号与代码的距离，默认是5pt  
 	basicstyle=\footnotesize, % 这句设置代码的大小  
-	showspaces=false, %  
+	showspaces=false, % 
+	escapechar=`,
 	flexiblecolumns=true, %  
 	breaklines=true, %对过长的代码自动换行  
 	breakautoindent=true,%  
@@ -57,7 +58,7 @@
 	showstringspaces=false, %不显示字符串中的空格  
 	backgroundcolor=\color[RGB]{245,245,244},   %代码背景色  
 	%backgroundcolor=\color[rgb]{0.91,0.91,0.91}    %添加背景色  
-	escapeinside=``,  %在``里显示中文  
+	escapeinside={``}{\_},  %在``里显示中文  
 	%% added by http://bbs.ctex.org/viewthread.php?tid=53451  
 	fontadjust,  
 	captionpos=t,  
@@ -79,6 +80,16 @@
 \section*{Spring}
 
 http://stackoverflow.com/questions/31045955/using-configurationproperties-to-fill-map-in-generic-way
+
+\subsection{Spring Boot开发者工具}
+
+在build.gradle文件里添加开发工具：
+
+\begin{lstlisting}[language=Bash]
+compile "org.springframework.boot:spring-boot-devtools"
+\end{lstlisting}
+
+在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
 
 \subsection*{JDBC数据库重连}
 
@@ -233,11 +244,83 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{Python}
+
+Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
+
+\subsection{基础}
+
+查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
+
+\begin{lstlisting}[language=Bash]
+sudo pip install mysql-python
+\end{lstlisting}
+
+\subsection{Beautiful Soup}
+
+Beautiful Soup 是用Python写的一个HTML/XML的解析器，它可以很好的处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。如下代码片段展示爬取豆瓣书籍详情页的书籍信息：
+
+\begin{lstlisting}[language=Bash]
+def get_single_book_detail_info(url):
+	try:
+		req = urllib2.Request(url, headers=hds[np.random.randint(0, len(hds))])
+		source_code = urllib2.urlopen(req).read()
+		plain_text = str(source_code)
+	except (urllib2.HTTPError, urllib2.URLError), e:
+		print e
+	soup = BeautifulSoup(plain_text)
+	list_soup = soup.find('div', {'id': 'info'}).findAll('span')
+	return list_soup
+\end{lstlisting}
+
+find方法直接返回结果，findAll方法返回符合条件的结果。
+
+\subsection{爬取豆瓣书籍}
+
+向数据库中保存数据：
+
+\begin{lstlisting}[language=Python]
+def save_to_mysql():
+	try:
+		conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
+		cur = conn.cursor()
+		conn.select_db('dolphin')
+		value = ['hi rollen']
+		cur.execute('insert into book(name) values(%s)', value)
+		conn.commit()
+		cur.close()
+		conn.close()
+	
+	except MySQLdb.Error, e:
+		print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+\end{lstlisting}
+
+在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
+
+\subsection{防止IP被封}
+
+在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
+
+\subsection{sh: mysql\_config: command not found解决办法}
+
+首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
+
+\begin{lstlisting}[language=Bash]
+PATH="$PATH":/usr/local/mysql/bin
+\end{lstlisting}
+
+设置完成之后，输入如下语句安装MySQL Python：
+
+\begin{lstlisting}[language=Bash]
+sudo pip install mysql-python
+\end{lstlisting}
+
+
 \section{React}
 
 \subsection{Cookie}
 
-在Chrome中查看Cookie可以直接在Console中输入：
+The browser is expected to support 20 cookies for each Web server, 300 cookies total, and may limit cookie size to 4 KB each.在Chrome中查看Cookie可以直接在Console中输入：
 
 \begin{lstlisting}[language=Bash]
 document.cookie
@@ -262,25 +345,11 @@ HttpOnly: 告知浏览器不允许通过脚本document.cookie去更改这个值�
 secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到服务器，如果是http链接则不会传递该信息。就算设置了secure 属性也并不代表他人不能看到你机器本地保存的 cookie 信息，所以不要把重要信息放cookie就对了
 \end{lstlisting}
 
+\paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
+\part{OS}
 
-\part{Tool}
-
-\newpage
-
-\section{Intellij Idea}
-
-\subsection{Intellij Idea远程调试}
-
-\subsection{Intellij Idea调试慢}
-
-在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
-
-
-
-\section{OS}
-
-\subsection{Linux}
+\section{Linux}
 
 在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
@@ -290,7 +359,110 @@ sudo apt-get -f install
 
 f参数表示尝试修正系统依赖损坏处。
 
-\subsubsection{环境变量}
+\subsection{shell}
+
+\paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
+
+\begin{lstlisting}[language=Bash]
+# version.properties文件中直接写VERSION\_CODE=1.0.2即可
+source /Users/dolphin/source/credit-system/gradle/version.properties
+# 输出1.0.2
+echo $VERSION_CODE
+\end{lstlisting}
+
+在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
+
+\paragraph{文件是否存在}
+
+Shell下判斷文件是否存在：
+
+\begin{lstlisting}[language=Bash]
+myFile="/opt/app/backend/app.pid"
+
+if [ -f "$myFile" ]; then
+kill `cat /opt/app/backend/app.pid`
+fi
+\end{lstlisting}
+
+\paragraph{大小写不敏感}
+
+有时文件前缀是大写字母，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell大小写不敏感，就不需要再重复做一次大小写转换操作了：
+
+\begin{lstlisting}[language=Bash]
+echo "set completion-ignore-case on">>~/.inputrc
+\end{lstlisting}
+
+设置完毕后重新打开终端即可。
+
+\subsection{自动部署}
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+#
+# 一键部署后端项目到远程1台或多台服务器
+# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 注：本机需要安装Ansible并与服务器做免密登录
+#
+# 2017-05-25 dolphin 增加动态读取版本号，根据版本自动发布程序
+#
+
+# 当使用未初始化的变量时，程序自动退出
+set -u
+
+# 当任何一行命令执行失败时，自动退出脚本
+set -e
+
+# send=`date '+%Y-%m-%d %H:%M:%S'`
+CURRENT\_TIME=`date '+%Y%m%d%H%M%S'`
+
+echo "$CURRENT_TIME"
+
+PROGRAM_PATH_INFORMATION_CENTER="/opt/app/backend"
+SERVER_IP="192.168.1.101"
+LOGIN_USER="root"
+LOCAL_PATH="./cc-web-boot/build/libs"
+
+# Read program version number
+source version.properties
+echo "$VERSION"
+
+PROGRAM_NAME="credit-system-web-boot-$VERSION.jar"
+echo "$PROGRAM_NAME"
+
+echo "开始构建..."
+# Build project
+./gradlew -p cc-web-boot -x test build
+./gradlew -p cc-etl-sechedule -x test build
+
+echo "开始拷贝..."
+# publish project
+scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
+scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+
+ansible webservers -m command -a "date"
+
+echo "停止站点..."
+ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
+
+echo "等待站点停止..."
+sleep 10
+
+echo "备份站点..."
+# 备份当前站点
+ansible webservers -m command -a "mv $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME-$CURRENT_TIME"
+
+echo "拷贝新文件..."
+ansible webservers -a "mv ~/app-soft/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "启动站点..."
+ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "部署完成"
+\end{lstlisting}
+
+\subsection{环境变量}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
 
@@ -360,6 +532,10 @@ screen sudo openvpn client.conf
 uname －a 
 \end{lstlisting}
 
+\subsection{XFCE桌面}
+
+占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
+
 \subsection{Fedora访问共享文件夹}
 
 在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
@@ -370,6 +546,30 @@ sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/da
 
 一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
 
+
+\subsection{软件包管理}
+
+根据软件包的名称模糊匹配，查看系统已经安装了哪些软件包：
+
+\begin{lstlisting}[language=Bash]
+dpkg -l|grep pcre
+yum list installed|grep openssl
+# 查看openssl版本
+openssl version -a
+\end{lstlisting}
+
+
+\part{Tool}
+
+\newpage
+
+\section{Intellij Idea}
+
+\subsection{Intellij Idea远程调试}
+
+\subsection{Intellij Idea调试慢}
+
+在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 
 \section*{Gradle}
@@ -545,13 +745,164 @@ sudo route del default gw 10.55.10.1
 
 \subsubsection{Windows同时连接内外网}
 
-\url{http://blog.csdn.net/jay329106193/article/details/8129374}
-
-\url{http://www.jianshu.com/p/b64da1d93e3d}
-
-
 
 \section{Ansible}
+
+\subsection{Ansible模块}
+
+\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
+
+\begin{lstlisting}[language=bash]
+ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+\end{lstlisting}
+
+如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
+
+
+\section{Nginx}
+
+\subsection{Nginx获取真实IP}
+
+Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+
+\begin{lstlisting}[language=bash]
+nginx -V
+\end{lstlisting}
+
+输出结果如下：
+
+\begin{lstlisting}[language=bash]
+nginx version: nginx/1.12.0
+built by gcc 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) 
+built with OpenSSL 1.0.2g-fips  1 Mar 2016 (running with OpenSSL 1.0.2g  1 Mar 2016)
+TLS SNI support enabled
+configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
+\end{lstlisting}
+
+此处显示已经编译了http\_realip\_module模块。项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
+
+\begin{lstlisting}[language=bash]
+# 在Ubuntu 14.04 LTS下安装pcre依赖
+# pcre:Perl Compatible Regular Expressions
+sudo apt-get install libpcre3 libpcre3-dev
+# 指定预编译参数，仅仅指定路径
+sudo ./configure --prefix=/opt/tengine
+# 将realip模块编译进入
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module
+# 编译
+sudo make
+# 安装
+sudo make install
+./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
+\end{lstlisting}
+
+不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
+你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
+指定prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+
+\begin{lstlisting}[language=bash]
+# 将realip模块编译进入，并指定pcre
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40 --with-openssl=/root/software/openssl-OpenSSL_1_1_0e --without-http_gzip_module
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
+
+#本机
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+# 构建程序
+make
+
+#安装程序
+make install
+\end{lstlisting}
+
+其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
+
+\begin{lstlisting}[language=bash]
+# 查看Tengine版本、模块信息，编译时所使用的参数
+./nginx -V
+\end{lstlisting}
+
+即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
+
+\begin{lstlisting}[language=bash]
+set_real_ip_from 192.168.1.10;
+real_ip_header X-Real-IP;
+\end{lstlisting}
+
+其中set\_real\_ip\_from可以指定某个网段。这个指令指定信任的代理IP，它们将会以精确的替换IP转发。0.8.22后可以指定Unix sockets。real\_ip\_header设置需要使用哪个头来确定替换的IP地址。由于项目中使用的Nginx作为反向代理，所以配置如下：
+
+\begin{lstlisting}[language=bash]
+location /inapi {
+         proxy_pass http://localhost:28080;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_redirect off;
+     }
+\end{lstlisting}
+
+在另一台电脑上访问服务端，在后端根据新添加的Header获取到的IP地址如图\ref{fig:nginxgetrealip}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{nginxgetrealip.png}
+	\caption{Nginx获取用户真实访问IP}
+	\label{fig:nginxgetrealip}
+\end{figure}
+
+此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
+
+\subsection{常见问题}
+
+\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
+
+找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
+
+\begin{lstlisting}[language=bash]
+/lib/i386-linux-gnu/libpcre.so.3
+/lib/x86_64-linux-gnu/libpcre.so.3
+\end{lstlisting}
+
+\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
+
+有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
+
+\begin{lstlisting}[language=bash]
+ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
+ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
+\end{lstlisting}
+
+.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
+
+\begin{lstlisting}[language=bash]
+sudo apt-get install libssl1.0.0:amd64
+sudo apt-get install libssl1.0.0 libssl-dev
+
+#查看OpenSSL版本
+openssl version
+
+#查看系统中对libssl
+find ／ -name libssl.s0*
+
+# 列出openssl包
+yum list \*openssl\*
+\end{lstlisting}
+
+不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
+
+\begin{lstlisting}[language=bash]
+yum --showduplicates list openssl
+\end{lstlisting}
+
+寻找包含libssl.so.1.0.0的安装包：
+
+\begin{lstlisting}[language=bash]
+yum provides */libssl.so.1.0.0
+\end{lstlisting}
+
+在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
+
+\url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
 
 \section{Fiddler}
 
@@ -565,7 +916,6 @@ Charles是Mac端的一款截取与分析网络请求的工具，在网络开发�
 
 
 \section{OpenVPN}
-
 
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
@@ -595,7 +945,18 @@ LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Obe
 \begin{lstlisting}[language=Bash]
 #建立一个空的pki结构，生成一系列的文件和目录
 ./easyrsa init-pki
+\end{lstlisting}
+
+PKI：Public Key Infrastructure公钥基础设施。生成请求：
+
+\begin{lstlisting}[language=Bash]
 ./easyrsa gen-req dolphinfedora
+\end{lstlisting}
+
+输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码。
+Apache和*NIX服务器偏向于使用这种编码格式.签约：
+
+\begin{lstlisting}[language=Bash]
 #切换到服务端生成rsa的目录
 #导入req
 ./easyrsa import-req ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/reqs/dolphinfedora.req dolphinfedora
@@ -758,6 +1119,24 @@ vncserver :2 -geometry 800x600 -depth 24
 	\label{fig:raspberryremtoeconfig}
 \end{figure}
 
+\subsection{Ubuntu远程Ubuntu}
+
+这里的两台机器都是Ubuntu 16.04 LTS系统，xrdp支持不了13.10的GNOME了，解决办法是安装xfce界面。被远程的机器上安装必须的组件：
+
+\begin{lstlisting}[language=Bash]
+#安装xrdp
+sudo apt-get install xrdp -y
+#安装vnc4server
+sudo apt-get install vnc4server tightvncserver -y
+#安装xfce4
+sudo apt-get install xubuntu-desktop -y
+sudo /etc/init.d/xrdp restart
+＃　指定桌面管理器
+echo "gnome-session --session=gnome-classic" > ~/.xsession
+\end{lstlisting}
+
+最后一个命令的作用是由于安装了gnome桌面，ubuntu1６.04中同时存在unity、GNOME多个桌面管理器，需要启动的时候指定一个，不然即使远程登录验证成功以后，也只是背景。在Ubuntu上使用Remmina Remote Desktop Client即可链接远程桌面。
+
 \subsection{Mac Book远程Fedora}
 
 在Mac Book远程Linux主机选择的是XQuartz，安装好XQuartz后，直接在从XQuartz打开的终端中运行：
@@ -772,6 +1151,7 @@ ssh -X dolphin@10.0.0.10
 
 得到了Initialization Sequence Completed消息，但是ping失败了 -- 这通常是服务端或客户端上的防火墙过滤了TUN/TAP网络接口从而阻止了VPN网络的流量。  
 
+\subsubsection{ssl3\_get\_server\_certificate:certificate verify failed}
 
 在Mac中，连接好了并没有显示IP的变化。This computer's apparent public IP address was not different after connecting to client. It is still 45.76.205.201.This may mean that your VPN is not configured correctly.
 
@@ -1063,6 +1443,12 @@ ControlPersist 4h
 
 When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
 
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
+
+\paragraph{远程转发Remote Forward}
+
 \subsection{rsync}
 
 在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
@@ -1080,30 +1466,7 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 \begin{lstlisting}[language=Bash]
 
-curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/commondetail?xdr= | jq '.'
-
-curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/page?xdr= | jq '.'
-
-curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/blacklist/commondetail?id=E8BFFE96203BC06E6CA5B11199262119&tableName=TS_F_HEIMINGDAN_C500039 | jq '.'
-
-curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:2016-12-19 16:58:02" -H "ECHOSTR:sdsaasf" -H "TOKEN:14d45648c62a746ae9dd9b90c03c50893061222d" http://localhost:28080/api/redlist/detail?id=E8BFFE96203BC06E6CA5B11199262119\&tableName=TS_F_HEIMINGDAN_C500039 | jq '.'
-
-2017-05-17 20:34:20.804  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: createUsingPOST_2
-2017-05-17 20:34:21.120  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findListUsingGET_2
-2017-05-17 20:34:21.406  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findPageUsingGET_7
-2017-05-17 20:34:21.589  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: getUsingGET_3
-2017-05-17 20:34:21.771  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_1
-2017-05-17 20:34:21.959  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateStatusUsingPUT_1
-2017-05-17 20:34:22.340  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findListUsingGET_3
-2017-05-17 20:34:22.681  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findPageUsingGET_8
-2017-05-17 20:34:23.423  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateUsingPUT_2
-2017-05-17 20:34:24.524  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: findByIdUsingGET_3
-2017-05-17 20:34:24.779  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: pageUsingGET_1
-2017-05-17 20:34:25.364  INFO 24053 --- [           main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: updateWorkFlowUsingPUT_
-
 \end{lstlisting}
-
-
 
 \section{Git}
 
@@ -1117,7 +1480,37 @@ git config --global merge.tool meld
 
 \section{Google Chrome}
 
+\subsection{Source Map}
+
+截止目前几乎没有浏览器完全原生支持es6标准，对于这种情况，Chrome引入了source-map文件，标识es5代码对应的转码前的es6代码哪一行，唯一要做的就是配置webpack自动生成source-map文件，这也很简单，在webpack.config.js中增加一行配置即可（需要重新启动webpack-dev-server使配置生效）
+
+\subsection{Replay XHR}
+
+有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
+
 \subsection{Google Chrome SSH}
+
+\section{Zentao}
+
+\subsection{常见问题}
+
+运行禅道需要PHP环境，在Ubuntu 16.04上面安装PHP：
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install php7.0 -y
+\end{lstlisting}
+
+由于80端口已经被占用，修改禅道的默认端口，在文件文件中。
+
+\begin{lstlisting}
+/opt/zbox/etc/apache/http.conf
+\end{lstlisting}
+
+由于以前电脑有安装MySQL，所以3306端口被占用了。所以在启动禅道是会提示MySQL端口已经被占用，执行如下命令修改禅道的MySQL端口即可：
+
+\begin{lstlisting}[language=Bash]
+/opt/zbox/zbox -mp 3307
+\end{lstlisting}
 
 \section{LaTex}
 
@@ -1132,7 +1525,26 @@ sudo apt-get install texlive -y
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
+\subsection{版面}
+
+\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
+
 \part{DB}
+
+\section{Redis}
+
+\subsection{安装}
+
+这里是在Raspberry Pi上安装Redis：
+
+\begin{lstlisting}[language=Bash]
+# 下载源码
+wget -c http://download.redis.io/releases/redis-3.2.9.tar.gz
+# 编译安装
+make
+make test
+\end{lstlisting}
+
 
 \section{MySQL}
 
@@ -1142,6 +1554,9 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \begin{lstlisting}[language=Bash]
 mysqld
+
+# Mac中启动MySQL，同理停止的参数为stop，重启的参数为restart
+sudo /usr/local/MySQL/support-files/mysql.server start
 
 # 防火墙添加端口
 sudo iptables -A INPUT -p tcp --dport 3306 -j ACCEPT /*允许包从3306端口进入*/
@@ -1164,6 +1579,26 @@ SHOW GRANTS FOR user                         //列出某用户权限
 GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.31.25'IDENTIFIED BY 'dolphin' WITH GRANT OPTION;
 \end{lstlisting}
 
+在使用MySQL会出现中文乱码问题，MySQL的字符集支持(Character Set Support)有两个方面：字符集(Character set)和排序方式(Collation)。对于字符集的支持细化到四个层次: 服务器(server)，数据库(database)，数据表(table)和连接(connection)。在Mac中，在etc目录下新建my.cnf文件，指定数据库编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+character-set-server=utf8
+init_connect='SET NAMES utf8'
+[mysql]
+default-character-set=utf8
+\end{lstlisting}
+
+修改后，重新启动数据库。但是以前新建的表有可能还是采用的原来的编码，使用如下语句进行修改：
+
+\begin{lstlisting}[language=SQL]
+--检查数据表所有字段的状态	
+show full columns from book; 
+--发现address字段的Collation项非utf8，改成utf8
+alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
+\end{lstlisting}
+
+
 \subsection{MySQL远程连接}
 
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
@@ -1182,6 +1617,48 @@ sudo mysqld --bind-address=192.168.31.25
 
 绑定好地址后，使用命令sudo lsof:3306查看。
 
+\subsection{Mac中MySQL初始密码}
+
+step1：
+
+苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
+
+step2：
+
+进入终端输入：cd /usr/local/mysql/bin/
+回车后 登录管理员权限 sudo su
+回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
+回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
+
+step3. 
+输入命令 ./mysql
+回车后，输入命令 FLUSH PRIVILEGES; 
+回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
+
+\subsection{存储过程}
+
+\begin{lstlisting}[language=SQL]
+DELIMITER $$
+
+CREATE DEFINER=`root`@`%` PROCEDURE `insert_initial_id`()
+BEGIN  
+
+DECLARE i INT DEFAULT 1;# can not be 0  
+DECLARE j INT DEFAULT 10000000;# can not be 0  
+
+
+WHILE i<99999999 && j < 10000050
+DO  
+	insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
+	SET i=i+1;  
+	set j=j+1;
+END WHILE ;  
+commit;  
+
+END$$
+DELIMITER ;
+\end{lstlisting}
+
 
 \subsection{mycli}
 
@@ -1192,10 +1669,15 @@ pip install mycli
 brew install mycli
 \end{lstlisting}
 
+在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
 
 \subsection{常见问题}
 
+\paragraph{ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock'}
 
+mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
+
+方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
 \part{Network}
 
@@ -1250,6 +1732,60 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\part{Engneering}
+
+\section{通用规范}
+
+\subsection{版本管理}
+
+在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号，方便测试进行问题识别。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
+
+\begin{itemize}
+	\item{MAJOR version when you make incompatible API changes,}
+    \item{MINOR version when you add functionality in a backwards-compatible manner}
+	\item{PATCH version when you make backwards-compatible bug fixes.}
+\end{itemize}
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.在项目的根目录下新建version.properties文件，文件中定义版本号：
+
+\begin{lstlisting}
+VERSION_CODE=1.0.2
+\end{lstlisting}
+
+在Gradle中读取版本号：
+
+\begin{lstlisting}
+version = getVersionCode()
+
+def getVersionCode() {
+	def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
+	if (versionFile.canRead()) {
+		def Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		def versionCode = versionProps['VERSION_CODE'].toString()
+		/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
+		if ('assembleRelease' in runTasks) {
+			versionProps['VERSION_CODE'] = (++versionCode).toString()
+			versionProps.store(versionFile.newWriter(), null)
+		}*/
+		return versionCode
+	} else {
+		throw new GradleException("Could not find version.properties!")
+	}
+}
+\end{lstlisting}
+
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，所以写成相对路径会比较妥当。可以写成如下：
+
+\begin{lstlisting}
+File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
+\end{lstlisting}
+
+其中\$rootDir表示项目的根目录，比如有一个叫做dolphin的项目，那么rootDir就是dolphin目录，另外还有一个projectDir的变量和buildDir的变量。projectDir就是dolphin/src目录，buildDir就是dolphin/src/build目录。如果是多个Project组成的项目，那么projectDir就是rootDir/projectName，buildDir就是dolphin/projectName/build。
+
+
+
 
 \end{document}
 \theend
