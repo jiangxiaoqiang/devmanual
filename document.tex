@@ -380,7 +380,7 @@ Shell下判斷文件是否存在：
 myFile="/opt/app/backend/app.pid"
 
 if [ -f "$myFile" ]; then
-kill `cat /opt/app/backend/app.pid`
+	kill `cat /opt/app/backend/app.pid`
 fi
 \end{lstlisting}
 
@@ -556,6 +556,8 @@ dpkg -l|grep pcre
 yum list installed|grep openssl
 # 查看openssl版本
 openssl version -a
+# yum查看已经安装的软件包
+yum list installed
 \end{lstlisting}
 
 
@@ -806,9 +808,11 @@ sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/ro
 
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
 
-#本机
-
+#本机编译（不成功）
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+#本机编译（成功）
+-prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
 
 # 构建程序
 make
@@ -827,7 +831,19 @@ with nginx by using --with-openssl=<path> option.
 
 \end{lstlisting}
 
-其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
+其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
+\end{lstlisting}
+
+这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+\end{lstlisting}
+
+编译完毕之后，输入如下命令：
 
 \begin{lstlisting}[language=bash]
 # 查看Tengine版本、模块信息，编译时所使用的参数
