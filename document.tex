@@ -380,7 +380,7 @@ Shell下判斷文件是否存在：
 myFile="/opt/app/backend/app.pid"
 
 if [ -f "$myFile" ]; then
-kill `cat /opt/app/backend/app.pid`
+	kill `cat /opt/app/backend/app.pid`
 fi
 \end{lstlisting}
 
@@ -556,6 +556,8 @@ dpkg -l|grep pcre
 yum list installed|grep openssl
 # 查看openssl版本
 openssl version -a
+# yum查看已经安装的软件包
+yum list installed
 \end{lstlisting}
 
 \subsection{输入法(Input Method)}
@@ -774,7 +776,7 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 \subsection{Nginx获取真实IP}
 
-Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
 \begin{lstlisting}[language=bash]
 nginx -V
@@ -817,18 +819,42 @@ sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/ro
 
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
 
-#本机
-
+#本机编译（不成功）
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+#本机编译（成功）
+-prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
 
 # 构建程序
 make
 
 #安装程序
 make install
+
+#服务器
+./configure --prefix=/opt/tengine
+
+./configure: error: SSL modules require the OpenSSL library.
+You can either do not enable the modules, or install the OpenSSL library
+into the system, or build the OpenSSL library statically from the source
+with nginx by using --with-openssl=<path> option.
+
+
 \end{lstlisting}
 
-其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
+其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
+\end{lstlisting}
+
+这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+\end{lstlisting}
+
+编译完毕之后，输入如下命令：
 
 \begin{lstlisting}[language=bash]
 # 查看Tengine版本、模块信息，编译时所使用的参数
@@ -838,7 +864,9 @@ make install
 即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
 
 \begin{lstlisting}[language=bash]
-set_real_ip_from 192.168.1.10;
+#指令是告诉nginx，10.10.1.11是我们的反代服务器，不是真实的用户IP
+set_real_ip_from 10.10.1.11;
+#告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
 real_ip_header X-Real-IP;
 \end{lstlisting}
 
