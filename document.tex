@@ -571,6 +571,13 @@ yum list installed
 	\label{fig:regionandlanguagesetting}
 \end{figure}
 
+在使用Ubuntu 16.04的搜狗拼音时，有时也会出现各种问题。可以尝试的解决方案包括，登录系统再次重新登入。删除输入法配置后，重新添加输入法，或者使用Google拼音输入法，输入如下命令进行安装：
+
+\begin{lstlisting}[language=Bash]
+sudo apt install fcitx-googlepinyin
+\end{lstlisting}
+
+安装好后需要重新登入系统，添加输入法配置时才可以选择Google输入法。
 
 \part{Tool}
 
