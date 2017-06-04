@@ -560,6 +560,17 @@ openssl version -a
 yum list installed
 \end{lstlisting}
 
+\subsection{输入法(Input Method)}
+
+有时在Fedora 24中，突然中文输入法切换后无法输入中文了。可以到系统区域和语言(Region\&Language)设置界面，重新删除后再添加即可修复,如图\ref{fig:regionandlanguagesetting}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{regionandlanguagesetting.jpg}
+	\caption{Fedora区域和语言设置}
+	\label{fig:regionandlanguagesetting}
+\end{figure}
+
 
 \part{Tool}
 
@@ -1544,6 +1555,13 @@ sudo apt-get install php7.0 -y
 \end{lstlisting}
 
 \section{LaTex}
+
+\subsection{安装}
+
+\begin{lstlisting}[language=Bash]
+# Ubuntu下安装Texlive
+sudo apt-get install texlive -y
+\end{lstlisting}
 
 \subsection{字体}
 
