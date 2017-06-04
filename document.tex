@@ -765,7 +765,7 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 \subsection{Nginx获取真实IP}
 
-Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
 \begin{lstlisting}[language=bash]
 nginx -V
@@ -853,7 +853,9 @@ with nginx by using --with-openssl=<path> option.
 即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
 
 \begin{lstlisting}[language=bash]
-set_real_ip_from 192.168.1.10;
+#指令是告诉nginx，10.10.1.11是我们的反代服务器，不是真实的用户IP
+set_real_ip_from 10.10.1.11;
+#告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
 real_ip_header X-Real-IP;
 \end{lstlisting}
 
