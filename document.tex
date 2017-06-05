@@ -253,6 +253,10 @@ Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布�
 查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
 
 \begin{lstlisting}[language=Bash]
+# 安装MySQL
+sudo apt-get install mysql-server -y
+# 安装pip
+sudo apt-get install python-pip python-dev build-essential 
 sudo pip install mysql-python
 \end{lstlisting}
 
@@ -1664,7 +1668,7 @@ bind-address            = 192.168.31.25
 sudo mysqld --bind-address=192.168.31.25
 \end{lstlisting}
 
-绑定好地址后，使用命令sudo lsof:3306查看。
+绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
 
 \subsection{Mac中MySQL初始密码}
 
