@@ -76,10 +76,7 @@
 
 \part{Framework}
 
-
 \section*{Spring}
-
-http://stackoverflow.com/questions/31045955/using-configurationproperties-to-fill-map-in-generic-way
 
 \subsection{Spring Boot开发者工具}
 
@@ -254,6 +251,10 @@ Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布�
 
 \begin{lstlisting}[language=Bash]
 sudo pip install mysql-python
+# 安装Beautiful Soup
+sudo pip install beautifulsoup4
+# openpyxl来处理xml文件
+sudo pip install openpyxl
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -1421,6 +1422,23 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \subsection{配置}
 
+\subsection{常见问题}
+
+
+\paragraph{error setting certificate verify location}
+
+当你通过HTTPS访问Git远程仓库，如果服务器的SSL证书未经过第三方机构签署，那么Git就会报错。这是十分合理的设计，毕竟未知的没有签署过的证书意味着很大安全风险。但是，如果你正好在架设Git服务器，而正式的SSL证书没有签发下来，你为了赶时间生成了自签署的临时证书。
+
+\begin{lstlisting}[language=Bash]
+env GIT_SSL_NO_VERIFY=true git clone https://<host_name/git/project.git
+\end{lstlisting}
+
+或者将Git设置为不允许ssl认证：
+
+
+\begin{lstlisting}[language=Bash]
+git config --system http.sslverify false
+\end{lstlisting}
 
 
 \section{ssh}
