@@ -250,6 +250,10 @@ Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布�
 查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
 
 \begin{lstlisting}[language=Bash]
+# 安装MySQL
+sudo apt-get install mysql-server -y
+# 安装pip
+sudo apt-get install python-pip python-dev build-essential 
 sudo pip install mysql-python
 # 安装Beautiful Soup
 sudo pip install beautifulsoup4
@@ -381,7 +385,7 @@ Shell下判斷文件是否存在：
 myFile="/opt/app/backend/app.pid"
 
 if [ -f "$myFile" ]; then
-kill `cat /opt/app/backend/app.pid`
+	kill `cat /opt/app/backend/app.pid`
 fi
 \end{lstlisting}
 
@@ -523,8 +527,19 @@ GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软�
 screen sudo openvpn client.conf
 \end{lstlisting}
 
-接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。
+接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。查看当前系统中有哪些screen会话：
 
+\begin{lstlisting}[language=Bash]
+screen -ls
+\end{lstlisting}
+
+该命令会列出当前系统中所有的screen会话，重新打开会话：
+
+\begin{lstlisting}[language=Bash]
+screen -r 12865
+\end{lstlisting}
+
+正常情况下，当你退出一个窗口中最后一个程序（通常是bash）后，这个窗口就关闭了。另一个关闭窗口的方法是使用C-a k，这个快捷键杀死当前的窗口，同时也将杀死这个窗口中正在运行的进程。如果一个Screen会话中最后一个窗口被关闭了，那么整个Screen会话也就退出了，screen进程会被终止。除了依次退出/杀死当前Screen会话中所有窗口这种方法之外，还可以使用快捷键C-a :，然后输入quit命令退出Screen会话。需要注意的是，这样退出会杀死所有窗口并退出其中运行的所有程序。其实C-a :这个快捷键允许用户直接输入的命令有很多，包括分屏可以输入split等，这也是实现Screen功能的一个途径
 
 \subsubsection{查看Linux信息}
 
@@ -557,8 +572,28 @@ dpkg -l|grep pcre
 yum list installed|grep openssl
 # 查看openssl版本
 openssl version -a
+# yum查看已经安装的软件包
+yum list installed
 \end{lstlisting}
 
+\subsection{输入法(Input Method)}
+
+有时在Fedora 24中，突然中文输入法切换后无法输入中文了。可以到系统区域和语言(Region\&Language)设置界面，重新删除后再添加即可修复,如图\ref{fig:regionandlanguagesetting}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{regionandlanguagesetting.jpg}
+	\caption{Fedora区域和语言设置}
+	\label{fig:regionandlanguagesetting}
+\end{figure}
+
+在使用Ubuntu 16.04的搜狗拼音时，有时也会出现各种问题。可以尝试的解决方案包括，登录系统再次重新登入。删除输入法配置后，重新添加输入法，或者使用Google拼音输入法，输入如下命令进行安装：
+
+\begin{lstlisting}[language=Bash]
+sudo apt install fcitx-googlepinyin
+\end{lstlisting}
+
+安装好后需要重新登入系统，添加输入法配置时才可以选择Google输入法。
 
 \part{Tool}
 
@@ -572,6 +607,9 @@ openssl version -a
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
+\subsection{常用设置}
+
+\paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
 \section*{Gradle}
 
@@ -807,9 +845,11 @@ sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/ro
 
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
 
-#本机
-
+#本机编译（不成功）
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+#本机编译（成功）
+-prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
 
 # 构建程序
 make
@@ -828,7 +868,19 @@ with nginx by using --with-openssl=<path> option.
 
 \end{lstlisting}
 
-其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。编译完毕之后，输入如下命令：
+其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
+\end{lstlisting}
+
+这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+\end{lstlisting}
+
+编译完毕之后，输入如下命令：
 
 \begin{lstlisting}[language=bash]
 # 查看Tengine版本、模块信息，编译时所使用的参数
@@ -1544,6 +1596,13 @@ sudo apt-get install php7.0 -y
 
 \section{LaTex}
 
+\subsection{安装}
+
+\begin{lstlisting}[language=Bash]
+# Ubuntu下安装Texlive
+sudo apt-get install texlive -y
+\end{lstlisting}
+
 \subsection{字体}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
@@ -1638,7 +1697,7 @@ bind-address            = 192.168.31.25
 sudo mysqld --bind-address=192.168.31.25
 \end{lstlisting}
 
-绑定好地址后，使用命令sudo lsof:3306查看。
+绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
 
 \subsection{Mac中MySQL初始密码}
 
