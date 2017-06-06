@@ -256,8 +256,11 @@ Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布�
 # 安装MySQL
 sudo apt-get install mysql-server -y
 # 安装pip
-sudo apt-get install python-pip python-dev build-essential 
+sudo apt-get install python-pip python-dev build-essential
+# 安装MySQL驱动
 sudo pip install mysql-python
+# 安装beautifulsoup4
+sudo pip install beautifulsoup4
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -310,6 +313,10 @@ def save_to_mysql():
 首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
 
 \begin{lstlisting}[language=Bash]
+# 安装python-devel
+sudo dnf install python-devel -y
+# 解决fatal error: Python.h: No such file or directory
+sudo dnf install python-devel --allowerasing
 PATH="$PATH":/usr/local/mysql/bin
 \end{lstlisting}
 
