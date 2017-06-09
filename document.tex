@@ -284,7 +284,7 @@ def get_single_book_detail_info(url):
 	return list_soup
 \end{lstlisting}
 
-find方法直接返回结果，findAll方法返回符合条件的结果。
+find方法直接返回结果，findAll方法返回符合条件的结果。Python在使用前，可以不需要初始化变量，在外层可以直接使用内层函数的变量。
 
 \subsection{爬取豆瓣书籍}
 
@@ -327,6 +327,59 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 \paragraph{避免重复抓取}
 
 \paragraph{海量数据}
+
+\subsection{读取Properties文件}
+
+在项目中持续集成的Python脚本需要读取Java的Properties文件，读取的方法如下：
+
+\begin{lstlisting}[language=Python]
+def getVersion():
+	#
+	#动态从版本配置文件中读取当前最新版本号
+	#
+	file_path = VERSION_CONFIG_PATH
+	props = parse(file_path)   #读取文件
+	print('version:'+props.get('VERSION'))
+	#根据key读取value
+	return props.get('VERSION')            
+
+def parse(file_name):
+	return Properties(file_name)
+\end{lstlisting}
+
+Propertise类的代码如下：
+
+\begin{lstlisting}[language=Python]
+import re
+import os
+import tempfile
+
+class Properties:
+
+	def __init__(self, file_name):
+		self.file_name = file_name
+		self.properties = {}
+		try:
+		fopen = open(self.file_name, 'r')
+		for line in fopen:
+		line = line.strip()
+		if line.find('=') > 0 and not line.startswith('#'):
+		strs = line.split('=')
+		self.properties[strs[0].strip()] = strs[1].strip()
+		except Exception, e:
+		raise e
+		else:
+		fopen.close()
+	
+	def has_key(self, key):
+		return key in self.properties
+	
+	def get(self, key, default_value=''):
+		if key in self.properties:
+		return self.properties[key]
+		return default_value
+\end{lstlisting}
+
 
 \subsection{sh: mysql\_config: command not found解决办法}
 
@@ -1611,6 +1664,13 @@ sudo apt-get install php7.0 -y
 \begin{lstlisting}[language=Bash]
 /opt/zbox/zbox -mp 3307
 \end{lstlisting}
+
+\section{Graphviz}
+
+\subsection{编译}
+
+
+
 
 \section{LaTex}
 
