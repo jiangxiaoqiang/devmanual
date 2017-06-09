@@ -253,12 +253,18 @@ Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布�
 # 安装MySQL
 sudo apt-get install mysql-server -y
 # 安装pip
-sudo apt-get install python-pip python-dev build-essential 
+sudo apt-get install python-pip python-dev build-essential
+# 安装MySQL驱动
 sudo pip install mysql-python
+<<<<<<< HEAD
+# 安装beautifulsoup4
+sudo pip install beautifulsoup4
+=======
 # 安装Beautiful Soup
 sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
+>>>>>>> 4e1bb2f54143f9979a2dcb5a27193e327bd09a9a
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -327,6 +333,10 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
 
 \begin{lstlisting}[language=Bash]
+# 安装python-devel
+sudo dnf install python-devel -y
+# 解决fatal error: Python.h: No such file or directory
+sudo dnf install python-devel --allowerasing
 PATH="$PATH":/usr/local/mysql/bin
 \end{lstlisting}
 
@@ -1724,6 +1734,12 @@ step3.
 输入命令 ./mysql
 回车后，输入命令 FLUSH PRIVILEGES; 
 回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
+
+\subsection{备份}
+
+netstat -ln | grep mysql
+
+mysqldump --sock=/var/run/mysqld/mysqld.sock -u root -p dolphin>dolphin.sql
 
 \subsection{存储过程}
 
