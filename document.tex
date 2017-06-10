@@ -666,6 +666,12 @@ sudo apt install fcitx-googlepinyin
 
 \subsection{Intellij Idea远程调试}
 
+\begin{lstlisting}[language=Bash]
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/system-web-boot-1.0.9.jar --spring.config.location=application.properties>/dev/null &
+\end{lstlisting}
+
+
+
 \subsection{Intellij Idea调试慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
@@ -863,13 +869,27 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 \section{Nginx}
 
+\subsection{X-Forwarded-For}
+
+X-Forwarded-For 是一个 HTTP 扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
+
+\begin{lstlisting}[language=bash]
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+\end{lstlisting}
+
+X-Forwarded-For 请求头格式:
+
+\begin{lstlisting}[language=bash]
+X-Forwarded-For: IP0, IP1, IP2
+\end{lstlisting}
+
+XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
+
 \subsection{Nginx获取真实IP}
 
 做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
-\begin{lstlisting}[language=bash]
-nginx -V
-\end{lstlisting}
+
 
 输出结果如下：
 
