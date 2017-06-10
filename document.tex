@@ -284,7 +284,7 @@ def get_single_book_detail_info(url):
 	return list_soup
 \end{lstlisting}
 
-find方法直接返回结果，findAll方法返回符合条件的结果。
+find方法直接返回结果，findAll方法返回符合条件的结果。Python在使用前，可以不需要初始化变量，在外层可以直接使用内层函数的变量。
 
 \subsection{爬取豆瓣书籍}
 
@@ -308,9 +308,25 @@ def save_to_mysql():
 
 在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
 
-\subsection{防止IP被封}
+\subsection{抓取技巧}
 
-在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
+\paragraph{防止IP被封}在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
+
+\paragraph{模仿浏览器}有些网站会检查你是不是真的浏览器访问，还是机器自动访问的。这种情况，加上User-Agent，表明你是浏览器访问即可。有时还会检查是否带Referer信息还会检查你的Referer是否合法，一般再加上Referer。在此次抓取的过程中，模仿浏览器：
+
+\begin{lstlisting}[language=Python]
+# Some User Agents
+headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'}, \
+{
+'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.12 Safari/535.11'}, \
+{'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)'}]
+\end{lstlisting}
+
+在HTTP请求头中，添加浏览器相关标识，让服务器认定为来自浏览器的请求。
+
+\paragraph{避免重复抓取}
+
+\paragraph{海量数据}
 
 \subsection{读取Properties文件}
 
@@ -382,7 +398,6 @@ PATH="$PATH":/usr/local/mysql/bin
 \begin{lstlisting}[language=Bash]
 sudo pip install mysql-python
 \end{lstlisting}
-
 
 \section{React}
 
@@ -1370,13 +1385,6 @@ open|filtered 和 closed|filtered时，那说明Nmap无法确定该端口处于�
 当要求进行版本探测时，端口表也可以包含软件的版本信息。
 当要求进行IP协议扫描时 (-sO)，Nmap提供关于所支持的IP协议而不是正在监听的端口的信息。
 获取远程主机的系统类型及开放端口：
-
-http://localhost:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
-
-curl −H "APPID:hlb11529c136334gh2" −H "TIMESTAMP:2016-12-19 16:58:02" −H "ECHOSTR:sdsaasf" −H "TOKEN:34504e2a8ab71e586ec53ec6c1b70ba460ceacbd" http://127.0.0.1:28080/api/banan/enterprise?xdrShxym=915001034847362101|jq ’.’
-
-
-generating uniq	operation name 慢
 
 \begin{lstlisting}[language=Bash]
 nmap -sS -P0 -sV -O <target>
