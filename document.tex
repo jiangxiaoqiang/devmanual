@@ -1942,7 +1942,7 @@ def getVersionCode() {
 }
 \end{lstlisting}
 
-此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，所以写成相对路径会比较妥当。可以写成如下：
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，不同的成员使用的操作系统有区别，项目存放的路径也不一样，所以写成相对路径会比较妥当。可以写成如下：
 
 \begin{lstlisting}
 File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
