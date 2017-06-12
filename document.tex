@@ -990,6 +990,18 @@ location /inapi {
 
 此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
 
+\subsection{Nginx并发}
+
+如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
+
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+
+HttpLimitReqModul用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。
+
+HttpLimitConnModul用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令
+
+这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制
+
 \subsection{常见问题}
 
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
