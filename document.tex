@@ -257,9 +257,11 @@ sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
 # 安装beautifulsoup4
-sudo pip install beautifulsoup
+sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
+# 安装Redis支持模块
+sudo pip install redis
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -325,7 +327,7 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \subsection{读取Properties文件}
 
-在项目中持续集成的Python脚本需要读取Java的Properties文件，读取的方法如下：
+在项目中持续集成的Python部署脚本中，需要读取Java的Properties文件，读取的方法如下：
 
 \begin{lstlisting}[language=Python]
 def getVersion():
@@ -471,6 +473,16 @@ echo "set completion-ignore-case on">>~/.inputrc
 \end{lstlisting}
 
 设置完毕后重新打开终端即可。
+
+\subsection{命令行}
+
+\paragraph{ls}
+
+有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
+
+\begin{lstlisting}[language=Bash]
+ls -lh authorized_keys
+\end{lstlisting}
 
 \subsection{自动部署}
 
