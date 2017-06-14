@@ -256,15 +256,10 @@ sudo apt-get install mysql-server -y
 sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
-<<<<<<< HEAD
-# 安装beautifulsoup4
-sudo pip install beautifulsoup4
-=======
 # 安装Beautiful Soup
 sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
->>>>>>> 4e1bb2f54143f9979a2dcb5a27193e327bd09a9a
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -324,7 +319,7 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 在HTTP请求头中，添加浏览器相关标识，让服务器认定为来自浏览器的请求。
 
-\paragraph{避免重复抓取}
+\paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
 \paragraph{海量数据}
 
