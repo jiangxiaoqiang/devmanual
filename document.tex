@@ -256,10 +256,19 @@ sudo apt-get install mysql-server -y
 sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
+<<<<<<< HEAD
 # 安装Beautiful Soup
 sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
+=======
+# 安装beautifulsoup4
+sudo pip install beautifulsoup4
+# openpyxl来处理xml文件
+sudo pip install openpyxl
+# 安装Redis支持模块
+sudo pip install redis
+>>>>>>> 28ebcfe631651eaa2a1bdf65f6ed34fbabb1f042
 \end{lstlisting}
 
 \subsection{Beautiful Soup}
@@ -325,7 +334,7 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \subsection{读取Properties文件}
 
-在项目中持续集成的Python脚本需要读取Java的Properties文件，读取的方法如下：
+在项目中持续集成的Python部署脚本中，需要读取Java的Properties文件，读取的方法如下：
 
 \begin{lstlisting}[language=Python]
 def getVersion():
@@ -471,6 +480,16 @@ echo "set completion-ignore-case on">>~/.inputrc
 \end{lstlisting}
 
 设置完毕后重新打开终端即可。
+
+\subsection{命令行}
+
+\paragraph{ls}
+
+有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
+
+\begin{lstlisting}[language=Bash]
+ls -lh authorized_keys
+\end{lstlisting}
 
 \subsection{自动部署}
 
@@ -1009,6 +1028,18 @@ location /inapi {
 \end{figure}
 
 此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
+
+\subsection{Nginx并发}
+
+如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
+
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+
+HttpLimitReqModul用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。
+
+HttpLimitConnModul用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令
+
+这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制
 
 \subsection{常见问题}
 
@@ -1957,7 +1988,7 @@ def getVersionCode() {
 }
 \end{lstlisting}
 
-此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，所以写成相对路径会比较妥当。可以写成如下：
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，不同的成员使用的操作系统有区别，项目存放的路径也不一样，所以写成相对路径会比较妥当。可以写成如下：
 
 \begin{lstlisting}
 File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
