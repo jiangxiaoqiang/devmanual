@@ -264,6 +264,14 @@ sudo pip install openpyxl
 sudo pip install redis
 \end{lstlisting}
 
+在Mac OS X上，提示No Module named requests，使用pip安装requests模块也无法解决，输入如下命令此问题消失：
+
+\begin{lstlisting}[language=Bash]
+sudo easy_install -U requests
+\end{lstlisting}
+
+pip 改善了不少 easy\_install 的缺點，如此说來 pip 應該是略勝一籌，不過它還不能完全取代對方，因为目前有很多套件還是得用 easy\_install 安裝。easy\_insall的作用和perl中的cpan，ruby中的gem类似，都提供了在线一键安装模块的傻瓜方便方式，而pip是easy\_install的改进版，提供更好的提示信息，删除package等功能。老版本的python中只有easy\_install，没有pip。
+
 \subsection{Beautiful Soup}
 
 Beautiful Soup 是用Python写的一个HTML/XML的解析器，它可以很好的处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。如下代码片段展示爬取豆瓣书籍详情页的书籍信息：
@@ -697,6 +705,8 @@ sudo apt install fcitx-googlepinyin
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
 \section*{Gradle}
+
+一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
 \subsection{执行流程}
 
@@ -1863,6 +1873,30 @@ brew install mycli
 mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
 
 方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
+
+\section{通用知识}
+
+\subsection{查询}
+
+最近使用数据库中，遇到查询性能低下的问题。数据量大概在800W左右，但是分页查询需要40s左右才能够查询出来结果，测试库200W数据量左右，分页查询也需要10s才能出结果。
+
+使用MySQL，有的人BB说5.1以前300w就会很明显，5.5-5.6已经有很大优化，如果是5.7千万也不是问题。随着互联网的发展，数据的量级也是撑指数的增长，从GB到TB到PB。对数据的各种操作也是愈加的困难，传统的关系性数据库已经无法满足快速查询与插入数据的需求。这个时候NoSQL的出现暂时解决了这一危机。它通过降低数据的安全性，减少对事务的支持，减少对复杂查询的支持，来获取性能上的提升。但是，在有些场合NoSQL一些折衷是无法满足使用场景的，就比如有些使用场景是绝对要有事务与安全指标的。这个时候NoSQL肯定是无法满足的，所以还是需要使用关系性数据库。
+
+\paragraph{增加缓存}增加缓存可以提高查询效率，但是在对数据表做任何的更新操作(update/insert/delete)等操作，server为了保证缓存与数据库的一致性，会强制刷新缓存数据，导致缓存数据全部失效。
+
+\paragraph{分库分表}分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
+
+对于mysql，其数据文件是以文件形式存储在磁盘上的。当一个数据文件过大的时候，操作系统对大文件的操作就会比较麻烦与耗时，而且有的操作系统就不支持大文件，所以这个时候就必须分表了。另外对于mysql常用的存储引擎是Innodb，它的底层数据结构是B+树。当其数据文件过大的时候，B+树就会从层次和节点上比较多，当查询一个节点的时候可能会查询很多层次，而这必定会导致多次IO操作进行装载进内存，肯定会耗时的。除此之外还有Innodb对于B+树的锁机制。对每个节点进行加锁，那么当更改表结构的时候，这时候就会树进行加锁，当表文件大的时候，这可以认为是不可实现的。
+
+\subsection{注意事项}
+
+\paragraph{不要ORDER BY RAND()}MySQL会不得 不去执行RAND()函数（很耗CPU时间），而且这是为了每一行记录去记行，然后再对其排序。就算是你用了Limit 1也无济于事。自己在做爬虫时，写过这样的语句：
+
+\begin{lstlisting}[language=SQL]
+select * from douban_book_id where isscapy = 0 limit 1
+\end{lstlisting}
+
+难怪后来变的很慢，把中间停顿的sleep函数去掉之后还是很慢，开始还一位是sleep函数暂停的问题。
 
 \part{Network}
 
