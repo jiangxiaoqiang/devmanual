@@ -80,13 +80,13 @@
 
 \subsection{Spring Boot开发者工具}
 
-在build.gradle文件里添加开发工具：
+spring-boot-devtools为应用提供一些开发时特性，包括默认值设置，自动重启，livereload等。在build.gradle文件里添加开发工具配置：
 
 \begin{lstlisting}[language=Bash]
 compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
-在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
+在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
 \subsection*{JDBC数据库重连}
 
@@ -227,6 +227,18 @@ public class DataSourceConfig {
 
 由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
+\subsection{常见问题}
+
+\paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
+
+Tomcat 的内部日志使用 JULI 组件，这是一个 Apache Commons 日志的重命名的打包分支，默认被硬编码，使用 java.util.logging 架构。这能保证 Tomcat 内部日志与 Web 应用的日志保持独立，即使 Web 应用使用的是 Apache Commons Logging。在Gradle构建脚本中添加如下配置即可：
+
+\begin{lstlisting}[language=Bash]
+dependencies{
+	compile group: 'org.apache.tomcat', name: 'tomcat-juli', version: property('tomcat.version')
+}
+\end{lstlisting}
+
 \subsection{jps}
 
 jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
@@ -256,12 +268,19 @@ sudo apt-get install mysql-server -y
 sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
+<<<<<<< HEAD
+# 安装Beautiful Soup
+sudo pip install beautifulsoup4
+# openpyxl来处理xml文件
+sudo pip install openpyxl
+=======
 # 安装beautifulsoup4
 sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
 # 安装Redis支持模块
 sudo pip install redis
+>>>>>>> 28ebcfe631651eaa2a1bdf65f6ed34fbabb1f042
 \end{lstlisting}
 
 在Mac OS X上，提示No Module named requests，使用pip安装requests模块也无法解决，输入如下命令此问题消失：
@@ -329,7 +348,7 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 在HTTP请求头中，添加浏览器相关标识，让服务器认定为来自浏览器的请求。
 
-\paragraph{避免重复抓取}
+\paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
 \paragraph{海量数据}
 
@@ -696,6 +715,12 @@ sudo apt install fcitx-googlepinyin
 
 \subsection{Intellij Idea远程调试}
 
+\begin{lstlisting}[language=Bash]
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/system-web-boot-1.0.9.jar --spring.config.location=application.properties>/dev/null &
+\end{lstlisting}
+
+
+
 \subsection{Intellij Idea调试慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
@@ -895,13 +920,27 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 \section{Nginx}
 
+\subsection{X-Forwarded-For}
+
+X-Forwarded-For 是一个 HTTP 扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
+
+\begin{lstlisting}[language=bash]
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+\end{lstlisting}
+
+X-Forwarded-For 请求头格式:
+
+\begin{lstlisting}[language=bash]
+X-Forwarded-For: IP0, IP1, IP2
+\end{lstlisting}
+
+XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
+
 \subsection{Nginx获取真实IP}
 
 做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
-\begin{lstlisting}[language=bash]
-nginx -V
-\end{lstlisting}
+
 
 输出结果如下：
 
@@ -1603,6 +1642,11 @@ git config --system http.sslverify false
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
 \end{lstlisting}
 
+\subsection{ssh连接慢}
+
+在使用SSH时，每次连接建立都相当的慢啊。
+
+
 \subsection{Session时间}
 
 在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
@@ -1736,6 +1780,11 @@ make test
 
 
 \section{MySQL}
+
+
+
+
+
 
 \subsection{基础}
 
