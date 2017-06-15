@@ -468,6 +468,8 @@ f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
 
+\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
+
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
 
 \begin{lstlisting}[language=Bash]
@@ -725,9 +727,17 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
-\subsection{常用设置}
+\subsection{Tips}
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
+
+
+\paragraph{匹配文件}有时需要使用Intellij Idea的全局搜索，在匹配文件时，如果想匹配某几类文件，可以输入如下的过滤条件。
+
+\begin{lstlisting}[language=Bash]
+#在Java文件和log文件中进行匹配
+*.java,*.log
+\end{lstlisting}
 
 \section*{Gradle}
 
@@ -917,6 +927,11 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
 
+\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
+
+\begin{lstlisting}[language=bash]
+ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
+\end{lstlisting}
 
 \section{Nginx}
 
@@ -1613,6 +1628,14 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \subsection{配置}
 
+\subsection{查看某几行代码修改}在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
+
+\begin{lstlisting}[language=Bash]
+git blame /home/hldev/hldata/backend/system/cc-web/src/main/java/cresystem/web/controllers/pubapi/PubapiOrgController.java
+\end{lstlisting}
+
+会显示每一行代码的作者(最后修改者)和最后的修改时间。
+
 \subsection{常见问题}
 
 
@@ -1644,8 +1667,14 @@ ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.s
 
 \subsection{ssh连接慢}
 
-在使用SSH时，每次连接建立都相当的慢啊。
+在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
 
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
+使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
 
 \subsection{Session时间}
 
