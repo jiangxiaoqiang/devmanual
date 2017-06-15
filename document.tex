@@ -468,6 +468,22 @@ f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
 
+\paragraph{创建路径}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
+
+\begin{lstlisting}[language=Bash]
+#新建后端开发目录
+mkdir -p /home/dolphin/hldata/backend/credit-system
+#新建开发目录树
+mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
+\end{lstlisting}
+
+\paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
+
+\begin{lstlisting}[language=Bash]
+#如果目录不存在，则创建相应的目录
+cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
+\end{lstlisting}
+
 \paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
