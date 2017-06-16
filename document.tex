@@ -253,6 +253,19 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\section{Scala}
+
+\subsection{基础}
+
+Scala有两种变量，val和var。val就不能再赋值了。与之对应的，var可以在它生命周期中被多次赋值。数据转换：
+
+\begin{lstlisting}[language=Scala]
+//字符串转整型
+val errorCodeId: Int = singleErrorCode.toInt;
+//split函数
+val dstArray: Array[String] = errorCode.toString.split(',')
+\end{lstlisting}
+
 \section{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
@@ -268,19 +281,12 @@ sudo apt-get install mysql-server -y
 sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
-<<<<<<< HEAD
-# 安装Beautiful Soup
-sudo pip install beautifulsoup4
-# openpyxl来处理xml文件
-sudo pip install openpyxl
-=======
 # 安装beautifulsoup4
 sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
 # 安装Redis支持模块
 sudo pip install redis
->>>>>>> 28ebcfe631651eaa2a1bdf65f6ed34fbabb1f042
 \end{lstlisting}
 
 在Mac OS X上，提示No Module named requests，使用pip安装requests模块也无法解决，输入如下命令此问题消失：
@@ -468,7 +474,15 @@ f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
 
-\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
+\paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
+
+\paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在.bashrc中添加如下设置：
+
+\begin{lstlisting}[language=Bash]
+if [ -d /home/app/ ];then
+	cd /home/app/
+fi
+\end{lstlisting}
 
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
 
@@ -917,6 +931,8 @@ sudo route del default gw 10.55.10.1
 
 \section{Ansible}
 
+
+
 \subsection{Ansible模块}
 
 \paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
@@ -1077,6 +1093,23 @@ HttpLimitReqModul用来限制连单位时间内连接数的模块，使用limit\
 HttpLimitConnModul用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令
 
 这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制
+
+\subsection{URI长度限制}
+
+在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
+
+\begin{lstlisting}[language=bash]
+client_header_buffer_size 2048k;
+\end{lstlisting}
+
+项目采用Spring Boot，所使用的Tomcat为内嵌的Tomcat。在application.properties中，增加如下配置:
+
+\begin{lstlisting}[language=bash]
+#单位为KB,如果没有指定，默认为8192(8KB)
+server.max-http-header-size=1024
+\end{lstlisting}
+
+奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
 
 \subsection{常见问题}
 
