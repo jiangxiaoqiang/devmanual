@@ -468,6 +468,14 @@ f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
 
+\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+
+\begin{lstlisting}[language=Bash]
+export EDITOR=vim
+\end{lstlisting}
+
+在vim中，编辑好了命令之后，直接按下ZZ命令，即可退出vim，shell即会执行编辑完成后的命令。
+
 \paragraph{创建路径}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
 
 \begin{lstlisting}[language=Bash]
@@ -1713,7 +1721,13 @@ sudo chmod 600 .ssh/authorized_keys
 tail -f /var/log/auth.log
 \end{lstlisting}
 
-是不是服务器关闭了密码登陆？只能使用公钥认证登陆。
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+ PubkeyAuthentication yes 
+\end{lstlisting}
+
 
 \subsection{Session时间}
 
