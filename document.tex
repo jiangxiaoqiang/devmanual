@@ -253,6 +253,23 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+\begin{lstlisting}[language=Scala]
+case class User(  
+	id: Int,  
+	firstName: String,  
+	lastName: String,  
+	age: Int,  
+	gender: Option[String])  
+	
+	object UserRepository {  
+	private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
+	2 -> User(2, "Johanna", "Doe", 30, None))  
+	def findById(id: Int): Option[User] = users.get(id)  
+	def findAll = users.values  
+}  
+\end{lstlisting}
+
+
 \section{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
@@ -752,6 +769,19 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 \subsection{Tips}
+
+
+\paragraph{Class JavaLaunchHelper is implemented}
+
+
+启动时提示错误：
+
+\begin{lstlisting}[language=Bash]
+objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/bin/java (0x10d19c4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10ea194e0). One of the two will be used. Which one is undefined.
+\end{lstlisting}
+
+
+检查启动配置里启动模块是否选择正确。
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
