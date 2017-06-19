@@ -204,6 +204,43 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
+\subsection{缓存}
+
+SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
+
+@Cacheable : Spring在每次执行前都会检查Cache中是否存在相同key的缓存元素，如果存在就不再执行该方法，而是直接从缓存中获取结果进行返回，否则才会执行并将返回结果存入指定的缓存中。 
+ 
+@CacheEvict : 清除缓存。 
+
+@CachePut : @CachePut也可以声明一个方法支持缓存功能。使用@CachePut标注的方法在执行前不会去检查缓存中是否存在之前执行过的结果，而是每次都会执行该方法，并将执行结果以键值对的形式存入指定的缓存中。 
+
+这三个方法中都有两个主要的属性：value 指的是 ehcache.xml 中的缓存策略空间；key 指的是缓存的标识，同时可以用 \# 来引用参数。
+在ehcache.xml中配置缓存策略空间：
+
+\begin{lstlisting}[language=XML]
+<ehcache>
+	<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
+</ehcache>
+\end{lstlisting}
+
+在方法上指定缓存，语法采用SpEL，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
+SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
+
+\begin{lstlisting}[language=Java]
+@Cacheable(value = "summaryXzxk",
+			key = "'findPage'+#pageable.page+#pageable.params.get('xdr')",
+			condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+)
+\end{lstlisting}
+
+其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
+
+\begin{lstlisting}[language=Java]
+condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+\end{lstlisting}
+
+如上条件，取出xdr为空的数据进行缓存。
+
 \subsection{读取properties属性}
 
 \subsubsection{读取自定义属性}
@@ -930,8 +967,6 @@ sudo route del default gw 10.55.10.1
 
 
 \section{Ansible}
-
-
 
 \subsection{Ansible模块}
 
