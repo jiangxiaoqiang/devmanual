@@ -204,9 +204,9 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
-\subsection{缓存}
+\subsection{Spring Boot缓存}
 
-SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
+SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架,需要在XML中配置。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
 
 @Cacheable : Spring在每次执行前都会检查Cache中是否存在相同key的缓存元素，如果存在就不再执行该方法，而是直接从缓存中获取结果进行返回，否则才会执行并将返回结果存入指定的缓存中。 
  
@@ -290,6 +290,7 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 \newpage
 \section*{Groovy}
 
+<<<<<<< HEAD
 \section{Scala}
 
 \subsection{基础}
@@ -303,6 +304,25 @@ val errorCodeId: Int = singleErrorCode.toInt;
 val dstArray: Array[String] = errorCode.toString.split(',')
 \end{lstlisting}
 
+=======
+\begin{lstlisting}[language=Scala]
+case class User(  
+	id: Int,  
+	firstName: String,  
+	lastName: String,  
+	age: Int,  
+	gender: Option[String])  
+	
+	object UserRepository {  
+	private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
+	2 -> User(2, "Johanna", "Doe", 30, None))  
+	def findById(id: Int): Option[User] = users.get(id)  
+	def findAll = users.values  
+}  
+\end{lstlisting}
+
+
+>>>>>>> 8fbcab7d178930e594a50c8decf97d5a6acebc77
 \section{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
@@ -511,6 +531,7 @@ f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
 
+<<<<<<< HEAD
 \paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
 
 \paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在.bashrc中添加如下设置：
@@ -520,6 +541,33 @@ if [ -d /home/app/ ];then
 	cd /home/app/
 fi
 \end{lstlisting}
+=======
+\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+
+\begin{lstlisting}[language=Bash]
+export EDITOR=vim
+\end{lstlisting}
+
+在vim中，编辑好了命令之后，直接按下ZZ命令，即可退出vim，shell即会执行编辑完成后的命令。
+
+\paragraph{创建路径}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
+
+\begin{lstlisting}[language=Bash]
+#新建后端开发目录
+mkdir -p /home/dolphin/hldata/backend/credit-system
+#新建开发目录树
+mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
+\end{lstlisting}
+
+\paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
+
+\begin{lstlisting}[language=Bash]
+#如果目录不存在，则创建相应的目录
+cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
+\end{lstlisting}
+
+\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
+>>>>>>> 8fbcab7d178930e594a50c8decf97d5a6acebc77
 
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
 
@@ -779,6 +827,19 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
 \subsection{Tips}
+
+
+\paragraph{Class JavaLaunchHelper is implemented}
+
+
+启动时提示错误：
+
+\begin{lstlisting}[language=Bash]
+objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/bin/java (0x10d19c4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10ea194e0). One of the two will be used. Which one is undefined.
+\end{lstlisting}
+
+
+检查启动配置里启动模块是否选择正确。
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
@@ -1744,6 +1805,35 @@ GSSAPIAuthentication　no
 GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
 使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
 
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+ PubkeyAuthentication yes 
+\end{lstlisting}
+
+
 \subsection{Session时间}
 
 在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
@@ -2022,7 +2112,7 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 \section{通用知识}
 
-\subsection{查询}
+\subsection{查询优化}
 
 最近使用数据库中，遇到查询性能低下的问题。数据量大概在800W左右，但是分页查询需要40s左右才能够查询出来结果，测试库200W数据量左右，分页查询也需要10s才能出结果。
 
@@ -2033,6 +2123,10 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 \paragraph{分库分表}分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
 
 对于mysql，其数据文件是以文件形式存储在磁盘上的。当一个数据文件过大的时候，操作系统对大文件的操作就会比较麻烦与耗时，而且有的操作系统就不支持大文件，所以这个时候就必须分表了。另外对于mysql常用的存储引擎是Innodb，它的底层数据结构是B+树。当其数据文件过大的时候，B+树就会从层次和节点上比较多，当查询一个节点的时候可能会查询很多层次，而这必定会导致多次IO操作进行装载进内存，肯定会耗时的。除此之外还有Innodb对于B+树的锁机制。对每个节点进行加锁，那么当更改表结构的时候，这时候就会树进行加锁，当表文件大的时候，这可以认为是不可实现的。
+
+\paragraph{采用NoSQL数据库}
+
+Hbase读的性能比较强，官方定义为适合PB级数据的秒级查询，就是说在巨海量的数据中查询，响应速度非常快。
 
 \subsection{注意事项}
 
