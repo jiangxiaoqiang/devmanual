@@ -241,6 +241,10 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 
 如上条件，取出xdr为空的数据进行缓存。
 
+\subsection{用户重复登录问题}
+
+在服务端维护登录用户与其SessionID的关系。同一用户，后登陆者将前登陆者的SessionID冲掉，这样，前者如果再请求服务器资源，就会认为其未登录，要求重新登录。这样，即使出现断电等无法注销的情况，也会在他下次登陆时自动取代掉，同时也解决了用户登陆的唯一性问题。
+
 \subsection{读取properties属性}
 
 \subsubsection{读取自定义属性}
