@@ -243,7 +243,7 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 
 \subsection{用户重复登录问题}
 
-在服务端维护登录用户与其SessionID的关系。同一用户，后登陆者将前登陆者的SessionID冲掉，这样，前者如果再请求服务器资源，就会认为其未登录，要求重新登录。这样，即使出现断电等无法注销的情况，也会在他下次登陆时自动取代掉，同时也解决了用户登陆的唯一性问题。
+在服务端维护登录用户与其SessionID的对应关系。同一用户，后登陆者将前登陆者的SessionID替换，这样，前者如果再请求服务器资源，无法与新生成的Session ID匹配，此时服务端会返回一个错误码，前端捕获到此错误码，就会认为其未登录，要求重新登录。这样，即使出现断电等无法注销的情况，也会在他下次登陆时自动取代掉，同时也解决了用户登陆的唯一性问题。
 
 \subsection{读取properties属性}
 
@@ -489,6 +489,22 @@ sudo pip install mysql-python
 \end{lstlisting}
 
 \section{React}
+
+\subsection{Route}
+
+\paragraph{onEnter}
+
+Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，比如验证权限。单页应用路由的权限控制的基本思路是：监听路由的改变，每当路由将要发生改变，我们就使用一个中间服务(该服务介于上一级路由和将要到达路由之间启动)，来判断我们是否有进入这个路由的权限，有的话直接进入，没有的话就redirect。在React中，为某个路由进行权限监听的方式是：
+
+\begin{lstlisting}[language=HTML]
+<Route path="page" component={Page} onEnter={requireCredentials}/>
+\end{lstlisting}
+
+该onEnter属性对应连着一个具有判断权限的中间服务。
+
+\subsection{axios}
+
+axios 是一个基于Promise 用于浏览器和 nodejs 的 HTTP 客户端。
 
 \subsection{Cookie}
 
@@ -1184,11 +1200,27 @@ location /inapi {
 
 cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
 
-HttpLimitReqModul用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。
+HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
 
-HttpLimitConnModul用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令
+\begin{lstlisting}[language=bash]
+http {
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	#Zone=one或allips表示设置了名为“one”或“allips”的存储区
+	#大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
+}
+\end{lstlisting}
 
-这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制
+HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令，这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制。
 
 \subsection{URI长度限制}
 
