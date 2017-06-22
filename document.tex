@@ -101,7 +101,7 @@ spring.datasource.allow-pool-suspension=true
 
 \begin{tabular}{|c|c|p{7cm}|}
 	\hline
-	\multirow{1}{*}{序号}
+	\multirow{1}{*}{名称}
 	%\multirow{1}{c|}{名称}  
 	& \multicolumn{1}{c|}{协议} 
 	& \multicolumn{1}{c|}{备注}\\			
@@ -715,10 +715,14 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\multirow{1}{*}{序号}
 	& \multicolumn{1}{c}{名称}  \\
 	\hline			
-	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\	
+	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
+	\hline	
 	/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+	\hline
 	/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+	\hline
 	~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+	\hline
 	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
 	\hline
 \end{tabular}
