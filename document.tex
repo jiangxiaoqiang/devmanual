@@ -270,9 +270,18 @@ public class DataSourceConfig {
 
 \subsection{常见问题}
 
-\subsection{Session already invalid}
+\subsection{getAttribute: Session already invalidated}
 
+当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
 
+\begin{lstlisting}[language=Java]
+#使Session无效的语句
+getSessionMap().get(sessionId).invalidate();
+#出错的语句
+User user = (User) session.getAttribute("LOCAL_CLINET_USER");
+\end{lstlisting}
+
+当在无效的session中获取Attribute时，出现了上面的错误，解决办法就是不调用invalidate方法。
 
 \paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
 
