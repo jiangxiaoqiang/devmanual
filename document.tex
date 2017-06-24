@@ -76,7 +76,42 @@
 
 \part{Framework}
 
-\section*{Spring}
+\chapter{Spring}
+
+\section{Common Sense}
+
+\subsection{classpath}
+
+classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.8]{javaresourcefolder.png}
+	\caption{Intellij Idea中的资源文件夹}
+	\label{fig:javaresourcefolder}
+\end{figure}
+
+仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定：
+
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@Component
+@PropertySource("classpath:application.properties")
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceConfig {
+
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+}
+\end{lstlisting}
+
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
 \subsection{Spring Boot开发者工具}
 
@@ -87,6 +122,13 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
+
+\section{注解}
+
+\paragraph{ComponentScan}
+
+
+
 
 \subsection*{JDBC数据库重连}
 
@@ -118,7 +160,17 @@ spring.datasource.allow-pool-suspension=true
 	\hline
 \end{tabular}
 
-登陆服务器，使用命令查看正常的数据库连接：
+Tomcat 在 7.0 以前的版本都是使用 commons-dbcp 做为连接池的实现，但是 dbcp 饱受诟病，原因有：
+
+\begin{itemize}
+	\item{dbcp 是单线程的，为了保证线程安全会锁整个连接池}
+	\item{dbcp 性能不佳}
+	\item{dbcp 太复杂，超过 60 个类}
+\end{itemize}
+
+dbcp 使用静态接口，在 JDK 1.6 编译有问题
+dbcp 发展滞后
+因此很多人会选择一些第三方的连接池组件，例如 c3p0 , bonecp, druid。为此，Tomcat 从 7.0 开始引入一个新的模块：Tomcat jdbc pool。登陆服务器，使用命令查看正常的数据库连接：
 
 \begin{lstlisting}[language=Bash]
 lsof -i:5236
@@ -204,6 +256,14 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
+\subsection{常见问题}
+
+\begin{lstlisting}
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Hikari.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.zaxxer.hikari.HikariDataSource]: Factory method 'dataSource' threw exception; nested exception is java.lang.NullPointerException
+\end{lstlisting}
+
+除了要定义jdbc-url外，还需要定义url。
+
 \subsection{Spring Boot缓存}
 
 SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架,需要在XML中配置。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
@@ -268,11 +328,20 @@ public class DataSourceConfig {
 
 由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
-\subsection{常见问题}
+\section{常见问题}
 
-\subsection{Session already invalid}
+\subsection{getAttribute: Session already invalidated}
 
+当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
 
+\begin{lstlisting}[language=Java]
+#使Session无效的语句
+getSessionMap().get(sessionId).invalidate();
+#出错的语句
+User user = (User) session.getAttribute("LOCAL_CLINET_USER");
+\end{lstlisting}
+
+当在无效的session中获取Attribute时，出现了上面的错误，解决办法就是不调用invalidate方法。
 
 \paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
 
@@ -294,11 +363,67 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
+\section{Mybatis}
+
+
+\subsection{打印SQL}
+
+开发中，配置日志中打印SQL语句，在application.properties文件中指定mybatis配置文件路径：
+
+\begin{lstlisting}[language=Bash]
+mybatis.config-location=classpath:mybatis-config.xml
+\end{lstlisting}
+
+在Mybatis配置文件中，做如下配置：
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+</configuration>
+\end{lstlisting}
+
+打印SQL语句效果如图\ref{fig:mybatisprintsql}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{mybatisprintsql.png}
+	\caption{MyBatis打印SQL}
+	\label{fig:mybatisprintsql}
+\end{figure}
+
+\subsection{常见问题}
+
+在配置MyBatis Mapper时，出现如下错误：
+
+\begin{lstlisting}[language=Java]
+Request processing failed; nested exception is org.apache.ibatis.binding.BindingException: Invalid bound statement (not found)
+\end{lstlisting}
+
+配置文件检查了没有问题，后来看网上说是需要在resource目录下新建一个文件夹，并设置成资源文件夹，放置Mapper.xml文件。还真能够解决问题，但是不明白为什么需要单独建立一个文件夹，按道理resource也是资源文件夹啊，应该可以读取才对。问题虽然解决，但是其中原理始终没有弄个明白，最终文件夹结构如图\ref{fig:mapperreourcestructure}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{mapperreourcestructure.png}
+	\caption{Mapper XML放置目录结构}
+	\label{fig:mapperreourcestructure}
+\end{figure}
+
+
 
 \newpage
-\section*{Groovy}
 
-\section{Scala}
+
+
+\chapter{Groovy}
+
+\chapter{Scala}
 
 \subsection{基础}
 
@@ -329,7 +454,7 @@ case class User(
 \end{lstlisting}
 
 
-\section{Python}
+\chapter{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
 
@@ -492,7 +617,7 @@ PATH="$PATH":/usr/local/mysql/bin
 sudo pip install mysql-python
 \end{lstlisting}
 
-\section{React}
+\chapter{React}
 
 \subsection{Route}
 
@@ -794,6 +919,7 @@ uname －a
 在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
 
 \begin{lstlisting}[language=Bash]
+#密码aaa321
 sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/data /home/dolphin/software
 \end{lstlisting}
 
@@ -874,6 +1000,11 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 #在Java文件和log文件中进行匹配
 *.java,*.log
 \end{lstlisting}
+
+\paragraph{智能提示}
+
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+
 
 \section*{Gradle}
 
@@ -1932,6 +2063,19 @@ git config --global merge.tool meld
 \end{lstlisting}
 
 \section{Google Chrome}
+
+\subsection{DevTools}
+
+\begin{tabular}{|c|p{6cm}|}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c|}{备注}\\			
+	\hline
+	Ctrl+Shift+J (Windows/Linux)  & 打开DevTools Console面板 \\
+	\hline
+	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板 \\
+	\hline
+\end{tabular}
 
 \subsection{Source Map}
 
