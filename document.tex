@@ -128,7 +128,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 \paragraph{ComponentScan}
 
 
-
+\section{数据库操作}
 
 \subsection*{JDBC数据库重连}
 
@@ -256,13 +256,43 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
-\subsection{常见问题}
+\subsection{HikariCP数据库连接}
+
+在配置HikariCP数据库连接时，总是提示如下错误：
 
 \begin{lstlisting}
 org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Hikari.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.zaxxer.hikari.HikariDataSource]: Factory method 'dataSource' threw exception; nested exception is java.lang.NullPointerException
 \end{lstlisting}
 
-除了要定义jdbc-url外，还需要定义url。
+经过跟踪，发现是url为空导致的这个问题，后来增加了url的配置才得以成功连接数据库。所以除了要定义jdbc-url外，还需要定义url。经过查看HikariCP的文档，属性jdbc-url将使 HikariCP 使用“基于驱动管理器”（DriverManager-based）的配置。一般情况下，基于数据源（DataSource-based）的配置是更好的选择。但对许多部署实例来讲却也区别不大。当使用jdbc-url来配置“旧”的 JDBC 驱动时，你可能也需要设置 driverClassName 属性，但可以试一试不设置是否能行得通。所以，最终连接数据库的配置如下：
+
+\begin{lstlisting}
+spring.datasource.hikari.jdbc-url=jdbc:mysql://10.0.0.14:3306/dolphin
+spring.datasource.hikari.url=jdbc:mysql://10.0.0.14:3306/dolphin
+spring.datasource.hikari.username=root
+spring.datasource.hikari.password=dolphin
+spring.datasource.hikari.type=com.zaxxer.hikari.HikariDataSource
+spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
+\end{lstlisting}
+
+
+\paragraph{DataSource跟DriverManager区别及联系}
+
+In basic terms, a data source is a facility for storing data. It can be as sophisticated as a complex database for a large corporation or as simple as a file with rows and columns. A data source can reside on a remote server, or it can be on a local desktop machine. Applications access a data source using a connection, and aDataSource object can be thought of as a factory for connections to the particular data source that theDataSource instance represents.
+
+两者相同点：
+Using a DataSource object is the preferred alternative to using the DriverManager for establishing a connection to a data source. They are similar to the extent that the DriverManager class and DataSource interface both have methods for creating a connection, methods for getting and setting a timeout limit for making a connection, and methods for getting and setting a stream for logging.
+
+两者不同点：
+1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a JavaTM Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
+
+2.The second major advantage is that the DataSource facility allows developers to implement a DataSourceclass to take advantage of features like connection pooling and distributed transactions.
+
+传统的数据库连接方式（指通过DriverManager和基本实现DataSource进行连接）中，一个数据库连接对象均对应一个物理数据库连接，数据库连接的建立以及关闭对系统而言是耗费系统资源的操作，在多层结构的应用程序环境中这种耗费资源的动作对系统的性能影响尤为明显。
+
+在多层结构的应用程序中通过连接池（connection pooling）技术可以使系统的性能明显得到提到，连接池意味着当应用程序需要调用一个数据库连接的时，数据库相关的接口通过返回一个通过重用数据库连接来代替重新创建一个数据库连接。通过这种方式，应用程序可以减少对数据库连接操作，尤其在多层环境中多个客户端可以通过共享少量的物理数据库连接来满足系统需求。通过连接池技术Java应用程序不仅可以提高系统性能同时也为系统提高了可测量性。
+
+数据库连接池是运行在后台的而且应用程序的编码没有任何的影响。此中状况存在的前提是应用程序必须通过DataSource对象（一个实现javax.sql.DataSource接口的实例）的方式代替原有通过DriverManager类来获得数据库连接的方式。一个实现javax.sql.DataSource接口的类可以支持也可以不支持数据库连接池，但是两者获得数据库连接的代码基本是相同的。
 
 \subsection{Spring Boot缓存}
 
@@ -374,7 +404,7 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 mybatis.config-location=classpath:mybatis-config.xml
 \end{lstlisting}
 
-在Mybatis配置文件中，做如下配置：
+在Mybatis配置文件mybatis-config.xml中，做如下配置：
 
 \begin{lstlisting}[language=XML]
 <?xml version="1.0" encoding="UTF-8"?>
@@ -410,7 +440,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{mapperreourcestructure.png}
+	\includegraphics[scale=0.7]{mapperreourcestructure.png}
 	\caption{Mapper XML放置目录结构}
 	\label{fig:mapperreourcestructure}
 \end{figure}
