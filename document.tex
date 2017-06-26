@@ -704,6 +704,27 @@ gulp.task('images', function() {
 gulp images
 \end{lstlisting}
 
+\subsection{清除文件}
+
+在再次生成文件前，最好先清除之前生成的文件：
+
+\begin{lstlisting}[language=JavaScript]
+gulp.task('clean', function(cb) {
+	del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
+});
+\end{lstlisting}
+
+在这里没有必要使用Gulp插件了，可以使用NPM提供的插件。用一个回调函数（cb）确保在退出前完成任务。
+
+\subsection{设置默认任务}
+
+\begin{lstlisting}[language=JavaScript]
+gulp.task('default', ['clean'], function() {
+	gulp.start('styles', 'scripts', 'images');
+});
+\end{lstlisting}
+
+clean任务执行完成了才会去运行其他的任务，在gulp.start()里的任务执行的顺序是不确定的，所以将要在它们之前执行的任务写在数组里面。
 
 \section{webpack}
 
