@@ -664,6 +664,29 @@ sudo pip install mysql-python
 
 \chapter{React}
 
+在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作。而复杂或频繁的DOM操作通常是性能瓶颈产生的原因（如何进行高性能的复杂DOM操作通常是衡量一个前端开发人员技能的重要指标）。React为此引入了虚拟DOM（Virtual DOM）的机制：在浏览器端用Javascript实现了一套DOM API。基于React进行开发时所有的DOM构造都是通过虚拟DOM进行，每当数据变化时，React都会重新构建整个DOM树，然后React将当前整个DOM树和上一次的DOM树进行对比，得到DOM结构的区别，然后仅仅将需要变化的部分进行实际的浏览器DOM更新。如下定义一个最简单的React示例，首先写基本的一个程序入口的组件：
+
+\begin{lstlisting}[language=Javascript]
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+ReactDOM.render(
+	<div>Hello World!</div>,
+	document.getElementById('root')
+);
+\end{lstlisting}
+
+随后定义一个默认的HTML文件：
+
+\begin{lstlisting}[language=HTML]
+<body>
+	<!-- 容器 -->
+	<div id="root"></div>
+	<!-- 引入编译好的js文件 -->
+	<script type="text/javascript" src="./bundle.js"></script>
+</body>
+\end{lstlisting}
+
 \section{Route}
 
 \paragraph{onEnter}
@@ -1357,9 +1380,9 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 \chapter{youtube-dl}
 
 
-
-
 \chapter{Nginx}
+
+Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
 
 \subsection{X-Forwarded-For}
 
