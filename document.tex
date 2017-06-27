@@ -1105,7 +1105,7 @@ sudo apt install fcitx-googlepinyin
 输入如下命令，启动远程调试：
 
 \begin{lstlisting}[language=Bash]
-nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/system-web-boot-1.0.9.jar --spring.config.location=application.properties>/dev/null &
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.9.jar --spring.config.location=application.properties>/dev/null &
 \end{lstlisting}
 
 
@@ -1593,14 +1593,14 @@ yum provides */libssl.so.1.0.0
 
 \subsection{Fiddler替换Host}
 
-\section{Charles}
+\chapter{Charles}
 
 Charles是Mac端的一款截取与分析网络请求的工具，在网络开发中使用其作分析，可以大大提高我们的开发效率。Charles是收费软件，一般可以试用三十天。Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information).
 
 \subsection{title}
 
 
-\section{OpenVPN}
+\chapter{OpenVPN}
 
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
@@ -1850,7 +1850,7 @@ By default, OpenVPN only sends some traffic through the VPN — traffic that is 
 
 An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
-\section{Nmap(GNU General Public License)}
+\chapter{Nmap(GNU General Public License)}
 
 Nmap(Network Mapper)，网络映射器，是一款开放源代码的网络探测和安全审核的工具。
 它的设计目标是快速地扫描大型网络，当然用它扫描单个主机也没有问题。
@@ -2511,7 +2511,12 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \part{Network}
 
-\section{HTTP}
+\chapter{HTTP}
+
+\subsection{性能分析}
+
+在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求。
+
 
 \subsection{Session}
 
