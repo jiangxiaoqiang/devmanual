@@ -996,7 +996,7 @@ env
 unset http_proxy
 \end{lstlisting}
 
-set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。在.bashrc脚本中，删除了export定义的环境变量并重新source脚本后，在env命令中还是可以查看到定义的变量。不知道是什么原因。
 
 \begin{tabular}{cp{8cm}c}
 	\hline
