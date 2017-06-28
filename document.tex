@@ -689,6 +689,18 @@ ReactDOM.render(
 
 \section{Route}
 
+\subsection{数据获取流程}
+
+前端在进入一个页面时，首先触发React组件的componentWillMount事件。在此事件中调用Service，通过axios库发送XHR请求向服务端获取数据。获取到数据后，调用dispatch将获取到的结果放入state中。等待组件渲染时，直接从props中获取相应的数据即可。react-redux帮我们做了这些，同时它提供了Provider和connect。Provider是一个组件，它接受store作为props，然后通过context往下传，这样react中任何组件都可以通过contex获取store。connect函数在初始化的时候会将mapDispatchToProps对象绑定到store，如果mapDispatchToProps是函数则在Connect组件获得store后，根据传入的store.dispatch和action通过bindActionCreators进行绑定，再将返回的对象绑定到store，connect函数会返回一个wrapWithConnect函数，同时wrapWithConnect会被调用且传入一个ui组件，wrapWithConnect内部使用class Connect extends Component定义了一个Connect组件，传入的ui组件就是Connect的子组件，然后Connect组件会通过context获得store，并通过store.getState获得完整的state对象，将state传入mapStateToProps返回stateProps对象、mapDispatchToProps对象或mapDispatchToProps函数会返回一个dispatchProps对象，stateProps、dispatchProps以及Connect组件的props三者通过Object.assign()，或者mergeProps合并为props传入ui组件。然后在ComponentDidMount中调用store.subscribe，注册了一个回调函数handleChange监听state的变化。此时ui组件就可以在props中找到actionCreator，当我们调用actionCreator时会自动调用dispatch，在dispatch中会调用getState获取整个state，同时注册一个listener监听state的变化，store将获得的state和action传给combineReducers，combineReducers会将state依据state的key值分别传给子reducer，并将action传给全部子reducer，reducer会被依次执行进行action.type的判断，如果有则返回一个新的state，如果没有则返回默认。combineReducers再次将子reducer返回的单个state进行合并成一个新的完整的state。此时state发生了变化。Connect组件中调用的subscribe会监听到state发生了变化，然后调用handleChange函数，handleChange函数内部首先调用getState获取新的state值并对新旧两个state进行浅对比，如果相同直接return，如果不同则调用mapStateToProps获取stateProps并将新旧两个stateProps进行浅对比，如果相同，直接return结束，不进行后续操作。如果不相同则调用this.setState()触发Connect组件的更新，传入ui组件，触发ui组件的更新，此时ui组件获得新的props，react --> redux --> react 的一次流程结束。流程如图\ref{fig:front-end-flow}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.1]{front-end-flow.jpg}
+	\caption{前端数据交互流程}
+	\label{fig:front-end-flow}
+\end{figure}
+
+
 \paragraph{onEnter}
 
 Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，比如验证权限。单页应用路由的权限控制的基本思路是：监听路由的改变，每当路由将要发生改变，我们就使用一个中间服务(该服务介于上一级路由和将要到达路由之间启动)，来判断我们是否有进入这个路由的权限，有的话直接进入，没有的话就redirect。在React中，为某个路由进行权限监听的方式是：
@@ -698,6 +710,12 @@ Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，�
 \end{lstlisting}
 
 该onEnter属性对应连着一个具有判断权限的中间服务。
+
+\section{MobX}
+
+\subsection{简介}
+
+mobx 是一个库 (library)，不是一个框架 (framework)。可以和React组合使用，MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP). React and MobX together are a powerful combination. redux 管理的是 (STORE -> VIEW -> ACTION) 的整个闭环，而 mobx 只关心 STORE -> VIEW 的部分。
 
 \section{gulp}
 
@@ -750,8 +768,6 @@ gulp.task('default', ['clean'], function() {
 clean任务执行完成了才会去运行其他的任务，在gulp.start()里的任务执行的顺序是不确定的，所以将要在它们之前执行的任务写在数组里面。
 
 \section{webpack}
-
-
 
 
 \section{Axios}
