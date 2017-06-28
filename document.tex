@@ -825,7 +825,7 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \part{OS}
 
-\section{Linux}
+\chapter{Linux}
 
 在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
@@ -906,7 +906,7 @@ echo "set completion-ignore-case on">>~/.inputrc
 
 设置完毕后重新打开终端即可。
 
-\subsection{命令行}
+\subsection{命令}
 
 \paragraph{ls}
 
@@ -915,6 +915,18 @@ echo "set completion-ignore-case on">>~/.inputrc
 \begin{lstlisting}[language=Bash]
 ls -lh authorized_keys
 \end{lstlisting}
+
+\paragraph{find}
+
+在当前目录下查找大文件：
+
+\begin{lstlisting}[language=Bash]
+find . -type f -size +1000k
+#查找大于100MB的文件
+find . -type f -size +100M
+\end{lstlisting}
+
+size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。
 
 \subsection{自动部署}
 
