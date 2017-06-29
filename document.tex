@@ -687,7 +687,26 @@ ReactDOM.render(
 </body>
 \end{lstlisting}
 
-\section{Route}
+\section{Component}
+
+\subsection{Provider}
+
+Provider 是 React-redux 库提供的，Provider 本身并没有做很多事情，只是把 store放在 context 里罢了。实际上如果你用 react-redux，那么连接视图和数据层最好的办法是使用 connect 函数。本质上 Provider 就是给 connect 提供 store 用的。在入口函数处定义：
+
+\begin{lstlisting}[language=Javascript]
+const rootElement = document.getElementById('root');
+
+ReactDOM.render(
+	<Provider store={store}>
+		<App />
+	</Provider>,
+	rootElement
+);
+\end{lstlisting}
+
+\subsection{Route}
+
+react-router 更新到了4.0，很多API已经不一样了。history 被纳入了 react-router-dom 文件下的 HashRouter、BrowserRouter等。
 
 \subsection{数据获取流程}
 
