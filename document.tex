@@ -23,6 +23,9 @@
 \usepackage{ifthen}
 \usepackage{longtable}
 
+%Figure显示为中文的“图”
+\renewcommand\figurename{图}
+
 %%%% 下面的命令设置行间距与段落间距 %%%%
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
@@ -137,6 +140,10 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
+
+\subsection{拦截操作}
+
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。
 
 \section{注解}
 
@@ -664,6 +671,10 @@ sudo pip install mysql-python
 
 \chapter{React}
 
+\section{组件}
+
+\subsection{第一个React}
+
 在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作。而复杂或频繁的DOM操作通常是性能瓶颈产生的原因（如何进行高性能的复杂DOM操作通常是衡量一个前端开发人员技能的重要指标）。React为此引入了虚拟DOM（Virtual DOM）的机制：在浏览器端用Javascript实现了一套DOM API。基于React进行开发时所有的DOM构造都是通过虚拟DOM进行，每当数据变化时，React都会重新构建整个DOM树，然后React将当前整个DOM树和上一次的DOM树进行对比，得到DOM结构的区别，然后仅仅将需要变化的部分进行实际的浏览器DOM更新。如下定义一个最简单的React示例，首先写基本的一个程序入口的组件：
 
 \begin{lstlisting}[language=Javascript]
@@ -687,7 +698,98 @@ ReactDOM.render(
 </body>
 \end{lstlisting}
 
-\section{Route}
+\subsection{规范}
+
+React模块使用.jsx扩展名，如BookMain.jsx。对于JSX属性值总是使用双引号("), 其他均使用单引号。为什么? JSX属性 不能包括转译的引号, 因此在双引号里包括像 "don't" 的属性值更容易输入。HTML属性也是用双引号，所以JSX属性也遵循同样的语法。
+
+\subsection{Router}
+
+Web 服务并不会解析 hash，也就是说 \# 后的内容 Web 服务都会自动忽略，但是 JavaScript 是可以通过 window.location.hash 读取到的，读取到路径加以解析之后就可以响应不同路径的逻辑处理。history 是 HTML5 才有的新 API，可以用来操作浏览器的 session history (会话历史)。在HTML5的history API出现之前，前端的路由都是通过 hash 来实现的，hash 能兼容低版本的浏览器。React Router的设计思想来源于Ember的路由，如果原来有用过Ember的路由，那么应该对React Router不会陌生。React Router 4.0（以下简称 RR4） 已经正式发布，它遵循react的设计理念，即万物皆组件。所以 RR4 只是一堆提供了导航功能的组件（还有若干对象和方法），具有声明式（引入即用），可组合性的特点。添加一个Router组件如下：
+
+\begin{lstlisting}[language=Javascript]
+import React from "react";
+import {BrowserRouter, Route} from 'react-router-dom'
+
+const User = ({match}) => {
+	return <h1>Hello {match.params.username}!</h1>
+}
+
+const routes = (
+	<BrowserRouter>
+		<Route path="/user/:username" component={User}/>
+	</BrowserRouter>
+);
+
+export default routes;
+\end{lstlisting}
+
+<BrowserRouter>是一个使用了HTML5 history API的高阶路由组件，保证你的UI界面和URL保持同步。使用HTML5历史记录API（pushState，replaceState和popstate事件）的<Router>来保持UI与URL的同步。<Route> 也许是RR4中最重要的组件了。它最基本的职责就是当页面的访问地址与 Route 上的 path 匹配时，就渲染出对应的 UI 界面。<Route> 自带三个render method和三个props，props 分别是：match、location、history。所有的render method 无一例外都将被传入这些props。访问效果如图\ref{fig:firstroute}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{firstroute.png}
+	\caption{React Route效果}
+	\label{fig:firstroute}
+\end{figure}
+
+\subsection{Provider}
+
+Provider方法会在react组件外边包一层名为provider的组件，使其所有子组件共享store提供的方法。connect方法生成容器组件以后，需要让容器组件拿到state对象，才能生成 UI 组件的参数。一种解决方法是将state对象作为参数，传入容器组件。但是，这样做比较麻烦，尤其是容器组件可能在很深的层级，一级级将state传下去就很麻烦。React-Redux 提供Provider组件，可以让容器组件拿到state。
+
+\begin{lstlisting}[language=Javascript]
+ReactDOM.render(
+	<Provider store={store}>{routes}</Provider>,
+	document.getElementById('root')
+);
+\end{lstlisting}
+
+Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。它的原理是React组件的context属性。
+
+\subsection{Connect}
+
+React-Redux 提供connect方法，用于从 UI 组件生成容器组件。connect的意思，就是将这两种组件连起来。
+
+\subsection{Actions}
+
+Action向store派发指令，action 函数会返回一个带有 type 属性的 Javascript Plain Object，store将会根据不同的action.type来执行相应的方法。
+
+\subsection{Store}
+
+store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起。
+
+\subsection{Props}
+
+当你用React Redux的connect进行封装的时候，connect方法会把dispatch放到props中。
+
+\paragraph{React Router父子Props传递}
+
+在React中需要将bookService由父组件中传递到子组件中，写法如下：
+
+\begin{lstlisting}[language=Javascript]
+const routes = (
+	<BrowserRouter>
+		<BookContainer>
+			<switch>
+				<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
+			</switch>
+		</BookContainer>
+	</BrowserRouter>
+);
+\end{lstlisting}
+
+在浏览器中，切换到相应组件上，可以看到对应的属性，如图\ref{fig:bookserviceprops}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{bookserviceprops.png}
+	\caption{React 组件Props传递}
+	\label{fig:bookserviceprops}
+\end{figure}
+
+\subsection{Reducers}
+
+Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过 Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。
+
 
 \paragraph{onEnter}
 
@@ -751,7 +853,7 @@ clean任务执行完成了才会去运行其他的任务，在gulp.start()里的
 
 \section{webpack}
 
-
+使用install --save时，将默认在package.json中添加小尖尖\^而不是小波浪\~作为依赖版本的前缀。
 
 
 \section{Axios}
@@ -835,7 +937,38 @@ sudo apt-get -f install
 
 f参数表示尝试修正系统依赖损坏处。
 
-\subsection{shell}
+\section{shell}
+
+使用一个变量的值时，有助于防止由于空格导致单词分割开和由于识别和扩展了通配符而导致的不必要匹配。除了非常小的脚本（只有几行代码），总是记得用函数来使代码模块化且使得脚本更可读和可重用。在shell中 == 是 = 的同义词，因此仅用个单 = 来做字符串比较。命令代换 是用这个命令的输出结果取代命令本身。用 \$(command) 而不是引号 command 来做命令代换。
+
+\begin{lstlisting}[language=Bash]
+user=$(echo “$UID”)
+\end{lstlisting}
+
+用readonly来声明静态变量，静态变量不会改变；它的值一旦在脚本中定义后不能被修改。常量和环境变量(Constants and Environment Variable Names)用大写字母命名，而自定义变量用小写。所有的bash环境变量用大写字母去命名，因此用小写字母来命名你的自定义变量以避免变量名冲突。
+
+\subsection{shell调试}
+
+shell跟踪简单的来说就是跟踪shell脚本中的命令的执行。要打开shell跟踪，请使用-x(xtrace或execution trace简称)调试选项。这会让shell在终端上显示所有执行的命令及其参数，如下命令调试运行脚本onekey-deploy.sh。
+
+\begin{lstlisting}[language=Bash]
+bash -x onekey-deploy.sh
+\end{lstlisting}
+
+输出效果如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{shellscriptdebug.png}
+	\caption{Shell脚本调试}
+	\label{fig:shellscriptdebug}
+\end{figure}
+
+-n(noexec或no ecxecution简称)激活语法检查模式。它会让 shell 读取所有的命令，但是不会执行它们，它（shell）只会检查语法。如果脚本没有语法错误，就没有任何输出，如果有语法错误，则会进行提示：
+
+\begin{lstlisting}[language=Bash]
+bash -n onekey-deploy.sh
+\end{lstlisting}
 
 \paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
 
@@ -862,6 +995,7 @@ export EDITOR=vim
 mkdir -p /home/dolphin/hldata/backend/credit-system
 #新建开发目录树
 mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
+sudo mkdir -p /opt/dolphin/{frontend/{dist},backend/{log,app},spider}
 \end{lstlisting}
 
 \paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
@@ -906,7 +1040,7 @@ echo "set completion-ignore-case on">>~/.inputrc
 
 设置完毕后重新打开终端即可。
 
-\subsection{命令}
+\section{命令}
 
 \paragraph{ls}
 
@@ -926,7 +1060,22 @@ find . -type f -size +1000k
 find . -type f -size +100M
 \end{lstlisting}
 
-size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。
+size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。在指定目录下查找指定范围大小的文件：
+
+\begin{lstlisting}[language=Bash]
+# 在根目录下查找xls/xlsx/mp3文件且文件大小大于1MB
+sudo find / -regex '.*\.xls\|.*\.xlsx\|.*\.mp3' -size +1M
+\end{lstlisting}
+
+\paragraph{tar}
+
+tar命令用于打包或解压文件。
+
+\begin{lstlisting}[language=Bash]
+tar -zcvf backend.tar.gz backend/
+\end{lstlisting}
+
+c创建新的档案文件。如果用户想备份一个目录或是一些文件，就要选择这个选项。相当于打包。-z ：是否同时具有 gzip 的属性？亦即是否需要用 gzip 压缩或解压？ 一般格式为xx.tar.gz或xx. tgz。-f ：使用档名，请留意，在 f 之后要立即接档名喔！不要再加其他参数！
 
 \subsection{自动部署}
 
@@ -1060,7 +1209,7 @@ GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软�
 screen sudo openvpn client.conf
 \end{lstlisting}
 
-接着在跳出的窗口中，输入密码。按下Ctrl + A后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。查看当前系统中有哪些screen会话：
+接着在跳出的窗口中，输入密码。按下Ctrl + a后再按下d键，暂时断开screen会话即可。只要Screen本身没有终止，在其内部运行的会话都可以恢复。这一点对于远程登录的用户特别有用——即使网络连接中断，用户也不会失去对已经打开的命令行会话的控制。只要再次登录到主机上执行screen -r就可以恢复会话的运行。同样在暂时离开的时候，也可以执行分离命令detach，在保证里面的程序正常运行的情况下让Screen挂起（切换到后台）。这一点和图形界面下的VNC很相似。查看当前系统中有哪些screen会话：
 
 \begin{lstlisting}[language=Bash]
 screen -ls
@@ -1072,7 +1221,7 @@ screen -ls
 screen -r 12865
 \end{lstlisting}
 
-正常情况下，当你退出一个窗口中最后一个程序（通常是bash）后，这个窗口就关闭了。另一个关闭窗口的方法是使用C-a k，这个快捷键杀死当前的窗口，同时也将杀死这个窗口中正在运行的进程。如果一个Screen会话中最后一个窗口被关闭了，那么整个Screen会话也就退出了，screen进程会被终止。除了依次退出/杀死当前Screen会话中所有窗口这种方法之外，还可以使用快捷键C-a :，然后输入quit命令退出Screen会话。需要注意的是，这样退出会杀死所有窗口并退出其中运行的所有程序。其实C-a :这个快捷键允许用户直接输入的命令有很多，包括分屏可以输入split等，这也是实现Screen功能的一个途径
+正常情况下，当你退出一个窗口中最后一个程序（通常是bash）后，这个窗口就关闭了。另一个关闭窗口的方法是使用Ctrl+a,k，这个快捷键杀死当前的窗口，同时也将杀死这个窗口中正在运行的进程。如果一个Screen会话中最后一个窗口被关闭了，那么整个Screen会话也就退出了，screen进程会被终止。除了依次退出/杀死当前Screen会话中所有窗口这种方法之外，还可以使用快捷键C-a :，然后输入quit命令退出Screen会话。需要注意的是，这样退出会杀死所有窗口并退出其中运行的所有程序。其实C-a :这个快捷键允许用户直接输入的命令有很多，包括分屏可以输入split等，这也是实现Screen功能的一个途径
 
 \subsubsection{查看Linux信息}
 
@@ -1083,7 +1232,7 @@ uname －a
 
 \subsection{XFCE桌面}
 
-占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
+占用资源较GNOME ，KDE少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
 
 \subsection{Fedora访问共享文件夹}
 
@@ -1094,7 +1243,17 @@ uname －a
 sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/data /home/dolphin/software
 \end{lstlisting}
 
-一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
+一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows共享电脑的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.在Ubuntu下，首先安装cifs工具：
+
+\begin{lstlisting}[language=Bash]
+#安装cifs
+sudo apt-get install cifs-utils -y
+#挂载共享文件夹
+sudo mount -t cifs -o username="aaa",uid="hldev",gid="hldev" //10.55.10.2/data /home/hldev/software
+#检查挂载是否成功，没有输出法代表挂载成功
+sudo mount -a
+\end{lstlisting}
+
 
 
 \subsection{软件包管理}
@@ -1129,26 +1288,76 @@ sudo apt install fcitx-googlepinyin
 
 安装好后需要重新登入系统，添加输入法配置时才可以选择Google输入法。
 
+\section{文件}
+
+\subsection{/etc/fstab}
+
+磁盘被手动挂载之后都必须把挂载信息写入/etc/fstab(File System Table)这个文件中，否则下次开机启动时仍然需要重新挂载。系统开机时会主动读取/etc/fstab这个文件中的内容，根据文件里面的配置挂载磁盘。这样我们只需要将磁盘的挂载信息写入这个文件中我们就不需要每次开机启动之后手动进行挂载了。
+
 \part{Tool}
 
 \newpage
 
 \chapter{Intellij Idea}
 
+\section{Debug}
+
 \subsection{Intellij Idea远程调试}
 
-输入如下命令，启动远程调试：
+输入如下命令，在服务端开启远程调试：
 
 \begin{lstlisting}[language=Bash]
 nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.9.jar --spring.config.location=application.properties>/dev/null &
 \end{lstlisting}
 
+-Xms表示Max Execute Stack，set initial Java heap size，其中X可以理解成Extended或者Execute。属于扩展选项，Java的参数分为标准选项(java -help命令查看)、X选项(java -X命令查看)、XX选项。Ｘ选项基本就固定了，不再变化。X选项有可能变动，XX选项属于实验性选项。如下命令可以打印所有XX选项的默认值：
+
+\begin{lstlisting}[language=Bash]
+java -XX:+PrintFlagsInitial
+\end{lstlisting}
+
+JDWP是Java Debug Wire Protocol的缩写，它定义了调试器（debugger）和被调试的Java虚拟机（target vm）之间的通信协议。
 
 \subsection{Intellij Idea调试慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
+\subsection{Intellij Idea断点}
+
+有时在调试时想让程序在发生异常的地方停下，可以在Intellij Idea中设置异常断点(Ctrl + Shift + B)。如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{javabreakpointsetting.png}
+	\caption{Java断点中断设置}
+	\label{fig:javabreakpointsetting}
+\end{figure}
+
+图中设置所有的异常都会停止程序。
+
 \subsection{Tips}
+
+\paragraph{快捷键}
+
+Intellij Idea重要的快捷键如下表所示：
+
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{描述}  \\
+	\hline			
+	Alt + Left/Right  & 编辑器左右文件切换 \\	
+	\hline
+\end{tabular}
+
+Ubuntu环境下，使用Intellij Idea进行程序开发，在Idea中有个热键“Ctrl+Alt+Left”用于代码浏览的回退，但是我发现我按下以上热键后总是没有一点反应，很明显，该热键已经被其他程序注册了,发现是Gnome下的"switch-to-workspace-left"命令。用命令打开dconf-editor,取消热键配置，如图\ref{fig:ubuntugnomekeybindings}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{ubuntugnomekeybindings.png}
+	\caption{配置Ubuntu Key Bindings}
+	\label{fig:ubuntugnomekeybindings}
+\end{figure}
 
 
 \paragraph{Class JavaLaunchHelper is implemented}
@@ -1175,7 +1384,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启Intellij Idea。 情况三配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的情况是属于勾选了省电模式。
 
 
 \chapter{Gradle}
@@ -1428,7 +1637,7 @@ TLS SNI support enabled
 configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
 \end{lstlisting}
 
-此处显示已经编译了http\_realip\_module模块。项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
+以上是在开发机器上查看，显示已经编译了http\_realip\_module模块。但是项目中使用的tengine，经过查看没有编译http\_realip\_module模块，所以需要手动将此模块编译进去，从tengine官网上下载好源码，输入如下命令进行编译：
 
 \begin{lstlisting}[language=bash]
 # 在Ubuntu 14.04 LTS下安装pcre依赖
@@ -1445,9 +1654,7 @@ sudo make install
 ./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
 \end{lstlisting}
 
-不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
-你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
-指定prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+不指定prefix，则可执行文件默认放在/usr/local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr/local/share。不指定prefix时，如果要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉，比较麻烦。如果指定了prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
 
 \begin{lstlisting}[language=bash]
 # 将realip模块编译进入，并指定pcre
@@ -1560,6 +1767,7 @@ HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和
 在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
 
 \begin{lstlisting}[language=bash]
+#Nginx中指定HTTP Header的最大请求头长度
 client_header_buffer_size 2048k;
 \end{lstlisting}
 
@@ -1567,6 +1775,7 @@ client_header_buffer_size 2048k;
 
 \begin{lstlisting}[language=bash]
 #单位为KB,如果没有指定，默认为8192(8KB)
+#Spring Boot配置文件中指定Tomcat请求头大小
 server.max-http-header-size=1024
 \end{lstlisting}
 
@@ -2061,7 +2270,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 \end{tabular}
 
 
-\section{Raspberry Pi}
+\chapter{Raspberry Pi}
 
 \subsection{Raspberry Pi远程}
 
@@ -2118,7 +2327,17 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
-\section{Git}
+\chapter{Git}
+
+\subsection{remote}
+
+添加远程仓库：
+
+\begin{lstlisting}[language=Bash]
+#添加名为company-internal的远程仓库
+git remote add company-internal http://xiaoqiang.jiang@gitlab.com/backend/credit-system.git
+\end{lstlisting}
+
 
 \subsection{配置}
 
@@ -2331,7 +2550,15 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
-\subsection{支持语言}
+\subsection{设置}
+
+将英文的Figure设置为中文的图：
+
+\begin{lstlisting}[language=Bash]
+\renewcommand\figurename{图}
+\end{lstlisting}
+
+\paragraph{支持语言}
 
 Latex原生不支持JavaScript语言，添加如下定义：
 
