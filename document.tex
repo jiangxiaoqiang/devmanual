@@ -138,6 +138,19 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
+\subsection{接口返回}
+
+接口返回的格式如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{restresponse.png}
+	\caption{Restful接口返回数据示例}
+	\label{fig:restresponse}
+\end{figure}
+
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。
+
 \section{注解}
 
 \paragraph{ComponentScan}
