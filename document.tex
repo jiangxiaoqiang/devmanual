@@ -791,6 +791,20 @@ const routes = (
 );
 \end{lstlisting}
 
+其中Book处于内层，负责渲染界面，所以叫做展示组件(Presentational Container)。BookContainer与Book组件属于父子组件的关系，BookContainer负责和Redux Store打交道，处于外层，称作容器组件(Container Component)。容器组件的定义如下：
+
+\begin{lstlisting}[language=Javascript]
+/**
+* 容器组件，负责与Redux Store打交道
+* 通过props把状态传递给内层组件
+*/
+class BookContainer extends Component {
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
+}
+\end{lstlisting}
+
 在浏览器中，切换到相应组件上，可以看到对应的属性，如图\ref{fig:bookserviceprops}所示。
 
 \begin{figure}[htbp]
