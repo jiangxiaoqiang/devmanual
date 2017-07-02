@@ -816,6 +816,31 @@ Promise 对象有以下两个特点。
 
 Promise 也有一些缺点。首先，无法取消 Promise，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，Promise 内部抛出的错误，不会反应到外部。第三，当处于 Pending 状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
+\subsection{Axios请求}
+
+一个简单的Axios请求示例如下：
+
+\begin{lstlisting}[language=JavaScript]
+import axios from 'axios';
+
+export function request() {
+	return axios({
+		method: 'get', url: 'http://localhost:8011/api/book/111'
+	}).then(
+		response => {
+			console.log(response)
+		}
+	).catch(
+		error => {
+			console.error(error);
+		}
+	);
+}
+\end{lstlisting}
+
+
+这里需要解决跨域问题，通过Node或Nginx等做Proxy，或者在服务器端配置CORS。
+
 \subsection{Axios拦截响应}
 
 拦截响应可以对服务端抛出的错误做统一的handle:
