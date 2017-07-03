@@ -954,6 +954,9 @@ axios.interceptors.response.use(
 );
 \end{lstlisting}
 
+\subsection{Promise}
+
+为了降低异步编程的复杂性，开发人员一直寻找简便的方法来处理异步操作。其中一种处理模式称为promise，它代表了一种可能会长时间运行而且不一定必须完整的操作的结果。这种模式不会阻塞和等待长时间的操作完成，而是返回一个代表了承诺的（promised）结果的对象。promise模式通常会实现一种称为then的方法，用来注册状态变化时对应的回调函数。promise模式在任何时刻都处于以下三种状态之一：未完成（unfulfilled）、已完成（resolved）和拒绝（rejected）。Promise.reject返回了一个拒绝状态的Promise对象. 对于这样的Promise对象, 如果其后续then | catch中都没有声明onRejected回调, 它将会抛出一个 “Uncaught (in promise) …”的错误. Promise之间泾渭分明, 内部Promise抛出的任何错误,外部Promise对象都无法感知并捕获. 同时, 由于promise是异步的, try catch语句也无法捕获其错误.因此养成良好习惯, promise记得写上catch.
 
 \section{Cookie}
 
