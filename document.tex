@@ -2521,6 +2521,34 @@ Latex原生不支持JavaScript语言，添加如下定义：
 
 \part{DB}
 
+\chapter{性能(Performance)}
+
+\section{索引(Index)}
+
+\subsection{索引常识}
+
+绝大多数情况下，数据库只使用一个索引。在开发中遇到有时根据时间查询很快：
+
+\begin{lstlisting}[language=SQL]
+--在列org\_id和jdrq上都建立了索引
+--同样都查询语句，不同都org\_id值会有不同都查询性能
+--当org\_id结果集很少当时候，数据库会使用org\_id索引
+--在使用了org\_id索引后，不会使用jdrq索引
+--同理，当org\_id结果集更大，根据jdrq索引效率更高时
+--数据库会使用jdrq列作为索引，而不会使用org\_id索引
+select *
+from table
+where org_id = '1000'
+order by jdrq desc
+\end{lstlisting}
+
+所以需要同时利用多个列的索引，或者查询条件包含多列时，应该使用联合索引。
+
+\begin{lstlisting}[language=SQL]
+create index idx_ts_b_xzxk_jdrq_org_id on xzxk(jdrq desc,org_id);
+\end{lstlisting}
+
+
 \section{Redis}
 
 \subsection{安装}
@@ -2707,6 +2735,8 @@ select * from douban_book_id where isscapy = 0 limit 1
 \end{lstlisting}
 
 难怪后来变的很慢，把中间停顿的sleep函数去掉之后还是很慢，开始还一位是sleep函数暂停的问题。
+
+
 
 \part{Network}
 
