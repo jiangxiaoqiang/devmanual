@@ -2489,6 +2489,24 @@ git config --global merge.tool meld
 
 \subsection{Console}
 
+\subsection{Async调试}
+
+在Promise被广泛应用的今天，我们都知道，Promise的回调是异步执行的，没有开启Async模式前，调动栈只记录到回调函数本身，我们无法找到代码执行的顺序，这给我们调试带来巨大的困难。Async模式可以解决这个问题。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{chromeasyncdebugging.png}
+	\caption{Google Chrome异步调试}
+	\label{fig:chromeasyncdebugging}
+\end{figure}
+
+
+
+
+\paragraph{查找成员函数}
+
+Ctrl+Shif+O文件中定位成员函数。
+
 \paragraph{打印对象数组}
 
 在Javascript中可能返回有数组，有的时候可能某一个数组元素感觉数据不对，在Javascript调试跟踪时，输出了一些Object对象，如果是几个元素，还可以一个一个点开查看，如果有成百上千的元素，一个一个点开查看几乎是不可能的，至今没有发现在结果中按关键字搜索的功能，此时可以使用如下方法：
