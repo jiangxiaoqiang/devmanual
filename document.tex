@@ -394,6 +394,23 @@ public class DataSourceConfig {
 
 由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
+\section{单元测试}
+
+\subsection{Gradle中单元测试}
+
+项目使用Gradle进行构建，写好单元测试类后，在Gradle中做如下配置:
+
+\begin{lstlisting}[language=Java]
+project(':cc-api') {	
+	test{
+		include('**/*Test.class')
+	}
+}
+\end{lstlisting}
+
+在每次构建时都会运行单元测试。Mock和Stub是两种测试代码功能的方法。Mock测重于对功能的模拟。Stub测重于对功能的测试重现。比如对于List接口，Mock会直接对List进行模拟，而Stub会新建一个实现了List的TestList，在其中编写测试的代码。强烈建议优先选择Mock方式，因为Mock方式下，模拟代码与测试代码放在一起，易读性好，而且扩展性、灵活性都比Stub好。
+
+
 \section{常见问题}
 
 \subsection{getAttribute: Session already invalidated}
@@ -828,6 +845,14 @@ Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，�
 \end{lstlisting}
 
 该onEnter属性对应连着一个具有判断权限的中间服务。
+
+\subsection{Immutable}
+
+JavaScript 中的对象一般是可变的（Mutable），因为使用了引用赋值，新的对象简单的引用了原始对象，改变新的对象将影响到原始对象。如 foo={a: 1}; bar=foo; bar.a=2 你会发现此时 foo.a 也被改成了 2。虽然这样做可以节约内存，但当应用复杂后，这就造成了非常大的隐患，Mutable 带来的优点变得得不偿失。为了解决这个问题，一般的做法是使用 shallowCopy（浅拷贝）或 deepCopy（深拷贝）来避免被修改，但这样做造成了 CPU 和内存的浪费。Immutable 可以很好地解决这些问题。
+
+\paragraph{IMMUTABLE DATA}
+
+Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
 
 \section{MobX}
 
@@ -2225,7 +2250,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 \end{tabular}
 
 
-\section{Raspberry Pi}
+\chapter{Raspberry Pi}
 
 \subsection{Raspberry Pi远程}
 
@@ -2238,7 +2263,7 @@ sudo apt-get install tightvncserver　－ｙ
 vncpasswd
 \end{lstlisting}
 
-\section{Widgets}
+\chapter{Widgets}
 
 \subsection{autojump}
 
@@ -2282,7 +2307,7 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
-\section{Git}
+\chapter{Git}
 
 \subsection{配置}
 
@@ -2313,7 +2338,7 @@ git config --system http.sslverify false
 \end{lstlisting}
 
 
-\section{ssh}
+\chapter{ssh}
 
 \subsection{免密登陆}
 
@@ -2410,7 +2435,7 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 \end{lstlisting}
 
-\section{Git}
+\chapter{Git}
 
 \subsection{merge}
 
@@ -2420,9 +2445,9 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 git config --global merge.tool meld
 \end{lstlisting}
 
-\section{Google Chrome}
+\chapter{Google Chrome}
 
-\subsection{DevTools}
+\section{DevTools}
 
 \begin{tabular}{|c|p{6cm}|}
 	\hline
@@ -2434,6 +2459,26 @@ git config --global merge.tool meld
 	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板 \\
 	\hline
 \end{tabular}
+
+\subsection{Console}
+
+\paragraph{打印对象数组}
+
+在Javascript中可能返回有数组，有的时候可能某一个数组元素感觉数据不对，在Javascript调试跟踪时，输出了一些Object对象，如果是几个元素，还可以一个一个点开查看，如果有成百上千的元素，一个一个点开查看几乎是不可能的，至今没有发现在结果中按关键字搜索的功能，此时可以使用如下方法：
+
+\begin{lstlisting}[language=Bash]
+console.table(data);
+\end{lstlisting}
+
+即可以表格的形式显示所有元素，其中data表示一个对象或者数组，如图\ref{fig:googlechromeconsoletable}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{googlechromeconsoletable.png}
+	\caption{Google Chrome查看对象数组}
+	\label{fig:googlechromeconsoletable}
+\end{figure}
+
 
 \subsection{Source Map}
 
@@ -2559,7 +2604,19 @@ h=\log_{(m+1)} N
 
 当数据量N一定的情况下，m越大，h越小；而m = 磁盘块的大小 / 数据项的大小，磁盘块的大小也就是一个数据页的大小，是固定的，如果数据项占的空间越小，数据项的数量越多，树的高度越低。这就是为什么每个数据项，即索引字段要尽量的小，比如int占4字节，要比bigint8字节少一半。这也是为什么b+树要求把真实的数据放到叶子节点而不是内层节点，一旦放到内层节点，磁盘块的数据项会大幅度下降，导致树增高。当数据项等于1时将会退化成线性表。
 
-当b+树的数据项是复合的数据结构，比如(name,age,sex)的时候，b+数是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道下一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。比如当(张三,F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age的缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了， 这个是非常重要的性质，即索引的最左匹配特性\footnote{\url{参考链接：http://tech.meituan.com/mysql-index.html}}。
+当b+树的数据项是复合的数据结构，比如(name,age,sex)的时候，b+数是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道下一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。比如当(张三,F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age的缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了， 这个是非常重要的性质，即索引的最左匹配特性\footnote{\url{参考链接:http://tech.meituan.com/mysql-index.html}}。
+
+\paragraph{索引原则}
+
+\subparagraph{最左前缀匹配原则}最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
+
+\subparagraph{=和in可以乱序}=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式
+
+\subparagraph{尽量选择区分度高的列作为索引}尽量选择区分度高的列作为索引,区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录
+
+\subparagraph{索引列不能参与计算}索引列不能参与计算，保持列“干净”，比如from\_unixtime(create\_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create\_time = unix\_timestamp(’2014-05-29’);
+
+\subparagraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
 
 \section{Redis}
 
