@@ -2489,6 +2489,10 @@ git config --global merge.tool meld
 
 \subsection{Console}
 
+\paragraph{Log XMLHttpRequests}
+
+想要看到使用中应用发送的 XHR 请求，可以打开 settings 面板（译注：打开调试面板按 F1 呼出）选中 “Log XMLHttpRequests” 选项，然后就可以在 “Console” 面板中看到请求了。点击此请求可以导航到Network选项卡上，当然也可以直接在Network选项卡中查看XHR HttpRequest请求，不过使用Console打印出来到导航还是要方便一些，多了一个入口。
+
 \paragraph{脚本添加到黑盒}
 
 当你使用 “Event listener breakpoint :: Mouse :: Click” 调试事件时，有很大的可能是代码在第三方的库中中断了（例如 jquery ），这时如果你想找到属于自己项目的调用需要在调试器里面点很多次的下一步才能看到。 一种很棒的方式就是把这些第三方的脚本放到黑盒里面，调试器永远不会在黑盒中的脚本内停止，它会一直向后运行，直到运行的代码行位于黑盒之外的文件。 你可以在调用栈面板中右键点击第三方脚本的文件名，然后左键在下拉菜单中点击 “Blackbox Script”。
