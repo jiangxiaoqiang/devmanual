@@ -1400,6 +1400,8 @@ repositories {
 
 总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
+\section{Gradle对象}
+
 \subsection{属性(Properties)}
 
 \subsubsection{Extra Properties}
@@ -1442,6 +1444,31 @@ project(":web"){
 \end{lstlisting}
 
 编译打包后的jar包名称即为dolphin-web.jar。
+
+\subsection{Task}
+
+对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)
+
+\paragraph{拷贝文件}
+
+在项目中需要根据不同的用途生成不同的文件，比如api需要单独打包，平台需要单独打包，但是api和平台的代码都是一套代码，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包名称，使用copy功能来实现。首先定义项目的动态属性：
+
+\begin{lstlisting}[language=Java]
+buildscript {
+	ext {
+		projectVersion = '1.1.11'
+	}
+}
+\end{lstlisting}
+
+然后在task中使用此属性即可。
+
+\begin{lstlisting}[language=Java]
+task copyfile(){
+	println(projectVersion)
+}
+\end{lstlisting}
+
 
 \subsection{同时连接内外网}
 
