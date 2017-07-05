@@ -499,6 +499,14 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 \end{figure}
 
 
+\section{性能(Performance)}
+
+
+
+\subsection{VisualVM}
+
+使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。
+
 
 \newpage
 
@@ -1011,6 +1019,48 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 \end{lstlisting}
 
 \paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
+
+\section{Javascript}
+
+\subsection{prototype}
+
+prototype是用于解决实例对象之间无法共享属性和方法的。
+
+\begin{lstlisting}[language=Javascript]
+function Tiger(name){
+	this.name = name;
+	this.species = "猫科";
+}
+var tigerA = new Tiger("大虎");
+var tigerB = new Tiger("二虎");
+tigerA.species="犬科";
+console.log(tigerB.species);//猫科
+\end{lstlisting}
+
+此处无法做到数据共享，也是极大的资源浪费。其实species共享是符合设计的。使用prototype来实现共享：
+
+\begin{lstlisting}[language=Javascript]
+function Tiger(name) {
+	this.name = name;
+}
+Tiger.prototype = {
+	species: '犬科'
+};
+var tigerA = new Tiger("大虎");
+var tigerB = new Tiger("二虎");
+console.log(tigerA.species);//犬科
+console.log(tigerB.species);//犬科
+Tiger.prototype.species = '猫科';
+console.log(tigerA.species);//猫科
+console.log(tigerB.species);//猫科
+\end{lstlisting}
+
+注意这里是设置Tiger的prototype而不是Tiger实例的prototype。一个未初始化的变量的值为undefined,一个没有传入实参的形参变量的值为undefined,如果一个函数什么都不返回,则该函数默认返回undefined.所以这里在控制台最后会打印一行undefined。普通对象设置prototype使用如下语句：
+
+\begin{lstlisting}[language=Javascript]
+tigerA.__proto__.species = '犬科';
+\end{lstlisting}
+
 
 \part{OS}
 
@@ -2492,7 +2542,7 @@ git config --global merge.tool meld
 	\hline
 	Ctrl+Shift+J (Windows/Linux)  & 打开DevTools Console面板 \\
 	\hline
-	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板 \\
+	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
 	\hline
 \end{tabular}
 
@@ -2556,6 +2606,11 @@ console.table(data);
 \subsection{Elements}
 
 \subsection{Sources}
+
+\paragraph{Snippets}
+
+
+
 
 \subsection{Google Chrome SSH}
 
@@ -2686,6 +2741,14 @@ h=\log_{(m+1)} N
 \subparagraph{索引列不能参与计算}索引列不能参与计算，保持列“干净”，比如from\_unixtime(create\_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create\_time = unix\_timestamp(’2014-05-29’);
 
 \subparagraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
+
+\subsection{like查询}
+
+模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
+
+
+
+
 
 \section{Redis}
 
@@ -2879,6 +2942,15 @@ select * from douban_book_id where isscapy = 0 limit 1
 \part{Network}
 
 \chapter{HTTP}
+
+
+目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
+
+
+
+
+
+
 
 \subsection{性能分析}
 
