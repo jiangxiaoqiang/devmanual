@@ -1274,7 +1274,7 @@ uname －a
 
 占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
 
-\subsection{Fedora访问共享文件夹}
+\subsection{Fedora访问Windows共享文件夹}
 
 在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
 
@@ -1285,6 +1285,15 @@ sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/da
 
 一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
 
+\subsection{Ubuntu访问Windows共享文件夹}
+
+在文件管理器中，点击左侧的“Connect to Server”选项卡，填写Windows的IP，示例如下：
+
+\begin{lstlisting}[language=HTML]
+smb://10.55.10.2
+\end{lstlisting}
+
+点击确定后，在弹出的对话框中输入相应的用户名和密码即可。
 
 \subsection{软件包管理}
 
