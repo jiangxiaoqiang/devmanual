@@ -1409,6 +1409,8 @@ repositories {
 
 总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
+\section{Gradle对象}
+
 \subsection{属性(Properties)}
 
 \subsubsection{Extra Properties}
@@ -1451,6 +1453,31 @@ project(":web"){
 \end{lstlisting}
 
 编译打包后的jar包名称即为dolphin-web.jar。
+
+\subsection{Task}
+
+对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)
+
+\paragraph{拷贝文件}
+
+在项目中需要根据不同的用途生成不同的文件，比如api需要单独打包，平台需要单独打包，但是api和平台的代码都是一套代码，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包名称，使用copy功能来实现。首先定义项目的动态属性：
+
+\begin{lstlisting}[language=Java]
+buildscript {
+	ext {
+		projectVersion = '1.1.11'
+	}
+}
+\end{lstlisting}
+
+然后在task中使用此属性即可。
+
+\begin{lstlisting}[language=Java]
+task copyfile(){
+	println(projectVersion)
+}
+\end{lstlisting}
+
 
 \subsection{同时连接内外网}
 
@@ -2471,6 +2498,33 @@ git config --global merge.tool meld
 
 \subsection{Console}
 
+\paragraph{Log XMLHttpRequests}
+
+想要看到使用中应用发送的 XHR 请求，可以打开 settings 面板（译注：打开调试面板按 F1 呼出）选中 “Log XMLHttpRequests” 选项，然后就可以在 “Console” 面板中看到请求了。点击此请求可以导航到Network选项卡上，当然也可以直接在Network选项卡中查看XHR HttpRequest请求，不过使用Console打印出来到导航还是要方便一些，多了一个入口。
+
+\paragraph{脚本添加到黑盒}
+
+当你使用 “Event listener breakpoint :: Mouse :: Click” 调试事件时，有很大的可能是代码在第三方的库中中断了（例如 jquery ），这时如果你想找到属于自己项目的调用需要在调试器里面点很多次的下一步才能看到。 一种很棒的方式就是把这些第三方的脚本放到黑盒里面，调试器永远不会在黑盒中的脚本内停止，它会一直向后运行，直到运行的代码行位于黑盒之外的文件。 你可以在调用栈面板中右键点击第三方脚本的文件名，然后左键在下拉菜单中点击 “Blackbox Script”。
+
+\paragraph{定位按钮触发代码}
+
+快速定位某个特定按钮或者链接点击后所触发的代码，只需要在你真正点击按钮之前，激活一个 “Event listener breakpoint”, 选中右侧面板下 mouse 下面的 click 确认框即可。
+
+\paragraph{Async调试}
+
+在Promise被广泛应用的今天，我们都知道，Promise的回调是异步执行的，没有开启Async模式前，调动栈只记录到回调函数本身，我们无法找到代码执行的顺序，这给我们调试带来巨大的困难。Async模式可以解决这个问题。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.9]{chromeasyncdebugging.png}
+	\caption{Google Chrome异步调试}
+	\label{fig:chromeasyncdebugging}
+\end{figure}
+
+\paragraph{查找成员函数}
+
+Ctrl+Shif+O文件中定位成员函数。
+
 \paragraph{打印对象数组}
 
 在Javascript中可能返回有数组，有的时候可能某一个数组元素感觉数据不对，在Javascript调试跟踪时，输出了一些Object对象，如果是几个元素，还可以一个一个点开查看，如果有成百上千的元素，一个一个点开查看几乎是不可能的，至今没有发现在结果中按关键字搜索的功能，此时可以使用如下方法：
@@ -2496,6 +2550,12 @@ console.table(data);
 \subsection{Replay XHR}
 
 有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
+
+\subsection{Network}
+
+\subsection{Elements}
+
+\subsection{Sources}
 
 \subsection{Google Chrome SSH}
 
