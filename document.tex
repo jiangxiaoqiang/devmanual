@@ -161,8 +161,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \section{注解}
 
-\paragraph{ComponentScan}
-
+\subsection{ComponentScan}
 
 \section{数据库操作}
 
@@ -359,7 +358,7 @@ SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以
 )
 \end{lstlisting}
 
-其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
+@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
 
 \begin{lstlisting}[language=Java]
 condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
@@ -1165,7 +1164,7 @@ find . -type f -size +1000k
 find . -type f -size +100M
 \end{lstlisting}
 
-size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。
+size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。
 
 \subsection{自动部署}
 
@@ -2597,19 +2596,44 @@ console.table(data);
 
 截止目前几乎没有浏览器完全原生支持es6标准，对于这种情况，Chrome引入了source-map文件，标识es5代码对应的转码前的es6代码哪一行，唯一要做的就是配置webpack自动生成source-map文件，这也很简单，在webpack.config.js中增加一行配置即可（需要重新启动webpack-dev-server使配置生效）
 
-\subsection{Replay XHR}
-
-有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
 
 \subsection{Network}
 
+\paragraph{Replay XHR}
+
+有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
+
+\paragraph{Disable cache}
+
+勾选上Disable cache后，浏览器不会利用本地的Javascript缓存，每次都会到服务器上重新取。
+
+\paragraph{Preserve Log}
+
+保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。
+
+
 \subsection{Elements}
+
+\subsection{Performance}
+
+
 
 \subsection{Sources}
 
 \paragraph{Snippets}
 
+\paragraph{Others}
 
+\subparagraph{查看Render区域}
+
+有时需要查看浏览器重绘制的区域，页面的绘制时间（paint time）是每一个前端开发都需要关注的的重要指标，它决定了你的页面流畅程度。而如何去观察页面的绘制时间，找到性能瓶颈，可以借助Chrome的开发者工具，激活页面绘制区域显示如图\ref{fig:pagepainting}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{pagepainting.png}
+	\caption{激活页面绘制区域高亮}
+	\label{fig:pagepainting}
+\end{figure}
 
 
 \subsection{Google Chrome SSH}
@@ -2742,12 +2766,51 @@ h=\log_{(m+1)} N
 
 \subparagraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
 
+\subsection{索引类型}
+
+\subparagraph{位图索引(Bitmap Index)}
+
+相对于B*Tree索引,占用的空间非常小,创建和使用非常快。位图索引由于只存储键值的起止Rowid和位图,占用的空间非常少。B*Tree索引由于不记录空值,当基于is null的查询时,会使用全表扫描,而对位图索引列进行is null查询时,则可以使用索引。当select count(XX) 时,可以直接访问索引中一个位图就快速得出统计数据。当根据键值做and,or或 in(x,y,..)查询时,直接用索引的位图进行或运算,快速得出结果行数据。
+
+\subparagraph{散列索引Or哈希索引(Hash Index)}
+
+散列索引是根据HASH算法来构建的索引，所以检索速度很快，但不能范围查询。散列索引的特点，只适合等值查询（包括= <> 和in），不适合模糊或范围查询
+
+\subparagraph{聚集索引(Cluster Index)}
+
+聚集索引确定表中数据的物理顺序。聚集索引类似于电话簿，后者按姓氏排列数据。由于聚集索引规定数据在表中的物理存储顺序，因此一个表只能包含一个聚集索引。但该索引可以包含多个列（组合索引），就像电话簿按姓氏和名字进行组织一样。 
+
+\subparagraph{非聚集索引(Non-Cluster Index)}
+
+它并不决定数据在磁盘上的物理排序，索引上只包含被建立索引的数据，以及一个行定位符row-locator，这个行定位符，可以理解为一个聚集索引物理排序的指针，通过这个指针，可以找到行数据。
+
+\subparagraph{联合索引}
+
+联合索引能够满足最左侧查询需求，例如(a, b, c)三列的联合索引，能够加速a | (a, b) | (a, b, c) 三组查询需求。这也就是为何不建立(passwd, loginName)这样联合索引的原因，业务上几乎没有passwd的单条件查询需求，而有很多loginName的单条件查询需求。
+
 \subsection{like查询}
 
 模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
 
+\paragraph{全文索引(Full-text Search)}
 
+在达梦数据库中创建全文索引：
 
+\begin{lstlisting}[language=SQL]
+create context index qymcindex on user_xycq.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+\end{lstlisting}
+
+填充索引：
+
+\begin{lstlisting}[language=SQL]
+alter context index qymcindex on user_xycq.TS_F_CORPORATION_TEST rebuild;
+\end{lstlisting}
+
+删除索引：
+
+\begin{lstlisting}[language=SQL]
+drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
+\end{lstlisting}
 
 
 \section{Redis}
@@ -2962,7 +3025,57 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \subsection{性能分析}
 
-在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求。
+\paragraph{慢的SQL查询}
+
+在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。添加相应的索引可以解决。
+
+\paragraph{大的Javascript脚本}在项目中，发现有的JavaScript脚本特别大，有6MB+之巨，明显是造成性能瓶颈的原因之一，如图\ref{fig:largejavasript}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{largejavasript.png}
+	\caption{较大的Javascript脚本}
+	\label{fig:largejavasript}
+\end{figure}
+
+\subparagraph{去掉Javascript注释}
+
+在webpack.config.js文件的plugins数组里面添加及配置插件即可。
+
+\begin{lstlisting}[language=Javascript]
+new UglifyJsPlugin({
+	output: {
+		comments: false,//去掉Javascript中的注释
+	},
+	compress: {
+		warnings: false
+	}
+})
+\end{lstlisting}
+
+去掉注释后小了400KB左右，但是还是有6MB，没有从根本上解决问题。
+
+\subparagraph{添加插件}
+
+添加一些插件压缩包。
+
+\begin{lstlisting}[language=Javascript]
+plugins: [
+	new webpack.DefinePlugin({ // <-- key to reducing React's size
+		'process.env': {
+		'NODE_ENV': JSON.stringify('production')
+	}
+	}),
+	new webpack.optimize.DedupePlugin(), //dedupe similar code 
+	new webpack.optimize.UglifyJsPlugin(), //minify everything
+	new webpack.optimize.AggressiveMergingPlugin()//Merge chunks 
+]
+\end{lstlisting}
+
+
+\subparagraph{React切换到产品环境}
+
+
 
 
 \subsection{Session}
