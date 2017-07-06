@@ -2791,9 +2791,23 @@ h=\log_{(m+1)} N
 
 联合索引能够满足最左侧查询需求，例如(a, b, c)三列的联合索引，能够加速a | (a, b) | (a, b, c) 三组查询需求。这也就是为何不建立(passwd, loginName)这样联合索引的原因，业务上几乎没有passwd的单条件查询需求，而有很多loginName的单条件查询需求。
 
-\subsection{like查询}
+\subsection{like查询优化}
 
-模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
+目前数据量将近千万，模糊查询效率比较低。模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
+
+\paragraph{采用函数}
+
+采用函数来优化查询：
+
+\begin{lstlisting}[language=SQL]
+SELECT `column` FROM `table` WHERE LOCATE('keyword', `field`)>0
+
+SELECT `column` FROM `table` WHERE POSITION('keyword' IN `filed`)
+
+SELECT `column` FROM `table` WHERE INSTR(`field`, 'keyword' )>0
+
+SELECT * FROM `person` WHERE FIND_IN_SET('apply',`name`);
+\end{lstlisting}
 
 \paragraph{全文索引(Full-text Search)}
 
@@ -3021,16 +3035,11 @@ select * from douban_book_id where isscapy = 0 limit 1
 目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
 
 
-
-
-
-
-
 \subsection{性能分析}
 
 \paragraph{慢的SQL查询}
 
-在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。添加相应的索引可以解决。
+在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。在SQL中添加相应的索引可以解决。
 
 \paragraph{大的Javascript脚本}在项目中，发现有的JavaScript脚本特别大，有6MB+之巨，明显是造成性能瓶颈的原因之一，如图\ref{fig:largejavasript}所示。
 
@@ -3078,8 +3087,9 @@ plugins: [
 
 \subparagraph{React切换到产品环境}
 
+\subparagraph{利用浏览器缓存}
 
-
+有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要访问服务器，减轻了服务端的压力。
 
 \subsection{Session}
 
