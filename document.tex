@@ -515,7 +515,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 
 \chapter{Scala}
 
-\subsection{基础}
+\section{函数}
 
 Scala有两种变量，val和var。val就不能再赋值了。与之对应的，var可以在它生命周期中被多次赋值。数据转换：
 
@@ -543,6 +543,19 @@ case class User(
 }  
 \end{lstlisting}
 
+\subsection{排序}
+
+对Vector中的元素做倒序排序。
+
+\begin{lstlisting}[language=Scala]
+/**
+* 对要排序的列做反向排序（reverse）
+* 全文索引列必须要置于条件的开始
+* 否则无法利用索引
+* 行政许可XDR列有全文索引，需要排序在前
+*/
+val params = pageable.getParams.asScala.toVector.reverse  
+\end{lstlisting}
 
 \chapter{Python}
 
@@ -1761,7 +1774,7 @@ with nginx by using --with-openssl=<path> option.
 这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
 
 \begin{lstlisting}[language=bash]
-./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
 \end{lstlisting}
 
 编译完毕之后，输入如下命令：
@@ -1846,7 +1859,38 @@ server.max-http-header-size=1024
 
 奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
 
+\subsection{开启gzip压缩}
+
+用curl测试是否开启了压缩：
+
+\begin{lstlisting}[language=Bash]
+curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
+curl -I -H "Accept-Encoding: gzip, deflate" "http://5.24.25.6:3800/main"
+\end{lstlisting}
+
+开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+
 \subsection{常见问题}
+
+\paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
+
+以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
+
+\begin{lstlisting}[language=bash]
+./nginx -c /opt/app/local/tengine/conf/nginx.conf
+\end{lstlisting}
+
+也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
+
+\begin{lstlisting}[language=bash]
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+\end{lstlisting}
+
+其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
+
+\begin{lstlisting}[language=bash]
+./nginx -p /opt/app/local/tengine -s reload
+\end{lstlisting}
 
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
 
@@ -2797,16 +2841,35 @@ h=\log_{(m+1)} N
 
 \paragraph{采用函数}
 
-采用函数来优化查询：
+采用函数来优化查询(没有效果)：
 
 \begin{lstlisting}[language=SQL]
+--120W数据平均2.3秒左右，比原生查询稍慢
 SELECT `column` FROM `table` WHERE LOCATE('keyword', `field`)>0
 
+select * 
+from "table" 
+where locate('陶然居',mc)>0
+and code is not null
+limit 0,10;
+
+--120W数据平均1.8秒左右，与原生查询时间相仿
 SELECT `column` FROM `table` WHERE POSITION('keyword' IN `filed`)
 
+select * 
+from "table" 
+where position('西南铝业' in mc)
+and code is not null
+limit 0,10;
+
+--120W数据平均1.8秒左右，与原生查询时间相仿
 SELECT `column` FROM `table` WHERE INSTR(`field`, 'keyword' )>0
 
-SELECT * FROM `person` WHERE FIND_IN_SET('apply',`name`);
+select * 
+from "table" 
+where INSTR('西南铝业' in mc)>0
+and code is not null
+limit 0,10;
 \end{lstlisting}
 
 \paragraph{全文索引(Full-text Search)}
@@ -2829,6 +2892,7 @@ alter context index qymcindex on user_xycq.TS_F_CORPORATION_TEST rebuild;
 drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 \end{lstlisting}
 
+达梦数据库中，在写全文索引查询时，全文索引的条件需要放到前面，这样才能够利用到索引。
 
 \section{Redis}
 
@@ -3017,22 +3081,19 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 难怪后来变的很慢，把中间停顿的sleep函数去掉之后还是很慢，开始还一位是sleep函数暂停的问题。
 
-
-
 \part{Network}
 
 \chapter{WebService}
 
 \section{Axis2}
 
+目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
+
 \subsection{Axis2 Web Service}
 
-
+在填写Web Service地址时，提示url is not valid,地址是\url{http://www.webxml.com.cn/WebServices/WeatherWebService?wsdl}，而地址\url{http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl}是有效地址。
 
 \chapter{HTTP}
-
-
-目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
 
 
 \subsection{性能分析}
@@ -3089,7 +3150,29 @@ plugins: [
 
 \subparagraph{利用浏览器缓存}
 
-有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要访问服务器，减轻了服务端的压力。
+有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要频繁的访问服务器下载Javascript脚本，提升 本地加载速度的同时也减轻了服务端的压力，如图\ref{fig:scriptusingdiskcache}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{scriptusingdiskcache.png}
+	\caption{Javascript脚本利用浏览器缓存}
+	\label{fig:scriptusingdiskcache}
+\end{figure}
+
+由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是无法忍受的。
+
+\subparagraph{开启Gzip压缩}
+
+同时可以考虑在服务端开启Gzip压缩，开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{openservercompress.png}
+	\caption{开启服务端压缩效果}
+	\label{fig:openservercompress}
+\end{figure}
+
+图中，globalInfo请求，压缩之前有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。
 
 \subsection{Session}
 
