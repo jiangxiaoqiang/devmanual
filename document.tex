@@ -724,6 +724,10 @@ sudo pip install mysql-python
 
 \section{组件}
 
+\subsection{组件生命周期(Life Cycle)}
+
+页面的交互流程，页面加载或者用户操作界面，调用相关函数通过Ajax从服务端获取数据，触发dispatch，将action传递给reducer更改state(要赋给propss的值都存在state中)，然后再将state的新的值赋给props，重新渲染页面。connect中的函数当state改变时都会被执行，可以理解成subscribe函数或者监听函数。
+
 \subsection{第一个React}
 
 在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作。而复杂或频繁的DOM操作通常是性能瓶颈产生的原因（如何进行高性能的复杂DOM操作通常是衡量一个前端开发人员技能的重要指标）。React为此引入了虚拟DOM（Virtual DOM）的机制：在浏览器端用Javascript实现了一套DOM API。基于React进行开发时所有的DOM构造都是通过虚拟DOM进行，每当数据变化时，React都会重新构建整个DOM树，然后React将当前整个DOM树和上一次的DOM树进行对比，得到DOM结构的区别，然后仅仅将需要变化的部分进行实际的浏览器DOM更新。如下定义一个最简单的React示例，首先写基本的一个程序入口的组件：
@@ -800,6 +804,39 @@ Provider在根组件外面包了一层，这样一来，App的所有子组件就
 
 React-Redux 提供connect方法，用于从 UI 组件生成容器组件。connect的意思，就是将这两种组件连起来。
 
+\begin{lstlisting}[language=Javascript]
+connect(mapStateToProps, mapDispatchToProps, mergeProps)(MyComponent)
+\end{lstlisting}
+
+项目中connect定义如下：
+
+\begin{lstlisting}[language=Javascript]
+/**
+* mapStateToProps:这个函数的作用是确定哪些 Redux 全局的 state 是我们组件想要通过 props 获取
+*/
+const mapStateToProps = (state) => {
+	return {
+		book: state.book
+	}
+}
+
+/**
+* mapDispatchToProps:这个方法的作用是确定 哪些action创建函数是我们想要通过props获取
+*/
+const mapDispatchToProps = (dispatch) =>{
+	return{
+		bookService: bindActionCreators(bookService, dispatch)
+	}
+}
+
+connect(mapStateToProps, mapDispatchToProps)
+class BookContainer extends Component {
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
+}
+\end{lstlisting}
+
 \subsection{Actions}
 
 Action向store派发指令，action 函数会返回一个带有 type 属性的 Javascript Plain Object，store将会根据不同的action.type来执行相应的方法。
@@ -807,6 +844,18 @@ Action向store派发指令，action 函数会返回一个带有 type 属性的 J
 \subsection{Store}
 
 store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起。
+
+\subsection{Dispatcher}
+
+接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。
+
+\paragraph{redux-thunk}
+
+解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。
+
+\subsection{state}
+
+state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.
 
 \subsection{Props}
 
@@ -1073,6 +1122,27 @@ console.log(tigerB.species);//猫科
 tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
+\section{常见问题}
+
+\subsection{Store does not have a valid reducer}
+
+提示错误：Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.store在index.js文件中引入，在store.js中添加打印语句将reducer对象打印出来，看到实际是有reducer对象的，所以怀疑是reducer的定义有些问题。最后发现原来是require的使用有问题。
+
+\begin{lstlisting}[language=Javascript]
+const state = {};
+for (const name of nameList) {
+state[name] = require(`./${name}/${name}Reducer`);
+
+}
+\end{lstlisting}
+
+这里是用Requre动态加载，但是实际有点问题，暂时还找不到原因。暂时采用如下的写法：
+
+
+\begin{lstlisting}[language=Javascript]
+import bookReducer from './book/bookReducer';
+state[0] = bookReducer;
+\end{lstlisting}
 
 \part{OS}
 
@@ -1164,8 +1234,12 @@ echo "set completion-ignore-case on">>~/.inputrc
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
 
 \begin{lstlisting}[language=Bash]
+#列出指定文件的信息
 ls -lh authorized_keys
+#只显示当前文件夹下的目录
+ls -al | grep "^d"
 \end{lstlisting}
+
 
 \paragraph{find}
 
@@ -1661,6 +1735,18 @@ sudo route del default gw 10.55.10.1
 \chapter{Ansible}
 
 \subsection{Ansible模块}
+
+Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
+
+\paragraph{Ansible配置}
+
+Ansible主机配置：
+
+\begin{lstlisting}[language=bash]
+[pi]
+192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
+\end{lstlisting}
+
 
 \paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
 
@@ -2587,6 +2673,8 @@ git config --global merge.tool meld
 	\hline
 	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
 	\hline
+	Ctrl+Shift+P (Windows/Linux)  & 打开所有窗口 \\
+	\hline
 \end{tabular}
 
 \subsection{Console}
@@ -3159,7 +3247,7 @@ plugins: [
 	\label{fig:scriptusingdiskcache}
 \end{figure}
 
-由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是无法忍受的。
+由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是用户无法忍受的。
 
 \subparagraph{开启Gzip压缩}
 
