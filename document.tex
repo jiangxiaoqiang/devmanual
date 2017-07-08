@@ -23,13 +23,31 @@
 \usepackage{ifthen}
 \usepackage{longtable}
 
+%Figure显示为中文的“图”
+\renewcommand\figurename{图}
+
 %%%% 下面的命令设置行间距与段落间距 %%%%
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
 \setlength{\parskip}{0.5\baselineskip}
 
+\lstdefinelanguage{JavaScript}{
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+
 %Set Code Format%
-\lstloadlanguages{C, csh, make,python,Java}
+\lstloadlanguages{C, csh, make,python,Java,JavaScript}
 \lstset{	  
 	alsolanguage= XML,  
 	tabsize=4, %  
@@ -76,17 +94,76 @@
 
 \part{Framework}
 
-\section*{Spring}
+\chapter{Spring}
+
+\section{Common Sense}
+
+\subsection{classpath}
+
+classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.8]{javaresourcefolder.png}
+	\caption{Intellij Idea中的资源文件夹}
+	\label{fig:javaresourcefolder}
+\end{figure}
+
+仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定：
+
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@Component
+@PropertySource("classpath:application.properties")
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceConfig {
+
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+}
+\end{lstlisting}
+
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
 \subsection{Spring Boot开发者工具}
 
-在build.gradle文件里添加开发工具：
+spring-boot-devtools为应用提供一些开发时特性，包括默认值设置，自动重启，livereload等。在build.gradle文件里添加开发工具配置：
 
 \begin{lstlisting}[language=Bash]
 compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
-在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。
+在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
+
+\subsection{拦截操作}
+
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。
+
+
+\subsection{接口返回}
+
+接口返回的格式如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{restresponse.png}
+	\caption{Restful接口返回数据示例}
+	\label{fig:restresponse}
+\end{figure}
+
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。
+
+\section{注解}
+
+\subsection{ComponentScan}
+
+\section{数据库操作}
 
 \subsection*{JDBC数据库重连}
 
@@ -99,26 +176,36 @@ spring.datasource.allow-pool-suspension=true
 
 可以将连接池到c3p0，c3p0连接池本身具有数据库重连机制。目前常见到连接池如下表所示：
 
-\begin{tabular}{|c|c|c|p{8cm}|c|}
+\begin{tabular}{|c|c|p{7cm}|}
 	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c|}{名称}  
+	\multirow{1}{*}{名称}
+	%\multirow{1}{c|}{名称}  
 	& \multicolumn{1}{c|}{协议} 
 	& \multicolumn{1}{c|}{备注}\\			
-	\cline{1-4}
-	1 & c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+	\cline{1-3}
+	c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
 	\hline
-	2 & HikariCP & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
+	HikariCP & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
 	\hline
-	3 & Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
+	Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
 	\hline
-	4 & DBCP & Apache 2.0 & DBCP(DataBase connection pool),是 apache 上的一个 java 连接池项目，也是 tomcat 使用的连接池组件。单独使用dbcp需要2个包：commons-dbcp.jar,commons-pool.jar \\
+	DBCP & Apache 2.0 & DBCP(DataBase connection pool),是 apache 上的一个 java 连接池项目，也是 tomcat 使用的连接池组件。单独使用dbcp需要2个包：commons-dbcp.jar,commons-pool.jar \\
 	\hline
-	5 & BoneCP & Apache 2.0 & 使用HikariCP替代\\
+	BoneCP & Apache 2.0 & 使用HikariCP替代\\
 	\hline
 \end{tabular}
 
-登陆服务器，使用命令查看正常的数据库连接：
+Tomcat 在 7.0 以前的版本都是使用 commons-dbcp 做为连接池的实现，但是 dbcp 饱受诟病，原因有：
+
+\begin{itemize}
+	\item{dbcp 是单线程的，为了保证线程安全会锁整个连接池}
+	\item{dbcp 性能不佳}
+	\item{dbcp 太复杂，超过 60 个类}
+\end{itemize}
+
+dbcp 使用静态接口，在 JDK 1.6 编译有问题
+dbcp 发展滞后
+因此很多人会选择一些第三方的连接池组件，例如 c3p0 , bonecp, druid。为此，Tomcat 从 7.0 开始引入一个新的模块：Tomcat jdbc pool。登陆服务器，使用命令查看正常的数据库连接：
 
 \begin{lstlisting}[language=Bash]
 lsof -i:5236
@@ -204,6 +291,85 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
+\subsection{HikariCP数据库连接}
+
+在配置HikariCP数据库连接时，总是提示如下错误：
+
+\begin{lstlisting}
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'dataSource' defined in class path resource [org/springframework/boot/autoconfigure/jdbc/DataSourceConfiguration$Hikari.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.zaxxer.hikari.HikariDataSource]: Factory method 'dataSource' threw exception; nested exception is java.lang.NullPointerException
+\end{lstlisting}
+
+经过跟踪，发现是url为空导致的这个问题，后来增加了url的配置才得以成功连接数据库。所以除了要定义jdbc-url外，还需要定义url。经过查看HikariCP的文档，属性jdbc-url将使 HikariCP 使用“基于驱动管理器”（DriverManager-based）的配置。一般情况下，基于数据源（DataSource-based）的配置是更好的选择。但对许多部署实例来讲却也区别不大。当使用jdbc-url来配置“旧”的 JDBC 驱动时，你可能也需要设置 driverClassName 属性，但可以试一试不设置是否能行得通。所以，最终连接数据库的配置如下：
+
+\begin{lstlisting}
+spring.datasource.hikari.jdbc-url=jdbc:mysql://10.0.0.14:3306/dolphin
+spring.datasource.hikari.url=jdbc:mysql://10.0.0.14:3306/dolphin
+spring.datasource.hikari.username=root
+spring.datasource.hikari.password=dolphin
+spring.datasource.hikari.type=com.zaxxer.hikari.HikariDataSource
+spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
+\end{lstlisting}
+
+
+\paragraph{DataSource跟DriverManager区别及联系}
+
+In basic terms, a data source is a facility for storing data. It can be as sophisticated as a complex database for a large corporation or as simple as a file with rows and columns. A data source can reside on a remote server, or it can be on a local desktop machine. Applications access a data source using a connection, and aDataSource object can be thought of as a factory for connections to the particular data source that theDataSource instance represents.
+
+两者相同点：
+Using a DataSource object is the preferred alternative to using the DriverManager for establishing a connection to a data source. They are similar to the extent that the DriverManager class and DataSource interface both have methods for creating a connection, methods for getting and setting a timeout limit for making a connection, and methods for getting and setting a stream for logging.
+
+两者不同点：
+1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a JavaTM Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
+
+2.The second major advantage is that the DataSource facility allows developers to implement a DataSourceclass to take advantage of features like connection pooling and distributed transactions.
+
+传统的数据库连接方式（指通过DriverManager和基本实现DataSource进行连接）中，一个数据库连接对象均对应一个物理数据库连接，数据库连接的建立以及关闭对系统而言是耗费系统资源的操作，在多层结构的应用程序环境中这种耗费资源的动作对系统的性能影响尤为明显。
+
+在多层结构的应用程序中通过连接池（connection pooling）技术可以使系统的性能明显得到提到，连接池意味着当应用程序需要调用一个数据库连接的时，数据库相关的接口通过返回一个通过重用数据库连接来代替重新创建一个数据库连接。通过这种方式，应用程序可以减少对数据库连接操作，尤其在多层环境中多个客户端可以通过共享少量的物理数据库连接来满足系统需求。通过连接池技术Java应用程序不仅可以提高系统性能同时也为系统提高了可测量性。
+
+数据库连接池是运行在后台的而且应用程序的编码没有任何的影响。此中状况存在的前提是应用程序必须通过DataSource对象（一个实现javax.sql.DataSource接口的实例）的方式代替原有通过DriverManager类来获得数据库连接的方式。一个实现javax.sql.DataSource接口的类可以支持也可以不支持数据库连接池，但是两者获得数据库连接的代码基本是相同的。
+
+\subsection{Spring Boot缓存}
+
+SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架,需要在XML中配置。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
+
+@Cacheable : Spring在每次执行前都会检查Cache中是否存在相同key的缓存元素，如果存在就不再执行该方法，而是直接从缓存中获取结果进行返回，否则才会执行并将返回结果存入指定的缓存中。 
+ 
+@CacheEvict : 清除缓存。 
+
+@CachePut : @CachePut也可以声明一个方法支持缓存功能。使用@CachePut标注的方法在执行前不会去检查缓存中是否存在之前执行过的结果，而是每次都会执行该方法，并将执行结果以键值对的形式存入指定的缓存中。 
+
+这三个方法中都有两个主要的属性：value 指的是 ehcache.xml 中的缓存策略空间；key 指的是缓存的标识，同时可以用 \# 来引用参数。
+在ehcache.xml中配置缓存策略空间：
+
+\begin{lstlisting}[language=XML]
+<ehcache>
+	<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
+</ehcache>
+\end{lstlisting}
+
+在方法上指定缓存，语法采用SpEL，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
+SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
+
+\begin{lstlisting}[language=Java]
+@Cacheable(value = "summaryXzxk",
+			key = "'findPage'+#pageable.page+#pageable.params.get('xdr')",
+			condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+)
+\end{lstlisting}
+
+@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
+
+\begin{lstlisting}[language=Java]
+condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+\end{lstlisting}
+
+如上条件，取出xdr为空的数据进行缓存。
+
+\subsection{用户重复登录问题}
+
+在服务端维护登录用户与其SessionID的对应关系。同一用户，后登陆者将前登陆者的SessionID替换，这样，前者如果再请求服务器资源，无法与新生成的Session ID匹配，此时服务端会返回一个错误码，前端捕获到此错误码，就会认为其未登录，要求重新登录。这样，即使出现断电等无法注销的情况，也会在他下次登陆时自动取代掉，同时也解决了用户登陆的唯一性问题。
+
 \subsection{读取properties属性}
 
 \subsubsection{读取自定义属性}
@@ -227,6 +393,48 @@ public class DataSourceConfig {
 
 由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
+\section{单元测试}
+
+\subsection{Gradle中单元测试}
+
+项目使用Gradle进行构建，写好单元测试类后，在Gradle中做如下配置:
+
+\begin{lstlisting}[language=Java]
+project(':cc-api') {	
+	test{
+		include('**/*Test.class')
+	}
+}
+\end{lstlisting}
+
+在每次构建时都会运行单元测试。Mock和Stub是两种测试代码功能的方法。Mock测重于对功能的模拟。Stub测重于对功能的测试重现。比如对于List接口，Mock会直接对List进行模拟，而Stub会新建一个实现了List的TestList，在其中编写测试的代码。强烈建议优先选择Mock方式，因为Mock方式下，模拟代码与测试代码放在一起，易读性好，而且扩展性、灵活性都比Stub好。
+
+
+\section{常见问题}
+
+\subsection{getAttribute: Session already invalidated}
+
+当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
+
+\begin{lstlisting}[language=Java]
+#使Session无效的语句
+getSessionMap().get(sessionId).invalidate();
+#出错的语句
+User user = (User) session.getAttribute("LOCAL_CLINET_USER");
+\end{lstlisting}
+
+当在无效的session中获取Attribute时，出现了上面的错误，解决办法就是不调用invalidate方法。
+
+\paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
+
+Tomcat 的内部日志使用 JULI 组件，这是一个 Apache Commons 日志的重命名的打包分支，默认被硬编码，使用 java.util.logging 架构。这能保证 Tomcat 内部日志与 Web 应用的日志保持独立，即使 Web 应用使用的是 Apache Commons Logging。在Gradle构建脚本中添加如下配置即可：
+
+\begin{lstlisting}[language=Bash]
+dependencies{
+	compile group: 'org.apache.tomcat', name: 'tomcat-juli', version: property('tomcat.version')
+}
+\end{lstlisting}
+
 \subsection{jps}
 
 jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
@@ -237,11 +445,119 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
+\section{Mybatis}
+
+
+\subsection{打印SQL}
+
+开发中，配置日志中打印SQL语句，在application.properties文件中指定mybatis配置文件路径：
+
+\begin{lstlisting}[language=Bash]
+mybatis.config-location=classpath:mybatis-config.xml
+\end{lstlisting}
+
+在Mybatis配置文件mybatis-config.xml中，做如下配置：
+
+\begin{lstlisting}[language=XML]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
+</configuration>
+\end{lstlisting}
+
+打印SQL语句效果如图\ref{fig:mybatisprintsql}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{mybatisprintsql.png}
+	\caption{MyBatis打印SQL}
+	\label{fig:mybatisprintsql}
+\end{figure}
+
+\subsection{常见问题}
+
+在配置MyBatis Mapper时，出现如下错误：
+
+\begin{lstlisting}[language=Java]
+Request processing failed; nested exception is org.apache.ibatis.binding.BindingException: Invalid bound statement (not found)
+\end{lstlisting}
+
+配置文件检查了没有问题，后来看网上说是在Intellij Idea中，需要在resource目录下新建一个文件夹，并设置成资源文件夹，放置Mapper.xml文件。还真能够解决问题，但是不明白为什么需要单独建立一个文件夹，按道理resource也是资源文件夹啊，应该可以读取才对。问题虽然解决，但是其中原理始终没有弄个明白，最终文件夹结构如图\ref{fig:mapperreourcestructure}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{mapperreourcestructure.png}
+	\caption{Mapper XML放置目录结构}
+	\label{fig:mapperreourcestructure}
+\end{figure}
+
+
+\section{性能(Performance)}
+
+
+
+\subsection{VisualVM}
+
+使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。
+
 
 \newpage
-\section*{Groovy}
 
-\section{Python}
+
+
+\chapter{Groovy}
+
+\chapter{Scala}
+
+\section{函数}
+
+Scala有两种变量，val和var。val就不能再赋值了。与之对应的，var可以在它生命周期中被多次赋值。数据转换：
+
+\begin{lstlisting}[language=Scala]
+//字符串转整型
+val errorCodeId: Int = singleErrorCode.toInt;
+//split函数
+val dstArray: Array[String] = errorCode.toString.split(',')
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Scala]
+case class User(  
+	id: Int,  
+	firstName: String,  
+	lastName: String,  
+	age: Int,  
+	gender: Option[String])  
+	
+	object UserRepository {  
+	private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
+	2 -> User(2, "Johanna", "Doe", 30, None))  
+	def findById(id: Int): Option[User] = users.get(id)  
+	def findAll = users.values  
+}  
+\end{lstlisting}
+
+\subsection{排序}
+
+对Vector中的元素做倒序排序。
+
+\begin{lstlisting}[language=Scala]
+/**
+* 对要排序的列做反向排序（reverse）
+* 全文索引列必须要置于条件的开始
+* 否则无法利用索引
+* 行政许可XDR列有全文索引，需要排序在前
+*/
+val params = pageable.getParams.asScala.toVector.reverse  
+\end{lstlisting}
+
+\chapter{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
 
@@ -257,10 +573,20 @@ sudo apt-get install python-pip python-dev build-essential
 # 安装MySQL驱动
 sudo pip install mysql-python
 # 安装beautifulsoup4
-sudo pip install beautifulsoup
+sudo pip install beautifulsoup4
 # openpyxl来处理xml文件
 sudo pip install openpyxl
+# 安装Redis支持模块
+sudo pip install redis
 \end{lstlisting}
+
+在Mac OS X上，提示No Module named requests，使用pip安装requests模块也无法解决，输入如下命令此问题消失：
+
+\begin{lstlisting}[language=Bash]
+sudo easy_install -U requests
+\end{lstlisting}
+
+pip 改善了不少 easy\_install 的缺點，如此说來 pip 應該是略勝一籌，不過它還不能完全取代對方，因为目前有很多套件還是得用 easy\_install 安裝。easy\_insall的作用和perl中的cpan，ruby中的gem类似，都提供了在线一键安装模块的傻瓜方便方式，而pip是easy\_install的改进版，提供更好的提示信息，删除package等功能。老版本的python中只有easy\_install，没有pip。
 
 \subsection{Beautiful Soup}
 
@@ -319,13 +645,13 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 在HTTP请求头中，添加浏览器相关标识，让服务器认定为来自浏览器的请求。
 
-\paragraph{避免重复抓取}
+\paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
 \paragraph{海量数据}
 
 \subsection{读取Properties文件}
 
-在项目中持续集成的Python脚本需要读取Java的Properties文件，读取的方法如下：
+在项目中持续集成的Python部署脚本中，需要读取Java的Properties文件，读取的方法如下：
 
 \begin{lstlisting}[language=Python]
 def getVersion():
@@ -394,9 +720,290 @@ PATH="$PATH":/usr/local/mysql/bin
 sudo pip install mysql-python
 \end{lstlisting}
 
-\section{React}
+\chapter{React}
 
-\subsection{Cookie}
+\section{组件}
+
+\subsection{第一个React}
+
+在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作。而复杂或频繁的DOM操作通常是性能瓶颈产生的原因（如何进行高性能的复杂DOM操作通常是衡量一个前端开发人员技能的重要指标）。React为此引入了虚拟DOM（Virtual DOM）的机制：在浏览器端用Javascript实现了一套DOM API。基于React进行开发时所有的DOM构造都是通过虚拟DOM进行，每当数据变化时，React都会重新构建整个DOM树，然后React将当前整个DOM树和上一次的DOM树进行对比，得到DOM结构的区别，然后仅仅将需要变化的部分进行实际的浏览器DOM更新。如下定义一个最简单的React示例，首先写基本的一个程序入口的组件：
+
+\begin{lstlisting}[language=Javascript]
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+ReactDOM.render(
+	<div>Hello World!</div>,
+	document.getElementById('root')
+);
+\end{lstlisting}
+
+随后定义一个默认的HTML文件：
+
+\begin{lstlisting}[language=HTML]
+<body>
+	<!-- 容器 -->
+	<div id="root"></div>
+	<!-- 引入编译好的js文件 -->
+	<script type="text/javascript" src="./bundle.js"></script>
+</body>
+\end{lstlisting}
+
+\subsection{规范}
+
+React模块使用.jsx扩展名，如BookMain.jsx。对于JSX属性值总是使用双引号("), 其他均使用单引号。为什么? JSX属性 不能包括转译的引号, 因此在双引号里包括像 "don't" 的属性值更容易输入。HTML属性也是用双引号，所以JSX属性也遵循同样的语法。
+
+\subsection{Router}
+
+Web 服务并不会解析 hash，也就是说 \# 后的内容 Web 服务都会自动忽略，但是 JavaScript 是可以通过 window.location.hash 读取到的，读取到路径加以解析之后就可以响应不同路径的逻辑处理。history 是 HTML5 才有的新 API，可以用来操作浏览器的 session history (会话历史)。在HTML5的history API出现之前，前端的路由都是通过 hash 来实现的，hash 能兼容低版本的浏览器。React Router的设计思想来源于Ember的路由，如果原来有用过Ember的路由，那么应该对React Router不会陌生。React Router 4.0（以下简称 RR4） 已经正式发布，它遵循react的设计理念，即万物皆组件。所以 RR4 只是一堆提供了导航功能的组件（还有若干对象和方法），具有声明式（引入即用），可组合性的特点。添加一个Router组件如下：
+
+\begin{lstlisting}[language=Javascript]
+import React from "react";
+import {BrowserRouter, Route} from 'react-router-dom'
+
+const User = ({match}) => {
+	return <h1>Hello {match.params.username}!</h1>
+}
+
+const routes = (
+	<BrowserRouter>
+		<Route path="/user/:username" component={User}/>
+	</BrowserRouter>
+);
+
+export default routes;
+\end{lstlisting}
+
+<BrowserRouter>是一个使用了HTML5 history API的高阶路由组件，保证你的UI界面和URL保持同步。使用HTML5历史记录API（pushState，replaceState和popstate事件）的<Router>来保持UI与URL的同步。<Route> 也许是RR4中最重要的组件了。它最基本的职责就是当页面的访问地址与 Route 上的 path 匹配时，就渲染出对应的 UI 界面。<Route> 自带三个render method和三个props，props 分别是：match、location、history。所有的render method 无一例外都将被传入这些props。访问效果如图\ref{fig:firstroute}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{firstroute.png}
+	\caption{React Route效果}
+	\label{fig:firstroute}
+\end{figure}
+
+\subsection{Provider}
+
+Provider方法会在react组件外边包一层名为provider的组件，使其所有子组件共享store提供的方法。connect方法生成容器组件以后，需要让容器组件拿到state对象，才能生成 UI 组件的参数。一种解决方法是将state对象作为参数，传入容器组件。但是，这样做比较麻烦，尤其是容器组件可能在很深的层级，一级级将state传下去就很麻烦。React-Redux 提供Provider组件，可以让容器组件拿到state。
+
+\begin{lstlisting}[language=Javascript]
+ReactDOM.render(
+	<Provider store={store}>{routes}</Provider>,
+	document.getElementById('root')
+);
+\end{lstlisting}
+
+Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。它的原理是React组件的context属性。
+
+\subsection{Connect}
+
+React-Redux 提供connect方法，用于从 UI 组件生成容器组件。connect的意思，就是将这两种组件连起来。
+
+\subsection{Actions}
+
+Action向store派发指令，action 函数会返回一个带有 type 属性的 Javascript Plain Object，store将会根据不同的action.type来执行相应的方法。
+
+\subsection{Store}
+
+store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起。
+
+\subsection{Props}
+
+当你用React Redux的connect进行封装的时候，connect方法会把dispatch放到props中。
+
+\paragraph{React Router父子Props传递}
+
+在React中需要将bookService由父组件中传递到子组件中，写法如下：
+
+\begin{lstlisting}[language=Javascript]
+const routes = (
+	<BrowserRouter>
+		<BookContainer>
+			<switch>
+				<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
+			</switch>
+		</BookContainer>
+	</BrowserRouter>
+);
+\end{lstlisting}
+
+其中Book处于内层，负责渲染界面，所以叫做展示组件(Presentational Container)。BookContainer与Book组件属于父子组件的关系，BookContainer负责和Redux Store打交道，处于外层，称作容器组件(Container Component)。容器组件的定义如下：
+
+\begin{lstlisting}[language=Javascript]
+/**
+* 容器组件，负责与Redux Store打交道
+* 通过props把状态传递给内层组件
+*/
+class BookContainer extends Component {
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
+}
+\end{lstlisting}
+
+在浏览器中，切换到相应组件上，可以看到对应的属性，如图\ref{fig:bookserviceprops}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{bookserviceprops.png}
+	\caption{React 组件Props传递}
+	\label{fig:bookserviceprops}
+\end{figure}
+
+\subsection{Reducers}
+
+Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过 Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。
+
+
+\paragraph{onEnter}
+
+Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，比如验证权限。单页应用路由的权限控制的基本思路是：监听路由的改变，每当路由将要发生改变，我们就使用一个中间服务(该服务介于上一级路由和将要到达路由之间启动)，来判断我们是否有进入这个路由的权限，有的话直接进入，没有的话就redirect。在React中，为某个路由进行权限监听的方式是：
+
+\begin{lstlisting}[language=HTML]
+<Route path="page" component={Page} onEnter={requireCredentials}/>
+\end{lstlisting}
+
+该onEnter属性对应连着一个具有判断权限的中间服务。
+
+\subsection{Immutable}
+
+JavaScript 中的对象一般是可变的（Mutable），因为使用了引用赋值，新的对象简单的引用了原始对象，改变新的对象将影响到原始对象。如 foo={a: 1}; bar=foo; bar.a=2 你会发现此时 foo.a 也被改成了 2。虽然这样做可以节约内存，但当应用复杂后，这就造成了非常大的隐患，Mutable 带来的优点变得得不偿失。为了解决这个问题，一般的做法是使用 shallowCopy（浅拷贝）或 deepCopy（深拷贝）来避免被修改，但这样做造成了 CPU 和内存的浪费。Immutable 可以很好地解决这些问题。
+
+\paragraph{IMMUTABLE DATA}
+
+Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
+
+\section{MobX}
+
+\subsection{简介}
+
+mobx 是一个库 (library)，不是一个框架 (framework)。可以和React组合使用，MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP). React and MobX together are a powerful combination. redux 管理的是 (STORE -> VIEW -> ACTION) 的整个闭环，而 mobx 只关心 STORE -> VIEW 的部分。
+
+\section{gulp}
+
+Gulp基于Node.js的前端构建工具，通过Gulp的插件可以实现前端代码的编译（sass、less）、压缩、测试；图片的压缩；浏览器自动刷新。比起Grunt不仅配置简单而且更容易阅读和维护。gulpjs是一个前端构建工具，与gruntjs相比，gulpjs无需写一大堆繁杂的配置参数，API也非常简单，学习起来很容易，而且gulpjs使用的是nodejs中stream来读取和操作数据，其速度更快。使用 browserify 进行打包， gulp 进行任务构建。由于使用了 ES2015 和 JSX 语法，因此使用 Babel 进行转换。
+
+\begin{itemize}
+	\item{压缩js代码（gulp-uglify）}
+	\item{压缩图片（gulp-imagemin）}
+\end{itemize}
+
+\subsection{压缩图片}
+
+首先，定义一个压缩图片的任务：
+
+\begin{lstlisting}[language=JavaScript]
+gulp.task('images', function() {
+	return gulp.src('src/images/**/*')
+			.pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+			.pipe(gulp.dest('dist/assets/img'))
+			.pipe(notify({ message: 'Images task complete' }));
+});
+\end{lstlisting}
+
+定义一个名称为images的任务，这个任务使用imagemin插件把所有在src/images/目录以及其子目录下的所有图片（文件）进行压缩，可以进一步优化，利用缓存保存已经压缩过的图片。在终端中运行如下命令执行此任务。
+
+\begin{lstlisting}[language=Bash]
+gulp images
+\end{lstlisting}
+
+\subsection{清除文件}
+
+在再次生成文件前，最好先清除之前生成的文件：
+
+\begin{lstlisting}[language=JavaScript]
+gulp.task('clean', function(cb) {
+	del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
+});
+\end{lstlisting}
+
+在这里没有必要使用Gulp插件了，可以使用NPM提供的插件。用一个回调函数（cb）确保在退出前完成任务。
+
+\subsection{设置默认任务}
+
+\begin{lstlisting}[language=JavaScript]
+gulp.task('default', ['clean'], function() {
+	gulp.start('styles', 'scripts', 'images');
+});
+\end{lstlisting}
+
+clean任务执行完成了才会去运行其他的任务，在gulp.start()里的任务执行的顺序是不确定的，所以将要在它们之前执行的任务写在数组里面。
+
+\section{webpack}
+
+使用install --save时，将默认在package.json中添加小尖尖\^而不是小波浪\~作为依赖版本的前缀。
+
+
+\section{Axios}
+
+axios是一个基于Promise用于浏览器和nodejs的HTTP客户端。ES6 原生提供了 Promise 对象。所谓 Promise，就是一个对象，用来传递异步操作的消息。它代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的 API，可供进一步处理。
+
+Promise 对象有以下两个特点。
+
+（1）对象的状态不受外界影响。Promise 对象代表一个异步操作，有三种状态：Pending（进行中）、Resolved（已完成，又称 Fulfilled）和 Rejected（已失败）。只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是 Promise 这个名字的由来，它的英语意思就是「承诺」，表示其他手段无法改变。
+
+（2）一旦状态改变，就不会再变，任何时候都可以得到这个结果。Promise 对象的状态改变，只有两种可能：从 Pending 变为 Resolved 和从 Pending 变为 Rejected。只要这两种情况发生，状态就凝固了，不会再变了，会一直保持这个结果。就算改变已经发生了，你再对 Promise 对象添加回调函数，也会立即得到这个结果。这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。
+
+有了 Promise 对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise 对象提供统一的接口，使得控制异步操作更加容易。
+
+Promise 也有一些缺点。首先，无法取消 Promise，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，Promise 内部抛出的错误，不会反应到外部。第三，当处于 Pending 状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
+
+\subsection{Axios请求}
+
+一个简单的Axios请求示例如下：
+
+\begin{lstlisting}[language=JavaScript]
+import axios from 'axios';
+
+export function request() {
+	return axios({
+		method: 'get', url: 'http://localhost:8011/api/book/111'
+	}).then(
+		response => {
+			console.log(response)
+		}
+	).catch(
+		error => {
+			console.error(error);
+		}
+	);
+}
+\end{lstlisting}
+
+
+这里需要解决跨域问题，通过Node或Nginx等做Proxy，或者在服务器端配置CORS。
+
+\subsection{Axios拦截响应}
+
+拦截响应可以对服务端抛出的错误做统一的handle:
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* axios响应拦截器
+*/
+axios.interceptors.response.use(
+	response =>{
+		return response;
+	},
+	error => {
+		if(error.response){
+			switch (error.response.status){
+				case 401:
+					responseError401PreHandle(error.response.data);
+					break;
+				case 403:
+			}
+		}
+	}
+);
+\end{lstlisting}
+
+\subsection{Promise}
+
+为了降低异步编程的复杂性，开发人员一直寻找简便的方法来处理异步操作。其中一种处理模式称为promise，它代表了一种可能会长时间运行而且不一定必须完整的操作的结果。这种模式不会阻塞和等待长时间的操作完成，而是返回一个代表了承诺的（promised）结果的对象。promise模式通常会实现一种称为then的方法，用来注册状态变化时对应的回调函数。promise模式在任何时刻都处于以下三种状态之一：未完成（unfulfilled）、已完成（resolved）和拒绝（rejected）。Promise.reject返回了一个拒绝状态的Promise对象. 对于这样的Promise对象, 如果其后续then | catch中都没有声明onRejected回调, 它将会抛出一个 “Uncaught (in promise) …”的错误. Promise之间泾渭分明, 内部Promise抛出的任何错误,外部Promise对象都无法感知并捕获. 同时, 由于promise是异步的, try catch语句也无法捕获其错误.因此养成良好习惯, promise记得写上catch.
+
+\section{Cookie}
 
 The browser is expected to support 20 cookies for each Web server, 300 cookies total, and may limit cookie size to 4 KB each.在Chrome中查看Cookie可以直接在Console中输入：
 
@@ -425,9 +1032,51 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
+\section{Javascript}
+
+\subsection{prototype}
+
+prototype是用于解决实例对象之间无法共享属性和方法的。
+
+\begin{lstlisting}[language=Javascript]
+function Tiger(name){
+	this.name = name;
+	this.species = "猫科";
+}
+var tigerA = new Tiger("大虎");
+var tigerB = new Tiger("二虎");
+tigerA.species="犬科";
+console.log(tigerB.species);//猫科
+\end{lstlisting}
+
+此处无法做到数据共享，也是极大的资源浪费。其实species共享是符合设计的。使用prototype来实现共享：
+
+\begin{lstlisting}[language=Javascript]
+function Tiger(name) {
+	this.name = name;
+}
+Tiger.prototype = {
+	species: '犬科'
+};
+var tigerA = new Tiger("大虎");
+var tigerB = new Tiger("二虎");
+console.log(tigerA.species);//犬科
+console.log(tigerB.species);//犬科
+Tiger.prototype.species = '猫科';
+console.log(tigerA.species);//猫科
+console.log(tigerB.species);//猫科
+\end{lstlisting}
+
+注意这里是设置Tiger的prototype而不是Tiger实例的prototype。一个未初始化的变量的值为undefined,一个没有传入实参的形参变量的值为undefined,如果一个函数什么都不返回,则该函数默认返回undefined.所以这里在控制台最后会打印一行undefined。普通对象设置prototype使用如下语句：
+
+\begin{lstlisting}[language=Javascript]
+tigerA.__proto__.species = '犬科';
+\end{lstlisting}
+
+
 \part{OS}
 
-\section{Linux}
+\chapter{Linux}
 
 在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
@@ -438,6 +1087,42 @@ sudo apt-get -f install
 f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
+
+\paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
+
+\paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在当前用户的.bashrc中添加如下设置：
+
+\begin{lstlisting}[language=Bash]
+if [ -d /home/app/ ];then
+	cd /home/app/
+fi
+\end{lstlisting}
+
+\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+
+\begin{lstlisting}[language=Bash]
+export EDITOR=vim
+\end{lstlisting}
+
+在vim中，编辑好了命令之后，直接按下ZZ命令，即可退出vim，shell即会执行编辑完成后的命令。
+
+\paragraph{创建路径}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
+
+\begin{lstlisting}[language=Bash]
+#新建后端开发目录
+mkdir -p /home/dolphin/hldata/backend/credit-system
+#新建开发目录树
+mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
+\end{lstlisting}
+
+\paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
+
+\begin{lstlisting}[language=Bash]
+#如果目录不存在，则创建相应的目录
+cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
+\end{lstlisting}
+
+\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
 
@@ -471,6 +1156,28 @@ echo "set completion-ignore-case on">>~/.inputrc
 \end{lstlisting}
 
 设置完毕后重新打开终端即可。
+
+\subsection{命令}
+
+\paragraph{ls}
+
+有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
+
+\begin{lstlisting}[language=Bash]
+ls -lh authorized_keys
+\end{lstlisting}
+
+\paragraph{find}
+
+在当前目录下查找大文件：
+
+\begin{lstlisting}[language=Bash]
+find . -type f -size +1000k
+#查找大于100MB的文件
+find . -type f -size +100M
+\end{lstlisting}
+
+size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。
 
 \subsection{自动部署}
 
@@ -559,10 +1266,14 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\multirow{1}{*}{序号}
 	& \multicolumn{1}{c}{名称}  \\
 	\hline			
-	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\	
+	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
+	\hline	
 	/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+	\hline
 	/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+	\hline
 	~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+	\hline
 	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
 	\hline
 \end{tabular}
@@ -625,16 +1336,26 @@ uname －a
 
 占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
 
-\subsection{Fedora访问共享文件夹}
+\subsection{Fedora访问Windows共享文件夹}
 
 在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
 
 \begin{lstlisting}[language=Bash]
+#密码aaa321
 sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/data /home/dolphin/software
 \end{lstlisting}
 
 一般提示权限错误是由于用户名密码输入错误。aaa为Windows机器的用户名，uid为当前Fedora账户的名称，gid为当前Fedora用户组的名称。10.55.10.2为Windows账户的IP，data为共享文件夹的名称，与盘符无关。/home/dolphin/software本地Fedora机器的目录。cifs为通用网络文件系统，The Common Internet File System (CIFS) is the standard way that computer users share files across corporate intranets and the Internet. An enhanced version of the Microsoft open, cross-platform Server Message Block (SMB) protocol, CIFS is a native file-sharing protocol in Windows 2000.
 
+\subsection{Ubuntu访问Windows共享文件夹}
+
+在文件管理器中，点击左侧的“Connect to Server”选项卡，填写Windows的IP，示例如下：
+
+\begin{lstlisting}[language=HTML]
+smb://10.55.10.2
+\end{lstlisting}
+
+点击确定后，在弹出的对话框中输入相应的用户名和密码即可。
 
 \subsection{软件包管理}
 
@@ -672,19 +1393,54 @@ sudo apt install fcitx-googlepinyin
 
 \newpage
 
-\section{Intellij Idea}
+\chapter{Intellij Idea}
 
 \subsection{Intellij Idea远程调试}
+
+输入如下命令，启动远程调试：
+
+\begin{lstlisting}[language=Bash]
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.9.jar --spring.config.location=application.properties>/dev/null &
+\end{lstlisting}
+
 
 \subsection{Intellij Idea调试慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
-\subsection{常用设置}
+\subsection{Tips}
+
+
+\paragraph{Class JavaLaunchHelper is implemented}
+
+
+启动时提示错误：
+
+\begin{lstlisting}[language=Bash]
+objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/bin/java (0x10d19c4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10ea194e0). One of the two will be used. Which one is undefined.
+\end{lstlisting}
+
+
+检查启动配置里启动模块是否选择正确。
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
-\section*{Gradle}
+
+\paragraph{匹配文件}有时需要使用Intellij Idea的全局搜索，在匹配文件时，如果想匹配某几类文件，可以输入如下的过滤条件。
+
+\begin{lstlisting}[language=Bash]
+#在Java文件和log文件中进行匹配
+*.java,*.log
+\end{lstlisting}
+
+\paragraph{智能提示}
+
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+
+
+\chapter{Gradle}
+
+一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
 \subsection{执行流程}
 
@@ -715,6 +1471,8 @@ repositories {
 
 总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
+\section{Gradle对象}
+
 \subsection{属性(Properties)}
 
 \subsubsection{Extra Properties}
@@ -740,6 +1498,48 @@ ext.isSnapshot = version.endsWith("-SNAPSHOT")
 if (isSnapshot) {
 	// do snapshot stuff
 }
+
+\paragraph{定义目标jar包名}
+
+有时在构建后需要定义目标jar包的名称。
+
+\begin{lstlisting}[language=Java]
+project(":web"){
+
+	description = "web"
+	
+	jar{
+		baseName = "dolphin-web"
+	}
+}
+\end{lstlisting}
+
+编译打包后的jar包名称即为dolphin-web.jar。
+
+\subsection{Task}
+
+对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)
+
+\paragraph{拷贝文件}
+
+在项目中需要根据不同的用途生成不同的文件，比如api需要单独打包，平台需要单独打包，但是api和平台的代码都是一套代码，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包名称，使用copy功能来实现。首先定义项目的动态属性：
+
+\begin{lstlisting}[language=Java]
+buildscript {
+	ext {
+		projectVersion = '1.1.11'
+	}
+}
+\end{lstlisting}
+
+然后在task中使用此属性即可。
+
+\begin{lstlisting}[language=Java]
+task copyfile(){
+	println(projectVersion)
+}
+\end{lstlisting}
+
 
 \subsection{同时连接内外网}
 
@@ -858,7 +1658,7 @@ sudo route del default gw 10.55.10.1
 \subsubsection{Windows同时连接内外网}
 
 
-\section{Ansible}
+\chapter{Ansible}
 
 \subsection{Ansible模块}
 
@@ -870,16 +1670,40 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 
 如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
 
+\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
 
-\section{Nginx}
+\begin{lstlisting}[language=bash]
+ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
+\end{lstlisting}
+
+\chapter{youtube-dl}
+
+
+\chapter{Nginx}
+
+Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
+
+\subsection{X-Forwarded-For}
+
+X-Forwarded-For 是一个 HTTP 扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
+
+\begin{lstlisting}[language=bash]
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+\end{lstlisting}
+
+X-Forwarded-For 请求头格式:
+
+\begin{lstlisting}[language=bash]
+X-Forwarded-For: IP0, IP1, IP2
+\end{lstlisting}
+
+XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
 
 \subsection{Nginx获取真实IP}
 
 做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
-\begin{lstlisting}[language=bash]
-nginx -V
-\end{lstlisting}
+
 
 输出结果如下：
 
@@ -950,7 +1774,7 @@ with nginx by using --with-openssl=<path> option.
 这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
 
 \begin{lstlisting}[language=bash]
-./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
 \end{lstlisting}
 
 编译完毕之后，输入如下命令：
@@ -990,7 +1814,83 @@ location /inapi {
 
 此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
 
+\subsection{Nginx并发}
+
+如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
+
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+
+HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
+
+\begin{lstlisting}[language=bash]
+http {
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	#Zone=one或allips表示设置了名为“one”或“allips”的存储区
+	#大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
+}
+\end{lstlisting}
+
+HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令，这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制。
+
+\subsection{URI长度限制}
+
+在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
+
+\begin{lstlisting}[language=bash]
+client_header_buffer_size 2048k;
+\end{lstlisting}
+
+项目采用Spring Boot，所使用的Tomcat为内嵌的Tomcat。在application.properties中，增加如下配置:
+
+\begin{lstlisting}[language=bash]
+#单位为KB,如果没有指定，默认为8192(8KB)
+server.max-http-header-size=1024
+\end{lstlisting}
+
+奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
+
+\subsection{开启gzip压缩}
+
+用curl测试是否开启了压缩：
+
+\begin{lstlisting}[language=Bash]
+curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
+curl -I -H "Accept-Encoding: gzip, deflate" "http://5.24.25.6:3800/main"
+\end{lstlisting}
+
+开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+
 \subsection{常见问题}
+
+\paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
+
+以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
+
+\begin{lstlisting}[language=bash]
+./nginx -c /opt/app/local/tengine/conf/nginx.conf
+\end{lstlisting}
+
+也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
+
+\begin{lstlisting}[language=bash]
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+\end{lstlisting}
+
+其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
+
+\begin{lstlisting}[language=bash]
+./nginx -p /opt/app/local/tengine -s reload
+\end{lstlisting}
 
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
 
@@ -1042,18 +1942,18 @@ yum provides */libssl.so.1.0.0
 
 \url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
 
-\section{Fiddler}
+\chapter{Fiddler}
 
 \subsection{Fiddler替换Host}
 
-\section{Charles}
+\chapter{Charles}
 
 Charles是Mac端的一款截取与分析网络请求的工具，在网络开发中使用其作分析，可以大大提高我们的开发效率。Charles是收费软件，一般可以试用三十天。Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information).
 
 \subsection{title}
 
 
-\section{OpenVPN}
+\chapter{OpenVPN}
 
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
 
@@ -1303,7 +2203,7 @@ By default, OpenVPN only sends some traffic through the VPN — traffic that is 
 
 An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
-\section{Nmap(GNU General Public License)}
+\chapter{Nmap(GNU General Public License)}
 
 Nmap(Network Mapper)，网络映射器，是一款开放源代码的网络探测和安全审核的工具。
 它的设计目标是快速地扫描大型网络，当然用它扫描单个主机也没有问题。
@@ -1479,7 +2379,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 \end{tabular}
 
 
-\section{Raspberry Pi}
+\chapter{Raspberry Pi}
 
 \subsection{Raspberry Pi远程}
 
@@ -1492,7 +2392,7 @@ sudo apt-get install tightvncserver　－ｙ
 vncpasswd
 \end{lstlisting}
 
-\section{Widgets}
+\chapter{Widgets}
 
 \subsection{autojump}
 
@@ -1536,9 +2436,17 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
-\section{Git}
+\chapter{Git}
 
 \subsection{配置}
+
+\subsection{查看某几行代码修改}在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
+
+\begin{lstlisting}[language=Bash]
+git blame /home/hldev/hldata/backend/system/cc-web/src/main/java/cresystem/web/controllers/pubapi/PubapiOrgController.java
+\end{lstlisting}
+
+会显示每一行代码的作者(最后修改者)和最后的修改时间。
 
 \subsection{常见问题}
 
@@ -1559,7 +2467,7 @@ git config --system http.sslverify false
 \end{lstlisting}
 
 
-\section{ssh}
+\chapter{ssh}
 
 \subsection{免密登陆}
 
@@ -1568,6 +2476,46 @@ git config --system http.sslverify false
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
 \end{lstlisting}
+
+\subsection{ssh连接慢}
+
+在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
+
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
+使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
+
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+ PubkeyAuthentication yes 
+\end{lstlisting}
+
 
 \subsection{Session时间}
 
@@ -1616,7 +2564,7 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 \end{lstlisting}
 
-\section{Git}
+\chapter{Git}
 
 \subsection{merge}
 
@@ -1626,15 +2574,114 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 git config --global merge.tool meld
 \end{lstlisting}
 
-\section{Google Chrome}
+\chapter{Google Chrome}
+
+\section{DevTools}
+
+\begin{tabular}{|c|p{6cm}|}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c|}{备注}\\			
+	\hline
+	Ctrl+Shift+J (Windows/Linux)  & 打开DevTools Console面板 \\
+	\hline
+	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
+	\hline
+\end{tabular}
+
+\subsection{Console}
+
+\paragraph{Log XMLHttpRequests}
+
+想要看到使用中应用发送的 XHR 请求，可以打开 settings 面板（译注：打开调试面板按 F1 呼出）选中 “Log XMLHttpRequests” 选项，然后就可以在 “Console” 面板中看到请求了。点击此请求可以导航到Network选项卡上，当然也可以直接在Network选项卡中查看XHR HttpRequest请求，不过使用Console打印出来到导航还是要方便一些，多了一个入口。
+
+\paragraph{脚本添加到黑盒}
+
+当你使用 “Event listener breakpoint :: Mouse :: Click” 调试事件时，有很大的可能是代码在第三方的库中中断了（例如 jquery ），这时如果你想找到属于自己项目的调用需要在调试器里面点很多次的下一步才能看到。 一种很棒的方式就是把这些第三方的脚本放到黑盒里面，调试器永远不会在黑盒中的脚本内停止，它会一直向后运行，直到运行的代码行位于黑盒之外的文件。 你可以在调用栈面板中右键点击第三方脚本的文件名，然后左键在下拉菜单中点击 “Blackbox Script”。
+
+\paragraph{定位按钮触发代码}
+
+快速定位某个特定按钮或者链接点击后所触发的代码，只需要在你真正点击按钮之前，激活一个 “Event listener breakpoint”, 选中右侧面板下 mouse 下面的 click 确认框即可。
+
+\paragraph{Async调试}
+
+在Promise被广泛应用的今天，我们都知道，Promise的回调是异步执行的，没有开启Async模式前，调动栈只记录到回调函数本身，我们无法找到代码执行的顺序，这给我们调试带来巨大的困难。Async模式可以解决这个问题。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.9]{chromeasyncdebugging.png}
+	\caption{Google Chrome异步调试}
+	\label{fig:chromeasyncdebugging}
+\end{figure}
+
+\paragraph{查找成员函数}
+
+Ctrl+Shif+O文件中定位成员函数。
+
+\paragraph{打印对象数组}
+
+在Javascript中可能返回有数组，有的时候可能某一个数组元素感觉数据不对，在Javascript调试跟踪时，输出了一些Object对象，如果是几个元素，还可以一个一个点开查看，如果有成百上千的元素，一个一个点开查看几乎是不可能的，至今没有发现在结果中按关键字搜索的功能，此时可以使用如下方法：
+
+\begin{lstlisting}[language=Bash]
+console.table(data);
+\end{lstlisting}
+
+即可以表格的形式显示所有元素，其中data表示一个对象或者数组，如图\ref{fig:googlechromeconsoletable}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{googlechromeconsoletable.png}
+	\caption{Google Chrome查看对象数组}
+	\label{fig:googlechromeconsoletable}
+\end{figure}
+
 
 \subsection{Source Map}
 
 截止目前几乎没有浏览器完全原生支持es6标准，对于这种情况，Chrome引入了source-map文件，标识es5代码对应的转码前的es6代码哪一行，唯一要做的就是配置webpack自动生成source-map文件，这也很简单，在webpack.config.js中增加一行配置即可（需要重新启动webpack-dev-server使配置生效）
 
-\subsection{Replay XHR}
 
-有时在开发时，可以直接在Network中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提交不少效率。
+\subsection{Network}
+
+\paragraph{Replay XHR}
+
+有时在开发时，可以直接在Network中的网络请求列表中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提高不少效率。
+
+\paragraph{Disable cache}
+
+勾选上Disable cache后，浏览器不会利用本地的Javascript缓存，每次都会到服务器上重新取。
+
+\paragraph{Preserve Log}
+
+保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。
+
+
+\subsection{Elements}
+
+在元素上，按住Ctrl + Alt + 鼠标左键，可以展开元素及下级元素的所有节点。
+
+
+\subsection{Performance}
+
+
+
+\subsection{Sources}
+
+\paragraph{Snippets}
+
+\paragraph{Others}
+
+\subparagraph{查看Render区域}
+
+有时需要查看浏览器重绘制的区域，页面的绘制时间（paint time）是每一个前端开发都需要关注的的重要指标，它决定了你的页面流畅程度。而如何去观察页面的绘制时间，找到性能瓶颈，可以借助Chrome的开发者工具，激活页面绘制区域显示如图\ref{fig:pagepainting}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{pagepainting.png}
+	\caption{激活页面绘制区域高亮}
+	\label{fig:pagepainting}
+\end{figure}
+
 
 \subsection{Google Chrome SSH}
 
@@ -1666,8 +2713,12 @@ sudo apt-get install php7.0 -y
 
 
 
+\begin{lstlisting}[language=Bash]
+dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
+\end{lstlisting}
 
-\section{LaTex}
+
+\chapter{LaTex}
 
 \subsection{安装}
 
@@ -1684,7 +2735,164 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
+\subsection{支持语言}
+
+Latex原生不支持JavaScript语言，添加如下定义：
+
+\begin{lstlisting}[language=Tex]
+%lstlisting包JavaScript语言设置
+\lstdefinelanguage{JavaScript}{
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+\end{lstlisting}
+
+即可在文档中定义JavaScript，并支持关键字颜色区分。
+
 \part{DB}
+
+\chapter{性能(Performance)}
+
+\section{索引(Index)}
+
+\subsection{索引常识}
+
+绝大多数情况下，数据库只使用一个索引。在开发中遇到有时根据时间查询很快：
+
+\begin{lstlisting}[language=SQL]
+--在列org\_id和jdrq上都建立了索引
+--同样都查询语句，不同都org\_id值会有不同都查询性能
+--当org\_id结果集很少当时候，数据库会使用org\_id索引
+--在使用了org\_id索引后，不会使用jdrq索引
+--同理，当org\_id结果集更大，根据jdrq索引效率更高时
+--数据库会使用jdrq列作为索引，而不会使用org\_id索引
+select *
+from table
+where org_id = '1000'
+order by jdrq desc
+\end{lstlisting}
+
+所以需要同时利用多个列的索引，或者查询条件包含多列时，应该使用联合索引。
+
+\begin{lstlisting}[language=SQL]
+create index idx_ts_b_xzxk_jdrq_org_id on xzxk(jdrq desc,org_id);
+\end{lstlisting}
+
+\paragraph{B+树}
+
+IO次数取决于b+数的高度h(height)，假设当前数据表的数据为N，每个磁盘块的数据项的数量是m，则有
+
+\begin{equation}
+h=\log_{(m+1)} N
+\end{equation}
+
+
+当数据量N一定的情况下，m越大，h越小；而m = 磁盘块的大小 / 数据项的大小，磁盘块的大小也就是一个数据页的大小，是固定的，如果数据项占的空间越小，数据项的数量越多，树的高度越低。这就是为什么每个数据项，即索引字段要尽量的小，比如int占4字节，要比bigint8字节少一半。这也是为什么b+树要求把真实的数据放到叶子节点而不是内层节点，一旦放到内层节点，磁盘块的数据项会大幅度下降，导致树增高。当数据项等于1时将会退化成线性表。
+
+当b+树的数据项是复合的数据结构，比如(name,age,sex)的时候，b+数是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道下一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。比如当(张三,F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age的缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了， 这个是非常重要的性质，即索引的最左匹配特性\footnote{\url{参考链接:http://tech.meituan.com/mysql-index.html}}。
+
+\paragraph{索引原则}
+
+\subparagraph{最左前缀匹配原则}最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
+
+\subparagraph{=和in可以乱序}=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式
+
+\subparagraph{尽量选择区分度高的列作为索引}尽量选择区分度高的列作为索引,区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录
+
+\subparagraph{索引列不能参与计算}索引列不能参与计算，保持列“干净”，比如from\_unixtime(create\_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create\_time = unix\_timestamp(’2014-05-29’);
+
+\subparagraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
+
+\subsection{索引类型}
+
+\subparagraph{位图索引(Bitmap Index)}
+
+相对于B*Tree索引,占用的空间非常小,创建和使用非常快。位图索引由于只存储键值的起止Rowid和位图,占用的空间非常少。B*Tree索引由于不记录空值,当基于is null的查询时,会使用全表扫描,而对位图索引列进行is null查询时,则可以使用索引。当select count(XX) 时,可以直接访问索引中一个位图就快速得出统计数据。当根据键值做and,or或 in(x,y,..)查询时,直接用索引的位图进行或运算,快速得出结果行数据。
+
+\subparagraph{散列索引Or哈希索引(Hash Index)}
+
+散列索引是根据HASH算法来构建的索引，所以检索速度很快，但不能范围查询。散列索引的特点，只适合等值查询（包括= <> 和in），不适合模糊或范围查询
+
+\subparagraph{聚集索引(Cluster Index)}
+
+聚集索引确定表中数据的物理顺序。聚集索引类似于电话簿，后者按姓氏排列数据。由于聚集索引规定数据在表中的物理存储顺序，因此一个表只能包含一个聚集索引。但该索引可以包含多个列（组合索引），就像电话簿按姓氏和名字进行组织一样。 
+
+\subparagraph{非聚集索引(Non-Cluster Index)}
+
+它并不决定数据在磁盘上的物理排序，索引上只包含被建立索引的数据，以及一个行定位符row-locator，这个行定位符，可以理解为一个聚集索引物理排序的指针，通过这个指针，可以找到行数据。
+
+\subparagraph{联合索引}
+
+联合索引能够满足最左侧查询需求，例如(a, b, c)三列的联合索引，能够加速a | (a, b) | (a, b, c) 三组查询需求。这也就是为何不建立(passwd, loginName)这样联合索引的原因，业务上几乎没有passwd的单条件查询需求，而有很多loginName的单条件查询需求。
+
+\subsection{like查询优化}
+
+目前数据量将近千万，模糊查询效率比较低。模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
+
+\paragraph{采用函数}
+
+采用函数来优化查询(没有效果)：
+
+\begin{lstlisting}[language=SQL]
+--120W数据平均2.3秒左右，比原生查询稍慢
+SELECT `column` FROM `table` WHERE LOCATE('keyword', `field`)>0
+
+select * 
+from "table" 
+where locate('陶然居',mc)>0
+and code is not null
+limit 0,10;
+
+--120W数据平均1.8秒左右，与原生查询时间相仿
+SELECT `column` FROM `table` WHERE POSITION('keyword' IN `filed`)
+
+select * 
+from "table" 
+where position('西南铝业' in mc)
+and code is not null
+limit 0,10;
+
+--120W数据平均1.8秒左右，与原生查询时间相仿
+SELECT `column` FROM `table` WHERE INSTR(`field`, 'keyword' )>0
+
+select * 
+from "table" 
+where INSTR('西南铝业' in mc)>0
+and code is not null
+limit 0,10;
+\end{lstlisting}
+
+\paragraph{全文索引(Full-text Search)}
+
+在达梦数据库中创建全文索引：
+
+\begin{lstlisting}[language=SQL]
+create context index qymcindex on user_xycq.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+\end{lstlisting}
+
+填充索引：
+
+\begin{lstlisting}[language=SQL]
+alter context index qymcindex on user_xycq.TS_F_CORPORATION_TEST rebuild;
+\end{lstlisting}
+
+删除索引：
+
+\begin{lstlisting}[language=SQL]
+drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
+\end{lstlisting}
+
+达梦数据库中，在写全文索引查询时，全文索引的条件需要放到前面，这样才能够利用到索引。
 
 \section{Redis}
 
@@ -1702,6 +2910,11 @@ make test
 
 
 \section{MySQL}
+
+
+
+
+
 
 \subsection{基础}
 
@@ -1846,7 +3059,131 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
+\section{通用知识}
+
+\subsection{查询优化}
+
+最近使用数据库中，遇到查询性能低下的问题。数据量大概在800W左右，但是分页查询需要40s左右才能够查询出来结果，测试库200W数据量左右，分页查询也需要10s才能出结果。
+
+使用MySQL，有的人BB说5.1以前300w就会很明显，5.5-5.6已经有很大优化，如果是5.7千万也不是问题。随着互联网的发展，数据的量级也是撑指数的增长，从GB到TB到PB。对数据的各种操作也是愈加的困难，传统的关系性数据库已经无法满足快速查询与插入数据的需求。这个时候NoSQL的出现暂时解决了这一危机。它通过降低数据的安全性，减少对事务的支持，减少对复杂查询的支持，来获取性能上的提升。但是，在有些场合NoSQL一些折衷是无法满足使用场景的，就比如有些使用场景是绝对要有事务与安全指标的。这个时候NoSQL肯定是无法满足的，所以还是需要使用关系性数据库。
+
+\paragraph{增加缓存}增加缓存可以提高查询效率，但是在对数据表做任何的更新操作(update/insert/delete)等操作，server为了保证缓存与数据库的一致性，会强制刷新缓存数据，导致缓存数据全部失效。
+
+\paragraph{分库分表}分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
+
+对于mysql，其数据文件是以文件形式存储在磁盘上的。当一个数据文件过大的时候，操作系统对大文件的操作就会比较麻烦与耗时，而且有的操作系统就不支持大文件，所以这个时候就必须分表了。另外对于mysql常用的存储引擎是Innodb，它的底层数据结构是B+树。当其数据文件过大的时候，B+树就会从层次和节点上比较多，当查询一个节点的时候可能会查询很多层次，而这必定会导致多次IO操作进行装载进内存，肯定会耗时的。除此之外还有Innodb对于B+树的锁机制。对每个节点进行加锁，那么当更改表结构的时候，这时候就会树进行加锁，当表文件大的时候，这可以认为是不可实现的。
+
+\paragraph{采用NoSQL数据库}
+
+Hbase读的性能比较强，官方定义为适合PB级数据的秒级查询，就是说在巨海量的数据中查询，响应速度非常快。
+
+\subsection{注意事项}
+
+\paragraph{不要ORDER BY RAND()}MySQL会不得 不去执行RAND()函数（很耗CPU时间），而且这是为了每一行记录去记行，然后再对其排序。就算是你用了Limit 1也无济于事。自己在做爬虫时，写过这样的语句：
+
+\begin{lstlisting}[language=SQL]
+select * from douban_book_id where isscapy = 0 limit 1
+\end{lstlisting}
+
+难怪后来变的很慢，把中间停顿的sleep函数去掉之后还是很慢，开始还一位是sleep函数暂停的问题。
+
 \part{Network}
+
+\chapter{WebService}
+
+\section{Axis2}
+
+目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
+
+\subsection{Axis2 Web Service}
+
+在填写Web Service地址时，提示url is not valid,地址是\url{http://www.webxml.com.cn/WebServices/WeatherWebService?wsdl}，而地址\url{http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl}是有效地址。
+
+\chapter{HTTP}
+
+
+\subsection{性能分析}
+
+\paragraph{慢的SQL查询}
+
+在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。在SQL中添加相应的索引可以解决。
+
+\paragraph{大的Javascript脚本}在项目中，发现有的JavaScript脚本特别大，有6MB+之巨，明显是造成性能瓶颈的原因之一，如图\ref{fig:largejavasript}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{largejavasript.png}
+	\caption{较大的Javascript脚本}
+	\label{fig:largejavasript}
+\end{figure}
+
+\subparagraph{去掉Javascript注释}
+
+在webpack.config.js文件的plugins数组里面添加及配置插件即可。
+
+\begin{lstlisting}[language=Javascript]
+new UglifyJsPlugin({
+	output: {
+		comments: false,//去掉Javascript中的注释
+	},
+	compress: {
+		warnings: false
+	}
+})
+\end{lstlisting}
+
+去掉注释后小了400KB左右，但是还是有6MB，没有从根本上解决问题。
+
+\subparagraph{添加插件}
+
+添加一些插件压缩包。
+
+\begin{lstlisting}[language=Javascript]
+plugins: [
+	new webpack.DefinePlugin({ // <-- key to reducing React's size
+		'process.env': {
+		'NODE_ENV': JSON.stringify('production')
+	}
+	}),
+	new webpack.optimize.DedupePlugin(), //dedupe similar code 
+	new webpack.optimize.UglifyJsPlugin(), //minify everything
+	new webpack.optimize.AggressiveMergingPlugin()//Merge chunks 
+]
+\end{lstlisting}
+
+
+\subparagraph{React切换到产品环境}
+
+\subparagraph{利用浏览器缓存}
+
+有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要频繁的访问服务器下载Javascript脚本，提升 本地加载速度的同时也减轻了服务端的压力，如图\ref{fig:scriptusingdiskcache}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{scriptusingdiskcache.png}
+	\caption{Javascript脚本利用浏览器缓存}
+	\label{fig:scriptusingdiskcache}
+\end{figure}
+
+由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是无法忍受的。
+
+\subparagraph{开启Gzip压缩}
+
+同时可以考虑在服务端开启Gzip压缩，开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{openservercompress.png}
+	\caption{开启服务端压缩效果}
+	\label{fig:openservercompress}
+\end{figure}
+
+图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
+
+\subsection{Session}
+
+当浏览器第一次请求时，服务器创建一个session对象，同时生成一个sessionId，并在此次响应中将sessionId 以响应报文的方式传回客户端浏览器内存或以重写url方式送回客户端，来保持整个会话。关闭此浏览器窗口，其内存中的sessionId也就随之销毁。session.invalidate()是将session设置为失效，一般在退出时使用，但要注意的是：session失效的同时 浏览器会立即创建一个新的session的，你第一个session已经失效了 所以调用它的getAttribute方法时候一定会抛出NullPointerException。jsessionid只是tomcat中对session id的叫法，在其它容器里面，不一定就是叫jsessionid。
+
 
 \section{PAC}
 
@@ -1943,7 +3280,7 @@ def getVersionCode() {
 }
 \end{lstlisting}
 
-此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，所以写成相对路径会比较妥当。可以写成如下：
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，不同的成员使用的操作系统有区别，项目存放的路径也不一样，所以写成相对路径会比较妥当。可以写成如下：
 
 \begin{lstlisting}
 File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
