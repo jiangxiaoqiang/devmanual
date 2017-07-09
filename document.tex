@@ -798,7 +798,7 @@ ReactDOM.render(
 );
 \end{lstlisting}
 
-Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。它的原理是React组件的context属性。
+Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。同理store只需要在最顶层导入一次，否则在下级的每一个组件都需要导入store，非常不利于组件复用，每个组件都导入显然不够优雅，它的原理是React组件的context属性。
 
 \subsection{Connect}
 
@@ -855,7 +855,51 @@ store 是应用的状态管理中心，保存着是应用的状态（state），
 
 \subsection{state}
 
-state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.
+state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.而Action不会引起state的变化，引起state变化的是reducer。如果用 redux，就没有 state 和 props 的区分了。组件都应该用 props，不应该有任何组件私有的 state。尽量使用props当作数据源，state用来存放状态值。
+
+\paragraph{初始化state}
+
+有2种方法来初始化应用的state，一种是在createStore方法中的第二个可选参数preloadState。也可以在reducer中为undefined的state参数指定默认初始值。
+
+\paragraph{redux logger}
+
+Redux Logger是一个中间件，它会打印出当前应用的state变化，配置如下代码所示。
+
+\begin{lstlisting}[language=Javascript]
+/**
+* ES6 with npm, you can write import React from 'react'. 
+* ES5 with npm, you can write var React = require('react').
+*/
+import {createLogger} from 'redux-logger';
+
+if (process.env.NODE_ENV === 'development') {
+	const logger = createLogger({
+		stateTransformer: (state) => {
+			let newState = {};
+			for (let i of Object.keys(state)) {
+				if (Iterable.isIterable(state[i])) {
+					newState[i] = state[i].toJS();
+				} else {
+					newState[i] = state[i];
+				}
+			}
+			return newState;
+		}
+	});
+	middleware.push(logger);
+}
+\end{lstlisting}
+
+打印出action的效果如图\ref{fig:reduxloggerexample}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{reduxloggerexample.png}
+	\caption{Redux Logger打印效果}
+	\label{fig:reduxloggerexample}
+\end{figure}
+
+从图中看出，state的状态已经改变。说明是state改变后的某些动作还未触发。
 
 \subsection{Props}
 
@@ -900,6 +944,7 @@ class BookContainer extends Component {
 	\label{fig:bookserviceprops}
 \end{figure}
 
+
 \subsection{Reducers}
 
 Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过 Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。
@@ -922,6 +967,8 @@ JavaScript 中的对象一般是可变的（Mutable），因为使用了引用�
 \paragraph{IMMUTABLE DATA}
 
 Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
+
+
 
 \section{MobX}
 
@@ -3233,8 +3280,32 @@ plugins: [
 ]
 \end{lstlisting}
 
+\subparagraph{webpack-bundle-analyzer}
+
+\url{http://www.reactpeixun.com/reactganhuo/2017-06-05/304.html?nsukey=Oif9ieNi7kisvaq%2B0aDH46Tl37niZVItuq2VKmhdkz7Z%2F%2F2PmtYFX6EdwDLkcMg8ajYX9XxOUXO5ykezqUerb45blihPXZ3BgEZSQUlk25d4qkfLibGwVsIWSBdG9ByTmNG11Da14liYOc%2BB9tmOVI1FbAE%2FohPpzfc2kVRHQMk%3D}
 
 \subparagraph{React切换到产品环境}
+
+\subparagraph{查看Webpack输出}
+
+最最直接的，可以直接阅读Webpack的输出，里面有模块的文件大小，在package.json文件中添加--display-chunks参数，配置如下：
+
+\begin{lstlisting}[language=Javascript]
+"scripts": {
+	"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
+}
+\end{lstlisting}
+
+
+输出如图\ref{fig:webpackcheckingfilesize}所示。也可以在输出中查找是否包含重复依赖。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{webpackcheckingfilesize.png}
+	\caption{Webpack查看输出文件大小}
+	\label{fig:webpackcheckingfilesize}
+\end{figure}
+
 
 \subparagraph{利用浏览器缓存}
 
