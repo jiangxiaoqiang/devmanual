@@ -348,7 +348,7 @@ SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。
 </ehcache>
 \end{lstlisting}
 
-在方法上指定缓存，语法采用SpEL，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
+在方法上指定缓存，语法采用SpEL(Spring Express Language)，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
 SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
 
 \begin{lstlisting}[language=Java]
@@ -364,7 +364,13 @@ SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以
 condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
 \end{lstlisting}
 
-如上条件，取出xdr为空的数据进行缓存。
+如上条件，取出xdr为空的数据进行缓存。如下情形缓存将会不起作用：
+
+\begin{itemize}
+	\item{同一个bean内部方法调用，这个问题遇到过，也是查了一些时间才发现}
+	\item{子类调用父类中有缓存注解的方法}
+\end{itemize}
+
 
 \subsection{用户重复登录问题}
 
@@ -2788,7 +2794,29 @@ console.table(data);
 
 \paragraph{Preserve Log}
 
-保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。
+保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。在使用large request row后，size和time会出现2行内容，如图\ref{fig:networksizeandtime}所示。其中时间行，上面的时间代表从请求开始到接收完最后一个byte为止的时间，下面一行是Latency，代表从请求接收完后到读取该资源第一个byte之间的等待时间。按照这个逻辑，那么上面一行的时间减去下面一行的时间就是数据的下载时间，将鼠标移动到右侧waterfall图标上，可以看到下载时间(Content Download)正好是上下两行的时间差。另外Size列也有2行，上面一行代表网络上实际传输的文件大小，下面一行代表原始的未经过压缩的文件大小。一般服务器会对资源使用Gzip进行压缩。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{networksizeandtime.png}
+	\caption{Network宽行显示}
+	\label{fig:networksizeandtime}
+\end{figure}
+
+\paragraph{DOMContentLoaded和load事件信息}
+
+DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件会在页面上DOM完全加载并解析完毕之后触发，不会等待CSS、图片、子框架加载完成。load事件会在页面上所有DOM、CSS、JS、图片完全加载完毕之后触发。DOMContentLoaded事件在Overview上用一条蓝色竖线标记，并且在Summary以蓝色文字显示确切的时间。load事件同样会在Overview和Requests Table上用一条红色竖线标记，在Summary也会以红色文字显示确切的时间。
+
+\paragraph{资源的发起者(请求源)和依赖项}
+
+通过按住Shift并且把光标移到资源名称上，可以查看该资源是由哪个对象或进程发起的（请求源）和对该资源的请求过程中引发了哪些资源（依赖资源）。在该资源的上方第一个标记为绿色的资源就是该资源的发起者（请求源），有可能会有第二个标记为绿色的资源是该资源的发起者的发起者，以此类推。在该资源的下方标记为红色的资源是该资源的依赖资源，如图\ref{fig:resourcedependency}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{resourcedependency.png}
+	\caption{依赖资源}
+	\label{fig:resourcedependency}
+\end{figure}
 
 
 \subsection{Elements}
@@ -2812,7 +2840,7 @@ console.table(data);
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{pagepainting.png}
+	\includegraphics[scale=0.6]{pagepainting.png}
 	\caption{激活页面绘制区域高亮}
 	\label{fig:pagepainting}
 \end{figure}
@@ -3322,7 +3350,20 @@ plugins: [
 
 \subparagraph{开启Gzip压缩}
 
-同时可以考虑在服务端开启Gzip压缩，开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
+同时可以考虑在服务端开启Gzip压缩，開啓Gzip壓縮配置如下：
+
+\begin{lstlisting}[language=Bash]
+#僅僅開啓Gzip還不行，需要各項詳細配置
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]\.";
+\end{lstlisting}
+
+开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -3332,6 +3373,23 @@ plugins: [
 \end{figure}
 
 图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
+
+\paragraph{字体文件加载}
+
+發現一個字體文件(fontawesome-webfont.woff2)在Linux下的Chrone中是從磁盤中加載(from disk cache)的，花費了220ms左右。在Windows平臺下的360浏览器中是從内存中加載(from cache)的。diskCache顾名思义，就是将资源缓存到磁盘中，等待下次访问时不需要重新下载资源，而直接从磁盘中获取，它的直接操作对象为CurlCacheManager。它与memoryCache最大的区别在于，当退出进程时，内存中的数据会被清空，而磁盘的数据不会，所以，当下次再进入该进程时，该进程仍可以从diskCache中获得数据，而memoryCache则不行。diskCache与memoryCache相似之处就是也只能存储一些派生类资源文件。它的存储形式为一个index.dat文件，记录存储数据的url，然后再分别存储该url的response信息和content内容。Response信息最大作用就是用于判断服务器上该url的content内容是否被修改。
+
+\paragraph{耗时长的请求}
+
+查看首页中一个耗时最长的请求，一般情况下耗时都稳定在1s左右。如图\ref{fig:longtimerequest}所示。可以看出挂起(stalled)304ms，等待服务端响应581ms，此两项的时间是最长的。Stalled从HTTP连接建立到请求能够被发出送出去(真正传输数据)之间的时间花费。包含用于处理代理的时间，如果有已经建立好的连接，这个时间还包括等待已建立连接被复用的时间。挂起时间长是由于浏览器对同一个主机域名的并发连接数有限制，因此如果当前的连接数已经超过上限，那么其余请求就会被阻塞，等待新的可用连接；此外脚本也会阻塞其他组件的下载。另外在不同的平台上挂起时间时长也不一定，在Windows平台的360浏览器上挂起时长(stalled)仅仅为0.458ms。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{longtimerequest.png}
+	\caption{耗时长的请求}
+	\label{fig:longtimerequest}
+\end{figure}
+
+针对服务器端耗时长的请求，使用VisualVM查看服务端调用的耗时最长的方法。VisualVM 是一款免费的性能分析工具。它通过 jvmstat、JMX、SA（Serviceability Agent）以及 Attach API 等多种方式从程序运行时获得实时数据，从而进行动态的性能分析。同时，它能自动选择更快更轻量级的技术尽量减少性能分析对应用程序造成的影响，提高性能分析的精度。
 
 \subsection{Session}
 
@@ -3348,7 +3406,7 @@ PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就
 
 一个最简单的PAC脚本：
 
-\begin{lstlisting}[language=VBScript]
+\begin{lstlisting}[language=JavaScript]
 function FindProxyForURL(url,host){
 	return "DIRECT";
 }
