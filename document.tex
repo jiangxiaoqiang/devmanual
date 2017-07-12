@@ -849,11 +849,44 @@ Action向store派发指令，action 函数会返回一个带有 type 属性的 J
 
 \subsection{Store}
 
-store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起。
+store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起，如下语句创建一个简单的store。
+
+\begin{lstlisting}[language=Javascript]
+import {createStore} from 'redux';
+//创建store
+const store = createStore(reducer, 1);
+\end{lstlisting}
+
+第一个参数为reducer，第二个参数是初始化的状态(initialState)，这里为1。
+
+\subsection{Reducer}
+
+如下语句创建一个简单的Reducer：
+
+\begin{lstlisting}[language=Javascript]
+const reducer = (state, action) => {
+	switch (action.type) {
+		case "ADD":
+			state = state + action.payload;
+			break;
+		case "SUBTRACT":
+			break;
+	}
+	return state;
+};
+\end{lstlisting}
 
 \subsection{Dispatcher}
 
-接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。
+接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
+
+\begin{lstlisting}[language=Javascript]
+store.dispatch({
+	type: "ADD",
+	payload: 10
+});
+\end{lstlisting}
+
 
 \paragraph{redux-thunk}
 
