@@ -163,6 +163,12 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \subsection{ComponentScan}
 
+\section{Shiro}
+
+\subsection{新建表}
+
+
+
 \section{数据库操作}
 
 \subsection*{JDBC数据库重连}
@@ -358,7 +364,7 @@ SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以
 )
 \end{lstlisting}
 
-@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
+@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。缓存的Key,当我们没有指定该属性时，Spring将使用默认策略生成key(表示使用方法的参数类型及参数值作为key),key属性是用来指定Spring缓存方法的返回结果时对应的key的。该属性支持SpringEL表达式。我们还可以自定义策略：自定义策略是指我们可以通过Spring的EL表达式来指定我们的key。这里的EL表达式可以使用方法参数及它们对应的属性。使用方法参数时我们可以直接使用“\#参数名”或者“\#p参数index”。key的生成策略有两种：一种是默认策略，一种是自定义策略。默认的key生成策略是通过KeyGenerator生成的，其默认策略如下：1.如果方法没有参数，则使用0作为key。2.如果只有一个参数的话则使用该参数作为key。3.如果参数多余一个的话则使用所有参数的hashCode作为key满足一定条件才缓存，写法如下：
 
 \begin{lstlisting}[language=Java]
 condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
@@ -371,6 +377,24 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 	\item{子类调用父类中有缓存注解的方法}
 \end{itemize}
 
+\subsection{全局异常拦截器}
+
+在class注解上@ControllerAdvice
+
+\begin{lstlisting}[language=Java]
+@ControllerAdvice(basePackages = "creditsystem.web.controllers")
+public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
+
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
+			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
+		}
+		logger.error("系统错误", ex);
+		return new ResponseEntity<>(ApiResult.error(status.value(), "系统错误"), headers, HttpStatus.OK);
+	}
+}
+\end{lstlisting}
 
 \subsection{用户重复登录问题}
 
@@ -562,6 +586,21 @@ case class User(
 */
 val params = pageable.getParams.asScala.toVector.reverse  
 \end{lstlisting}
+
+\subsection{集合操作}
+
+Scala集合操作如下：
+
+\begin{lstlisting}[language=Scala]
+processResult = errorCode.get.split(',')
+	.filter(s => StringUtils.isNoneBlank(s))
+	.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
+	.filter(_ != null)
+	.map(eet => eet.getErrDesc)
+	.mkString("；")
+\end{lstlisting}
+
+mkString把集合元素转化为字符串，可以添加分隔符，前缀，后缀。
 
 \chapter{Python}
 
@@ -865,7 +904,16 @@ state是React中组件的一个对象.React把用户界面当做是状态机,想
 
 \paragraph{初始化state}
 
-有2种方法来初始化应用的state，一种是在createStore方法中的第二个可选参数preloadState。也可以在reducer中为undefined的state参数指定默认初始值。
+有2种方法来初始化应用的state，一种是在createStore方法中的第二个可选参数preloadState。也可以在reducer中为undefined的state参数指定默认初始值。state的结构如图\ref{fig:statedemo}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{statedemo.png}
+	\caption{State状态示例}
+	\label{fig:statedemo}
+\end{figure}
+
+
 
 \paragraph{redux logger}
 
@@ -1175,6 +1223,16 @@ console.log(tigerB.species);//猫科
 tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
+\subsection{常用函数}
+
+数学函数：
+
+\begin{lstlisting}[language=Javascript]
+f = Math.round(x / 10000 * Math.pow(10, y)) / Math.pow(10, y);
+\end{lstlisting}
+
+Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
+
 \section{常见问题}
 
 \subsection{Store does not have a valid reducer}
@@ -1305,6 +1363,10 @@ find . -type f -size +100M
 \end{lstlisting}
 
 size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。
+
+\paragraph{kill}
+
+
 
 \subsection{自动部署}
 
@@ -1496,6 +1558,8 @@ openssl version -a
 # yum查看已经安装的软件包
 yum list installed
 \end{lstlisting}
+
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。
 
 \subsection{输入法(Input Method)}
 
@@ -2000,11 +2064,24 @@ server.max-http-header-size=1024
 
 \subsection{开启gzip压缩}
 
+开启Gzip压缩配置如下：
+
+\begin{lstlisting}[language=Bash]
+gzip on;
+gzip\_min\_length 1k;
+gzip\_buffers 4 16k;
+\#gzip\_http\_version 1.0;
+gzip\_comp\_level 2;
+gzip\_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip\_vary off;
+gzip\_disable "MSIE [1-6]\textbackslash\{\}.";
+\end{lstlisting}
+
 用curl测试是否开启了压缩：
 
 \begin{lstlisting}[language=Bash]
 curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
-curl -I -H "Accept-Encoding: gzip, deflate" "http://5.24.25.6:3800/main"
+curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
 \end{lstlisting}
 
 开启压缩成功后，可以看到一句：Content-Encoding: gzip。
@@ -2029,6 +2106,7 @@ curl -I -H "Accept-Encoding: gzip, deflate" "http://5.24.25.6:3800/main"
 
 \begin{lstlisting}[language=bash]
 ./nginx -p /opt/app/local/tengine -s reload
+./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
 
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
@@ -2579,6 +2657,17 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \subsection{配置}
 
+常用语句。
+
+\begin{lstlisting}[language=Bash]
+#增加远程库
+git remote add company-internal http://xiaoqiang.jiang@gitlab.data.com/backend/system.git
+#删除远程库
+git remote rm company-
+#修改远程库地址
+git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
+\end{lstlisting}
+
 \subsection{查看某几行代码修改}在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
 
 \begin{lstlisting}[language=Bash]
@@ -2798,7 +2887,7 @@ console.table(data);
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{networksizeandtime.png}
+	\includegraphics[scale=0.6]{networksizeandtime.png}
 	\caption{Network宽行显示}
 	\label{fig:networksizeandtime}
 \end{figure}
@@ -2831,6 +2920,9 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 \subsection{Sources}
 
 \paragraph{Snippets}
+
+
+
 
 \paragraph{Others}
 
@@ -2994,6 +3086,10 @@ h=\log_{(m+1)} N
 
 它并不决定数据在磁盘上的物理排序，索引上只包含被建立索引的数据，以及一个行定位符row-locator，这个行定位符，可以理解为一个聚集索引物理排序的指针，通过这个指针，可以找到行数据。
 
+\subparagraph{全文索引(Full-text Search)}
+
+全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。，该对象中必须有一唯一并且非空的列。 
+
 \subparagraph{联合索引}
 
 联合索引能够满足最左侧查询需求，例如(a, b, c)三列的联合索引，能够加速a | (a, b) | (a, b, c) 三组查询需求。这也就是为何不建立(passwd, loginName)这样联合索引的原因，业务上几乎没有passwd的单条件查询需求，而有很多loginName的单条件查询需求。
@@ -3040,13 +3136,13 @@ limit 0,10;
 在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
-create context index qymcindex on user_xycq.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
 \end{lstlisting}
 
 填充索引：
 
 \begin{lstlisting}[language=SQL]
-alter context index qymcindex on user_xycq.TS_F_CORPORATION_TEST rebuild;
+alter context index qymcindex1 on user_xycq.TS_F_CORPORATION rebuild;
 \end{lstlisting}
 
 删除索引：
@@ -3072,11 +3168,23 @@ make test
 \end{lstlisting}
 
 
-\section{MySQL}
+\chapter{MySQL}
 
 
+\chapter{达梦}
 
+\section{SQL}
 
+\subsection{索引}
+
+全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
+
+\begin{lstlisting}[language=Bash]
+select * 
+from "CTISYS"."SYSCONTEXTINDEXES";
+\end{lstlisting}
+
+新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
 
 
 \subsection{基础}
@@ -3226,13 +3334,23 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 \paragraph{增加缓存}增加缓存可以提高查询效率，但是在对数据表做任何的更新操作(update/insert/delete)等操作，server为了保证缓存与数据库的一致性，会强制刷新缓存数据，导致缓存数据全部失效。
 
-\paragraph{分库分表}分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
+\paragraph{分库分表}
+
+分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
 
 对于mysql，其数据文件是以文件形式存储在磁盘上的。当一个数据文件过大的时候，操作系统对大文件的操作就会比较麻烦与耗时，而且有的操作系统就不支持大文件，所以这个时候就必须分表了。另外对于mysql常用的存储引擎是Innodb，它的底层数据结构是B+树。当其数据文件过大的时候，B+树就会从层次和节点上比较多，当查询一个节点的时候可能会查询很多层次，而这必定会导致多次IO操作进行装载进内存，肯定会耗时的。除此之外还有Innodb对于B+树的锁机制。对每个节点进行加锁，那么当更改表结构的时候，这时候就会树进行加锁，当表文件大的时候，这可以认为是不可实现的。
+
+\paragraph{分区表}
+
+分区表是MySql 5.1引入的特性。根据官网alter-table-partition-operations的介绍，其本质是将分库分表直接集成到MySql中。我们知道，传统的分库分表功能，存在业务层、中间件、数据库三层：业务层通过调用中间件的API访问数据库，不知道具体的物理存储细节；中间件将一张很大的逻辑表映射到数据库中多张较小的物理表，并对业务层的访问请求进行分解后分别放到对应物理库中执行，再将执行结果在中间件合并后返回给业务层，从而对业务层屏蔽物理存储细节；数据库则提供实际的物理存储。而MySql的分区表，借助MySql本身的逻辑架构，将分库分表功能进行了下沉。MySql逻辑架构中的客户端即对应业务层，Server层对应中间件层，存储引擎层对应物理存储层。简单的说，分库表就是我们在数据库层面看到是一张表，但物理上是分成多个文件独立存储。逻辑上分析，分区表的优点很明显：既能解决大数据量的性能问题，又能对应用层无缝切换。
 
 \paragraph{采用NoSQL数据库}
 
 Hbase读的性能比较强，官方定义为适合PB级数据的秒级查询，就是说在巨海量的数据中查询，响应速度非常快。
+
+\subsection{系统架构}
+
+从系统架构来看，目前的商用服务器大体可以分为三类，即对称多处理器结构 (SMP ： Symmetric Multi-Processor) ，非一致存储访问结构 (NUMA ： Non-Uniform Memory Access) ，以及海量并行处理结构 (MPP ： Massive Parallel Processing) 
 
 \subsection{注意事项}
 
@@ -3447,6 +3565,9 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\section{dddd}
+
 
 \part{Engneering}
 
