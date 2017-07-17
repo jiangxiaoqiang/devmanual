@@ -3232,6 +3232,18 @@ make test
 
 \chapter{MySQL}
 
+\section{查询}
+
+\subsection{中文查询}
+
+在用MyBatis查询中文时，出来的结果却不是中文匹配的结果，将SQL在客户端工具中执行却可以正确查询。在MySQL配置文件中修改相应的编码。在服务端/etc/mysql/my.cnf修改相应编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+
+character-set-server=utf8
+\end{lstlisting}
+
 
 \chapter{达梦}
 
