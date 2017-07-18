@@ -1117,8 +1117,23 @@ clean任务执行完成了才会去运行其他的任务，在gulp.start()里的
 
 使用install --save时，将默认在package.json中添加小尖尖\^而不是小波浪\~作为依赖版本的前缀。
 
+\section{Library}
 
-\section{Axios}
+\subsection{lodash}
+
+lodash是一个具有一致接口、模块化、高性能等特性的 JavaScript 工具库。
+
+\paragraph{去除重复数据}
+
+去除重复数据：
+
+\begin{lstlisting}[language=JavaScript]
+import lodashUniqBy from "lodash/uniqBy";
+const uniqOrgList = lodashUniqBy(orgList, 'dfName');
+\end{lstlisting}
+
+
+\subsection{Axios}
 
 axios是一个基于Promise用于浏览器和nodejs的HTTP客户端。ES6 原生提供了 Promise 对象。所谓 Promise，就是一个对象，用来传递异步操作的消息。它代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的 API，可供进一步处理。
 
