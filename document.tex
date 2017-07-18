@@ -26,6 +26,8 @@
 %Figure显示为中文的“图”
 \renewcommand\figurename{图}
 
+\setcounter{tocdepth}{4}
+
 %%%% 下面的命令设置行间距与段落间距 %%%%
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
@@ -929,7 +931,7 @@ store.dispatch({
 
 \paragraph{redux-thunk}
 
-解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。
+解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。在异步Action时也需要使用thunder中间件。
 
 \subsection{state}
 
@@ -1271,6 +1273,16 @@ console.log(tigerB.species);//猫科
 tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
+<<<<<<< HEAD
+
+\begin{lstlisting}[language=Javascript]
+#默认会执行一次
+<button onClick={this.getBookInfo()}>查询</button>
+#默认不会执行
+<button onClick={() => this.getBookInfo()}>查询</button>
+\end{lstlisting}
+
+=======
 \subsection{常用函数}
 
 数学函数：
@@ -1281,6 +1293,7 @@ f = Math.round(x / 10000 * Math.pow(10, y)) / Math.pow(10, y);
 
 Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
 
+>>>>>>> cbb51d7390b22fb94dbeba2d53915ae2a17b6b23
 \section{常见问题}
 
 \subsection{Cannot read property 'apply' of undefined}
@@ -2705,6 +2718,27 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
+\section{Graphviz}
+
+\subsection{编译}
+
+一个简单的图形示例：
+
+\begin{lstlisting}
+digraph G {
+	node [peripheries=2 style=filled color="#eecc80"]
+	edge [color="sienna" fontcolor="green"]
+	"componentWillMount" -> "serviceComponent";
+	"serviceComponent" -> "axios";
+	"axios" -> "dishatch data to store"[label="XHR(GET/POST/PUT/DELETE)"] ;
+	"dishatch data to store" -> "props get data";
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
+\end{lstlisting}
+
 \chapter{Git}
 
 \subsection{配置}
@@ -2989,6 +3023,9 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 	\label{fig:pagepainting}
 \end{figure}
 
+\subsection{Audits}
+
+
 
 \subsection{Google Chrome SSH}
 
@@ -3014,15 +3051,7 @@ sudo apt-get install php7.0 -y
 /opt/zbox/zbox -mp 3307
 \end{lstlisting}
 
-\section{Graphviz}
 
-\subsection{编译}
-
-
-
-\begin{lstlisting}[language=Bash]
-dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
-\end{lstlisting}
 
 
 \chapter{LaTex}
@@ -3221,6 +3250,18 @@ make test
 
 
 \chapter{MySQL}
+
+\section{查询}
+
+\subsection{中文查询}
+
+在用MyBatis查询中文时，出来的结果却不是中文匹配的结果，将SQL在客户端工具中执行却可以正确查询。在MySQL配置文件中修改相应的编码。在服务端/etc/mysql/my.cnf修改相应编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+
+character-set-server=utf8
+\end{lstlisting}
 
 
 \chapter{达梦}
