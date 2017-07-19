@@ -173,6 +173,34 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \section{数据库操作}
 
+\subsection{Could not get JDBC connection}
+
+接口有时会查询不出数据，总是报超时错误。查看程序日志，提示Could not get JDBC Connection。查看了数据库的Session数量(40)远远未到达最大限制数量(500)。
+
+\begin{lstlisting}[language=SQL]
+#达梦DB查看最大会话数量
+select *
+from v$dm_ini
+where para_name ='MAX_SESSIONS'
+
+#达梦DB查看当前会话数量
+SELECT count(*)
+FROM v$sessions;
+\end{lstlisting}
+
+经过分析，是由于连接池的默认设置数量问题，由于配置中对HikariCP的连接池数量未做指定，HikariCP默认的连接池数量(maximumPoolSize)是10，正是由于连接池数量较小，很容易出现获取不到连接而出现超时的现象。This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections. Basically this value will determine the maximum number of actual connections to the database backend. A reasonable value for this is best determined by your execution environment. When the pool reaches this size, and no idle connections are available, calls to getConnection() will block for up to connectionTimeout milliseconds before timing out. Default: 10.如下配置HikariCP的连接池数量：
+
+\begin{lstlisting}[language=Bash]
+#
+# Pool数太少会出现连接超时,Hikari默认的大小是10
+# 用户数200-3000连接池目前设置为200
+# 调大时综合服务器内存、CPU负荷进行考虑
+# 数据库目前最大Session数量为500
+#
+spring.datasource.maximumPoolSize=200
+\end{lstlisting}
+
+
 \subsection*{JDBC数据库重连}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
