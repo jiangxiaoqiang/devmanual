@@ -143,9 +143,9 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
-\subsection{拦截操作}
+\subsection{返回消息封装}
 
-一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写拦截器来实现，拦截某些特定类型的Response，处理成功后的返回的Json格式。
 
 
 \subsection{接口返回}
@@ -1301,16 +1301,10 @@ console.log(tigerB.species);//猫科
 tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
-<<<<<<< HEAD
 
-\begin{lstlisting}[language=Javascript]
-#默认会执行一次
-<button onClick={this.getBookInfo()}>查询</button>
-#默认不会执行
-<button onClick={() => this.getBookInfo()}>查询</button>
-\end{lstlisting}
 
-=======
+
+
 \subsection{常用函数}
 
 数学函数：
@@ -1321,7 +1315,23 @@ f = Math.round(x / 10000 * Math.pow(10, y)) / Math.pow(10, y);
 
 Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
 
->>>>>>> cbb51d7390b22fb94dbeba2d53915ae2a17b6b23
+\begin{lstlisting}[language=Javascript]
+#默认会执行一次
+<button onClick={this.getBookInfo()}>查询</button>
+#默认不会执行
+<button onClick={() => this.getBookInfo()}>查询</button>
+\end{lstlisting}
+
+对象转数组：
+
+\begin{lstlisting}[language=Javascript]
+const books = this.props.books;
+let arr = [];
+for(let i in books){
+	arr.push(books[i]);
+}
+\end{lstlisting}
+
 \section{常见问题}
 
 \subsection{Cannot read property 'apply' of undefined}
