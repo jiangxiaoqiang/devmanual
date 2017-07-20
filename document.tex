@@ -161,6 +161,20 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。
 
+
+\subsection{集合}
+
+List移除空元素，移除重复元素：
+
+
+\begin{lstlisting}[language=Java]
+request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
+if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
+
+});
+\end{lstlisting}
+
+
 \section{注解}
 
 \subsection{ComponentScan}
