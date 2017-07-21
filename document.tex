@@ -1332,6 +1332,29 @@ for(let i in books){
 }
 \end{lstlisting}
 
+判断值是不是空：
+
+\begin{lstlisting}[language=Javascript]
+if (!value || (value + ' ').trim().length === 0) {
+	/**
+	* 值为空的字段在界面上不显示
+	* 如果value是整数，不能使用trim()，所以加字符串手动转换成String类型
+	*/
+	return;
+}
+
+/**
+* 如果需要判断字符串为空，直接if判断即可
+*/
+if(value){
+	/**
+	* 此种写法等价于if(value===null||value===undefined||value==='')
+	*/
+}
+\end{lstlisting}
+
+
+
 \section{常见问题}
 
 \subsection{Cannot read property 'apply' of undefined}
@@ -1812,7 +1835,8 @@ project(":web"){
 
 \subsection{Task}
 
-对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)
+对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)。
+
 
 \paragraph{拷贝文件}
 
@@ -1833,6 +1857,24 @@ task copyfile(){
 	println(projectVersion)
 }
 \end{lstlisting}
+
+一个简单的拷贝任务，在生成完毕文件后，目的文件拷贝一个接口部署包副本，接口与应用程序单独部署，并重新命名。
+
+\begin{lstlisting}[language=Java]
+def ccCommonBuildScript = file("$rootDir/gradle/common.gradle")
+apply from: ccCommonBuildScript
+/**
+* 复制一份接口的部署包
+* 接口与平台单独部署，避免互相影响
+*/
+task copyTask(type: Copy) {
+	from 'build/libs/credit-system-web-boot-' + version + '.jar'
+	into 'build/libs/api'
+	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
+}
+\end{lstlisting}
+
+在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
 
 
 \subsection{同时连接内外网}
