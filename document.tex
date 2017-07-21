@@ -174,6 +174,16 @@ if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
 });
 \end{lstlisting}
 
+对象做非空判断：
+
+\begin{lstlisting}[language=Java]
+f (!"".equals(name)) {
+	//将""写在前头，这样，不管name是否为null，都不会出错
+}
+\end{lstlisting}
+
+
+
 
 \section{注解}
 
@@ -2769,6 +2779,29 @@ vncpasswd
 \end{lstlisting}
 
 \chapter{Widgets}
+
+\section{VisualVM}
+
+使用nmap扫描1099端口，看jstatd是否生效。
+
+\subsection{VisualVM远程监控}
+
+jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器上建立一个指定安全策略的文件jstatd.all.policy ，文件内容如下：
+
+\begin{lstlisting}[language=Bash]
+grant codebase "file:${java.home}/../lib/tools.jar" {  
+	permission java.security.AllPermission;  
+}; 
+\end{lstlisting}
+
+
+在服务端运行jstatd守护程序：
+
+\begin{lstlisting}[language=Bash]
+./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=59.214.215.6 -J-Djava.rmi.server.logCalls=true -p 1011
+\end{lstlisting}
+
+VisualVM中做相应配置即可。
 
 \subsection{autojump}
 
