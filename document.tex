@@ -630,18 +630,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 \end{figure}
 
 
-\section{性能(Performance)}
-
-
-
-\subsection{VisualVM}
-
-使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。
-
-
 \newpage
-
-
 
 \chapter{Groovy}
 
@@ -2849,7 +2838,15 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 ./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=59.214.215.6 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
 
-VisualVM中做相应配置即可。
+使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{visualvmconnectremote.png}
+	\caption{VisualVM远程监控}
+	\label{fig:visualvmconnectremote}
+\end{figure}
+
 
 \subsection{autojump}
 
