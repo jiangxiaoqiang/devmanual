@@ -159,7 +159,16 @@ compile "org.springframework.boot:spring-boot-devtools"
 	\label{fig:restresponse}
 \end{figure}
 
-其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+@Autowired
+private MapperFacade corporationMapperFacade;
+
+public XydmResponse mapToCorporationResponse(Corporation corporation) {
+	return corporationMapperFacade.map(corporation, XydmResponse.class);
+}
+\end{lstlisting}
 
 
 \subsection{集合}
@@ -180,6 +189,10 @@ if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
 f (!"".equals(name)) {
 	//将""写在前头，这样，不管name是否为null，都不会出错
 }
+
+if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
+	//用String强制转换也不会报空指针异常
+} 
 \end{lstlisting}
 
 
@@ -493,6 +506,30 @@ project(':cc-api') {
 
 在每次构建时都会运行单元测试。Mock和Stub是两种测试代码功能的方法。Mock测重于对功能的模拟。Stub测重于对功能的测试重现。比如对于List接口，Mock会直接对List进行模拟，而Stub会新建一个实现了List的TestList，在其中编写测试的代码。强烈建议优先选择Mock方式，因为Mock方式下，模拟代码与测试代码放在一起，易读性好，而且扩展性、灵活性都比Stub好。
 
+\subsection{TestNG单元测试}
+
+项目经常涉及到修改，水平不够足，有些地方始终考虑的不够周到，会互相影响，所以考虑添加单元测试。系统前后端分离，分为各类接口，根据不同类的接口分组进行测试。在测试类上指定测试接口的分组：
+
+\begin{lstlisting}[language=Java]
+/**
+* 组名是数组类型，，所以一个测试方法可以属于多个组
+* group={"group name 1","group name 2"}
+*/
+@Test(groups = "xycq-api")
+public void testGetXzcfList() throws Exception {
+	TestPublicVariable.test("/xzcf?xdr=dolphin");
+}
+\end{lstlisting}
+
+配置跑单元测试如图\ref{fig:testngunittestbygroup}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{testngunittestbygroup.png}
+	\caption{TestNG单元测试}
+	\label{fig:testngunittestbygroup}
+\end{figure}
+
 
 \section{常见问题}
 
@@ -528,6 +565,17 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 \begin{lstlisting}[language=Bash]
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
+
+\subsection{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
+
+Java事务的类型有三种：JDBC事务、JTA(Java Transaction API)事务、容器事务。 常见的容器事务如Spring事务，容器事务主要是J2EE应用服务器提供的，容器事务大多是基于JTA完成，这是一个基于JNDI的，相当复杂的API实现。在本机请求会报此错误，但是部署到服务器上是OK的。在本地引入如下2个jar包即可修复此问题：
+
+\begin{lstlisting}[language=Bash]
+compile group: 'javax.transaction', name: 'jta', version: '1.1'
+compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.1'
+\end{lstlisting}
+
+Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等
 
 \section{Mybatis}
 
