@@ -578,6 +578,10 @@ nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location
 
 \subsection{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
 
+\paragraph{NoClassDefFoundError}
+
+连接时从内存找不到需要的class就出现NoClassDefFoundError，当Java虚拟机或 ClassLoader 实例试图在类的定义中加载（作为通常方法调用的一部分或者作为使用 new 表达式创建的新实例的一部分），但无法找到该类的定义时，抛出此异常。 
+
 Java事务的类型有三种：JDBC事务、JTA(Java Transaction API)事务、容器事务。 常见的容器事务如Spring事务，容器事务主要是J2EE应用服务器提供的，容器事务大多是基于JTA完成，这是一个基于JNDI的，相当复杂的API实现。在本机请求会报此错误，但是部署到服务器上是OK的。在本地引入如下2个jar包即可修复此问题：
 
 \begin{lstlisting}[language=Bash]
