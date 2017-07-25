@@ -2977,6 +2977,21 @@ git config --system http.sslverify false
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
 \end{lstlisting}
 
+在Mac OS X升级后，每次连接主机都需要输入密码短语(Passphrase)。而且Tab键智能提示的功能也没有了，真是太不方便了。在配置文件~/.ssh/config中做如下设置即可：
+
+\begin{lstlisting}[language=Bash]
+Host aliyun
+   #每次都需要输入Passphrase
+   #不是非常方便
+   #增加此配置即可
+   UseKeychain yes
+   HostName 192.168.1.101
+   User dolphin
+   Port 22222
+\end{lstlisting}
+
+可以使用 SSH agent 来帮助我们记住密码短语，无需我们记住每一个密钥对的密码短语，减轻了我们的负担。Keychain 是一个用来方便管理 SSH 密钥对的程序，它能尽最大努力去减少对用户的打扰。实际上，它就是一个 shell 脚本，驱动 ssh-agent 或者 gpg-add 来工作。一个值得注意的特性是，keychain 在多个会话中重复使用同一个 ssh-agent 进程。这意味着您只需要在机器启动时输入一次密码短语即可。
+
 \subsection{ssh连接慢}
 
 在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
