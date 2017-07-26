@@ -2831,6 +2831,86 @@ vncpasswd
 
 \chapter{Widgets}
 
+\section{ssh}
+
+\subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
+
+\begin{lstlisting}[language=Bash]
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+\end{lstlisting}
+
+\subsection{ssh连接慢}
+
+在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
+
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+# 重启sshd守护进程
+sudo service sshd restart
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
+使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
+
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+PubkeyAuthentication yes 
+\end{lstlisting}
+
+
+\subsection{Session时间}
+
+在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
+
+\paragraph{ClientAliveInterval}
+
+修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
+
+\paragraph{ClientAliveCountMax}
+
+另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
+
+\paragraph{ControlPersist 4h}
+
+在./ssh/config中添加一行：
+
+\begin{lstlisting}[language=Bash]
+ControlPersist 4h
+\end{lstlisting}
+
+When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
+
+\paragraph{远程转发Remote Forward}
+
 \section{VisualVM}
 
 使用nmap扫描1099端口，看jstatd是否生效。
@@ -2849,7 +2929,7 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 在服务端运行jstatd守护程序：
 
 \begin{lstlisting}[language=Bash]
-./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=59.214.215.6 -J-Djava.rmi.server.logCalls=true -p 1011
+./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
 
 使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
@@ -2967,83 +3047,7 @@ git config --system http.sslverify false
 \end{lstlisting}
 
 
-\chapter{ssh}
 
-\subsection{免密登陆}
-
-免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
-
-\begin{lstlisting}[language=Bash]
-ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
-\end{lstlisting}
-
-\subsection{ssh连接慢}
-
-在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
-
-\begin{lstlisting}[language=Bash]
-GSSAPIAuthentication　no
-\end{lstlisting}
-
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
-使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
-
-\subsection{Permission denied (publickey)}
-
-在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
-
-\begin{lstlisting}[language=Bash]
-ssh -p 2222 -vvv hldev@10.0.0.22
-\end{lstlisting}
-
-设置文件夹对应的权限：
-
-\begin{lstlisting}[language=Bash]
-sudo chmod 700 .ssh
-sudo chmod 600 .ssh/authorized_keys
-\end{lstlisting}
-
-登陆服务器观察相应的日志输出：
-
-\begin{lstlisting}[language=Bash]
-tail -f /var/log/auth.log
-\end{lstlisting}
-
-是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
-
-\begin{lstlisting}[language=Bash]
-#允许使用基于密钥认证的方式登陆
- PubkeyAuthentication yes 
-\end{lstlisting}
-
-
-\subsection{Session时间}
-
-在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
-
-\paragraph{ClientAliveInterval}
-
-修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
-
-\paragraph{ClientAliveCountMax}
-
-另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
-
-\paragraph{ControlPersist 4h}
-
-在./ssh/config中添加一行：
-
-\begin{lstlisting}[language=Bash]
-ControlPersist 4h
-\end{lstlisting}
-
-When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
-
-\subsection{代理转发}
-
-\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
-
-\paragraph{远程转发Remote Forward}
 
 \subsection{rsync}
 
