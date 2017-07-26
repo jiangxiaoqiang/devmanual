@@ -2835,6 +2835,86 @@ vncpasswd
 
 \chapter{Widgets}
 
+\section{ssh}
+
+\subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
+
+\begin{lstlisting}[language=Bash]
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+\end{lstlisting}
+
+\subsection{ssh连接慢}
+
+在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
+
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+# 重启sshd守护进程
+sudo service sshd restart
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
+使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
+
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+PubkeyAuthentication yes 
+\end{lstlisting}
+
+
+\subsection{Session时间}
+
+在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
+
+\paragraph{ClientAliveInterval}
+
+修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
+
+\paragraph{ClientAliveCountMax}
+
+另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
+
+\paragraph{ControlPersist 4h}
+
+在./ssh/config中添加一行：
+
+\begin{lstlisting}[language=Bash]
+ControlPersist 4h
+\end{lstlisting}
+
+When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
+
+\paragraph{远程转发Remote Forward}
+
 \section{VisualVM}
 
 使用nmap扫描1099端口，看jstatd是否生效。
@@ -2853,7 +2933,7 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 在服务端运行jstatd守护程序：
 
 \begin{lstlisting}[language=Bash]
-./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=59.214.215.6 -J-Djava.rmi.server.logCalls=true -p 1011
+./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
 
 使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
@@ -2965,104 +3045,9 @@ env GIT_SSL_NO_VERIFY=true git clone https://<host_name/git/project.git
 
 或者将Git设置为不允许ssl认证：
 
-
 \begin{lstlisting}[language=Bash]
 git config --system http.sslverify false
 \end{lstlisting}
-
-
-\chapter{ssh}
-
-\subsection{免密登陆}
-
-免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
-
-\begin{lstlisting}[language=Bash]
-ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
-\end{lstlisting}
-
-在Mac OS X升级后，每次连接主机都需要输入密码短语(Passphrase)。而且Tab键智能提示的功能也没有了，真是太不方便了。在配置文件~/.ssh/config中做如下设置即可：
-
-\begin{lstlisting}[language=Bash]
-Host aliyun
-   #每次都需要输入Passphrase
-   #不是非常方便
-   #增加此配置即可
-   UseKeychain yes
-   HostName 192.168.1.101
-   User dolphin
-   Port 22222
-\end{lstlisting}
-
-可以使用 SSH agent 来帮助我们记住密码短语，无需我们记住每一个密钥对的密码短语，减轻了我们的负担。Keychain 是一个用来方便管理 SSH 密钥对的程序，它能尽最大努力去减少对用户的打扰。实际上，它就是一个 shell 脚本，驱动 ssh-agent 或者 gpg-add 来工作。一个值得注意的特性是，keychain 在多个会话中重复使用同一个 ssh-agent 进程。这意味着您只需要在机器启动时输入一次密码短语即可。
-
-\subsection{ssh连接慢}
-
-在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
-
-\begin{lstlisting}[language=Bash]
-GSSAPIAuthentication　no
-\end{lstlisting}
-
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
-使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
-
-\subsection{Permission denied (publickey)}
-
-在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
-
-\begin{lstlisting}[language=Bash]
-ssh -p 2222 -vvv hldev@10.0.0.22
-\end{lstlisting}
-
-设置文件夹对应的权限：
-
-\begin{lstlisting}[language=Bash]
-sudo chmod 700 .ssh
-sudo chmod 600 .ssh/authorized_keys
-\end{lstlisting}
-
-登陆服务器观察相应的日志输出：
-
-\begin{lstlisting}[language=Bash]
-tail -f /var/log/auth.log
-\end{lstlisting}
-
-是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
-
-\begin{lstlisting}[language=Bash]
-#允许使用基于密钥认证的方式登陆
- PubkeyAuthentication yes 
-\end{lstlisting}
-
-
-\subsection{Session时间}
-
-在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
-
-\paragraph{ClientAliveInterval}
-
-修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
-
-\paragraph{ClientAliveCountMax}
-
-另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
-
-\paragraph{ControlPersist 4h}
-
-在./ssh/config中添加一行：
-
-\begin{lstlisting}[language=Bash]
-ControlPersist 4h
-\end{lstlisting}
-
-When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
-
-\subsection{代理转发}
-
-\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
-
-\paragraph{远程转发Remote Forward}
 
 \subsection{rsync}
 
@@ -3458,32 +3443,41 @@ make test
 
 \section{查询}
 
-\subsection{中文查询}
+\subsection{MySQL远程连接}
 
-在用MyBatis查询中文时，出来的结果却不是中文匹配的结果，将SQL在客户端工具中执行却可以正确查询。在MySQL配置文件中修改相应的编码。在服务端/etc/mysql/my.cnf修改相应编码：
-
-\begin{lstlisting}[language=Bash]
-[mysqld]
-
-character-set-server=utf8
-\end{lstlisting}
-
-
-\chapter{达梦}
-
-\section{SQL}
-
-\subsection{索引}
-
-全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
+本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
 \begin{lstlisting}[language=Bash]
-select * 
-from "CTISYS"."SYSCONTEXTINDEXES";
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = 192.168.31.25
 \end{lstlisting}
 
-新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
+默认是127.0.0.1,是一个回环地址,只有本机请求本机,目标地址才会是127.0.0.1,此时需要在其他主机请求，需要将绑定IP改为网卡地址, 也就是外网IP, 因为远程连接数据库目标IP肯定是公网IP. 不过还可以改成0.0.0.0,这样就表示监听所有IP, 只要端口一样, 网卡都会把请求传给进程。如果不在配置文件中修改地址，则需要在启动时指定绑定地址：
 
+\begin{lstlisting}[language=Bash]
+sudo mysqld --bind-address=192.168.31.25
+\end{lstlisting}
+
+绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
+
+\subsection{Mac中MySQL初始密码}
+
+step1：
+
+苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
+
+step2：
+
+进入终端输入：cd /usr/local/mysql/bin/
+回车后 登录管理员权限 sudo su
+回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
+回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
+
+step3. 
+输入命令 ./mysql
+回车后，输入命令 FLUSH PRIVILEGES; 
+回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
 
 \subsection{基础}
 
@@ -3535,43 +3529,6 @@ show full columns from book;
 alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
 \end{lstlisting}
 
-
-\subsection{MySQL远程连接}
-
-本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
-
-\begin{lstlisting}[language=Bash]
-# Instead of skip-networking the default is now to listen only on
-# localhost which is more compatible and is not less secure.
-bind-address            = 192.168.31.25
-\end{lstlisting}
-
-默认是127.0.0.1,是一个回环地址,只有本机请求本机,目标地址才会是127.0.0.1,此时需要在其他主机请求，需要将绑定IP改为网卡地址, 也就是外网IP, 因为远程连接数据库目标IP肯定是公网IP. 不过还可以改成0.0.0.0,这样就表示监听所有IP, 只要端口一样, 网卡都会把请求传给进程。如果不在配置文件中修改地址，则需要在启动时指定绑定地址：
-
-\begin{lstlisting}[language=Bash]
-sudo mysqld --bind-address=192.168.31.25
-\end{lstlisting}
-
-绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
-
-\subsection{Mac中MySQL初始密码}
-
-step1：
-
-苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
-
-step2：
-
-进入终端输入：cd /usr/local/mysql/bin/
-回车后 登录管理员权限 sudo su
-回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
-回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
-
-step3. 
-输入命令 ./mysql
-回车后，输入命令 FLUSH PRIVILEGES; 
-回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
-
 \subsection{备份}
 
 netstat -ln | grep mysql
@@ -3592,9 +3549,9 @@ DECLARE j INT DEFAULT 10000000;# can not be 0
 
 WHILE i<99999999 && j < 10000050
 DO  
-	insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
-	SET i=i+1;  
-	set j=j+1;
+insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
+SET i=i+1;  
+set j=j+1;
 END WHILE ;  
 commit;  
 
@@ -3621,6 +3578,34 @@ brew install mycli
 mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
 
 方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
+
+\subsection{中文查询}
+
+在用MyBatis查询中文时，出来的结果却不是中文匹配的结果，将SQL在客户端工具中执行却可以正确查询。在MySQL配置文件中修改相应的编码。在服务端/etc/mysql/my.cnf修改相应编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+
+character-set-server=utf8
+\end{lstlisting}
+
+
+\chapter{达梦}
+
+\section{SQL}
+
+\subsection{索引}
+
+全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
+
+\begin{lstlisting}[language=Bash]
+select * 
+from "CTISYS"."SYSCONTEXTINDEXES";
+\end{lstlisting}
+
+新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
+
+在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
 
 \section{通用知识}
 
