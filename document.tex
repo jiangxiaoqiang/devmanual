@@ -1843,6 +1843,10 @@ Evaluate the "settings.gradle" script, if present, against the Settings object t
 Use the configured Settings object to create the hierarchy of Project instances.
 Finally, evaluate each Project by executing its "build.gradle" file, if present, against the project. The projects are evaluated in breadth-wise order, such that a project is evaluated before its child projects. This order can be overridden by calling evaluationDependsOnChildren() or by adding an explicit evaluation dependency using evaluationDependsOn(String).
 
+\subsection{默认JVM}
+
+在Intellij Idea中导入Gradle项目时，可能提示未设置Gradle JVM，此时选择select Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
+
 \subsection{repositories}
 
 在Gradle构建标本build.gradle里，经常会看到如下脚本：
