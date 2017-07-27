@@ -1539,6 +1539,28 @@ echo "set completion-ignore-case on">>~/.inputrc
 
 设置完毕后重新打开终端即可。
 
+\paragraph{统计代码行数}
+
+统计项目代码行数使用如下命令：
+
+\begin{lstlisting}[language=Bash]
+# Java行数：35400
+find . -name "*.java"|xargs cat|grep -v ^$|wc -l
+# 42178，会显示每个Java文件的行数
+find . -name '*.java' |xargs wc -l
+
+# Scala行数：1500
+find . -name "*.scala"|xargs cat|grep -v ^$|wc -l
+# XML行数：7336
+find . -name "*.xml"|xargs cat|grep -v ^$|wc -l
+# js行数：151312
+find . -name "*.jsr"|xargs cat|grep -v ^$|wc -l
+
+# 统计代码行数
+find sourcecode "(" -name "*.js" -or -name "*.java" -or -name "*.scala" -or -name "*.xml" ")"|xargs cat|grep -v ^$|wc -l
+\end{lstlisting}
+
+
 \subsection{命令}
 
 \paragraph{ls}
@@ -1803,13 +1825,16 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 \subsection{Tips}
 
 
-\begin{tabular}{cp{10cm}c}
+\begin{tabular}{cp{8cm}c}
 	\hline
 	\multirow{1}{*}{快捷键}
 	& \multicolumn{1}{c}{作用}  \\
 	\hline			
-	Ctrl + Left／Right & 到行首／尾 \\
-	Command + Shift + A & Find Action \\	
+	Ctrl + Left/Right & 到行首/尾 \\
+	Command + Shift + A(Mac) & Find Action \\
+	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
+	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
+	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\	
 	\hline
 \end{tabular}
 
@@ -1850,7 +1875,15 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
-
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{作用}  \\
+	\hline			
+	fastjson & compile('com.alibaba:fastjson:1.2.35') \\
+	httpclient & compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'\\
+	\hline
+\end{tabular}
 
 
 
@@ -2964,6 +2997,8 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 	\caption{VisualVM远程监控}
 	\label{fig:visualvmconnectremote}
 \end{figure}
+
+目前可以通过VisualVM远程监控实现查看远程应用的PID、查看远程应用的启动参数、所使用的配置文件、JVM的版本以及路径、GC信息等等。
 
 
 \subsection{autojump}
