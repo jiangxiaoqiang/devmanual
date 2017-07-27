@@ -2894,6 +2894,19 @@ vncpasswd
 
 需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
 
+
+\subsection{常用模式}
+
+获取所有的key：
+
+\begin{lstlisting}[language=Bash]
+echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
+# 获取某一个value的值
+echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
+
+
+
 \section{ssh}
 
 \subsection{免密登陆}
