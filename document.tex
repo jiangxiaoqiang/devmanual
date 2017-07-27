@@ -1803,6 +1803,17 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 \subsection{Tips}
 
 
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{作用}  \\
+	\hline			
+	Ctrl + Left／Right & 到行首／尾 \\
+	Command + Shift + A & Find Action \\	
+	\hline
+\end{tabular}
+
+
 \paragraph{Class JavaLaunchHelper is implemented}
 
 
@@ -1814,6 +1825,11 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 
 检查启动配置里启动模块是否选择正确。
+
+\paragraph{列编辑模式}
+
+最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。
+
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
@@ -1846,6 +1862,10 @@ Create a Settings instance for the build.
 Evaluate the "settings.gradle" script, if present, against the Settings object to configure it.
 Use the configured Settings object to create the hierarchy of Project instances.
 Finally, evaluate each Project by executing its "build.gradle" file, if present, against the project. The projects are evaluated in breadth-wise order, such that a project is evaluated before its child projects. This order can be overridden by calling evaluationDependsOnChildren() or by adding an explicit evaluation dependency using evaluationDependsOn(String).
+
+\subsection{默认JVM}
+
+在Intellij Idea中导入Gradle项目时，可能提示未设置Gradle JVM，此时选择select Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
 
 \subsection{repositories}
 
