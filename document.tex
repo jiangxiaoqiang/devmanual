@@ -2888,6 +2888,12 @@ vncpasswd
 
 \chapter{Widgets}
 
+\section{jq}
+
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。
+
+需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+
 \section{ssh}
 
 \subsection{免密登陆}
@@ -3064,6 +3070,21 @@ digraph G {
 dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
 
+\section{Curl}
+
+内部接口测试：
+
+\begin{lstlisting}[language=Bash]
+
+\end{lstlisting}
+
+外部接口测试：
+
+
+\begin{lstlisting}[language=Bash]
+
+\end{lstlisting}
+
 \chapter{Git}
 
 \subsection{配置}
@@ -3108,22 +3129,8 @@ git config --system http.sslverify false
 
 在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
 
-\section{Curl}
-
-内部接口测试：
-
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
-
-外部接口测试：
 
 
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
-
-\chapter{Git}
 
 \subsection{merge}
 
