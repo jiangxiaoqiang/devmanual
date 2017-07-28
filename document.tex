@@ -1564,6 +1564,58 @@ find sourcecode "(" -name "*.js" -or -name "*.java" -or -name "*.scala" -or -nam
 
 符号$\textasciicircum$表示行首，\$表示行尾，使用grep -v可以实现NOT操作。-v选项用来实现反选匹配的（ invert match）。xargs 是一个强有力的命令，它能够捕获一个命令的输出，然后传递给另外一个命令。
 
+\paragraph{查看端口情况}
+
+查看某个端口是否被占用：
+
+\begin{lstlisting}[language=Bash]
+lsof -i:18080
+\end{lstlisting}
+
+lsof（list open files）是一个列出当前系统打开文件的工具。FD(File Descriptor)：文件描述符，应用程序通过文件描述符识别该文件。在Linux系统中一切皆可以看成是文件，文件又可分为：普通文件、目录文件、链接文件和设备文件。文件描述符（file descriptor）是内核为了高效管理已被打开的文件所创建的索引，其是一个非负整数（通常是小整数），用于指代被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。程序刚刚启动的时候，0是标准输入，1是标准输出，2是标准错误。如果此时去打开一个新的文件，它的文件描述符会是3。
+
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{文件描述符}
+	& \multicolumn{1}{c}{说明}  \\
+	\hline			
+	cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
+	txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
+	lnn & library references （AIX） \\
+	ltx & shared  library text（code and  data） \\
+	er & FD  information  error （see  NAME  column） \\
+	jld & jail  directory（FreeBSD） \\	
+	\hline
+\end{tabular}
+
+（7）mxx： hex  memory-mapped  type number  xx.
+
+（8）m86：DOS  Merge  mapped  file
+
+（9） mem: memory-mapped  file 
+
+（10）mmap: memory-mapped device
+
+（11）pd: parent  directory
+
+（12）rtd: root  directory
+
+（13）tr: kernel  trace file （OpenBSD）
+
+（14）v86  VP/ix  mapped  file
+
+（15）0：表示标准输出
+
+（16）1：表示标准输入
+
+（17）2：表示标准错误。
+根据具体操作系统的不同，将文件和目录称为 REG 和 DIR（在 Solaris 中，称为 VREG 和 VDIR）。其他可能的取值为 CHR 和 BLK，分别表示字符和块设备；或者 UNIX、FIFO 和 IPv4，分别表示 UNIX 域套接字、先进先出 (FIFO) 队列和网际协议 (IP) 套接字。
+进而查看被哪个程序占用：
+
+\begin{lstlisting}[language=Bash]
+ps pid
+\end{lstlisting}
+
 \subsection{命令}
 
 \paragraph{ls}
@@ -1828,7 +1880,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 \subsection{Tips}
 
 
-\begin{tabular}{cp{8cm}c}
+\begin{tabular}{cp{6cm}c}
 	\hline
 	\multirow{1}{*}{快捷键}
 	& \multicolumn{1}{c}{作用}  \\
@@ -1837,7 +1889,8 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	Command + Shift + A(Mac) & Find Action \\
 	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
 	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
-	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\	
+	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
 	\hline
 \end{tabular}
 
@@ -2907,8 +2960,6 @@ echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
 # 获取某一个value的值
 echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
 \end{lstlisting}
-
-
 
 \section{ssh}
 
