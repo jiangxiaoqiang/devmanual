@@ -1506,7 +1506,7 @@ mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-fron
 cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 \end{lstlisting}
 
-\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
+\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When tiaoash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
 \paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
 
@@ -1768,8 +1768,6 @@ shopt -s histappend
 
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
-
-
 \subsubsection{screen}
 
 GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
@@ -1925,6 +1923,22 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 \paragraph{智能提示}
 
 在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+
+\paragraph{Template}
+
+类模版：
+
+\begin{lstlisting}[language=Java]
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+#parse("File Header.java")
+/**
+* @author jiangtingqiang@gmail.com
+* @create ${YEAR}-${MONTH}-${DAY}-${TIME}
+*/
+public class ${NAME} {
+}
+\end{lstlisting}
+
 
 
 \chapter{Gradle}
@@ -2182,35 +2196,7 @@ sudo route del default gw 10.55.10.1
 \subsubsection{Windows同时连接内外网}
 
 
-\chapter{Ansible}
 
-\subsection{Ansible模块}
-
-Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
-
-\paragraph{Ansible配置}
-
-Ansible主机配置：
-
-\begin{lstlisting}[language=bash]
-[pi]
-192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
-\end{lstlisting}
-
-
-\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
-
-\begin{lstlisting}[language=bash]
-ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
-\end{lstlisting}
-
-如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
-
-\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
-
-\begin{lstlisting}[language=bash]
-ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
-\end{lstlisting}
 
 \chapter{youtube-dl}
 
@@ -2944,6 +2930,36 @@ vncpasswd
 
 \chapter{Widgets}
 
+\section{Ansible}
+
+\subsection{Ansible模块}
+
+Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
+
+\paragraph{Ansible配置}
+
+Ansible主机配置：
+
+\begin{lstlisting}[language=bash]
+[pi]
+192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
+\end{lstlisting}
+
+
+\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
+
+\begin{lstlisting}[language=bash]
+ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+\end{lstlisting}
+
+如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
+
+\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
+
+\begin{lstlisting}[language=bash]
+ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
+\end{lstlisting}
+
 \section{jq}
 
 项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。
@@ -3060,6 +3076,8 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 
 \begin{lstlisting}[language=Bash]
 ./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
+#在树莓派上启动jstatd
+sudo /usr/bin/jstatd -J-Djava.security.policy=/opt/dolphin/backend/jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.31.25 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
 
 使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
@@ -3195,9 +3213,6 @@ git config --system http.sslverify false
 \subsection{rsync}
 
 在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
-
-
-
 
 \subsection{merge}
 
