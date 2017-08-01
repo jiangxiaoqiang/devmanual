@@ -1926,6 +1926,22 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
+\paragraph{Template}
+
+类模版：
+
+\begin{lstlisting}[language=Java]
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+#parse("File Header.java")
+/**
+* @author jiangtingqiang@gmail.com
+* @create ${YEAR}-${MONTH}-${DAY}-${TIME}
+*/
+public class ${NAME} {
+}
+\end{lstlisting}
+
+
 
 \chapter{Gradle}
 
@@ -2670,26 +2686,9 @@ vncpasswd
 
 \section{Little Tool}
 
-\subsection{jq}
-
-项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。
-
-需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
-
-
-\paragraph{常用模式}
-
-获取所有的key：
-
-\begin{lstlisting}[language=Bash]
-echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
-# 获取某一个value的值
-echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
-\end{lstlisting}
-
 \subsection{Pandoc}
 
-Pandoc is a Haskell library for converting from one markup format to another, and a command-line tool that uses this library. It can read markdown and (subsets of) HTML, reStructuredText, LaTeX, DocBook, MediaWiki markup, Twiki markup, Haddock markup, OPML, Emacs Org-Mode, txt2tags and Textile, and it can write markdown, reStructuredText, HTML, LaTeX, ConTeXt, Docbook, OPML, OpenDocument, ODT, Word docx, RTF, MediaWiki, DokuWiki, Textile, groff man pages, plain text, Emacs Org-Mode, AsciiDoc, Haddock markup, EPUB (v2 and v3), FictionBook2, InDesign ICML, and several kinds of HTML/javascript slide shows (S5, Slidy, Slideous, DZSlides, reveal.js).将Tex文档转换为Word：
+将Tex文档转换为Word：
 
 \begin{lstlisting}[language=Bash]
 pandoc -s math.tex -o example30.docx
@@ -2912,6 +2911,37 @@ curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
 
 开启压缩成功后，可以看到一句：Content-Encoding: gzip。
 
+\subsection{配置}
+
+简单的配置：
+
+\begin{lstlisting}[language=bash]
+user www-data;
+worker_processes 4;
+pid /run/nginx.pid;
+
+events {
+	worker_connections 768;
+}
+
+http {
+	server{
+		listen 80;
+		# 定义网站默认根目录
+		root /opt/dolphin/frontend/dist;
+		
+		location /api {
+			proxy_pass http://localhost:8011;
+		}
+		
+		location / {
+			root /opt/dolphin/frontend/dist;
+			index index.html;
+		} 
+	}
+}
+\end{lstlisting}
+
 \subsection{常见问题}
 
 \paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
@@ -2985,8 +3015,52 @@ yum provides */libssl.so.1.0.0
 
 \url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
 
+\section{Ansible}
+
+\subsection{Ansible模块}
+
+Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
+
+\paragraph{Ansible配置}
+
+Ansible主机配置：
+
+\begin{lstlisting}[language=bash]
+[pi]
+192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
+\end{lstlisting}
 
 
+\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
+
+\begin{lstlisting}[language=bash]
+ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+\end{lstlisting}
+
+如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
+
+\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
+
+\begin{lstlisting}[language=bash]
+ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
+\end{lstlisting}
+
+\section{jq}
+
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。
+
+需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+
+
+\subsection{常用模式}
+
+获取所有的key：
+
+\begin{lstlisting}[language=Bash]
+echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
+# 获取某一个value的值
+echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
 
 \section{ssh}
 
@@ -3087,6 +3161,8 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 
 \begin{lstlisting}[language=Bash]
 ./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
+#在树莓派上启动jstatd
+sudo /usr/bin/jstatd -J-Djava.security.policy=/opt/dolphin/backend/jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.31.25 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
 
 使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
