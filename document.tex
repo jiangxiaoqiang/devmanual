@@ -2197,40 +2197,7 @@ sudo route del default gw 10.55.10.1
 
 \subsubsection{Windows同时连接内外网}
 
-
-\chapter{Ansible}
-
-\subsection{Ansible模块}
-
-Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
-
-\paragraph{Ansible配置}
-
-Ansible主机配置：
-
-\begin{lstlisting}[language=bash]
-[pi]
-192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
-\end{lstlisting}
-
-
-\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
-
-\begin{lstlisting}[language=bash]
-ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
-\end{lstlisting}
-
-如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
-
-\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
-
-\begin{lstlisting}[language=bash]
-ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
-\end{lstlisting}
-
 \chapter{youtube-dl}
-
-
 
 \chapter{Fiddler}
 
@@ -2731,19 +2698,11 @@ XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开�
 
 做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
-
-
-输出结果如下：
-
 \begin{lstlisting}[language=bash]
-nginx version: nginx/1.12.0
-built by gcc 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) 
-built with OpenSSL 1.0.2g-fips  1 Mar 2016 (running with OpenSSL 1.0.2g  1 Mar 2016)
-TLS SNI support enabled
-configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
+nginx -V
 \end{lstlisting}
 
-此处显示已经编译了http\_realip\_module模块。项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
+在命令的输出结果中，可以看到Nginx的版本，Nginx的编译参数，和Nginx已经包含有哪些模块。此处显示已经编译了http\_realip\_module模块。在服务器上的项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
 
 \begin{lstlisting}[language=bash]
 # 在Ubuntu 14.04 LTS下安装pcre依赖
@@ -2760,9 +2719,9 @@ sudo make install
 ./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
 \end{lstlisting}
 
-不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
+不指定prefix，则可执行文件默认放在/usr/local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
 你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
-指定prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+指定prefix，直接删掉一个文件夹就够了，这也是制定prefix一个比较方便的地方。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
 
 \begin{lstlisting}[language=bash]
 # 将realip模块编译进入，并指定pcre
@@ -2793,7 +2752,7 @@ with nginx by using --with-openssl=<path> option.
 
 \end{lstlisting}
 
-其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+其中--with-pcre表示pcre(Perl Compatible Regular Expressions)的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
 
 \begin{lstlisting}[language=bash]
 ./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
@@ -2812,10 +2771,10 @@ with nginx by using --with-openssl=<path> option.
 ./nginx -V
 \end{lstlisting}
 
-即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
+即可看到http\_realip\_module已经编译到Nginx中了。Nginx的http realip module等于Apache的mod\_rpaf，用于接受前端发来的IP head信息，从获取到真实的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
 
 \begin{lstlisting}[language=bash]
-#指令是告诉nginx，10.10.1.11是我们的反代服务器，不是真实的用户IP
+#指令是告诉nginx，10.10.1.11是我们的反向代服务器，不是真实的用户IP
 set_real_ip_from 10.10.1.11;
 #告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
 real_ip_header X-Real-IP;
@@ -2825,9 +2784,9 @@ real_ip_header X-Real-IP;
 
 \begin{lstlisting}[language=bash]
 location /inapi {
-proxy_pass http://localhost:28080;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_redirect off;
+	proxy_pass http://localhost:28080;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_redirect off;
 }
 \end{lstlisting}
 
@@ -2852,19 +2811,19 @@ HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit
 
 \begin{lstlisting}[language=bash]
 http {
-limit_conn_log_level error;
-limit_conn_status 503;
-#Zone=one或allips表示设置了名为“one”或“allips”的存储区
-#大小为10兆字节
-limit_conn_zone $binary_remote_addr zone=one:10m;
-limit_conn_zone $server_name zone=perserver:10m;
-#rate=10r/s 的意思是允许1秒钟不超过1000个请求
-limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
-server {
-limit_conn one 100;
-limit_conn perserver 3000;
-limit_req zone=allips  burst=5  nodelay;
-}
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	#Zone=one或allips表示设置了名为“one”或“allips”的存储区
+	#大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
 }
 \end{lstlisting}
 
@@ -2875,6 +2834,7 @@ HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和
 在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
 
 \begin{lstlisting}[language=bash]
+# Nginx配置HTTP请求头长度
 client_header_buffer_size 2048k;
 \end{lstlisting}
 
