@@ -2849,17 +2849,16 @@ server.max-http-header-size=1024
 
 \subsection{开启gzip压缩}
 
-开启Gzip压缩配置如下：
+Nginx开启Gzip压缩配置如下：
 
 \begin{lstlisting}[language=Bash]
 gzip on;
-gzip\_min\_length 1k;
-gzip\_buffers 4 16k;
-\#gzip\_http\_version 1.0;
-gzip\_comp\_level 2;
-gzip\_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
-gzip\_vary off;
-gzip\_disable "MSIE [1-6]\textbackslash\{\}.";
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]";
 \end{lstlisting}
 
 用curl测试是否开启了压缩：
@@ -3007,9 +3006,7 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 \section{jq}
 
-项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。
-
-需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
 
 
 \subsection{常用模式}
