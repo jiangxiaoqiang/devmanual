@@ -1957,7 +1957,21 @@ public class ${NAME} {
 	\hline
 \end{tabular}
 
+\section{基础}
 
+\subsection{引用本地文件}
+
+有时候项目依赖的可能不是公布在网络上的一个公共库，可能只是一个闭源的jar包，只是一个本地文件而已。Gradle中引用本地文件写法如下：
+
+\begin{lstlisting}[language=Java]
+def ccDataLibs = fileTree(dir: "$rootDir/cc-data/lib", include: '*.jar')
+
+dependencies {
+	compile ccDataLibs
+}
+\end{lstlisting}
+
+dir表示文件所在目录，include表示包含哪些文件。
 
 \subsection{执行流程}
 
@@ -2672,7 +2686,20 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 	\label{fig:zealsearch}
 \end{figure}
 
+\subsection{jq}
 
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+
+
+\paragraph{常用模式}
+
+获取所有的key：
+
+\begin{lstlisting}[language=Bash]
+echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
+# 获取某一个value的值
+echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
 
 \section{Nginx}
 
@@ -3004,20 +3031,7 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
 \end{lstlisting}
 
-\section{jq}
 
-项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
-
-
-\subsection{常用模式}
-
-获取所有的key：
-
-\begin{lstlisting}[language=Bash]
-echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
-# 获取某一个value的值
-echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
-\end{lstlisting}
 
 \section{ssh}
 
@@ -3063,7 +3077,7 @@ sudo chmod 600 .ssh/authorized_keys
 tail -f /var/log/auth.log
 \end{lstlisting}
 
-是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的公钥拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
 
 \begin{lstlisting}[language=Bash]
 #允许使用基于密钥认证的方式登陆
@@ -3196,6 +3210,10 @@ digraph G {
 \begin{lstlisting}[language=Bash]
 dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
+
+\section{MyBatis Generator}
+
+\subsection{title}
 
 \section{Curl}
 
