@@ -2669,11 +2669,13 @@ vncpasswd
 
 \subsection{Pandoc}
 
-将Tex文档转换为Word：
+在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
 
 \begin{lstlisting}[language=Bash]
 pandoc -s math.tex -o example30.docx
 \end{lstlisting}
+
+另外使用\LaTeX{}还有一个比较方便的地方是可以容易的以模块来管理文档，比如接口文档分为公共部分，所有调用方都可以看到，但是针对每个调用方可能会有一些定制的内容，当要修改公共部分时，如果是采用Word文件分散管理会出现不一致的情况，有的文件修改了，有的没有改。使用\LaTeX{}就只需要改动一个公共模块即可。其他引用公共的地方自动更新。
 
 \subsection{Zeal}
 
