@@ -28,6 +28,8 @@
 
 \setcounter{tocdepth}{4}
 
+\renewcommand\thesection{\arabic{section}} 
+
 %%%% 下面的命令设置行间距与段落间距 %%%%
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
@@ -90,6 +92,8 @@
 \graphicspath{{./Image/common/}{./Image/Api/}{./Image/InterfaceDesign/}{./Image/Attachment/}}
 
 \begin{document}
+
+\tableofcontents
 
 
 \include{title}
@@ -1644,6 +1648,15 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 
 \paragraph{kill}
 
+\paragraph{tar}
+
+创建压缩文档：
+
+\begin{lstlisting}[language=Bash]
+#打包
+tar -czvf mybatisDemo.tar.gz mybatisDemo
+\end{lstlisting}
+
 
 
 \subsection{自动部署}
@@ -1959,6 +1972,16 @@ public class ${NAME} {
 
 \section{基础}
 
+\subsection{初始化项目}
+
+输入如下命令来初始化一个项目：
+
+\begin{lstlisting}[language=Java]
+gradle init
+\end{lstlisting}
+
+运行命令后，会在项目中新建gradlew/gradlew.bat/settings.gradle/build.gradle文件。
+
 \subsection{引用本地文件}
 
 有时候项目依赖的可能不是公布在网络上的一个公共库，可能只是一个闭源的jar包，只是一个本地文件而已。Gradle中引用本地文件写法如下：
@@ -2005,6 +2028,13 @@ repositories {
 \end{lstlisting}
 
 总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+
+\subsection{常见问题}
+
+\paragraph{could not find method compile()}
+
+gradle项目配置中引用java插件。
+
 
 \section{Gradle对象}
 
@@ -2093,7 +2123,6 @@ task copyTask(type: Copy) {
 \end{lstlisting}
 
 在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
-
 
 \subsection{同时连接内外网}
 
@@ -3033,8 +3062,6 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
 \end{lstlisting}
 
-
-
 \section{ssh}
 
 \subsection{免密登陆}
@@ -3647,12 +3674,31 @@ make
 make test
 \end{lstlisting}
 
+\chapter{PostgreSQL}
+
+PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统），在灵活的BSD-风格许可证下发行。它在其他开放源代码数据库系统（比如MySQL和Firebird），和专有系统比如Oracle、Sybase、IBM的DB2和Microsoft SQL Server之外，为用户又提供了一种选择。
+
+\section{基础操作}
+
+登录：
+
+\begin{lstlisting}[language=Bash]
+sudo -u postgres psql
+\end{lstlisting}
+
+这里是以超级用户的身份登录，否则在修改密码时会提示：must be superuser to alter superusers。修改密码：
+
+\begin{lstlisting}[language=Bash]
+\password postgres
+\end{lstlisting}
+
+
 
 \chapter{MySQL}
 
-\section{查询}
+\subsection{查询}
 
-\subsection{MySQL远程连接}
+\paragraph{MySQL远程连接}
 
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
@@ -3797,6 +3843,8 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 character-set-server=utf8
 \end{lstlisting}
+
+
 
 
 \chapter{达梦}
