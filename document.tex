@@ -111,7 +111,7 @@ classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.8]{javaresourcefolder.png}
+	\includegraphics[scale=0.6]{javaresourcefolder.png}
 	\caption{Intellij Idea中的资源文件夹}
 	\label{fig:javaresourcefolder}
 \end{figure}
@@ -150,7 +150,15 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \subsection{返回消息封装}
 
-一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写拦截器来实现，拦截某些特定类型的Response，处理成功后的返回的Json格式。
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
+
+\begin{lstlisting}[language=Java]
+@RequestMapping("books")
+public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
+	List<Book> userShelfBooks = bookShelfComposite.getUserShelfBooks(userId);
+	return new RestApiResponse<>(ResponseCode.REQUEST_SUCCESS_MESSAGE, ResponseCode.REQUEST_SUCCESS, userShelfBooks);
+}
+\end{lstlisting}
 
 
 \subsection{接口返回}
@@ -159,7 +167,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{restresponse.png}
+	\includegraphics[scale=0.6]{restresponse.png}
 	\caption{Restful接口返回数据示例}
 	\label{fig:restresponse}
 \end{figure}
@@ -670,6 +678,27 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	\caption{MyBatis打印SQL}
 	\label{fig:mybatisprintsql}
 \end{figure}
+
+\subsection{多参数传递}
+
+在使用Mybatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
+
+\begin{lstlisting}[language=Java]
+int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
+\end{lstlisting}
+
+在XML中使用：
+
+\begin{lstlisting}[language=XML]
+<update id="batchUpdate" parameterType="java.util.List">
+	UPDATE TD_S_ORG
+	SET STATUS = #{status}
+	WHERE ORG_ID IN
+	<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</update>
+\end{lstlisting}
 
 \subsection{常见问题}
 
