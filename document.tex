@@ -26,6 +26,10 @@
 %Figure显示为中文的“图”
 \renewcommand\figurename{图}
 
+\setcounter{tocdepth}{4}
+
+\renewcommand\thesection{\arabic{section}} 
+
 %%%% 下面的命令设置行间距与段落间距 %%%%
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
@@ -52,7 +56,8 @@
 	alsolanguage= XML,  
 	tabsize=4, %  
 	frame=shadowbox, %把代码用带有阴影的框圈起来  
-	commentstyle=\color{red!50!green!50!blue!50},%浅灰色的注释  
+	commentstyle=\color{red!50!green!50!blue!50},%浅灰色的注释
+	frameround=tttt,  
 	rulesepcolor=\color{red!20!green!20!blue!20},%代码块边框为淡青色  
 	keywordstyle=\color{blue!90}\bfseries, %代码关键字的颜色为蓝色，粗体  
 	showstringspaces=false,%不显示代码字符串中间的空格标记  
@@ -89,6 +94,8 @@
 
 \begin{document}
 
+\tableofcontents
+
 
 \include{title}
 
@@ -104,7 +111,7 @@ classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.8]{javaresourcefolder.png}
+	\includegraphics[scale=0.6]{javaresourcefolder.png}
 	\caption{Intellij Idea中的资源文件夹}
 	\label{fig:javaresourcefolder}
 \end{figure}
@@ -141,9 +148,17 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
-\subsection{拦截操作}
+\subsection{返回消息封装}
 
-一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
+
+\begin{lstlisting}[language=Java]
+@RequestMapping("books")
+public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
+	List<Book> userShelfBooks = bookShelfComposite.getUserShelfBooks(userId);
+	return new RestApiResponse<>(ResponseCode.REQUEST_SUCCESS_MESSAGE, ResponseCode.REQUEST_SUCCESS, userShelfBooks);
+}
+\end{lstlisting}
 
 
 \subsection{接口返回}
@@ -152,18 +167,126 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{restresponse.png}
+	\includegraphics[scale=0.6]{restresponse.png}
 	\caption{Restful接口返回数据示例}
 	\label{fig:restresponse}
 \end{figure}
 
-其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+@Autowired
+private MapperFacade corporationMapperFacade;
+
+public XydmResponse mapToCorporationResponse(Corporation corporation) {
+	return corporationMapperFacade.map(corporation, XydmResponse.class);
+}
+\end{lstlisting}
+
+\subsection{Code Snippets}
+
+有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{visualstudiocodesnippet.png}
+	\caption{Visual Studio Code代码草稿}
+	\label{fig:visualstudiocodesnippet}
+\end{figure}
+
+ArrayList分页：
+
+\begin{lstlisting}[language=Java]
+return new Page<>(pageable, menuList.subList((page - 1) * size, page * size));
+\end{lstlisting}
+
+Optional避免空指针：
+
+\begin{lstlisting}[language=Java]
+public static String getChampionName(Competition comp) throws IllegalArgumentException {
+	return Optional.ofNullable(comp)
+			.map(c->c.getResult())
+			.map(r->r.getChampion())
+			.map(u->u.getName())
+			.orElseThrow(()->new IllegalArgumentException("The value of param comp isn't available."));
+}
+\end{lstlisting}
+
+Optional参数验证：
+
+\begin{lstlisting}[language=Java]
+public void setName(String name) throws IllegalArgumentException {
+	this.name = Optional.ofNullable(name).filter(User::isNameValid)
+						.orElseThrow(()->new IllegalArgumentException("Invalid username."));
+}
+\end{lstlisting}
+
+\subsection{集合}
+
+List移除空元素，移除重复元素：
+
+
+\begin{lstlisting}[language=Java]
+request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
+if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
+
+});
+\end{lstlisting}
+
+对象做非空判断：
+
+\begin{lstlisting}[language=Java]
+f (!"".equals(name)) {
+	//将""写在前头，这样，不管name是否为null，都不会出错
+}
+
+if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
+	//用String强制转换也不会报空指针异常
+} 
+\end{lstlisting}
+
+
+
 
 \section{注解}
 
 \subsection{ComponentScan}
 
+\section{Shiro}
+
+\subsection{新建表}
+
+
+
 \section{数据库操作}
+
+\subsection{Could not get JDBC connection}
+
+接口有时会查询不出数据，总是报超时错误。查看程序日志，提示Could not get JDBC Connection。查看了数据库的Session数量(40)远远未到达最大限制数量(500)。
+
+\begin{lstlisting}[language=SQL]
+#达梦DB查看最大会话数量
+select *
+from v$dm_ini
+where para_name ='MAX_SESSIONS'
+
+#达梦DB查看当前会话数量
+SELECT count(*)
+FROM v$sessions;
+\end{lstlisting}
+
+经过分析，是由于连接池的默认设置数量问题，由于配置中对HikariCP的连接池数量未做指定，HikariCP默认的连接池数量(maximumPoolSize)是10，正是由于连接池数量较小，很容易出现获取不到连接而出现超时的现象。This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections. Basically this value will determine the maximum number of actual connections to the database backend. A reasonable value for this is best determined by your execution environment. When the pool reaches this size, and no idle connections are available, calls to getConnection() will block for up to connectionTimeout milliseconds before timing out. Default: 10.如下配置HikariCP的连接池数量：
+
+\begin{lstlisting}[language=Bash]
+#
+# Pool数太少会出现连接超时,Hikari默认的大小是10
+# 用户数200-3000连接池目前设置为200
+# 调大时综合服务器内存、CPU负荷进行考虑
+# 数据库目前最大Session数量为500
+#
+spring.datasource.maximumPoolSize=200
+\end{lstlisting}
+
 
 \subsection*{JDBC数据库重连}
 
@@ -348,7 +471,7 @@ SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。
 </ehcache>
 \end{lstlisting}
 
-在方法上指定缓存，语法采用SpEL，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
+在方法上指定缓存，语法采用SpEL(Spring Express Language)，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
 SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
 
 \begin{lstlisting}[language=Java]
@@ -358,13 +481,37 @@ SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以
 )
 \end{lstlisting}
 
-@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。满足一定条件才缓存，写法如下：
+@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。缓存的Key,当我们没有指定该属性时，Spring将使用默认策略生成key(表示使用方法的参数类型及参数值作为key),key属性是用来指定Spring缓存方法的返回结果时对应的key的。该属性支持SpringEL表达式。我们还可以自定义策略：自定义策略是指我们可以通过Spring的EL表达式来指定我们的key。这里的EL表达式可以使用方法参数及它们对应的属性。使用方法参数时我们可以直接使用“\#参数名”或者“\#p参数index”。key的生成策略有两种：一种是默认策略，一种是自定义策略。默认的key生成策略是通过KeyGenerator生成的，其默认策略如下：1.如果方法没有参数，则使用0作为key。2.如果只有一个参数的话则使用该参数作为key。3.如果参数多余一个的话则使用所有参数的hashCode作为key满足一定条件才缓存，写法如下：
 
 \begin{lstlisting}[language=Java]
 condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
 \end{lstlisting}
 
-如上条件，取出xdr为空的数据进行缓存。
+如上条件，取出xdr为空的数据进行缓存。如下情形缓存将会不起作用：
+
+\begin{itemize}
+	\item{同一个bean内部方法调用，这个问题遇到过，也是查了一些时间才发现}
+	\item{子类调用父类中有缓存注解的方法}
+\end{itemize}
+
+\subsection{全局异常拦截器}
+
+在class注解上@ControllerAdvice
+
+\begin{lstlisting}[language=Java]
+@ControllerAdvice(basePackages = "creditsystem.web.controllers")
+public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
+
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
+			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
+		}
+		logger.error("系统错误", ex);
+		return new ResponseEntity<>(ApiResult.error(status.value(), "系统错误"), headers, HttpStatus.OK);
+	}
+}
+\end{lstlisting}
 
 \subsection{用户重复登录问题}
 
@@ -409,6 +556,70 @@ project(':cc-api') {
 
 在每次构建时都会运行单元测试。Mock和Stub是两种测试代码功能的方法。Mock测重于对功能的模拟。Stub测重于对功能的测试重现。比如对于List接口，Mock会直接对List进行模拟，而Stub会新建一个实现了List的TestList，在其中编写测试的代码。强烈建议优先选择Mock方式，因为Mock方式下，模拟代码与测试代码放在一起，易读性好，而且扩展性、灵活性都比Stub好。
 
+\subsection{TestNG单元测试}
+
+项目经常涉及到修改，水平不够足，有些地方始终考虑的不够周到，会互相影响，所以考虑添加单元测试。系统前后端分离，分为各类接口，根据不同类的接口分组进行测试。在测试类上指定测试接口的分组：
+
+\begin{lstlisting}[language=Java]
+/**
+* 组名是数组类型，，所以一个测试方法可以属于多个组
+* group={"group name 1","group name 2"}
+*/
+@Test(groups = "xycq-api")
+public void testGetXzcfList() throws Exception {
+	TestPublicVariable.test("/xzcf?xdr=dolphin");
+}
+\end{lstlisting}
+
+配置跑单元测试如图\ref{fig:testngunittestbygroup}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{testngunittestbygroup.png}
+	\caption{TestNG单元测试}
+	\label{fig:testngunittestbygroup}
+\end{figure}
+
+\subsection{Spring mockMvc测试}
+
+MockMvc实现了对Http请求的模拟，能够直接使用网络的形式，转换到Controller的调用，这样可以使得测试速度快、不依赖网络环境，而且提供了一套验证的工具，这样可以使得请求的验证统一而且很方便。引入在Gradle构建脚本中增加Spring测试包:
+
+\begin{lstlisting}
+compile("org.springframework.boot:spring-boot-test:" + springBootVersion)
+testCompile group: 'junit', name: 'junit', version: '4.12'
+\end{lstlisting}
+
+增加测试类：
+
+\begin{lstlisting}[language=Java]
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = DolphinApplication.class)
+@Commit
+@Transactional
+public class BookControllerTest {
+
+	private MockMvc mockMvc;
+	
+	@Autowired
+	private WebApplicationContext wac;
+	
+	@Before
+	public void setUp() {
+		this.mockMvc = webAppContextSetup(this.wac).build();
+	}
+	
+	@Test
+	public void getBooksByName() throws Exception {
+		String responseString = mockMvc.perform(
+					get("/api/book?name=小学生")
+				).andExpect(status().isOk())    //返回的状态是200
+				.andDo(print())         //打印出请求和相应的内容
+				.andReturn().getResponse().getContentAsString(); //将相应的数据转换为字符串
+		System.out.println("--------返回的json = " + responseString);
+	}
+}
+\end{lstlisting}
+
 
 \section{常见问题}
 
@@ -445,7 +656,35 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
+\subsection{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
+
+\paragraph{NoClassDefFoundError}
+
+连接时从内存找不到需要的class就出现NoClassDefFoundError，当Java虚拟机或 ClassLoader 实例试图在类的定义中加载（作为通常方法调用的一部分或者作为使用 new 表达式创建的新实例的一部分），但无法找到该类的定义时，抛出此异常。 
+
+Java事务的类型有三种：JDBC事务、JTA(Java Transaction API)事务、容器事务。 常见的容器事务如Spring事务，容器事务主要是J2EE应用服务器提供的，容器事务大多是基于JTA完成，这是一个基于JNDI的，相当复杂的API实现。在本机请求会报此错误，但是部署到服务器上是OK的。在本地引入如下2个jar包即可修复此问题：
+
+\begin{lstlisting}[language=Bash]
+compile group: 'javax.transaction', name: 'jta', version: '1.1'
+compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.1'
+\end{lstlisting}
+
+Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等
+
+\subsection{Unregistering JMX-exposed beans on shutdown}
+
+运行之后控制台输出“Unregistering JMX-exposed beans on shutdown”,原因为：SpringBoot内置Tomcat没有正常启动.原来是在引入时没有写版本号，在没有版本号的情况下此次引入其实是不成功的，难怪在类中始终不能够自动导入对应的命名空间。
+
+\begin{lstlisting}[language=Bash]
+compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
+\end{lstlisting}
+
+忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
+
+
 \section{Mybatis}
+
+mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
 
 
 \subsection{打印SQL}
@@ -480,6 +719,27 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	\label{fig:mybatisprintsql}
 \end{figure}
 
+\subsection{多参数传递}
+
+在使用Mybatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
+
+\begin{lstlisting}[language=Java]
+int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
+\end{lstlisting}
+
+在XML中使用：
+
+\begin{lstlisting}[language=XML]
+<update id="batchUpdate" parameterType="java.util.List">
+	UPDATE TD_S_ORG
+	SET STATUS = #{status}
+	WHERE ORG_ID IN
+	<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+</update>
+\end{lstlisting}
+
 \subsection{常见问题}
 
 在配置MyBatis Mapper时，出现如下错误：
@@ -488,7 +748,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 Request processing failed; nested exception is org.apache.ibatis.binding.BindingException: Invalid bound statement (not found)
 \end{lstlisting}
 
-配置文件检查了没有问题，后来看网上说是在Intellij Idea中，需要在resource目录下新建一个文件夹，并设置成资源文件夹，放置Mapper.xml文件。还真能够解决问题，但是不明白为什么需要单独建立一个文件夹，按道理resource也是资源文件夹啊，应该可以读取才对。问题虽然解决，但是其中原理始终没有弄个明白，最终文件夹结构如图\ref{fig:mapperreourcestructure}所示。
+配置文件检查了没有问题，后来看网上说是在Intellij Idea中，需要在resource目录下新建一个文件夹，并设置成资源文件夹，放置Mapper.xml文件。还真能够解决问题，但是不明白为什么需要单独建立一个文件夹，按道理resource也是资源文件夹啊，应该可以读取才对。还有建立的文件夹也有讲究，文件夹的名称应该和放Mapper.java文件的名称一致，不能随意起名。问题虽然解决，但是其中原理始终没有弄个明白，最终文件夹结构如图\ref{fig:mapperreourcestructure}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -498,18 +758,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 \end{figure}
 
 
-\section{性能(Performance)}
-
-
-
-\subsection{VisualVM}
-
-使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。
-
-
 \newpage
-
-
 
 \chapter{Groovy}
 
@@ -556,6 +805,21 @@ case class User(
 */
 val params = pageable.getParams.asScala.toVector.reverse  
 \end{lstlisting}
+
+\subsection{集合操作}
+
+Scala集合操作如下：
+
+\begin{lstlisting}[language=Scala]
+processResult = errorCode.get.split(',')
+	.filter(s => StringUtils.isNoneBlank(s))
+	.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
+	.filter(_ != null)
+	.map(eet => eet.getErrDesc)
+	.mkString("；")
+\end{lstlisting}
+
+mkString把集合元素转化为字符串，可以添加分隔符，前缀，后缀。
 
 \chapter{Python}
 
@@ -720,9 +984,15 @@ PATH="$PATH":/usr/local/mysql/bin
 sudo pip install mysql-python
 \end{lstlisting}
 
-\chapter{React}
+\chapter{前端}
 
-\section{组件}
+\section{React}
+
+只有动画或视频达到60fps，人眼才不会感觉卡顿。
+
+\subsection{组件生命周期(Life Cycle)}
+
+页面的交互流程，页面加载或者用户操作界面，调用相关函数通过Ajax从服务端获取数据，触发dispatch，将action传递给reducer更改state(要赋给propss的值都存在state中)，然后再将state的新的值赋给props，重新渲染页面。connect中的函数当state改变时都会被执行，可以理解成subscribe函数或者监听函数。
 
 \subsection{第一个React}
 
@@ -794,11 +1064,44 @@ ReactDOM.render(
 );
 \end{lstlisting}
 
-Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。它的原理是React组件的context属性。
+Provider在根组件外面包了一层，这样一来，App的所有子组件就默认都可以拿到state了。同理store只需要在最顶层导入一次，否则在下级的每一个组件都需要导入store，非常不利于组件复用，每个组件都导入显然不够优雅，它的原理是React组件的context属性。
 
 \subsection{Connect}
 
 React-Redux 提供connect方法，用于从 UI 组件生成容器组件。connect的意思，就是将这两种组件连起来。
+
+\begin{lstlisting}[language=Javascript]
+connect(mapStateToProps, mapDispatchToProps, mergeProps)(MyComponent)
+\end{lstlisting}
+
+项目中connect定义如下：
+
+\begin{lstlisting}[language=Javascript]
+/**
+* mapStateToProps:这个函数的作用是确定哪些 Redux 全局的 state 是我们组件想要通过 props 获取
+*/
+const mapStateToProps = (state) => {
+	return {
+		book: state.book
+	}
+}
+
+/**
+* mapDispatchToProps:这个方法的作用是确定 哪些action创建函数是我们想要通过props获取
+*/
+const mapDispatchToProps = (dispatch) =>{
+	return{
+		bookService: bindActionCreators(bookService, dispatch)
+	}
+}
+
+connect(mapStateToProps, mapDispatchToProps)
+class BookContainer extends Component {
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
+}
+\end{lstlisting}
 
 \subsection{Actions}
 
@@ -806,7 +1109,105 @@ Action向store派发指令，action 函数会返回一个带有 type 属性的 J
 
 \subsection{Store}
 
-store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起。
+store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起，如下语句创建一个简单的store。
+
+\begin{lstlisting}[language=Javascript]
+import {createStore} from 'redux';
+//创建store
+const store = createStore(reducer, 1);
+\end{lstlisting}
+
+第一个参数为reducer，第二个参数是初始化的状态(initialState)，这里为1。
+
+\subsection{Reducer}
+
+如下语句创建一个简单的Reducer：
+
+\begin{lstlisting}[language=Javascript]
+const reducer = (state, action) => {
+	switch (action.type) {
+		case "ADD":
+			state = state + action.payload;
+			break;
+		case "SUBTRACT":
+			break;
+	}
+	return state;
+};
+\end{lstlisting}
+
+\subsection{Dispatcher}
+
+接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
+
+\begin{lstlisting}[language=Javascript]
+store.dispatch({
+	type: "ADD",
+	payload: 10
+});
+\end{lstlisting}
+
+
+\paragraph{redux-thunk}
+
+解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。在异步Action时也需要使用thunder中间件。
+
+\subsection{state}
+
+state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.而Action不会引起state的变化，引起state变化的是reducer。如果用 redux，就没有 state 和 props 的区分了。组件都应该用 props，不应该有任何组件私有的 state。尽量使用props当作数据源，state用来存放状态值。
+
+\paragraph{初始化state}
+
+有2种方法来初始化应用的state，一种是在createStore方法中的第二个可选参数preloadState。也可以在reducer中为undefined的state参数指定默认初始值。state的结构如图\ref{fig:statedemo}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{statedemo.png}
+	\caption{State状态示例}
+	\label{fig:statedemo}
+\end{figure}
+
+
+
+\paragraph{redux logger}
+
+Redux Logger是一个中间件，它会打印出当前应用的state变化，配置如下代码所示。
+
+\begin{lstlisting}[language=Javascript]
+/**
+* ES6 with npm, you can write import React from 'react'. 
+* ES5 with npm, you can write var React = require('react').
+*/
+import {createLogger} from 'redux-logger';
+
+if (process.env.NODE_ENV === 'development') {
+	const logger = createLogger({
+		stateTransformer: (state) => {
+			let newState = {};
+			for (let i of Object.keys(state)) {
+				if (Iterable.isIterable(state[i])) {
+					newState[i] = state[i].toJS();
+				} else {
+					newState[i] = state[i];
+				}
+			}
+			return newState;
+		}
+	});
+	middleware.push(logger);
+}
+\end{lstlisting}
+
+打印出action的效果如图\ref{fig:reduxloggerexample}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{reduxloggerexample.png}
+	\caption{Redux Logger打印效果}
+	\label{fig:reduxloggerexample}
+\end{figure}
+
+从图中看出，state的状态已经改变。说明是state改变后的某些动作还未触发。
 
 \subsection{Props}
 
@@ -851,6 +1252,7 @@ class BookContainer extends Component {
 	\label{fig:bookserviceprops}
 \end{figure}
 
+
 \subsection{Reducers}
 
 Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过 Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。
@@ -873,6 +1275,8 @@ JavaScript 中的对象一般是可变的（Mutable），因为使用了引用�
 \paragraph{IMMUTABLE DATA}
 
 Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
+
+
 
 \section{MobX}
 
@@ -934,8 +1338,23 @@ clean任务执行完成了才会去运行其他的任务，在gulp.start()里的
 
 使用install --save时，将默认在package.json中添加小尖尖\^而不是小波浪\~作为依赖版本的前缀。
 
+\section{Library}
 
-\section{Axios}
+\subsection{lodash}
+
+lodash是一个具有一致接口、模块化、高性能等特性的 JavaScript 工具库。
+
+\paragraph{去除重复数据}
+
+去除重复数据：
+
+\begin{lstlisting}[language=JavaScript]
+import lodashUniqBy from "lodash/uniqBy";
+const uniqOrgList = lodashUniqBy(orgList, 'dfName');
+\end{lstlisting}
+
+
+\subsection{Axios}
 
 axios是一个基于Promise用于浏览器和nodejs的HTTP客户端。ES6 原生提供了 Promise 对象。所谓 Promise，就是一个对象，用来传递异步操作的消息。它代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的 API，可供进一步处理。
 
@@ -1074,6 +1493,85 @@ tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
 
+
+
+
+\subsection{常用函数}
+
+数学函数：
+
+\begin{lstlisting}[language=Javascript]
+f = Math.round(x / 10000 * Math.pow(10, y)) / Math.pow(10, y);
+\end{lstlisting}
+
+Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
+
+\begin{lstlisting}[language=HTML]
+#默认会执行一次
+<button onClick={this.getBookInfo()}>查询</button>
+#默认不会执行
+<button onClick={() => this.getBookInfo()}>查询</button>
+\end{lstlisting}
+
+对象转数组：
+
+\begin{lstlisting}[language=Javascript]
+const books = this.props.books;
+let arr = [];
+for(let i in books){
+	arr.push(books[i]);
+}
+\end{lstlisting}
+
+判断值是不是空：
+
+\begin{lstlisting}[language=Javascript]
+if (!value || (value + ' ').trim().length === 0) {
+	/**
+	* 值为空的字段在界面上不显示
+	* 如果value是整数，不能使用trim()，所以加字符串手动转换成String类型
+	*/
+	return;
+}
+
+/**
+* 如果需要判断字符串为空，直接if判断即可
+*/
+if(value){
+	/**
+	* 此种写法等价于if(value===null||value===undefined||value==='')
+	*/
+}
+\end{lstlisting}
+
+
+
+\section{常见问题}
+
+\subsection{Cannot read property 'apply' of undefined}
+
+
+
+\subsection{Store does not have a valid reducer}
+
+提示错误：Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.store在index.js文件中引入，在store.js中添加打印语句将reducer对象打印出来，看到实际是有reducer对象的，所以怀疑是reducer的定义有些问题。最后发现原来是require的使用有问题。
+
+\begin{lstlisting}[language=Javascript]
+const state = {};
+for (const name of nameList) {
+state[name] = require(`./${name}/${name}Reducer`);
+
+}
+\end{lstlisting}
+
+这里是用Requre动态加载，但是实际有点问题，暂时还找不到原因。暂时采用如下的写法：
+
+
+\begin{lstlisting}[language=Javascript]
+import bookReducer from './book/bookReducer';
+state[0] = bookReducer;
+\end{lstlisting}
+
 \part{OS}
 
 \chapter{Linux}
@@ -1087,6 +1585,20 @@ sudo apt-get -f install
 f参数表示尝试修正系统依赖损坏处。
 
 \subsection{shell}
+
+\paragraph{快捷键}
+
+Shell中常用的快捷键如下：
+
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{说明}  \\
+	\hline			
+	Alt + F & 向前移动一个单词 \\
+	Alt + B & 向后移动一个单词 \\	
+	\hline
+\end{tabular}
 
 \paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
 
@@ -1157,6 +1669,81 @@ echo "set completion-ignore-case on">>~/.inputrc
 
 设置完毕后重新打开终端即可。
 
+\paragraph{统计代码行数}
+
+统计项目代码行数使用如下命令：
+
+\begin{lstlisting}[language=Bash]
+# Java行数：35400
+find . -name "*.java"|xargs cat|grep -v ^$|wc -l
+# 42178，会显示每个Java文件的行数
+find . -name '*.java' |xargs wc -l
+
+# Scala行数：1500
+find . -name "*.scala"|xargs cat|grep -v ^$|wc -l
+# XML行数：7336
+find . -name "*.xml"|xargs cat|grep -v ^$|wc -l
+# js行数：151312
+find . -name "*.jsr"|xargs cat|grep -v ^$|wc -l
+
+# 统计代码行数
+find sourcecode "(" -name "*.js" -or -name "*.java" -or -name "*.scala" -or -name "*.xml" ")"|xargs cat|grep -v ^$|wc -l
+\end{lstlisting}
+
+符号$\textasciicircum$表示行首，\$表示行尾，使用grep -v可以实现NOT操作。-v选项用来实现反选匹配的（ invert match）。xargs 是一个强有力的命令，它能够捕获一个命令的输出，然后传递给另外一个命令。
+
+\paragraph{查看端口情况}
+
+查看某个端口是否被占用：
+
+\begin{lstlisting}[language=Bash]
+lsof -i:18080
+\end{lstlisting}
+
+lsof（list open files）是一个列出当前系统打开文件的工具。FD(File Descriptor)：文件描述符，应用程序通过文件描述符识别该文件。在Linux系统中一切皆可以看成是文件，文件又可分为：普通文件、目录文件、链接文件和设备文件。文件描述符（file descriptor）是内核为了高效管理已被打开的文件所创建的索引，其是一个非负整数（通常是小整数），用于指代被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。程序刚刚启动的时候，0是标准输入，1是标准输出，2是标准错误。如果此时去打开一个新的文件，它的文件描述符会是3。
+
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{文件描述符}
+	& \multicolumn{1}{c}{说明}  \\
+	\hline			
+	cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
+	txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
+	lnn & library references （AIX） \\
+	ltx & shared  library text（code and  data） \\
+	er & FD  information  error （see  NAME  column） \\
+	jld & jail  directory（FreeBSD） \\	
+	\hline
+\end{tabular}
+
+（7）mxx： hex  memory-mapped  type number  xx.
+
+（8）m86：DOS  Merge  mapped  file
+
+（9） mem: memory-mapped  file 
+
+（10）mmap: memory-mapped device
+
+（11）pd: parent  directory
+
+（12）rtd: root  directory
+
+（13）tr: kernel  trace file （OpenBSD）
+
+（14）v86  VP/ix  mapped  file
+
+（15）0：表示标准输出
+
+（16）1：表示标准输入
+
+（17）2：表示标准错误。
+根据具体操作系统的不同，将文件和目录称为 REG 和 DIR（在 Solaris 中，称为 VREG 和 VDIR）。其他可能的取值为 CHR 和 BLK，分别表示字符和块设备；或者 UNIX、FIFO 和 IPv4，分别表示 UNIX 域套接字、先进先出 (FIFO) 队列和网际协议 (IP) 套接字。
+进而查看被哪个程序占用：
+
+\begin{lstlisting}[language=Bash]
+ps pid
+\end{lstlisting}
+
 \subsection{命令}
 
 \paragraph{ls}
@@ -1164,8 +1751,12 @@ echo "set completion-ignore-case on">>~/.inputrc
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
 
 \begin{lstlisting}[language=Bash]
+#列出指定文件的信息
 ls -lh authorized_keys
+#只显示当前文件夹下的目录
+ls -al | grep "^d"
 \end{lstlisting}
+
 
 \paragraph{find}
 
@@ -1178,6 +1769,19 @@ find . -type f -size +100M
 \end{lstlisting}
 
 size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。
+
+\paragraph{kill}
+
+\paragraph{tar}
+
+创建压缩文档：
+
+\begin{lstlisting}[language=Bash]
+#打包
+tar -czvf mybatisDemo.tar.gz mybatisDemo
+\end{lstlisting}
+
+
 
 \subsection{自动部署}
 
@@ -1370,6 +1974,8 @@ openssl version -a
 yum list installed
 \end{lstlisting}
 
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。
+
 \subsection{输入法(Input Method)}
 
 有时在Fedora 24中，突然中文输入法切换后无法输入中文了。可以到系统区域和语言(Region\&Language)设置界面，重新删除后再添加即可修复,如图\ref{fig:regionandlanguagesetting}所示。
@@ -1411,6 +2017,21 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 \subsection{Tips}
 
 
+\begin{tabular}{cp{6cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{作用}  \\
+	\hline			
+	Ctrl + Left/Right & 到行首/尾 \\
+	Command + Shift + A(Mac) & Find Action \\
+	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
+	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
+	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
+	\hline
+\end{tabular}
+
+
 \paragraph{Class JavaLaunchHelper is implemented}
 
 
@@ -1422,6 +2043,11 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 
 检查启动配置里启动模块是否选择正确。
+
+\paragraph{列编辑模式}
+
+最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。
+
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
@@ -1437,10 +2063,62 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
+\paragraph{Template}
+
+类模版：
+
+\begin{lstlisting}[language=Java]
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+#parse("File Header.java")
+/**
+* @author jiangtingqiang@gmail.com
+* @create ${YEAR}-${MONTH}-${DAY}-${TIME}
+*/
+public class ${NAME} {
+}
+\end{lstlisting}
+
+
 
 \chapter{Gradle}
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
+
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{作用}  \\
+	\hline			
+	fastjson & compile('com.alibaba:fastjson:1.2.35') \\
+	httpclient & compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'\\
+	\hline
+\end{tabular}
+
+\section{基础}
+
+\subsection{初始化项目}
+
+输入如下命令来初始化一个项目：
+
+\begin{lstlisting}[language=Java]
+gradle init
+\end{lstlisting}
+
+运行命令后，会在项目中新建gradlew/gradlew.bat/settings.gradle/build.gradle文件。
+
+\subsection{引用本地文件}
+
+有时候项目依赖的可能不是公布在网络上的一个公共库，可能只是一个闭源的jar包，只是一个本地文件而已。Gradle中引用本地文件写法如下：
+
+\begin{lstlisting}[language=Java]
+def ccDataLibs = fileTree(dir: "$rootDir/cc-data/lib", include: '*.jar')
+
+dependencies {
+	compile ccDataLibs
+}
+\end{lstlisting}
+
+dir表示文件所在目录，include表示包含哪些文件。
 
 \subsection{执行流程}
 
@@ -1450,6 +2128,10 @@ Create a Settings instance for the build.
 Evaluate the "settings.gradle" script, if present, against the Settings object to configure it.
 Use the configured Settings object to create the hierarchy of Project instances.
 Finally, evaluate each Project by executing its "build.gradle" file, if present, against the project. The projects are evaluated in breadth-wise order, such that a project is evaluated before its child projects. This order can be overridden by calling evaluationDependsOnChildren() or by adding an explicit evaluation dependency using evaluationDependsOn(String).
+
+\subsection{默认JVM}
+
+在Intellij Idea中导入Gradle项目时，可能提示未设置Gradle JVM，此时选择select Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
 
 \subsection{repositories}
 
@@ -1470,6 +2152,13 @@ repositories {
 \end{lstlisting}
 
 总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+
+\subsection{常见问题}
+
+\paragraph{could not find method compile()}
+
+gradle项目配置中引用java插件。
+
 
 \section{Gradle对象}
 
@@ -1518,7 +2207,8 @@ project(":web"){
 
 \subsection{Task}
 
-对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)
+对于build.gradle配置文件，当运行Gradle <Task> 时，Gradle会为我们创建一个Project的对象，来映射build.gradle中的内容。其中呢，对于不属于任何Task范畴的代码，Gradle会创建一个Script类的对象，来执行这些代码；对于Task的定义，Gradle会创建Task对象，并将它会作为project的属性存在(实际上是通过getTaskName完成的)。
+
 
 \paragraph{拷贝文件}
 
@@ -1540,6 +2230,23 @@ task copyfile(){
 }
 \end{lstlisting}
 
+一个简单的拷贝任务，在生成完毕文件后，目的文件拷贝一个接口部署包副本，接口与应用程序单独部署，并重新命名。
+
+\begin{lstlisting}[language=Java]
+def ccCommonBuildScript = file("$rootDir/gradle/common.gradle")
+apply from: ccCommonBuildScript
+/**
+* 复制一份接口的部署包
+* 接口与平台单独部署，避免互相影响
+*/
+task copyTask(type: Copy) {
+	from 'build/libs/credit-system-web-boot-' + version + '.jar'
+	into 'build/libs/api'
+	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
+}
+\end{lstlisting}
+
+在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
 
 \subsection{同时连接内外网}
 
@@ -1657,290 +2364,7 @@ sudo route del default gw 10.55.10.1
 
 \subsubsection{Windows同时连接内外网}
 
-
-\chapter{Ansible}
-
-\subsection{Ansible模块}
-
-\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
-
-\begin{lstlisting}[language=bash]
-ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
-\end{lstlisting}
-
-如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
-
-\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
-
-\begin{lstlisting}[language=bash]
-ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
-\end{lstlisting}
-
 \chapter{youtube-dl}
-
-
-\chapter{Nginx}
-
-Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
-
-\subsection{X-Forwarded-For}
-
-X-Forwarded-For 是一个 HTTP 扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
-
-\begin{lstlisting}[language=bash]
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-\end{lstlisting}
-
-X-Forwarded-For 请求头格式:
-
-\begin{lstlisting}[language=bash]
-X-Forwarded-For: IP0, IP1, IP2
-\end{lstlisting}
-
-XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
-
-\subsection{Nginx获取真实IP}
-
-做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
-
-
-
-输出结果如下：
-
-\begin{lstlisting}[language=bash]
-nginx version: nginx/1.12.0
-built by gcc 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.2) 
-built with OpenSSL 1.0.2g-fips  1 Mar 2016 (running with OpenSSL 1.0.2g  1 Mar 2016)
-TLS SNI support enabled
-configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-path=/usr/lib/nginx/modules --conf-path=/etc/nginx/nginx.conf --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --pid-path=/var/run/nginx.pid --lock-path=/var/run/nginx.lock --http-client-body-temp-path=/var/cache/nginx/client_temp --http-proxy-temp-path=/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/cache/nginx/scgi_temp --user=nginx --group=nginx --with-compat --with-file-aio --with-threads --with-http_addition_module --with-http_auth_request_module --with-http_dav_module --with-http_flv_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_mp4_module --with-http_random_index_module --with-http_realip_module --with-http_secure_link_module --with-http_slice_module --with-http_ssl_module --with-http_stub_status_module --with-http_sub_module --with-http_v2_module --with-mail --with-mail_ssl_module --with-stream --with-stream_realip_module --with-stream_ssl_module --with-stream_ssl_preread_module --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' --with-ld-opt='-Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -pie'
-\end{lstlisting}
-
-此处显示已经编译了http\_realip\_module模块。项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
-
-\begin{lstlisting}[language=bash]
-# 在Ubuntu 14.04 LTS下安装pcre依赖
-# pcre:Perl Compatible Regular Expressions
-sudo apt-get install libpcre3 libpcre3-dev
-# 指定预编译参数，仅仅指定路径
-sudo ./configure --prefix=/opt/tengine
-# 将realip模块编译进入
-sudo ./configure --prefix=/opt/tengine --with-http_realip_module
-# 编译
-sudo make
-# 安装
-sudo make install
-./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
-\end{lstlisting}
-
-不指定prefix，则可执行文件默认放在/usr /local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
-你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
-指定prefix，直接删掉一个文件夹就够了。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
-
-\begin{lstlisting}[language=bash]
-# 将realip模块编译进入，并指定pcre
-sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40 --with-openssl=/root/software/openssl-OpenSSL_1_1_0e --without-http_gzip_module
-
-./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
-
-#本机编译（不成功）
-./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
-
-#本机编译（成功）
--prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
-
-# 构建程序
-make
-
-#安装程序
-make install
-
-#服务器
-./configure --prefix=/opt/tengine
-
-./configure: error: SSL modules require the OpenSSL library.
-You can either do not enable the modules, or install the OpenSSL library
-into the system, or build the OpenSSL library statically from the source
-with nginx by using --with-openssl=<path> option.
-
-
-\end{lstlisting}
-
-其中--with-pcre表示pcre的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
-
-\begin{lstlisting}[language=bash]
-./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
-\end{lstlisting}
-
-这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
-
-\begin{lstlisting}[language=bash]
-./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
-\end{lstlisting}
-
-编译完毕之后，输入如下命令：
-
-\begin{lstlisting}[language=bash]
-# 查看Tengine版本、模块信息，编译时所使用的参数
-./nginx -V
-\end{lstlisting}
-
-即可看到http\_realip\_module已经编译到nginx中了。Nginx的http\_realip\_module等于Apache的mod\_rpaf用于接受前端发来的IP head信息，从获取到真是的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
-
-\begin{lstlisting}[language=bash]
-#指令是告诉nginx，10.10.1.11是我们的反代服务器，不是真实的用户IP
-set_real_ip_from 10.10.1.11;
-#告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
-real_ip_header X-Real-IP;
-\end{lstlisting}
-
-其中set\_real\_ip\_from可以指定某个网段。这个指令指定信任的代理IP，它们将会以精确的替换IP转发。0.8.22后可以指定Unix sockets。real\_ip\_header设置需要使用哪个头来确定替换的IP地址。由于项目中使用的Nginx作为反向代理，所以配置如下：
-
-\begin{lstlisting}[language=bash]
-location /inapi {
-         proxy_pass http://localhost:28080;
-         proxy_set_header X-Real-IP $remote_addr;
-         proxy_redirect off;
-     }
-\end{lstlisting}
-
-在另一台电脑上访问服务端，在后端根据新添加的Header获取到的IP地址如图\ref{fig:nginxgetrealip}所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.6]{nginxgetrealip.png}
-	\caption{Nginx获取用户真实访问IP}
-	\label{fig:nginxgetrealip}
-\end{figure}
-
-此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
-
-\subsection{Nginx并发}
-
-如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
-
-cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
-
-HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
-
-\begin{lstlisting}[language=bash]
-http {
-	limit_conn_log_level error;
-	limit_conn_status 503;
-	#Zone=one或allips表示设置了名为“one”或“allips”的存储区
-	#大小为10兆字节
-	limit_conn_zone $binary_remote_addr zone=one:10m;
-	limit_conn_zone $server_name zone=perserver:10m;
-	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
-	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
-	server {
-		limit_conn one 100;
-		limit_conn perserver 3000;
-		limit_req zone=allips  burst=5  nodelay;
-	}
-}
-\end{lstlisting}
-
-HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令，这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制。
-
-\subsection{URI长度限制}
-
-在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
-
-\begin{lstlisting}[language=bash]
-client_header_buffer_size 2048k;
-\end{lstlisting}
-
-项目采用Spring Boot，所使用的Tomcat为内嵌的Tomcat。在application.properties中，增加如下配置:
-
-\begin{lstlisting}[language=bash]
-#单位为KB,如果没有指定，默认为8192(8KB)
-server.max-http-header-size=1024
-\end{lstlisting}
-
-奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
-
-\subsection{开启gzip压缩}
-
-用curl测试是否开启了压缩：
-
-\begin{lstlisting}[language=Bash]
-curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
-curl -I -H "Accept-Encoding: gzip, deflate" "http://5.24.25.6:3800/main"
-\end{lstlisting}
-
-开启压缩成功后，可以看到一句：Content-Encoding: gzip。
-
-\subsection{常见问题}
-
-\paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
-
-以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
-
-\begin{lstlisting}[language=bash]
-./nginx -c /opt/app/local/tengine/conf/nginx.conf
-\end{lstlisting}
-
-也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
-
-\begin{lstlisting}[language=bash]
-/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
-\end{lstlisting}
-
-其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
-
-\begin{lstlisting}[language=bash]
-./nginx -p /opt/app/local/tengine -s reload
-\end{lstlisting}
-
-\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
-
-找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
-
-\begin{lstlisting}[language=bash]
-/lib/i386-linux-gnu/libpcre.so.3
-/lib/x86_64-linux-gnu/libpcre.so.3
-\end{lstlisting}
-
-\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
-
-有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
-
-\begin{lstlisting}[language=bash]
-ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
-ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
-\end{lstlisting}
-
-.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
-
-\begin{lstlisting}[language=bash]
-sudo apt-get install libssl1.0.0:amd64
-sudo apt-get install libssl1.0.0 libssl-dev
-
-#查看OpenSSL版本
-openssl version
-
-#查看系统中对libssl
-find ／ -name libssl.s0*
-
-# 列出openssl包
-yum list \*openssl\*
-\end{lstlisting}
-
-不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
-
-\begin{lstlisting}[language=bash]
-yum --showduplicates list openssl
-\end{lstlisting}
-
-寻找包含libssl.so.1.0.0的安装包：
-
-\begin{lstlisting}[language=bash]
-yum provides */libssl.so.1.0.0
-\end{lstlisting}
-
-在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
-
-\url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
 
 \chapter{Fiddler}
 
@@ -2394,6 +2818,489 @@ vncpasswd
 
 \chapter{Widgets}
 
+\section{Little Tool}
+
+\subsection{Pandoc}
+
+在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
+
+\begin{lstlisting}[language=Bash]
+pandoc -s interface.tex -o example30.docx
+\end{lstlisting}
+
+另外使用\LaTeX{}还有一个比较方便的地方是可以容易的以模块来管理文档，比如接口文档分为公共部分，所有调用方都可以看到，但是针对每个调用方可能会有一些定制的内容，当要修改公共部分时，如果是采用Word文件分散管理会出现不一致的情况，有的文件修改了，有的没有改。使用\LaTeX{}就只需要改动一个公共模块即可。其他引用公共的地方自动更新。
+
+\subsection{Zeal}
+
+Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息，示例如图\ref{fig:zealsearch}所示。搜索以nginx和冒号开始，表示搜索与Nignx相关的信息。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{zealsearch.png}
+	\caption{Zeal文档搜索示例}
+	\label{fig:zealsearch}
+\end{figure}
+
+\subsection{jq}
+
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+
+
+\paragraph{常用模式}
+
+获取所有的key：
+
+\begin{lstlisting}[language=Bash]
+echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
+# 获取某一个value的值
+echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
+
+\section{Nginx}
+
+安装配置好nginx服务器后默认目录是/usr/share/nginx/html。nginx模块一般被分成三大类：handler、filter和upstream。Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
+
+\subsection{X-Forwarded-For}
+
+X-Forwarded-For是一个HTTP扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
+
+\begin{lstlisting}[language=bash]
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+\end{lstlisting}
+
+X-Forwarded-For 请求头格式:
+
+\begin{lstlisting}[language=bash]
+X-Forwarded-For: IP0, IP1, IP2
+\end{lstlisting}
+
+XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
+
+\subsection{Nginx获取真实IP}
+
+做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+
+\begin{lstlisting}[language=bash]
+nginx -V
+\end{lstlisting}
+
+在命令的输出结果中，可以看到Nginx的版本，Nginx的编译参数，和Nginx已经包含有哪些模块。此处显示已经编译了http\_realip\_module模块。在服务器上的项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
+
+\begin{lstlisting}[language=bash]
+# 在Ubuntu 14.04 LTS下安装pcre依赖
+# pcre:Perl Compatible Regular Expressions
+sudo apt-get install libpcre3 libpcre3-dev
+# 指定预编译参数，仅仅指定路径
+sudo ./configure --prefix=/opt/tengine
+# 将realip模块编译进入
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module
+# 编译
+sudo make
+# 安装
+sudo make install
+./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
+\end{lstlisting}
+
+不指定prefix，则可执行文件默认放在/usr/local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
+你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
+指定prefix，直接删掉一个文件夹就够了，这也是制定prefix一个比较方便的地方。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+
+\begin{lstlisting}[language=bash]
+# 将realip模块编译进入，并指定pcre
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40 --with-openssl=/root/software/openssl-OpenSSL_1_1_0e --without-http_gzip_module
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
+
+#本机编译（不成功）
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+#本机编译（成功）
+-prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
+
+# 构建程序
+make
+
+#安装程序
+make install
+
+#服务器
+./configure --prefix=/opt/tengine
+
+./configure: error: SSL modules require the OpenSSL library.
+You can either do not enable the modules, or install the OpenSSL library
+into the system, or build the OpenSSL library statically from the source
+with nginx by using --with-openssl=<path> option.
+
+
+\end{lstlisting}
+
+其中--with-pcre表示pcre(Perl Compatible Regular Expressions)的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
+\end{lstlisting}
+
+这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+\end{lstlisting}
+
+编译完毕之后，输入如下命令：
+
+\begin{lstlisting}[language=bash]
+# 查看Tengine版本、模块信息，编译时所使用的参数
+./nginx -V
+\end{lstlisting}
+
+即可看到http\_realip\_module已经编译到Nginx中了。Nginx的http realip module等于Apache的mod\_rpaf，用于接受前端发来的IP head信息，从获取到真实的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
+
+\begin{lstlisting}[language=bash]
+#指令是告诉nginx，10.10.1.11是我们的反向代服务器，不是真实的用户IP
+set_real_ip_from 10.10.1.11;
+#告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
+real_ip_header X-Real-IP;
+\end{lstlisting}
+
+其中set\_real\_ip\_from可以指定某个网段。这个指令指定信任的代理IP，它们将会以精确的替换IP转发。0.8.22后可以指定Unix sockets。real\_ip\_header设置需要使用哪个头来确定替换的IP地址。由于项目中使用的Nginx作为反向代理，所以配置如下：
+
+\begin{lstlisting}[language=bash]
+location /inapi {
+	proxy_pass http://localhost:28080;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_redirect off;
+}
+\end{lstlisting}
+
+在另一台电脑上访问服务端，在后端根据新添加的Header获取到的IP地址如图\ref{fig:nginxgetrealip}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{nginxgetrealip.png}
+	\caption{Nginx获取用户真实访问IP}
+	\label{fig:nginxgetrealip}
+\end{figure}
+
+此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
+
+\subsection{Nginx并发}
+
+如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
+
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+
+HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
+
+\begin{lstlisting}[language=bash]
+http {
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	#Zone=one或allips表示设置了名为“one”或“allips”的存储区
+	#大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
+}
+\end{lstlisting}
+
+HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令，这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制。
+
+\subsection{URI长度限制}
+
+在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
+
+\begin{lstlisting}[language=bash]
+# Nginx配置HTTP请求头长度
+client_header_buffer_size 2048k;
+\end{lstlisting}
+
+项目采用Spring Boot，所使用的Tomcat为内嵌的Tomcat。在application.properties中，增加如下配置:
+
+\begin{lstlisting}[language=bash]
+#单位为KB,如果没有指定，默认为8192(8KB)
+server.max-http-header-size=1024
+\end{lstlisting}
+
+奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
+
+\subsection{开启gzip压缩}
+
+Nginx开启Gzip压缩配置如下：
+
+\begin{lstlisting}[language=Bash]
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]";
+\end{lstlisting}
+
+用curl测试是否开启了压缩：
+
+\begin{lstlisting}[language=Bash]
+curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
+curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
+\end{lstlisting}
+
+开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+
+\subsection{配置}
+
+简单的配置：
+
+\begin{lstlisting}[language=bash]
+user www-data;
+worker_processes 4;
+pid /run/nginx.pid;
+
+events {
+	worker_connections 768;
+}
+
+http {
+	server{
+		listen 80;
+		# 定义网站默认根目录
+		root /opt/dolphin/frontend/dist;
+		
+		location /api {
+			proxy_pass http://localhost:8011;
+		}
+		
+		location / {
+			root /opt/dolphin/frontend/dist;
+			index index.html;
+		} 
+	}
+}
+\end{lstlisting}
+
+\subsection{常见问题}
+
+\paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
+
+以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
+
+\begin{lstlisting}[language=bash]
+./nginx -c /opt/app/local/tengine/conf/nginx.conf
+\end{lstlisting}
+
+也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
+
+\begin{lstlisting}[language=bash]
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+\end{lstlisting}
+
+其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
+
+\begin{lstlisting}[language=bash]
+./nginx -p /opt/app/local/tengine -s reload
+./nginx -p /home/app/local/tengine -V
+\end{lstlisting}
+
+\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
+
+找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
+
+\begin{lstlisting}[language=bash]
+/lib/i386-linux-gnu/libpcre.so.3
+/lib/x86_64-linux-gnu/libpcre.so.3
+\end{lstlisting}
+
+\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
+
+有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
+
+\begin{lstlisting}[language=bash]
+ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
+ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
+\end{lstlisting}
+
+.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
+
+\begin{lstlisting}[language=bash]
+sudo apt-get install libssl1.0.0:amd64
+sudo apt-get install libssl1.0.0 libssl-dev
+
+#查看OpenSSL版本
+openssl version
+
+#查看系统中对libssl
+find ／ -name libssl.s0*
+
+# 列出openssl包
+yum list \*openssl\*
+\end{lstlisting}
+
+不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
+
+\begin{lstlisting}[language=bash]
+yum --showduplicates list openssl
+\end{lstlisting}
+
+寻找包含libssl.so.1.0.0的安装包：
+
+\begin{lstlisting}[language=bash]
+yum provides */libssl.so.1.0.0
+\end{lstlisting}
+
+在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
+
+\url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
+
+\section{Ansible}
+
+\subsection{Ansible模块}
+
+Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没有默认创建Ansible配置文件，手动创建即可。
+
+\paragraph{Ansible配置}
+
+Ansible主机配置：
+
+\begin{lstlisting}[language=bash]
+[pi]
+192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
+\end{lstlisting}
+
+
+\paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
+
+\begin{lstlisting}[language=bash]
+ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+\end{lstlisting}
+
+如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
+
+\paragraph{copy模块}copy模块是将本机中的文件复制到远程主机当中。如果在复制文件过程中需要使用变量，可以使用template模块。
+
+\begin{lstlisting}[language=bash]
+ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
+\end{lstlisting}
+
+\section{ssh}
+
+\subsection{免密登陆}
+
+免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
+
+\begin{lstlisting}[language=Bash]
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+\end{lstlisting}
+
+\subsection{ssh连接慢}
+
+在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
+
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+# 重启sshd守护进程
+sudo service sshd restart
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
+使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
+
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的公钥拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+PubkeyAuthentication yes 
+\end{lstlisting}
+
+
+\subsection{Session时间}
+
+在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
+
+\paragraph{ClientAliveInterval}
+
+修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
+
+\paragraph{ClientAliveCountMax}
+
+另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
+
+\paragraph{ControlPersist 4h}
+
+在./ssh/config中添加一行：
+
+\begin{lstlisting}[language=Bash]
+ControlPersist 4h
+\end{lstlisting}
+
+When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
+
+\paragraph{远程转发Remote Forward}
+
+\section{VisualVM}
+
+使用nmap扫描1099端口，看jstatd是否生效。
+
+\subsection{VisualVM远程监控}
+
+jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器上建立一个指定安全策略的文件jstatd.all.policy ，文件内容如下：
+
+\begin{lstlisting}[language=Bash]
+grant codebase "file:${java.home}/../lib/tools.jar" {  
+	permission java.security.AllPermission;  
+}; 
+\end{lstlisting}
+
+
+在服务端运行jstatd守护程序：
+
+\begin{lstlisting}[language=Bash]
+./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
+#在树莓派上启动jstatd
+sudo /usr/bin/jstatd -J-Djava.security.policy=/opt/dolphin/backend/jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.31.25 -J-Djava.rmi.server.logCalls=true -p 1011
+\end{lstlisting}
+
+使用VisualVM监控远程主机上JAVA应用程序时，需要开启远程主机上的远程监控访问，或者在远程JAVA应用程序启动时，开启远程监控选项，两种方法，选择其中一种就可以开启远程监控功能，配置完成后就可以在本地对远程主机上的JAVA应用程序进行监控。注意下载地址\footnote{\url{https://visualvm.github.io/uc/release139/updates.xml.gz}}需要手动修改一下，原装的地址已经失效。VisualVM中做相应配置即可。连接后如图\ref{fig:visualvmconnectremote}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{visualvmconnectremote.png}
+	\caption{VisualVM远程监控}
+	\label{fig:visualvmconnectremote}
+\end{figure}
+
+目前可以通过VisualVM远程监控实现查看远程应用的PID、查看远程应用的启动参数、所使用的配置文件、JVM的版本以及路径、GC信息等等。
+
+
 \subsection{autojump}
 
 autojump可以让你一键跳转到目标目录，一般情况下，很难准确的记忆清楚目标目录的准确路径，特别是目录嵌套比较深的时候。不停的重复使用cd命令一级或多级跳转显得有点笨拙。此时就可以使用autojump命令，只需要输入路径的关键字即可，比如只记得路径中隐约包含有关键字“jiangxiaoqiang”，那么仅仅输入命令autojump jiang，就可以自动跳转到对应的路径下。安装autojump：
@@ -2436,9 +3343,78 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
 
+\section{Graphviz}
+
+\subsection{编译}
+
+一个简单的图形示例：
+
+\begin{lstlisting}
+digraph G {
+	node [peripheries=2 style=filled color="#eecc80"]
+	edge [color="sienna" fontcolor="green"]
+	"componentWillMount" -> "serviceComponent";
+	"serviceComponent" -> "axios";
+	"axios" -> "dishatch data to store"[label="XHR(GET/POST/PUT/DELETE)"] ;
+	"dishatch data to store" -> "props get data";
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Bash]
+dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
+\end{lstlisting}
+
+\section{MyBatis Generator}
+
+\subsection{title}
+
+\section{Curl}
+
+内部接口测试：
+
+\begin{lstlisting}[language=Bash]
+
+\end{lstlisting}
+
+外部接口测试：
+
+
+\begin{lstlisting}[language=Bash]
+
+\end{lstlisting}
+
 \chapter{Git}
 
+\section{基础}
+
 \subsection{配置}
+
+常用语句。
+
+\begin{lstlisting}[language=Bash]
+#增加远程库
+git remote add company-internal http://xiaoqiang.jiang@gitlab.data.com/backend/system.git
+#删除远程库
+git remote rm company-
+#修改远程库地址
+git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
+\end{lstlisting}
+
+\subsection{返回到指定版本}
+
+查看提交历史：
+
+\begin{lstlisting}[language=Bash]
+git log --all --graph -12
+\end{lstlisting}
+
+回滚到指定版本：
+
+\begin{lstlisting}[language=Bash]
+git reset --hard e4177ea9061a9726efd42d289f73553409df793d
+\end{lstlisting}
+
+
 
 \subsection{查看某几行代码修改}在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
 
@@ -2461,110 +3437,16 @@ env GIT_SSL_NO_VERIFY=true git clone https://<host_name/git/project.git
 
 或者将Git设置为不允许ssl认证：
 
-
 \begin{lstlisting}[language=Bash]
 git config --system http.sslverify false
 \end{lstlisting}
-
-
-\chapter{ssh}
-
-\subsection{免密登陆}
-
-免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
-
-\begin{lstlisting}[language=Bash]
-ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
-\end{lstlisting}
-
-\subsection{ssh连接慢}
-
-在使用SSH时，每次连接建立都相当的慢啊，要10秒以上才能够登录上去，严重影响工作效率。在/etc/ssh/sshd\_config中，修改配置，将GSSAPIAuthentication默认设置为关闭即可：
-
-\begin{lstlisting}[language=Bash]
-GSSAPIAuthentication　no
-\end{lstlisting}
-
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题
-使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
-
-\subsection{Permission denied (publickey)}
-
-在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
-
-\begin{lstlisting}[language=Bash]
-ssh -p 2222 -vvv hldev@10.0.0.22
-\end{lstlisting}
-
-设置文件夹对应的权限：
-
-\begin{lstlisting}[language=Bash]
-sudo chmod 700 .ssh
-sudo chmod 600 .ssh/authorized_keys
-\end{lstlisting}
-
-登陆服务器观察相应的日志输出：
-
-\begin{lstlisting}[language=Bash]
-tail -f /var/log/auth.log
-\end{lstlisting}
-
-是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的密码拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
-
-\begin{lstlisting}[language=Bash]
-#允许使用基于密钥认证的方式登陆
- PubkeyAuthentication yes 
-\end{lstlisting}
-
-
-\subsection{Session时间}
-
-在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
-
-\paragraph{ClientAliveInterval}
-
-修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
-
-\paragraph{ClientAliveCountMax}
-
-另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
-
-\paragraph{ControlPersist 4h}
-
-在./ssh/config中添加一行：
-
-\begin{lstlisting}[language=Bash]
-ControlPersist 4h
-\end{lstlisting}
-
-When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
-
-\subsection{代理转发}
-
-\paragraph{本地转发Local Forward}将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 
-
-\paragraph{远程转发Remote Forward}
 
 \subsection{rsync}
 
 在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
 
-\section{Curl}
-
-内部接口测试：
-
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
-
-外部接口测试：
 
 
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
-
-\chapter{Git}
 
 \subsection{merge}
 
@@ -2586,6 +3468,8 @@ git config --global merge.tool meld
 	Ctrl+Shift+J (Windows/Linux)  & 打开DevTools Console面板 \\
 	\hline
 	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
+	\hline
+	Ctrl+Shift+P (Windows/Linux)  & 打开所有窗口 \\
 	\hline
 \end{tabular}
 
@@ -2653,7 +3537,29 @@ console.table(data);
 
 \paragraph{Preserve Log}
 
-保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。
+保留请求日志，勾选后，即使在当前页面刷新后，日志也不会清空。在使用large request row后，size和time会出现2行内容，如图\ref{fig:networksizeandtime}所示。其中时间行，上面的时间代表从请求开始到接收完最后一个byte为止的时间，下面一行是Latency，代表从请求接收完后到读取该资源第一个byte之间的等待时间。按照这个逻辑，那么上面一行的时间减去下面一行的时间就是数据的下载时间，将鼠标移动到右侧waterfall图标上，可以看到下载时间(Content Download)正好是上下两行的时间差。另外Size列也有2行，上面一行代表网络上实际传输的文件大小，下面一行代表原始的未经过压缩的文件大小。一般服务器会对资源使用Gzip进行压缩。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{networksizeandtime.png}
+	\caption{Network宽行显示}
+	\label{fig:networksizeandtime}
+\end{figure}
+
+\paragraph{DOMContentLoaded和load事件信息}
+
+DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件会在页面上DOM完全加载并解析完毕之后触发，不会等待CSS、图片、子框架加载完成。load事件会在页面上所有DOM、CSS、JS、图片完全加载完毕之后触发。DOMContentLoaded事件在Overview上用一条蓝色竖线标记，并且在Summary以蓝色文字显示确切的时间。load事件同样会在Overview和Requests Table上用一条红色竖线标记，在Summary也会以红色文字显示确切的时间。
+
+\paragraph{资源的发起者(请求源)和依赖项}
+
+通过按住Shift并且把光标移到资源名称上，可以查看该资源是由哪个对象或进程发起的（请求源）和对该资源的请求过程中引发了哪些资源（依赖资源）。在该资源的上方第一个标记为绿色的资源就是该资源的发起者（请求源），有可能会有第二个标记为绿色的资源是该资源的发起者的发起者，以此类推。在该资源的下方标记为红色的资源是该资源的依赖资源，如图\ref{fig:resourcedependency}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{resourcedependency.png}
+	\caption{依赖资源}
+	\label{fig:resourcedependency}
+\end{figure}
 
 
 \subsection{Elements}
@@ -2669,6 +3575,9 @@ console.table(data);
 
 \paragraph{Snippets}
 
+
+
+
 \paragraph{Others}
 
 \subparagraph{查看Render区域}
@@ -2677,10 +3586,13 @@ console.table(data);
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{pagepainting.png}
+	\includegraphics[scale=0.6]{pagepainting.png}
 	\caption{激活页面绘制区域高亮}
 	\label{fig:pagepainting}
 \end{figure}
+
+\subsection{Audits}
+
 
 
 \subsection{Google Chrome SSH}
@@ -2707,15 +3619,7 @@ sudo apt-get install php7.0 -y
 /opt/zbox/zbox -mp 3307
 \end{lstlisting}
 
-\section{Graphviz}
 
-\subsection{编译}
-
-
-
-\begin{lstlisting}[language=Bash]
-dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
-\end{lstlisting}
 
 
 \chapter{LaTex}
@@ -2831,6 +3735,10 @@ h=\log_{(m+1)} N
 
 它并不决定数据在磁盘上的物理排序，索引上只包含被建立索引的数据，以及一个行定位符row-locator，这个行定位符，可以理解为一个聚集索引物理排序的指针，通过这个指针，可以找到行数据。
 
+\subparagraph{全文索引(Full-text Search)}
+
+全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。，该对象中必须有一唯一并且非空的列。 
+
 \subparagraph{联合索引}
 
 联合索引能够满足最左侧查询需求，例如(a, b, c)三列的联合索引，能够加速a | (a, b) | (a, b, c) 三组查询需求。这也就是为何不建立(passwd, loginName)这样联合索引的原因，业务上几乎没有passwd的单条件查询需求，而有很多loginName的单条件查询需求。
@@ -2877,13 +3785,13 @@ limit 0,10;
 在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
-create context index qymcindex on user_xycq.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
 \end{lstlisting}
 
 填充索引：
 
 \begin{lstlisting}[language=SQL]
-alter context index qymcindex on user_xycq.TS_F_CORPORATION_TEST rebuild;
+alter context index qymcindex1 on user_xycq.TS_F_CORPORATION rebuild;
 \end{lstlisting}
 
 删除索引：
@@ -2908,13 +3816,71 @@ make
 make test
 \end{lstlisting}
 
+\chapter{PostgreSQL}
 
-\section{MySQL}
+PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统），在灵活的BSD-风格许可证下发行。它在其他开放源代码数据库系统（比如MySQL和Firebird），和专有系统比如Oracle、Sybase、IBM的DB2和Microsoft SQL Server之外，为用户又提供了一种选择。
 
+\section{基础操作}
 
+登录：
 
+\begin{lstlisting}[language=Bash]
+sudo -u postgres psql
+\end{lstlisting}
 
+这里是以超级用户的身份登录，否则在修改密码时会提示：must be superuser to alter superusers。修改密码：
 
+\begin{lstlisting}[language=Bash]
+\password postgres
+\end{lstlisting}
+
+Gradle引用驱动：
+
+\begin{lstlisting}[language=Bash]
+compile "org.postgresql:postgresql:42.1.1"
+\end{lstlisting}
+       
+PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，select里大小写都可以查询，如果列名为大写，查询语句中列名需要添加双引号才能查询。
+
+\chapter{MySQL}
+
+\subsection{查询}
+
+\paragraph{MySQL远程连接}
+
+本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
+
+\begin{lstlisting}[language=Bash]
+# Instead of skip-networking the default is now to listen only on
+# localhost which is more compatible and is not less secure.
+bind-address            = 192.168.31.25
+\end{lstlisting}
+
+默认是127.0.0.1,是一个回环地址,只有本机请求本机,目标地址才会是127.0.0.1,此时需要在其他主机请求，需要将绑定IP改为网卡地址, 也就是外网IP, 因为远程连接数据库目标IP肯定是公网IP. 不过还可以改成0.0.0.0,这样就表示监听所有IP, 只要端口一样, 网卡都会把请求传给进程。如果不在配置文件中修改地址，则需要在启动时指定绑定地址：
+
+\begin{lstlisting}[language=Bash]
+sudo mysqld --bind-address=192.168.31.25
+\end{lstlisting}
+
+绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
+
+\subsection{Mac中MySQL初始密码}
+
+step1：
+
+苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
+
+step2：
+
+进入终端输入：cd /usr/local/mysql/bin/
+回车后 登录管理员权限 sudo su
+回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
+回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
+
+step3. 
+输入命令 ./mysql
+回车后，输入命令 FLUSH PRIVILEGES; 
+回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
 
 \subsection{基础}
 
@@ -2966,43 +3932,6 @@ show full columns from book;
 alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
 \end{lstlisting}
 
-
-\subsection{MySQL远程连接}
-
-本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
-
-\begin{lstlisting}[language=Bash]
-# Instead of skip-networking the default is now to listen only on
-# localhost which is more compatible and is not less secure.
-bind-address            = 192.168.31.25
-\end{lstlisting}
-
-默认是127.0.0.1,是一个回环地址,只有本机请求本机,目标地址才会是127.0.0.1,此时需要在其他主机请求，需要将绑定IP改为网卡地址, 也就是外网IP, 因为远程连接数据库目标IP肯定是公网IP. 不过还可以改成0.0.0.0,这样就表示监听所有IP, 只要端口一样, 网卡都会把请求传给进程。如果不在配置文件中修改地址，则需要在启动时指定绑定地址：
-
-\begin{lstlisting}[language=Bash]
-sudo mysqld --bind-address=192.168.31.25
-\end{lstlisting}
-
-绑定好地址后，使用命令sudo lsof:3306查看。如果填写的绑定地址是192开头，那么最终只有192开头的局域网里的机器能够远程连接MySQL，有时一台设备可能会处于多个局域网中，那么此时另一个局域网的设备就无法远程连接MySQL了。此时可以将绑定地址修改为0.0.0.0，即允许所有的IP连接到MySQL，相应的MySQL的安全性相应的就降低了。
-
-\subsection{Mac中MySQL初始密码}
-
-step1：
-
-苹果->系统偏好设置->最下边点mysql 在弹出页面中 关闭mysql服务（点击stop mysql server）
-
-step2：
-
-进入终端输入：cd /usr/local/mysql/bin/
-回车后 登录管理员权限 sudo su
-回车后输入以下命令来禁止mysql验证功能 ./mysqld\_safe --skip-grant-tables \&
-回车后mysql会自动重启（偏好设置中mysql的状态会变成running）
-
-step3. 
-输入命令 ./mysql
-回车后，输入命令 FLUSH PRIVILEGES; 
-回车后，输入命令 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('你的新密码');
-
 \subsection{备份}
 
 netstat -ln | grep mysql
@@ -3023,9 +3952,9 @@ DECLARE j INT DEFAULT 10000000;# can not be 0
 
 WHILE i<99999999 && j < 10000050
 DO  
-	insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
-	SET i=i+1;  
-	set j=j+1;
+insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
+SET i=i+1;  
+set j=j+1;
 END WHILE ;  
 commit;  
 
@@ -3059,6 +3988,36 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
+\subsection{中文查询}
+
+在用MyBatis查询中文时，出来的结果却不是中文匹配的结果，将SQL在客户端工具中执行却可以正确查询。在MySQL配置文件中修改相应的编码。在服务端/etc/mysql/my.cnf修改相应编码：
+
+\begin{lstlisting}[language=Bash]
+[mysqld]
+
+character-set-server=utf8
+\end{lstlisting}
+
+
+
+
+\chapter{达梦}
+
+\section{SQL}
+
+\subsection{索引}
+
+全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
+
+\begin{lstlisting}[language=Bash]
+select * 
+from "CTISYS"."SYSCONTEXTINDEXES";
+\end{lstlisting}
+
+新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
+
+在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
+
 \section{通用知识}
 
 \subsection{查询优化}
@@ -3069,13 +4028,23 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 
 \paragraph{增加缓存}增加缓存可以提高查询效率，但是在对数据表做任何的更新操作(update/insert/delete)等操作，server为了保证缓存与数据库的一致性，会强制刷新缓存数据，导致缓存数据全部失效。
 
-\paragraph{分库分表}分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
+\paragraph{分库分表}
+
+分库分表应该算是查询优化的杀手锏了。上述各种措施在数据量达到一定等级之后，能起到优化的作用已经不明显了。这个时候就必须对数据量进行分流。分流一般有分库与分表两种措施。而分表又有垂直切分与水平切分两种方式。下面我们就针对每一种方式简单介绍。
 
 对于mysql，其数据文件是以文件形式存储在磁盘上的。当一个数据文件过大的时候，操作系统对大文件的操作就会比较麻烦与耗时，而且有的操作系统就不支持大文件，所以这个时候就必须分表了。另外对于mysql常用的存储引擎是Innodb，它的底层数据结构是B+树。当其数据文件过大的时候，B+树就会从层次和节点上比较多，当查询一个节点的时候可能会查询很多层次，而这必定会导致多次IO操作进行装载进内存，肯定会耗时的。除此之外还有Innodb对于B+树的锁机制。对每个节点进行加锁，那么当更改表结构的时候，这时候就会树进行加锁，当表文件大的时候，这可以认为是不可实现的。
+
+\paragraph{分区表}
+
+分区表是MySql 5.1引入的特性。根据官网alter-table-partition-operations的介绍，其本质是将分库分表直接集成到MySql中。我们知道，传统的分库分表功能，存在业务层、中间件、数据库三层：业务层通过调用中间件的API访问数据库，不知道具体的物理存储细节；中间件将一张很大的逻辑表映射到数据库中多张较小的物理表，并对业务层的访问请求进行分解后分别放到对应物理库中执行，再将执行结果在中间件合并后返回给业务层，从而对业务层屏蔽物理存储细节；数据库则提供实际的物理存储。而MySql的分区表，借助MySql本身的逻辑架构，将分库分表功能进行了下沉。MySql逻辑架构中的客户端即对应业务层，Server层对应中间件层，存储引擎层对应物理存储层。简单的说，分库表就是我们在数据库层面看到是一张表，但物理上是分成多个文件独立存储。逻辑上分析，分区表的优点很明显：既能解决大数据量的性能问题，又能对应用层无缝切换。
 
 \paragraph{采用NoSQL数据库}
 
 Hbase读的性能比较强，官方定义为适合PB级数据的秒级查询，就是说在巨海量的数据中查询，响应速度非常快。
+
+\subsection{系统架构}
+
+从系统架构来看，目前的商用服务器大体可以分为三类，即对称多处理器结构 (SMP ： Symmetric Multi-Processor) ，非一致存储访问结构 (NUMA ： Non-Uniform Memory Access) ，以及海量并行处理结构 (MPP ： Massive Parallel Processing) 
 
 \subsection{注意事项}
 
@@ -3151,8 +4120,32 @@ plugins: [
 ]
 \end{lstlisting}
 
+\subparagraph{webpack-bundle-analyzer}
+
+\url{http://www.reactpeixun.com/reactganhuo/2017-06-05/304.html?nsukey=Oif9ieNi7kisvaq%2B0aDH46Tl37niZVItuq2VKmhdkz7Z%2F%2F2PmtYFX6EdwDLkcMg8ajYX9XxOUXO5ykezqUerb45blihPXZ3BgEZSQUlk25d4qkfLibGwVsIWSBdG9ByTmNG11Da14liYOc%2BB9tmOVI1FbAE%2FohPpzfc2kVRHQMk%3D}
 
 \subparagraph{React切换到产品环境}
+
+\subparagraph{查看Webpack输出}
+
+最最直接的，可以直接阅读Webpack的输出，里面有模块的文件大小，在package.json文件中添加--display-chunks参数，配置如下：
+
+\begin{lstlisting}[language=Javascript]
+"scripts": {
+	"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
+}
+\end{lstlisting}
+
+
+输出如图\ref{fig:webpackcheckingfilesize}所示。也可以在输出中查找是否包含重复依赖。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{webpackcheckingfilesize.png}
+	\caption{Webpack查看输出文件大小}
+	\label{fig:webpackcheckingfilesize}
+\end{figure}
+
 
 \subparagraph{利用浏览器缓存}
 
@@ -3165,11 +4158,24 @@ plugins: [
 	\label{fig:scriptusingdiskcache}
 \end{figure}
 
-由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是无法忍受的。
+由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是用户无法忍受的。
 
 \subparagraph{开启Gzip压缩}
 
-同时可以考虑在服务端开启Gzip压缩，开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
+同时可以考虑在服务端开启Gzip压缩，開啓Gzip壓縮配置如下：
+
+\begin{lstlisting}[language=Bash]
+#僅僅開啓Gzip還不行，需要各項詳細配置
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]\.";
+\end{lstlisting}
+
+开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -3179,6 +4185,23 @@ plugins: [
 \end{figure}
 
 图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
+
+\paragraph{字体文件加载}
+
+發現一個字體文件(fontawesome-webfont.woff2)在Linux下的Chrone中是從磁盤中加載(from disk cache)的，花費了220ms左右。在Windows平臺下的360浏览器中是從内存中加載(from cache)的。diskCache顾名思义，就是将资源缓存到磁盘中，等待下次访问时不需要重新下载资源，而直接从磁盘中获取，它的直接操作对象为CurlCacheManager。它与memoryCache最大的区别在于，当退出进程时，内存中的数据会被清空，而磁盘的数据不会，所以，当下次再进入该进程时，该进程仍可以从diskCache中获得数据，而memoryCache则不行。diskCache与memoryCache相似之处就是也只能存储一些派生类资源文件。它的存储形式为一个index.dat文件，记录存储数据的url，然后再分别存储该url的response信息和content内容。Response信息最大作用就是用于判断服务器上该url的content内容是否被修改。
+
+\paragraph{耗时长的请求}
+
+查看首页中一个耗时最长的请求，一般情况下耗时都稳定在1s左右。如图\ref{fig:longtimerequest}所示。可以看出挂起(stalled)304ms，等待服务端响应581ms，此两项的时间是最长的。Stalled从HTTP连接建立到请求能够被发出送出去(真正传输数据)之间的时间花费。包含用于处理代理的时间，如果有已经建立好的连接，这个时间还包括等待已建立连接被复用的时间。挂起时间长是由于浏览器对同一个主机域名的并发连接数有限制，因此如果当前的连接数已经超过上限，那么其余请求就会被阻塞，等待新的可用连接；此外脚本也会阻塞其他组件的下载。另外在不同的平台上挂起时间时长也不一定，在Windows平台的360浏览器上挂起时长(stalled)仅仅为0.458ms。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{longtimerequest.png}
+	\caption{耗时长的请求}
+	\label{fig:longtimerequest}
+\end{figure}
+
+针对服务器端耗时长的请求，使用VisualVM查看服务端调用的耗时最长的方法。VisualVM 是一款免费的性能分析工具。它通过 jvmstat、JMX、SA（Serviceability Agent）以及 Attach API 等多种方式从程序运行时获得实时数据，从而进行动态的性能分析。同时，它能自动选择更快更轻量级的技术尽量减少性能分析对应用程序造成的影响，提高性能分析的精度。
 
 \subsection{Session}
 
@@ -3195,7 +4218,7 @@ PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就
 
 一个最简单的PAC脚本：
 
-\begin{lstlisting}[language=VBScript]
+\begin{lstlisting}[language=JavaScript]
 function FindProxyForURL(url,host){
 	return "DIRECT";
 }
@@ -3236,6 +4259,9 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\section{dddd}
+
 
 \part{Engneering}
 
