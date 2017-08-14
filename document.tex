@@ -733,7 +733,7 @@ Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另
 compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
 \end{lstlisting}
 
-忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
+忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略(应该是不能省略才是)，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
 
 \paragraph{AES加密失败}
 
@@ -1616,14 +1616,16 @@ if(value){
 
 \paragraph{Module build failed: SyntaxError: Unexpected token ...}
 
-...是ES6中的扩展运算符(Spread Operator)，需要将之转化为ES5语法，转换使用babel来完成，检查是否安装包：
+...是ES6中的扩展运算符(Spread Operator)，需要将之转化为ES5语法，转换使用babel来完成，presets字段设定转码规则，检查是否安装包：
 
 \begin{lstlisting}[language=Javascript]
 "devDependencies": {
 	"babel-core": "^6.25.0",
 	"babel-loader": "^7.1.0",
-	"babel-preset-es2015": "^6.24.1",
+	"babel-preset-es2015": "^6.24.1",//ES2015转码规则
 	"babel-preset-react": "^6.24.1",
+	//ES7不同阶段语法提案的转码规则（共有4个阶段）
+	//从stage-0到stage-3
 	"babel-preset-stage-0": "6.22.0"
 }
 \end{lstlisting}
