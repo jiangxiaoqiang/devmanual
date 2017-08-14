@@ -107,6 +107,48 @@
 
 \subsection{classpath}
 
+理解classpath花了不短的时间，classpath到底时哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
+
+\begin{lstlisting}[language=Java]
+public class Application {
+	public static void main(String[] args) {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+			URL[] urls = ((URLClassLoader) classLoader).getURLs();
+			for (URL url : urls) {
+			System.out.println(url.getFile());
+		}
+	}
+}
+\end{lstlisting}
+
+从代码的输出即可看出，classpath具体时哪些文件夹。
+
+\begin{lstlisting}[language=Bash]
+# 与JDK相关的文件夹
+/home/local/jdk1.8.0_111/jre/lib
+/home/local/jdk1.8.0_111/jre/lib/ext
+/home/local/jdk1.8.0_111/lib
+# 与项目相关的文件夹
+/home/hldev/hldata/backend/credit-system/cc-data/build/classes/main/
+/home/hldev/hldata/backend/credit-system/cc-data/build/resources/main/
+# 与Gradle相关的文件夹
+/home/hldev/.gradle/caches
+\end{lstlisting}
+
+所以在项目中看到如下的配置就不难理解了：
+
+\begin{lstlisting}[language=Java]
+bean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+\end{lstlisting}
+它实际上就是映射的如图\ref{fig:classpathfile}中所示的XML文件。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{classpathfile.png}
+	\caption{MyBatis映射classpath中的文件}
+	\label{fig:classpathfile}
+\end{figure}
+
 classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
 
 \begin{figure}[htbp]
@@ -136,7 +178,19 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
-在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。程序启动命令：
+
+\begin{lstlisting}[language=Bash]
+java -jar -Xmx2g credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
+\end{lstlisting}
+
+启动的同事启动远程调试：
+
+\begin{lstlisting}[language=Bash]
+java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
+\end{lstlisting}
+
+
 
 \subsection{Spring Boot开发者工具}
 
@@ -246,7 +300,15 @@ if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
 \end{lstlisting}
 
 
+\subsection{jps}
 
+jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
+
+java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
+
+\begin{lstlisting}[language=Bash]
+nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
+\end{lstlisting}
 
 \section{注解}
 
@@ -623,7 +685,7 @@ public class BookControllerTest {
 
 \section{常见问题}
 
-\subsection{getAttribute: Session already invalidated}
+\paragraph{getAttribute: Session already invalidated}
 
 当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
 
@@ -646,17 +708,9 @@ dependencies{
 }
 \end{lstlisting}
 
-\subsection{jps}
 
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
 
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
-
-\begin{lstlisting}[language=Bash]
-nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
-\end{lstlisting}
-
-\subsection{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
+\paragraph{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
 
 \paragraph{NoClassDefFoundError}
 
@@ -671,7 +725,7 @@ compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.1'
 
 Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等
 
-\subsection{Unregistering JMX-exposed beans on shutdown}
+\paragraph{Unregistering JMX-exposed beans on shutdown}
 
 运行之后控制台输出“Unregistering JMX-exposed beans on shutdown”,原因为：SpringBoot内置Tomcat没有正常启动.原来是在引入时没有写版本号，在没有版本号的情况下此次引入其实是不成功的，难怪在类中始终不能够自动导入对应的命名空间。
 
@@ -681,6 +735,16 @@ compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
 
 忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
 
+\paragraph{AES加密失败}
+
+因为某些国家的进口管制限制，Java发布的运行环境包中的加解密有一定的限制。比如默认不允许256位密钥的AES加解密，解决方法就是修改策略文件。将下载的没有限制的文件替换掉原来的文件即可。替换的路径为：
+
+\begin{lstlisting}[language=Bash]
+/home/hl/local/jdk1.8.0_144/jre/lib/security/local_policy.jar
+/home/hl/local/jdk1.8.0_144/jre/lib/security/US_export_policy.jar
+\end{lstlisting}
+
+由于信息安全在军事等方面极其重要，如在第二次世界大战期间，使用了无线电，若是能够成功解密敌方的机密情报，往往预示着战争的胜利，因此美国对加密解密等软件进行了出口限制，JDK中默认加密的密钥长度较短，加密强度较低，而UnlimitedJCEPolicyJDK7中的文件则没有这样的限制，因此为了获得更好的加密强度，需要替换掉那两个文件。
 
 \section{Mybatis}
 
