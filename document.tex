@@ -107,7 +107,7 @@
 
 \subsection{classpath}
 
-理解classpath花了不短的时间，classpath到底时哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
+理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
 
 \begin{lstlisting}[language=Java]
 public class Application {
@@ -121,14 +121,14 @@ public class Application {
 }
 \end{lstlisting}
 
-从代码的输出即可看出，classpath具体时哪些文件夹。
+从代码的输出即可看出，classpath具体是哪些文件夹。
 
 \begin{lstlisting}[language=Bash]
 # 与JDK相关的文件夹
 /home/local/jdk1.8.0_111/jre/lib
 /home/local/jdk1.8.0_111/jre/lib/ext
 /home/local/jdk1.8.0_111/lib
-# 与项目相关的文件夹
+# 与项目相关的文件夹，这里仅仅是一个module
 /home/hldev/hldata/backend/credit-system/cc-data/build/classes/main/
 /home/hldev/hldata/backend/credit-system/cc-data/build/resources/main/
 # 与Gradle相关的文件夹
