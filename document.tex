@@ -744,7 +744,19 @@ compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
 /home/hl/local/jdk1.8.0_144/jre/lib/security/US_export_policy.jar
 \end{lstlisting}
 
-由于信息安全在军事等方面极其重要，如在第二次世界大战期间，使用了无线电，若是能够成功解密敌方的机密情报，往往预示着战争的胜利，因此美国对加密解密等软件进行了出口限制，JDK中默认加密的密钥长度较短，加密强度较低，而UnlimitedJCEPolicyJDK7中的文件则没有这样的限制，因此为了获得更好的加密强度，需要替换掉那两个文件。
+由于信息安全在军事等方面极其重要，如在第二次世界大战期间，使用了无线电，若是能够成功解密敌方的机密情报，往往预示着战争的胜利，因此美国对加密解密等软件进行了出口限制，JDK中默认加密的密钥长度较短，加密强度较低，而UnlimitedJCEPolicyJDK7中的文件则没有这样的限制，因此为了获得更好的加密强度，需要替换掉那两个文件。如何知道文件是否已经替换成了允许256位加密的那个文件呢？只需要看文件的MD5即可，在Mac下：
+
+\begin{lstlisting}[language=Bash]
+# 切换到需要替换的文件所在目录
+/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/security/
+# 查看文件的MD5编码
+# 前提是需要知道替换后的那个文件的MD5编码
+# 与当前生成的MD5编码的文件比对即可
+MD5 local_policy.jar
+\end{lstlisting}
+
+
+
 
 \section{Mybatis}
 
