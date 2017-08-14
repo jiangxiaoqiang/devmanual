@@ -107,6 +107,48 @@
 
 \subsection{classpath}
 
+理解classpath花了不短的时间，classpath到底时哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
+
+\begin{lstlisting}[language=Java]
+public class Application {
+	public static void main(String[] args) {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+			URL[] urls = ((URLClassLoader) classLoader).getURLs();
+			for (URL url : urls) {
+			System.out.println(url.getFile());
+		}
+	}
+}
+\end{lstlisting}
+
+从代码的输出即可看出，classpath具体时哪些文件夹。
+
+\begin{lstlisting}[language=Bash]
+# 与JDK相关的文件夹
+/home/local/jdk1.8.0_111/jre/lib
+/home/local/jdk1.8.0_111/jre/lib/ext
+/home/local/jdk1.8.0_111/lib
+# 与项目相关的文件夹
+/home/hldev/hldata/backend/credit-system/cc-data/build/classes/main/
+/home/hldev/hldata/backend/credit-system/cc-data/build/resources/main/
+# 与Gradle相关的文件夹
+/home/hldev/.gradle/caches
+\end{lstlisting}
+
+所以在项目中看到如下的配置就不难理解了：
+
+\begin{lstlisting}[language=Java]
+bean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+\end{lstlisting}
+它实际上就是映射的如图\ref{fig:classpathfile}中所示的XML文件。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{classpathfile.png}
+	\caption{MyBatis映射classpath中的文件}
+	\label{fig:classpathfile}
+\end{figure}
+
 classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
 
 \begin{figure}[htbp]
