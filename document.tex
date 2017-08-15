@@ -121,7 +121,7 @@ public class Application {
 }
 \end{lstlisting}
 
-从代码的输出即可看出，classpath具体是哪些文件夹。
+从代码的输出即可看出，classpath具体是m哪些文件夹。
 
 \begin{lstlisting}[language=Bash]
 # 与JDK相关的文件夹
@@ -237,6 +237,43 @@ public XydmResponse mapToCorporationResponse(Corporation corporation) {
 }
 \end{lstlisting}
 
+\subsubsection{获取Response返回内容}
+
+在拦截器中记录日志时，有时需要获取HTTP Response中的内容，从图\ref{fig:outputchunkcontent}可以看出，只要获取到outputChunk的内容即可。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{outputchunkcontent.png}
+	\caption{获取HTTP Response返回的内容}
+	\label{fig:outputchunkcontent}
+\end{figure}
+
+
+可以通过反射来实现：
+
+\begin{lstlisting}[language=Java]
+public String getResponseContent(HttpServletResponse response) throws IOException, NoSuchFieldException, IllegalAccessException {
+	String responseContent = null;
+	CoyoteOutputStream outputStream = (CoyoteOutputStream) response.getOutputStream();
+	Class<CoyoteOutputStream> coyoteOutputStreamClass = CoyoteOutputStream.class;
+	Field obField = coyoteOutputStreamClass.getDeclaredField("ob");
+	if (obField.getType().toString().endsWith("OutputBuffer")) {
+		obField.setAccessible(true);
+		org.apache.catalina.connector.OutputBuffer outputBuffer = (org.apache.catalina.connector.OutputBuffer) obField.get(outputStream);
+		Class<org.apache.catalina.connector.OutputBuffer> opb = org.apache.catalina.connector.OutputBuffer.class;
+		Field outputChunkField = opb.getDeclaredField("outputChunk");
+		outputChunkField.setAccessible(true);
+		if (outputChunkField.getType().toString().endsWith("ByteChunk")) {
+			// 取到byte流
+			ByteChunk bc = (ByteChunk) outputChunkField.get(outputBuffer);
+			// 最终的值
+			responseContent = new String(bc.getBytes(), "UTF-8");
+		}
+	}
+	return responseContent;
+}
+\end{lstlisting}
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -297,6 +334,13 @@ f (!"".equals(name)) {
 if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
 	//用String强制转换也不会报空指针异常
 } 
+\end{lstlisting}
+
+获取Json单个值：
+
+\begin{lstlisting}[language=Java]
+JSONObject json = new JSONObject(responseContent);
+String total = json.getString("totalElementsCondition1");
 \end{lstlisting}
 
 
@@ -753,6 +797,8 @@ compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
 # 前提是需要知道替换后的那个文件的MD5编码
 # 与当前生成的MD5编码的文件比对即可
 MD5 local_policy.jar
+# 在Ubuntu下使用此命令查看MD5
+md5sum local_policy.jar
 \end{lstlisting}
 
 
