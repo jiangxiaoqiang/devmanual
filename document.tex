@@ -1475,6 +1475,21 @@ import lodashUniqBy from "lodash/uniqBy";
 const uniqOrgList = lodashUniqBy(orgList, 'dfName');
 \end{lstlisting}
 
+\paragraph{分组}
+
+将数组中的元素按照新的方式返回。
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* 将部门按照10个1组组成一个新数组返回
+*/
+return lodashChunk(dfbmList, 10)
+		.map((dfbms, rowNo) => {
+			const items = this.renderItems(groups, dfbms);
+			return (
+		});
+\end{lstlisting}
+
 
 \subsection{Axios}
 
