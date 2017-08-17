@@ -107,6 +107,48 @@
 
 \subsection{classpath}
 
+理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
+
+\begin{lstlisting}[language=Java]
+public class Application {
+	public static void main(String[] args) {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+			URL[] urls = ((URLClassLoader) classLoader).getURLs();
+			for (URL url : urls) {
+			System.out.println(url.getFile());
+		}
+	}
+}
+\end{lstlisting}
+
+从代码的输出即可看出，classpath具体是m哪些文件夹。
+
+\begin{lstlisting}[language=Bash]
+# 与JDK相关的文件夹
+/home/local/jdk1.8.0_111/jre/lib
+/home/local/jdk1.8.0_111/jre/lib/ext
+/home/local/jdk1.8.0_111/lib
+# 与项目相关的文件夹，这里仅仅是一个module
+/home/hldev/hldata/backend/credit-system/cc-data/build/classes/main/
+/home/hldev/hldata/backend/credit-system/cc-data/build/resources/main/
+# 与Gradle相关的文件夹
+/home/hldev/.gradle/caches
+\end{lstlisting}
+
+所以在项目中看到如下的配置就不难理解了：
+
+\begin{lstlisting}[language=Java]
+bean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+\end{lstlisting}
+它实际上就是映射的如图\ref{fig:classpathfile}中所示的XML文件。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{classpathfile.png}
+	\caption{MyBatis映射classpath中的文件}
+	\label{fig:classpathfile}
+\end{figure}
+
 classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
 
 \begin{figure}[htbp]
@@ -136,7 +178,19 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
-在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。程序启动命令：
+
+\begin{lstlisting}[language=Bash]
+java -jar -Xmx2g credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
+\end{lstlisting}
+
+启动的同事启动远程调试：
+
+\begin{lstlisting}[language=Bash]
+java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
+\end{lstlisting}
+
+
 
 \subsection{Spring Boot开发者工具}
 
@@ -147,6 +201,25 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
+
+\subsection{请求消息}
+
+在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
+
+\begin{lstlisting}[language=Java]
+# 获取未经过解码的参数
+String queryString = request.getQueryString();
+# 获取经过解码的参数
+String qymc = request.getParameter("qymc");
+\end{lstlisting}
+
+使用request.getParameter方式获得的参数是已经经过web服务器解码的。使用request.getQueryString可以获得未解码的原始参数。对于tomcat解码造成的乱码问题可以通过2种途径解决，修改tomcat配置文件设置解码方式，服务器端对于获取到的参数进行new String(param.getBytes("ISO-8859-1"),"页面指定编码")转换，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+# 将获取到的消息解码
+String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8");
+\end{lstlisting}
+
 
 \subsection{返回消息封装}
 
@@ -180,6 +253,43 @@ private MapperFacade corporationMapperFacade;
 
 public XydmResponse mapToCorporationResponse(Corporation corporation) {
 	return corporationMapperFacade.map(corporation, XydmResponse.class);
+}
+\end{lstlisting}
+
+\subsubsection{获取Response返回内容}
+
+在拦截器中记录日志时，有时需要获取HTTP Response中的内容，从图\ref{fig:outputchunkcontent}可以看出，只要获取到outputChunk的内容即可。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{outputchunkcontent.png}
+	\caption{获取HTTP Response返回的内容}
+	\label{fig:outputchunkcontent}
+\end{figure}
+
+
+可以通过反射来实现：
+
+\begin{lstlisting}[language=Java]
+public String getResponseContent(HttpServletResponse response) throws IOException, NoSuchFieldException, IllegalAccessException {
+	String responseContent = null;
+	CoyoteOutputStream outputStream = (CoyoteOutputStream) response.getOutputStream();
+	Class<CoyoteOutputStream> coyoteOutputStreamClass = CoyoteOutputStream.class;
+	Field obField = coyoteOutputStreamClass.getDeclaredField("ob");
+	if (obField.getType().toString().endsWith("OutputBuffer")) {
+		obField.setAccessible(true);
+		org.apache.catalina.connector.OutputBuffer outputBuffer = (org.apache.catalina.connector.OutputBuffer) obField.get(outputStream);
+		Class<org.apache.catalina.connector.OutputBuffer> opb = org.apache.catalina.connector.OutputBuffer.class;
+		Field outputChunkField = opb.getDeclaredField("outputChunk");
+		outputChunkField.setAccessible(true);
+		if (outputChunkField.getType().toString().endsWith("ByteChunk")) {
+			// 取到byte流
+			ByteChunk bc = (ByteChunk) outputChunkField.get(outputBuffer);
+			// 最终的值
+			responseContent = new String(bc.getBytes(), "UTF-8");
+		}
+	}
+	return responseContent;
 }
 \end{lstlisting}
 
@@ -221,10 +331,9 @@ public void setName(String name) throws IllegalArgumentException {
 }
 \end{lstlisting}
 
-\subsection{集合}
+\subsection{集合操作(Collection Operate)}
 
 List移除空元素，移除重复元素：
-
 
 \begin{lstlisting}[language=Java]
 request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
@@ -245,8 +354,32 @@ if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
 } 
 \end{lstlisting}
 
+获取Json单个值：
 
+\begin{lstlisting}[language=Java]
+JSONObject json = new JSONObject(responseContent);
+String total = json.getString("totalElementsCondition1");
+\end{lstlisting}
 
+去除List元素中的特殊字符：
+
+\begin{lstlisting}[language=Java]
+List<AccessLog> logs = operationLogs.stream()
+						.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+						.collect(Collectors.toList());
+\end{lstlisting}
+
+如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
+
+\subsection{jps}
+
+jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
+
+java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
+
+\begin{lstlisting}[language=Bash]
+nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
+\end{lstlisting}
 
 \section{注解}
 
@@ -623,7 +756,7 @@ public class BookControllerTest {
 
 \section{常见问题}
 
-\subsection{getAttribute: Session already invalidated}
+\paragraph{getAttribute: Session already invalidated}
 
 当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
 
@@ -646,17 +779,9 @@ dependencies{
 }
 \end{lstlisting}
 
-\subsection{jps}
 
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
 
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
-
-\begin{lstlisting}[language=Bash]
-nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
-\end{lstlisting}
-
-\subsection{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
+\paragraph{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
 
 \paragraph{NoClassDefFoundError}
 
@@ -671,7 +796,7 @@ compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.1'
 
 Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等
 
-\subsection{Unregistering JMX-exposed beans on shutdown}
+\paragraph{Unregistering JMX-exposed beans on shutdown}
 
 运行之后控制台输出“Unregistering JMX-exposed beans on shutdown”,原因为：SpringBoot内置Tomcat没有正常启动.原来是在引入时没有写版本号，在没有版本号的情况下此次引入其实是不成功的，难怪在类中始终不能够自动导入对应的命名空间。
 
@@ -679,7 +804,31 @@ Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另
 compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
 \end{lstlisting}
 
-忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
+忘记了写：1.5.2.RELEASE，其实这里的版本号可以省略(应该是不能省略才是)，但是目前还不清楚具体的省略机制，在什么情况下可以省略。
+
+\paragraph{AES加密失败}
+
+因为某些国家的进口管制限制，Java发布的运行环境包中的加解密有一定的限制。比如默认不允许256位密钥的AES加解密，解决方法就是修改策略文件。将下载的没有限制的文件替换掉原来的文件即可。替换的路径为：
+
+\begin{lstlisting}[language=Bash]
+/home/hl/local/jdk1.8.0_144/jre/lib/security/local_policy.jar
+/home/hl/local/jdk1.8.0_144/jre/lib/security/US_export_policy.jar
+\end{lstlisting}
+
+由于信息安全在军事等方面极其重要，如在第二次世界大战期间，使用了无线电，若是能够成功解密敌方的机密情报，往往预示着战争的胜利，因此美国对加密解密等软件进行了出口限制，JDK中默认加密的密钥长度较短，加密强度较低，而UnlimitedJCEPolicyJDK7中的文件则没有这样的限制，因此为了获得更好的加密强度，需要替换掉那两个文件。如何知道文件是否已经替换成了允许256位加密的那个文件呢？只需要看文件的MD5即可，在Mac下：
+
+\begin{lstlisting}[language=Bash]
+# 切换到需要替换的文件所在目录
+/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/security/
+# 查看文件的MD5编码
+# 前提是需要知道替换后的那个文件的MD5编码
+# 与当前生成的MD5编码的文件比对即可
+MD5 local_policy.jar
+# 在Ubuntu下使用此命令查看MD5
+md5sum local_policy.jar
+\end{lstlisting}
+
+
 
 
 \section{Mybatis}
@@ -1136,6 +1285,9 @@ const reducer = (state, action) => {
 };
 \end{lstlisting}
 
+
+
+
 \subsection{Dispatcher}
 
 接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
@@ -1276,7 +1428,9 @@ JavaScript 中的对象一般是可变的（Mutable），因为使用了引用�
 
 Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
 
+\subsection{前端Mock}
 
+有的时候前端没必要等待后端接口写好，可以直接Mock接口的返回数据。这里使用json-server\footnote{\url{https://github.com/typicode/json-server}}来实现。
 
 \section{MobX}
 
@@ -1351,6 +1505,21 @@ lodash是一个具有一致接口、模块化、高性能等特性的 JavaScript
 \begin{lstlisting}[language=JavaScript]
 import lodashUniqBy from "lodash/uniqBy";
 const uniqOrgList = lodashUniqBy(orgList, 'dfName');
+\end{lstlisting}
+
+\paragraph{分组}
+
+将数组中的元素按照新的方式返回。
+
+\begin{lstlisting}[language=JavaScript]
+/**
+* 将部门按照10个1组组成一个新数组返回
+*/
+return lodashChunk(dfbmList, 10)
+		.map((dfbms, rowNo) => {
+			const items = this.renderItems(groups, dfbms);
+			return (
+		});
 \end{lstlisting}
 
 
@@ -1548,11 +1717,41 @@ if(value){
 
 \section{常见问题}
 
-\subsection{Cannot read property 'apply' of undefined}
+\paragraph{Cannot read property 'apply' of undefined}
 
+\paragraph{Module build failed: SyntaxError: Unexpected token ...}
 
+...是ES6中的扩展运算符(Spread Operator)，需要将之转化为ES5语法，转换使用babel来完成，presets字段设定转码规则，检查是否安装包：
 
-\subsection{Store does not have a valid reducer}
+\begin{lstlisting}[language=Javascript]
+"devDependencies": {
+	"babel-core": "^6.25.0",
+	"babel-loader": "^7.1.0",
+	"babel-preset-es2015": "^6.24.1",//ES2015转码规则
+	"babel-preset-react": "^6.24.1",
+	//ES7不同阶段语法提案的转码规则（共有4个阶段）
+	//从stage-0到stage-3
+	"babel-preset-stage-0": "6.22.0"
+}
+\end{lstlisting}
+
+检查Webpack中的配置：
+
+\begin{lstlisting}[language=Javascript]
+module: {
+	loaders: [{
+		test: /\.(jsx|js)?$/,   // 匹配jsx语法规则
+		exclude: /node_modules/,   // 排除的模块
+		loaders: 'babel-loader',   // loader名
+		query: {
+			// 将react预置为es5
+			presets: ['es2015', 'react','stage-0']
+		}
+	}]
+}
+\end{lstlisting}
+
+\paragraph{Store does not have a valid reducer}
 
 提示错误：Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.store在index.js文件中引入，在store.js中添加打印语句将reducer对象打印出来，看到实际是有reducer对象的，所以怀疑是reducer的定义有些问题。最后发现原来是require的使用有问题。
 
@@ -1781,7 +1980,24 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 tar -czvf mybatisDemo.tar.gz mybatisDemo
 \end{lstlisting}
 
+\paragraph{grep}
 
+有时需要从返回的列表中，查看某一个字段的返回结果，如果列表太长或者字段太多，单凭肉眼分辨非常吃力，此时可以通过grep来查看数组返回数据：
+
+\begin{lstlisting}[language=Bash]
+curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.' |grep jdrq
+\end{lstlisting}
+
+效果如图\ref{fig:grepfilterreturnvalue}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{grepfilterreturnvalue.png}
+	\caption{Grep过滤Json结果}
+	\label{fig:grepfilterreturnvalue}
+\end{figure}
+
+这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
 
 \subsection{自动部署}
 
@@ -2856,6 +3072,12 @@ echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
 echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
 \end{lstlisting}
 
+嵌套数据查看：
+
+\begin{lstlisting}[language=Bash]
+curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.data.totalElements'
+\end{lstlisting}
+
 \section{Nginx}
 
 安装配置好nginx服务器后默认目录是/usr/share/nginx/html。nginx模块一般被分成三大类：handler、filter和upstream。Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
@@ -3052,7 +3274,7 @@ curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
 
 开启压缩成功后，可以看到一句：Content-Encoding: gzip。
 
-\subsection{配置}
+\subsection{Nginx配置}
 
 简单的配置：
 
@@ -4009,7 +4231,7 @@ character-set-server=utf8
 
 全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
 
-\begin{lstlisting}[language=Bash]
+\begin{lstlisting}[language=SQL]
 select * 
 from "CTISYS"."SYSCONTEXTINDEXES";
 \end{lstlisting}
@@ -4017,6 +4239,23 @@ from "CTISYS"."SYSCONTEXTINDEXES";
 新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
 
 在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
+
+\subsection{函数}
+
+根据条件来计算：
+
+\begin{lstlisting}[language=SQL]
+SELECT ORG_ID,
+		ORG_NAME,
+		INTERFACE_NAME,
+		COUNT(*) AS TOTAL,
+		SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
+		ROUND(CONVERT(DOUBLE,SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END))/CONVERT(DOUBLE,COUNT(*)),3) AS RATIO
+FROM TD_M_APPACCESS_LOG
+GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
+\end{lstlisting}
+
+如上语句统计接口的有效调用次数，返回数量(RETURN\_COUNT)大于0时，视为有效调用次数(VALID\_TIMES)。数量默认为整数，所以要得到小数的比率(RATIO)，就需要使用函数convert将数据转换为Double类型。
 
 \section{通用知识}
 
