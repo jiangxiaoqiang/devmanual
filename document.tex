@@ -202,6 +202,25 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
+\subsection{请求消息}
+
+在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
+
+\begin{lstlisting}[language=Java]
+# 获取未经过解码的参数
+String queryString = request.getQueryString();
+# 获取经过解码的参数
+String qymc = request.getParameter("qymc");
+\end{lstlisting}
+
+使用request.getParameter方式获得的参数是已经经过web服务器解码的。使用request.getQueryString可以获得未解码的原始参数。对于tomcat解码造成的乱码问题可以通过2种途径解决，修改tomcat配置文件设置解码方式，服务器端对于获取到的参数进行new String(param.getBytes("ISO-8859-1"),"页面指定编码")转换，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+# 将获取到的消息解码
+String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8");
+\end{lstlisting}
+
+
 \subsection{返回消息封装}
 
 一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
