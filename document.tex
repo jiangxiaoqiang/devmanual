@@ -331,10 +331,9 @@ public void setName(String name) throws IllegalArgumentException {
 }
 \end{lstlisting}
 
-\subsection{集合}
+\subsection{集合操作(Collection Operate)}
 
 List移除空元素，移除重复元素：
-
 
 \begin{lstlisting}[language=Java]
 request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
@@ -362,6 +361,15 @@ JSONObject json = new JSONObject(responseContent);
 String total = json.getString("totalElementsCondition1");
 \end{lstlisting}
 
+去除List元素中的特殊字符：
+
+\begin{lstlisting}[language=Java]
+List<AccessLog> logs = operationLogs.stream()
+						.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+						.collect(Collectors.toList());
+\end{lstlisting}
+
+如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
 
 \subsection{jps}
 
