@@ -1258,6 +1258,9 @@ const reducer = (state, action) => {
 };
 \end{lstlisting}
 
+
+
+
 \subsection{Dispatcher}
 
 接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
@@ -1398,7 +1401,9 @@ JavaScript 中的对象一般是可变的（Mutable），因为使用了引用�
 
 Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutable 对象的任何修改或添加删除操作都会返回一个新的 Immutable 对象。Immutable 实现的原理是 Persistent Data Structure（持久化数据结构），也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（结构共享），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。
 
+\subsection{前端Mock}
 
+有的时候前端没必要等待后端接口写好，可以直接Mock接口的返回数据。这里使用json-server\footnote{\url{https://github.com/typicode/json-server}}来实现。
 
 \section{MobX}
 
@@ -1948,7 +1953,24 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 tar -czvf mybatisDemo.tar.gz mybatisDemo
 \end{lstlisting}
 
+\paragraph{grep}
 
+有时需要从返回的列表中，查看某一个字段的返回结果，如果列表太长或者字段太多，单凭肉眼分辨非常吃力，此时可以通过grep来查看数组返回数据：
+
+\begin{lstlisting}[language=Bash]
+curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.' |grep jdrq
+\end{lstlisting}
+
+效果如图\ref{fig:grepfilterreturnvalue}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{grepfilterreturnvalue.png}
+	\caption{Grep过滤Json结果}
+	\label{fig:grepfilterreturnvalue}
+\end{figure}
+
+这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
 
 \subsection{自动部署}
 
@@ -3021,6 +3043,12 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
 # 获取某一个value的值
 echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
+
+嵌套数据查看：
+
+\begin{lstlisting}[language=Bash]
+curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.data.totalElements'
 \end{lstlisting}
 
 \section{Nginx}
@@ -4170,7 +4198,7 @@ character-set-server=utf8
 
 全文索引未生效时，可以到CTISYS模式下查看系统所有的全文索引：
 
-\begin{lstlisting}[language=Bash]
+\begin{lstlisting}[language=SQL]
 select * 
 from "CTISYS"."SYSCONTEXTINDEXES";
 \end{lstlisting}
@@ -4178,6 +4206,23 @@ from "CTISYS"."SYSCONTEXTINDEXES";
 新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
 
 在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
+
+\subsection{函数}
+
+根据条件来计算：
+
+\begin{lstlisting}[language=SQL]
+SELECT ORG_ID,
+		ORG_NAME,
+		INTERFACE_NAME,
+		COUNT(*) AS TOTAL,
+		SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
+		ROUND(CONVERT(DOUBLE,SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END))/CONVERT(DOUBLE,COUNT(*)),3) AS RATIO
+FROM TD_M_APPACCESS_LOG
+GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
+\end{lstlisting}
+
+如上语句统计接口的有效调用次数，返回数量(RETURN\_COUNT)大于0时，视为有效调用次数(VALID\_TIMES)。数量默认为整数，所以要得到小数的比率(RATIO)，就需要使用函数convert将数据转换为Double类型。
 
 \section{通用知识}
 
