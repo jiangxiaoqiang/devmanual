@@ -190,6 +190,8 @@ java -jar -Xmx2g credit-system-web-boot-1.1.28.jar --spring.config.location=appl
 java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
 \end{lstlisting}
 
+
+
 \subsection{Spring Boot开发者工具}
 
 spring-boot-devtools为应用提供一些开发时特性，包括默认值设置，自动重启，livereload等。在build.gradle文件里添加开发工具配置：
@@ -369,7 +371,7 @@ List<AccessLog> logs = operationLogs.stream()
 						.collect(Collectors.toList());
 \end{lstlisting}
 
-如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000全部去掉。
+peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
 
 \subsection{jps}
 
@@ -4185,6 +4187,12 @@ MyCli 是一个 MySQL 命令行工具，支持自动补全和语法高亮。也�
 \begin{lstlisting}[language=Bash]
 pip install mycli
 brew install mycli
+\end{lstlisting}
+
+使用MyCli连接数据库示例如下：
+
+\begin{lstlisting}[language=Bash]
+mycli -h 10.0.0.14 -u root -p dolphin
 \end{lstlisting}
 
 在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
