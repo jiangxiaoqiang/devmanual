@@ -121,9 +121,9 @@ public class Application {
 }
 \end{lstlisting}
 
-从代码的输出即可看出，classpath具体是m哪些文件夹。
+从代码的输出即可看出，classpath具体是哪些文件夹。
 
-\begin{lstlisting}[language=Bash]
+\begin{lstlisting}
 # 与JDK相关的文件夹
 /home/local/jdk1.8.0_111/jre/lib
 /home/local/jdk1.8.0_111/jre/lib/ext
@@ -158,7 +158,7 @@ classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文
 	\label{fig:javaresourcefolder}
 \end{figure}
 
-仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定：
+仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定配置文件的位置：
 
 \begin{lstlisting}[language=Java]
 @Configuration
@@ -184,13 +184,11 @@ public class DataSourceConfig {
 java -jar -Xmx2g credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
 \end{lstlisting}
 
-启动的同事启动远程调试：
+启动的同时启动远程调试：
 
 \begin{lstlisting}[language=Bash]
 java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
 \end{lstlisting}
-
-
 
 \subsection{Spring Boot开发者工具}
 
@@ -207,7 +205,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
 
 \begin{lstlisting}[language=Java]
-# 获取未经过解码的参数
+# 获取未经过解码的参数（汉字会显示乱码）
 String queryString = request.getQueryString();
 # 获取经过解码的参数
 String qymc = request.getParameter("qymc");
@@ -278,8 +276,8 @@ public String getResponseContent(HttpServletResponse response) throws IOExceptio
 	Field obField = coyoteOutputStreamClass.getDeclaredField("ob");
 	if (obField.getType().toString().endsWith("OutputBuffer")) {
 		obField.setAccessible(true);
-		org.apache.catalina.connector.OutputBuffer outputBuffer = (org.apache.catalina.connector.OutputBuffer) obField.get(outputStream);
-		Class<org.apache.catalina.connector.OutputBuffer> opb = org.apache.catalina.connector.OutputBuffer.class;
+		OutputBuffer outputBuffer = (OutputBuffer) obField.get(outputStream);
+		Class<OutputBuffer> opb = OutputBuffer.class;
 		Field outputChunkField = opb.getDeclaredField("outputChunk");
 		outputChunkField.setAccessible(true);
 		if (outputChunkField.getType().toString().endsWith("ByteChunk")) {
@@ -292,6 +290,8 @@ public String getResponseContent(HttpServletResponse response) throws IOExceptio
 	return responseContent;
 }
 \end{lstlisting}
+
+OutputBuffer的命名空间为：org.apache.catalina.connector。
 
 \subsection{Code Snippets}
 
@@ -369,7 +369,7 @@ List<AccessLog> logs = operationLogs.stream()
 						.collect(Collectors.toList());
 \end{lstlisting}
 
-如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
+如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000全部去掉。
 
 \subsection{jps}
 
@@ -2731,13 +2731,6 @@ verb 3
 \begin{lstlisting}[language=Bash]
 nsCertType server
 \end{lstlisting}
-
-1.首页总数体现新增数据，总数和本月新入数量
-2.综合查询时要体验不同的数据来源，法人和自然人新增一个数据来源字段
-3.红黑名单详情中，添加来源字段，要在详情中显示
-4.倒出数据自动化功能
-5.打印出的界面需要添加来源字段
-6.格式固定化，显示固定的字数，后面用省略号代替，鼠标移入时提示全部
 
 \subsection{Mac Book客户端配置}
 
