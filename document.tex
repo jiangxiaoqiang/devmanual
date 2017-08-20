@@ -891,7 +891,15 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 </update>
 \end{lstlisting}
 
+\subsection{resultMap和resultType区别}
+
+使用resultType进行输出映射，只有查询出来的列名和pojo中的属性名一致，该列才可以映射成功。如果查询出来的列名和pojo中的属性名全部不一致，没有创建pojo对象。只要查询出来的列名和pojo中的属性有一个一致，就会创建pojo对象。mybatis通过resultMap能帮助我们很好地进行高级映射。
+
+
+
 \subsection{常见问题}
+
+\paragraph{Invalid bound statement (not found)}
 
 在配置MyBatis Mapper时，出现如下错误：
 
@@ -908,6 +916,16 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 	\label{fig:mapperreourcestructure}
 \end{figure}
 
+
+\paragraph{Parameter 'keys' not found. Available parameters are [list]}
+
+在使用MyBatis时，出现如下错误：
+
+\begin{lstlisting}[language=Java]
+org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not found. Available parameters are [list]
+\end{lstlisting}
+
+传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时 候,MyBatis 会自动将它包装在一个Map中,用名称在作为键。List 实例将会以“list” 作为键,而数组实例将会以“array”作为键。因为此时传的参数只有一个，而且传入的是一个List集合，所以mybatis会自动封装成Map<"list",keys>。在解析的时候会通过“list”作为Map的key值去寻找。但是我在xml中却声明成keys了，所以自然会报错找不到。解决办法就是修改Mapper.xml文件。或者将List封装到Map里面传递。第一种方式以后如果要扩展该方法，增加集合参数的时候，需要修改xml中的内容。
 
 \newpage
 
@@ -1663,10 +1681,6 @@ console.log(tigerB.species);//猫科
 tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
-
-
-
-
 \subsection{常用函数}
 
 数学函数：
@@ -1715,6 +1729,25 @@ if(value){
 }
 \end{lstlisting}
 
+\subsection{日期处理}
+
+Moment.js是一个JavaScript日期处理类库，如下代码片段使用moment格式化日期。
+
+\begin{lstlisting}[language=Javascript]
+import moment from "moment";
+
+tableDataSource = (logList, orgList) => {
+	const content = logList.content || [];
+	return content.map((item, idx) => {
+		const org = orgList.find(org => org.orgId == item.ORG_ID);
+		return {
+			...item,
+			//格式化日期
+			QUERY_DATE: moment(item.QUERY_DATE).format("YYYY-MM-DD hh:mm:ss"),
+		};
+	})
+};
+\end{lstlisting}
 
 
 \section{常见问题}
@@ -1980,6 +2013,14 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 \begin{lstlisting}[language=Bash]
 #打包
 tar -czvf mybatisDemo.tar.gz mybatisDemo
+\end{lstlisting}
+
+解压tar.xz压缩文件，先 xz -d xxx.tar.xz 将 xxx.tar.xz解压成 xxx.tar 然后，再用 tar xvf xxx.tar来解包。
+
+
+\begin{lstlisting}[language=Bash]
+xz -d xxx.tar.xz
+tar xvf xxx.tar
 \end{lstlisting}
 
 \paragraph{grep}
