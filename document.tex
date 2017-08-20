@@ -1188,6 +1188,11 @@ ReactDOM.render(
 </body>
 \end{lstlisting}
 
+\subsection{React数据的流转过程}
+
+通过Axios向服务端发送HTTP请求，获取到服务端返回端Json数据后，触发对应Type的dispatch(serviceCommon.js)去更新state。当 state 变化，或者 ownProps 变化的时候，mapStateToProps(connect方法的第一个参数)都会被调用，计算出一个新的 stateProps，（在与 ownProps merge 后）更新给对应的组件。
+
+
 \subsection{规范}
 
 React模块使用.jsx扩展名，如BookMain.jsx。对于JSX属性值总是使用双引号("), 其他均使用单引号。为什么? JSX属性 不能包括转译的引号, 因此在双引号里包括像 "don't" 的属性值更容易输入。HTML属性也是用双引号，所以JSX属性也遵循同样的语法。
@@ -1326,7 +1331,7 @@ store.dispatch({
 
 \subsection{state}
 
-state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.而Action不会引起state的变化，引起state变化的是reducer。如果用 redux，就没有 state 和 props 的区分了。组件都应该用 props，不应该有任何组件私有的 state。尽量使用props当作数据源，state用来存放状态值。
+State (也称为 state tree) 是一个宽泛的概念，但是在 Redux API 中，通常是指一个唯一的 state 值，由 store 管理且由 getState() 方法获得。它表示了 Redux 应用的全部状态，通常为一个多层嵌套的对象。约定俗成，顶层 state 或为一个对象，或像 Map 那样的键-值集合，也可以是任意的数据类型。然而你应尽可能确保 state 可以被序列化，而且不要把什么数据都放进去，导致无法轻松地把 state 转换成 JSON\footnote{来源：\url{http://cn.redux.js.org/docs/Glossary.html}}。state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.而Action不会引起state的变化，引起state变化的是reducer。如果用 redux，就没有 state 和 props 的区分了。组件都应该用 props，不应该有任何组件私有的 state。尽量使用props当作数据源，state用来存放状态值。
 
 \paragraph{初始化state}
 
