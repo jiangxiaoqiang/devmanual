@@ -1647,6 +1647,16 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \section{Javascript}
 
+\begin{tabular}{cp{8cm}c}
+	\hline
+	\multirow{1}{*}{快捷键}
+	& \multicolumn{1}{c}{说明}  \\
+	\hline			
+	nbsp & " " \\
+	\hline
+\end{tabular}
+
+
 \subsection{prototype}
 
 prototype是用于解决实例对象之间无法共享属性和方法的。
@@ -3838,10 +3848,20 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \subsection{Sources}
 
+\paragraph{面板中查看变量}
+
+在调试的过程中，虽然鼠标可以移动到变量上会自动Pop出对应的变量，但是有时候鼠标移出区域后变量也会自动消失。那么此时可以在右侧面板中的Scope查看变量，如图\ref{fig:sourcepanelscopevariable}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{sourcepanelscopevariable.png}
+	\caption{Devtool Scope中查看变量}
+	\label{fig:sourcepanelscopevariable}
+\end{figure}
+
+
+
 \paragraph{Snippets}
-
-
-
 
 \paragraph{Others}
 
@@ -4299,6 +4319,31 @@ GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
 \end{lstlisting}
 
 如上语句统计接口的有效调用次数，返回数量(RETURN\_COUNT)大于0时，视为有效调用次数(VALID\_TIMES)。数量默认为整数，所以要得到小数的比率(RATIO)，就需要使用函数convert将数据转换为Double类型。
+
+\subsection{常用SQL记录}
+
+\begin{lstlisting}[language=SQL]
+select GNMK,
+max(ORG_NAME) as ORG_NAME,
+ORG_ID,
+COUNT(*) AS USING_TIMES,
+SUM(CASE WHEN ISOKRED > 0 OR ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
+SUM(CASE WHEN ISOKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_RED,
+SUM(CASE WHEN ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_BLACK
+from (
+	SELECT GNMK,
+	MAX(ORG_NAME) AS ORG_NAME,
+	ORG_ID,
+	sum(ISOKRED) as ISOKRED,
+	sum(ISOKBALCK) AS ISBLACKRED,
+	RESPONSEKEY	
+	FROM TI_B_REDBALCKLOG  
+	GROUP BY RESPONSEKEY,ORG_ID,GNMK 
+)
+GROUP BY ORG_ID,GNMK 
+order by ORG_ID DESC limit 0, 10
+\end{lstlisting}
+
 
 \section{通用知识}
 
