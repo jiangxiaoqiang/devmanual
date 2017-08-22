@@ -1767,6 +1767,33 @@ tableDataSource = (logList, orgList) => {
 
 \section{常见问题}
 
+\paragraph{index.js:83 TypeError: Cannot read property 'get' of undefined}
+
+出現此錯誤的原因是獲取到的參數爲空。
+
+\begin{lstlisting}
+TypeError: Cannot read property 'get' of undefined
+	at Object.getToJS (Utils.js:171)
+	at Object.getToArray (Utils.js:166)
+	at CreditDataPeopleMain.render (CreditDataPeopleMain.js:299)
+	at eval (ReactCompositeComponent.js:796)
+	at measureLifeCyclePerf (ReactCompositeComponent.js:75)
+	at ReactCompositeComponentWrapper._renderValidatedComponentWithoutOwnerOrContext (ReactCompositeComponent.js:795)
+	at ReactCompositeComponentWrapper._renderValidatedComponent (ReactCompositeComponent.js:822)
+	at ReactCompositeComponentWrapper.performInitialMount (ReactCompositeComponent.js:362)
+	at ReactCompositeComponentWrapper.mountComponent (ReactCompositeComponent.js:258)
+	at Object.mountComponent (ReactReconciler.js:46)
+\end{lstlisting}
+
+獲取到的空數據如圖\ref{fig:getundefineerror}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{getundefineerror.png}
+	\caption{undefined錯誤}
+	\label{fig:getundefineerror}
+\end{figure}
+
 \paragraph{Cannot read property 'apply' of undefined}
 
 \paragraph{Module build failed: SyntaxError: Unexpected token ...}
