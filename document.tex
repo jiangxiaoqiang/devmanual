@@ -893,9 +893,22 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 
 \subsection{resultMap和resultType区别}
 
-使用resultType进行输出映射，只有查询出来的列名和pojo中的属性名一致，该列才可以映射成功。如果查询出来的列名和pojo中的属性名全部不一致，没有创建pojo对象。只要查询出来的列名和pojo中的属性有一个一致，就会创建pojo对象。mybatis通过resultMap能帮助我们很好地进行高级映射。
+使用resultType进行输出映射，只有查询出来的列名和pojo中的属性名一致，该列才可以映射成功。如果查询出来的列名和pojo中的属性名全部不一致，没有创建pojo对象。只要查询出来的列名和pojo中的属性有一个一致，就会创建pojo对象。mybatis通过resultMap能帮助我们很好地进行高级映射。遇到一个问题是将分页的本应该写成resultMap的地方写成了resultType，在本地可以正常运行，但是打包成jar包放到服务器就无法运行了，提示org.apache.ibatis.type.TypeException: Could not resolve type alias 'AccessLog'：
+
+\begin{lstlisting}[language=XML]
+<!--这里的resultType应该写成resultMap-->
+<select id="countAccessLog" parameterType="com.hualongdata.data.mybatis.Pageable" resultType="AccessLog">
+</select>
+\end{lstlisting}
+
+如果改为resultMap又会出现如下错误：
 
 
+\begin{lstlisting}[language=XML]
+org.apache.ibatis.builder.IncompleteElementException: Could not find result map creditsystem.data.mapper.RedBalckLogMapper.RedBalckLog
+\end{lstlisting}
+
+出现这个错误的原因是在resultMap里面指定的是RedBalckLog(大写)，而Mapper中定义的是redBalckLog(小写)。这里resultMap指定的Bean需要和Mapper文件中定义的Bean的id一致。
 
 \subsection{常见问题}
 
