@@ -374,6 +374,21 @@ List<AccessLog> logs = operationLogs.stream()
 peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
 
 
+
+数组转List有如下方式：
+
+\begin{lstlisting}[language=Java]
+Integer[] integers = new Integer[] {1,2,3,4,5};
+// Cannot modify returned list
+List<Integer> list21 =  Arrays.asList(integers); 
+// good
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+//Java 8
+List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
+\end{lstlisting}
+
+采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
+
 \subsection{jps}
 
 jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
@@ -929,8 +944,6 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时 候,MyBatis 会自动将它包装在一个Map中,用名称在作为键。List 实例将会以“list” 作为键,而数组实例将会以“array”作为键。因为此时传的参数只有一个，而且传入的是一个List集合，所以mybatis会自动封装成Map<"list",keys>。在解析的时候会通过“list”作为Map的key值去寻找。但是我在xml中却声明成keys了，所以自然会报错找不到。解决办法就是修改Mapper.xml文件。或者将List封装到Map里面传递。第一种方式以后如果要扩展该方法，增加集合参数的时候，需要修改xml中的内容。
 
 \newpage
-
-\chapter{Groovy}
 
 \chapter{Scala}
 
@@ -1795,6 +1808,27 @@ TypeError: Cannot read property 'get' of undefined
 	\label{fig:getundefineerror}
 \end{figure}
 
+\paragraph{Each child in an array or iterator should have a unique "key" prop. Check the render method of `CreditDataPeopleMain`}
+
+提示在數組和可枚舉中需要給定一個唯一的key屬性：
+
+\begin{lstlisting}
+Warning: Each child in an array or iterator should have a unique "key" prop. Check the render method of `CreditDataPeopleMain`. See https://fb.me/react-warning-keys for more information.
+in a (created by CreditDataPeopleMain)
+in CreditDataPeopleMain (created by RouterContext)
+in SharingExchangeContainer (created by Connect(SharingExchangeContainer))
+in Connect(SharingExchangeContainer) (created by RouterContext)
+in div (created by AppContainer)
+in div (created by AppContainer)
+in div (created by AppContainer)
+in AppContainer (created by RouterContext)
+in RouterContext (created by Router)
+in Router
+in Provider
+\end{lstlisting}
+
+key屬性幫助react確定項目是否已經更新(Keys help React identify which items have changed, are added, or are removed. Keys should be given to the elements inside the array to give the elements a stable identity)。
+
 \paragraph{Cannot read property 'apply' of undefined}
 
 \paragraph{Module build failed: SyntaxError: Unexpected token ...}
@@ -2078,12 +2112,42 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{grepfilterreturnvalue.png}
+	\includegraphics[scale=0.5]{grepfilterreturnvalue.png}
 	\caption{Grep过滤Json结果}
 	\label{fig:grepfilterreturnvalue}
 \end{figure}
 
 这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
+
+\paragraph{sed}
+
+sed全名叫stream editor，流编辑器，用程序的方式来编辑文本，相当的hacker啊。sed基本上就是玩正则模式匹配，所以，玩sed的人，正则表达式一般都比较强。過濾某一個時間段的日志：
+
+\begin{lstlisting}[language=Bash]
+sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> filter.log
+\end{lstlisting}
+
+\paragraph{ag}
+
+ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜索文件内容，输入如下命令安装：
+
+\begin{lstlisting}[language=Bash]
+apt-get install silversearcher-ag
+dnf install the_silver_searcher
+\end{lstlisting}
+
+\paragraph{apt}
+
+apt(Advance Package Tool)是Ubuntu的包管理工具：
+
+\begin{lstlisting}[language=Bash]
+# Ubuntu显示包的详细信息
+sudo apt show wget
+# 移除安装包
+sudo apt remove wget
+# CentOS显示包信息
+yum info wget
+\end{lstlisting}
 
 \subsection{自动部署}
 
@@ -3735,15 +3799,35 @@ git log --all --graph -12
 git reset --hard e4177ea9061a9726efd42d289f73553409df793d
 \end{lstlisting}
 
+结果如图\ref{fig:filemodifyhistory}所示，即可看到由谁修改。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{filemodifyhistory.png}
+	\caption{Git查看文件修改历史}
+	\label{fig:filemodifyhistory}
+\end{figure}
 
 
-\subsection{查看某几行代码修改}在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
+\subsection{查看修改历史}
+
+在项目中看到有几行代码，百思不得其解，也没有注释，所以想看一看作者，与作者沟通，使用如下命令即可：
 
 \begin{lstlisting}[language=Bash]
-git blame /home/hldev/hldata/backend/system/cc-web/src/main/java/cresystem/web/controllers/pubapi/PubapiOrgController.java
+git blame PubapiOrgController.java
 \end{lstlisting}
 
-会显示每一行代码的作者(最后修改者)和最后的修改时间。
+会显示每一行代码的作者(最后修改者)和最后的修改时间。有的时候，不仅仅需要看某(几)行代码最后的修改，也希望看到最近几个版本的修改。比如有一次部署上去后，发现数据库链接被改掉了，那么可以使用如下命令查看文件的修改历史：
+
+\begin{lstlisting}[language=Bash]
+git log --follow application-jjxxzx-test.properties
+\end{lstlisting}
+
+会显示出指定文件的修改历史记录，使用如下命令查看详细的修改内容：
+
+\begin{lstlisting}[language=Bash]
+git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
+\end{lstlisting}
 
 \subsection{常见问题}
 
