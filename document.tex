@@ -234,6 +234,20 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 
 RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
 
+\subsection{接口认证(Authoration)}
+
+目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
+发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
+过期判断，容易遭受重放攻击(Replay Attack)。采用如下脚本生成认证请求的Key。
+
+\begin{lstlisting}[language=Bash]
+# Mac生成sha256串
+echo -n "foobar" | shasum -a 256
+echo -n "foobar" | openssl dgst -sha256
+\end{lstlisting}
+
+
+
 \subsection{接口返回}
 
 接口返回的格式如图所示：
