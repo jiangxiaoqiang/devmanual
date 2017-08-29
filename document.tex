@@ -94,10 +94,9 @@
 
 \begin{document}
 
-\tableofcontents
-
-
 \include{title}
+
+\tableofcontents
 
 \part{Framework}
 
@@ -107,7 +106,7 @@
 
 \subsection{classpath}
 
-理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目在classpath中的文件。
+理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
 
 \begin{lstlisting}[language=Java]
 public class Application {
@@ -121,7 +120,7 @@ public class Application {
 }
 \end{lstlisting}
 
-从代码的输出即可看出，classpath具体是哪些文件夹。
+从代码的输出结果即可看出，classpath具体是哪些文件夹。
 
 \begin{lstlisting}
 # 与JDK相关的文件夹
@@ -129,8 +128,8 @@ public class Application {
 /home/local/jdk1.8.0_111/jre/lib/ext
 /home/local/jdk1.8.0_111/lib
 # 与项目相关的文件夹，这里仅仅是一个module
-/home/hldev/hldata/backend/credit-system/cc-data/build/classes/main/
-/home/hldev/hldata/backend/credit-system/cc-data/build/resources/main/
+/home/credit-system/cc-data/build/classes/main/
+/home/credit-system/cc-data/build/resources/main/
 # 与Gradle相关的文件夹
 /home/hldev/.gradle/caches
 \end{lstlisting}
@@ -207,23 +206,23 @@ compile "org.springframework.boot:spring-boot-devtools"
 在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
 
 \begin{lstlisting}[language=Java]
-# 获取未经过解码的参数（汉字会显示乱码）
+// 获取未经过解码的参数（汉字会显示乱码）
 String queryString = request.getQueryString();
-# 获取经过解码的参数
+// 获取经过解码的参数
 String qymc = request.getParameter("qymc");
 \end{lstlisting}
 
 使用request.getParameter方式获得的参数是已经经过web服务器解码的。使用request.getQueryString可以获得未解码的原始参数。对于tomcat解码造成的乱码问题可以通过2种途径解决，修改tomcat配置文件设置解码方式，服务器端对于获取到的参数进行new String(param.getBytes("ISO-8859-1"),"页面指定编码")转换，如下代码片段所示：
 
 \begin{lstlisting}[language=Java]
-# 将获取到的消息解码
+// 将获取到的消息解码
 String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8");
 \end{lstlisting}
 
 
 \subsection{返回消息封装}
 
-一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
+一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。这也是Restful接口及接口采用Json交互的优势之一，在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
 
 \begin{lstlisting}[language=Java]
 @RequestMapping("books")
@@ -233,6 +232,7 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 }
 \end{lstlisting}
 
+RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
 
 \subsection{接口返回}
 
@@ -245,7 +245,7 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 	\label{fig:restresponse}
 \end{figure}
 
-其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是因为考虑到返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
 
 \begin{lstlisting}[language=Java]
 @Autowired
@@ -262,7 +262,7 @@ public XydmResponse mapToCorporationResponse(Corporation corporation) {
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{outputchunkcontent.png}
+	\includegraphics[scale=0.5]{outputchunkcontent.png}
 	\caption{获取HTTP Response返回的内容}
 	\label{fig:outputchunkcontent}
 \end{figure}
@@ -399,16 +399,6 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 \begin{lstlisting}[language=Bash]
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
-
-\section{注解}
-
-\subsection{ComponentScan}
-
-\section{Shiro}
-
-\subsection{新建表}
-
-
 
 \section{数据库操作}
 
