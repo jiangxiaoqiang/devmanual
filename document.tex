@@ -243,7 +243,9 @@ RestApiResponse为统一定义的返回实体，所有的接口都会返回标�
 \begin{lstlisting}[language=Bash]
 # Mac生成sha256串
 echo -n "foobar" | shasum -a 256
-echo -n "foobar" | openssl dgst -sha256
+readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
+curl -X POST -H "Content-Type: application/json" -d \
+'{"elem":"'"$TOKEN"'"}' "https://httpbin.org/post"; \
 \end{lstlisting}
 
 
