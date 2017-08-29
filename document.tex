@@ -375,6 +375,19 @@ peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List�
 
 \paragraph{数组转换为ArrayList}
 
+数组转List有如下方式：
+
+\begin{lstlisting}[language=Java]
+Integer[] integers = new Integer[] {1,2,3,4,5};
+// Cannot modify returned list
+List<Integer> list21 =  Arrays.asList(integers); 
+// good
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+//Java 8
+List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
+\end{lstlisting}
+
+采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
 
 
 \subsection{jps}
@@ -1779,6 +1792,17 @@ tableDataSource = (logList, orgList) => {
 };
 \end{lstlisting}
 
+获取本周的第一天，moment中可以用如下代码实现：
+
+\begin{lstlisting}[language=Javascript]
+moment.lang('zh-cn', {
+	week: {
+		dow: 1 // Monday is the first day of the week
+	}
+});
+// date now is the first day of the week, (i.e., Monday)
+const date = moment().weekday(0); 
+\end{lstlisting}
 
 \section{常见问题}
 
