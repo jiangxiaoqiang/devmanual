@@ -236,7 +236,7 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 
 RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
 
-\subsection{接口认证(Authoration)}
+\subsection{接口认证(Authorization)}
 
 目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
 发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
@@ -249,6 +249,10 @@ readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 curl -X POST -H "Content-Type: application/json" -d \
 '{"elem":"'"$TOKEN"'"}' "https://httpbin.org/post"; \
 \end{lstlisting}
+
+\subsection{日志记录(Logging)}
+
+接口日志记录时，自己的习惯是将之放在拦截器(Interceptor)中而不是单独写在方法中。写在方法里总有一些不可避免的重复，一旦修改起来许多地方都需要修改，而且非常容易遗漏。拦截器中缺点是无法很好的支持自定义日志的记录，而且对系统的性能等有影响。
 
 
 
