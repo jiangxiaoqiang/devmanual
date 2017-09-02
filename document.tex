@@ -3,7 +3,7 @@
 %%%%%% Import Package %%%%%%
 \usepackage{graphicx}
 \usepackage[unicode]{hyperref}
-\usepackage{cite}
+%\usepackage{cite}
 \usepackage{indentfirst}
 \usepackage{multirow}
 \usepackage{indentfirst}
@@ -23,7 +23,15 @@
 \usepackage{ifthen}
 \usepackage{longtable}
 \usepackage{eso-pic}
-\usepackage{titlesec}
+\usepackage{makeidx} % Required to make an index
+\makeindex % Tells LaTeX to create the files required for indexing
+
+% Bibliography
+\usepackage[style=alphabetic,sorting=nyt,sortcites=true,autopunct=true,babel=hyphen,hyperref=true,abbreviate=false,backref=true,backend=biber]{biblatex}
+\addbibresource{bibliography.bib} % BibTeX bibliography file
+\defbibheading{bibempty}{}
+
+
 
 %Figure显示为中文的“图”
 \renewcommand\figurename{图}
@@ -36,6 +44,8 @@
 \linespread{1.4}
 % \setlength{\parskip}{1ex}
 \setlength{\parskip}{0.5\baselineskip}
+
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -105,8 +115,6 @@
 
 \begin{document}
 
-%\include{title}
-
 %----------------------------------------------------------------------------------------
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
@@ -170,9 +178,9 @@ The Search for a Title\par % Book title
 
 \newpage
 
-\section{Common Sense}
+\section{Common Sense}\index{Common Sense}
 
-\subsection{classpath}
+\subsection{classpath}\index{classpath}
 
 理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
 
@@ -1991,7 +1999,7 @@ state[0] = bookReducer;
 
 \part{OS}
 
-\chapter{Linux}
+\chapter{Linux}\index{Linux}
 
 在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
@@ -4168,9 +4176,20 @@ Latex原生不支持JavaScript语言，添加如下定义：
 
 \subsection{常见问题}
 
-\paragraph{sty not found}
+\paragraph{infoBulle.sty not found}
 
 一般的，.cls和.sty文件是用来提高LaTeX的排版效果的补充文件。它们分别用命令\textbackslash documentclass\{...\}和命令\textbackslash usepackage\{...\}来装载到LaTeX文件。.cls文件通常被称为“classes”（也就是“类”），而.sty文件被称为“style files”（样式文件）,或者就简单地称其为“packages”（包）。
+
+下载下来的宏包，有的直接包含.sty 文件（.sty文件就是package的最终形式）;有的下载下来只包含了.ins, .dtx，以及一个readme文件，这时需要自己编译生成.sty文件，以及生成相应的manual。
+,你可以在这个路径下建立一个文件夹，譬如qrcode，然后把qrcode.sty放到这里，接着在你的电脑里找到MikTex的settings这个程序，settings有两个，选择后面括号里有admin的那个,打开以后，在general选项卡下有Refresh FNDB按钮，点击，过一会，这个package就会加入MikTex的路径中，然后在你的tex文件中就可以使用这个package了。
+
+infoBulle可能是作者自己写的一个宏包，系统里默认没有自带，此时就需要找到默认宏包的存放目录，将作者自己写的sty文件放进去。在Mac OS X下，路径为：
+
+\begin{lstlisting}
+/usr/local/texlive/2016/texmf-dist/tex/latex
+\end{lstlisting}
+
+
 
 
 \part{DB}
@@ -4864,7 +4883,30 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 其中\$rootDir表示项目的根目录，比如有一个叫做dolphin的项目，那么rootDir就是dolphin目录，另外还有一个projectDir的变量和buildDir的变量。projectDir就是dolphin/src目录，buildDir就是dolphin/src/build目录。如果是多个Project组成的项目，那么projectDir就是rootDir/projectName，buildDir就是dolphin/projectName/build。
 
 
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
 
+\chapter*{Bibliography}
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}}
+\section*{Books}
+\addcontentsline{toc}{section}{Books}
+\printbibliography[heading=bibempty,type=book]
+\section*{Articles}
+\addcontentsline{toc}{section}{Articles}
+\printbibliography[heading=bibempty,type=article]
+
+%----------------------------------------------------------------------------------------
+%	INDEX
+%----------------------------------------------------------------------------------------
+
+\cleardoublepage
+\setlength{\columnsep}{0.75cm}
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Index}}
+\printindex
+
+%----------------------------------------------------------------------------------------
 
 \end{document}
+
 \theend
