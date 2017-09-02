@@ -271,7 +271,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \subsection{请求消息}
 
-在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
+HttpServletResponse对象(HttpServletRequest同理)的字符输出流在编码时，默认采用的是ISO 8859-1编码，该编码方式不兼容中文，比如会将"中国"编码为"63 63"(在ISO 8959-1的码表中查不到的字符会显示63)。当浏览器对接收到的数据进行解码时，会默认采用GB2312，将"63"解码为"?"，浏览器就将"中国"两个字符解码为"??"。在获取请求消息记录日志时，获取到的汉字乱码。获取请求参数的语句为：
 
 \begin{lstlisting}[language=Java]
 // 获取未经过解码的参数（汉字会显示乱码）
@@ -875,6 +875,11 @@ dependencies{
 
 
 \paragraph{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
+
+添加如下引用即可：
+
+
+
 
 \paragraph{NoClassDefFoundError}
 
@@ -4122,7 +4127,7 @@ sudo apt-get install php7.0 -y
 
 \chapter{LaTex}
 
-\subsection{安装}
+\section{安装}
 
 \begin{lstlisting}[language=Bash]
 # Ubuntu下安装Texlive
@@ -4160,6 +4165,13 @@ Latex原生不支持JavaScript语言，添加如下定义：
 \end{lstlisting}
 
 即可在文档中定义JavaScript，并支持关键字颜色区分。
+
+\subsection{常见问题}
+
+\paragraph{sty not found}
+
+一般的，.cls和.sty文件是用来提高LaTeX的排版效果的补充文件。它们分别用命令\textbackslash documentclass\{...\}和命令\textbackslash usepackage\{...\}来装载到LaTeX文件。.cls文件通常被称为“classes”（也就是“类”），而.sty文件被称为“style files”（样式文件）,或者就简单地称其为“packages”（包）。
+
 
 \part{DB}
 
