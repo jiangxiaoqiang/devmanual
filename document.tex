@@ -121,13 +121,14 @@
 
 \begingroup
 \thispagestyle{empty}
-\AddToShipoutPicture*{\put(6,5){\includegraphics[scale=1]{background.pdf}}} % Image background
+%\AddToShipoutPicture*{\put(6,5){\includegraphics[scale=1]{background.pdf}}} % Image background
 \centering
-\vspace*{9cm}
+\vspace*{8cm}
 \par\normalfont\fontsize{35}{35}\sffamily\selectfont
-The Search for a Title\par % Book title
+开发记录\par % Book title
 \vspace*{1cm}
-{\Huge Dr. John Smith}\par % Author name
+{\Huge 2016-2017}\par % Author name
+{\huge jiangtingqiang@gmail.com}\par % mail
 \endgroup
 
 
@@ -156,7 +157,7 @@ The Search for a Title\par % Book title
 
 \newpage
 
-\chapterimage[width=350pt,height=150pt]{chapterhead1.pdf} % Table of contents heading image
+%\chapterimage[width=350pt,height=150pt]{chapterhead1.pdf} % Table of contents heading image
 
 \pagestyle{empty} % No headers
 
@@ -172,7 +173,7 @@ The Search for a Title\par % Book title
 
 \newpage
 
-\chapterimage[width=450pt]{chapterhead2.pdf} % Chapter heading image
+%\chapterimage[width=450pt]{chapterhead2.pdf} % Chapter heading image
 
 \chapter{Spring}
 
@@ -310,7 +311,7 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 
 RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
 
-\subsection{接口认证(Authoration)}
+\subsection{接口认证(Authorization)}
 
 目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
 发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
@@ -324,31 +325,11 @@ curl -X POST -H "Content-Type: application/json" -d \
 '{"elem":"'"$TOKEN"'"}' "https://httpbin.org/post"; \
 \end{lstlisting}
 
+\subsection{日志记录(Logging)}
 
+接口日志记录时，自己的习惯是将之放在拦截器(Interceptor)中而不是单独写在方法中。写在方法里总有一些不可避免的重复，一旦修改起来许多地方都需要修改，而且非常容易遗漏。拦截器中缺点是无法很好的支持自定义日志的记录，而且对系统的性能等有影响。记录日志时需要获取响应Json的内容进行记录，通过反射获取。
 
-\subsection{接口返回}
-
-接口返回的格式如图所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.6]{restresponse.png}
-	\caption{Restful接口返回数据示例}
-	\label{fig:restresponse}
-\end{figure}
-
-其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是因为考虑到返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
-
-\begin{lstlisting}[language=Java]
-@Autowired
-private MapperFacade corporationMapperFacade;
-
-public XydmResponse mapToCorporationResponse(Corporation corporation) {
-	return corporationMapperFacade.map(corporation, XydmResponse.class);
-}
-\end{lstlisting}
-
-\subsubsection{获取Response返回内容}
+\paragraph{获取Response返回内容}
 
 在拦截器中记录日志时，有时需要获取HTTP Response中的内容，从图\ref{fig:outputchunkcontent}可以看出，只要获取到outputChunk的内容即可。
 
@@ -385,7 +366,68 @@ public String getResponseContent(HttpServletResponse response) throws IOExceptio
 }
 \end{lstlisting}
 
-OutputBuffer的命名空间为：org.apache.catalina.connector。
+OutputBuffer的命名空间为：org.apache.catalina.connector。在获取响应Json时，有时Json数据会比较长，一个无法避免的问题是只能获取到部分Json数据，那是因为在HTTP传输时，动态传输内容时，将返回内容以chunk的形式进行传输。HTTP 1.1时，Response要嘛通过Content-Length来指定要传输的内容大小，要嘛通过Transfer-Encoding: chunked来传输动态大小的内容，此时要求Response传输的内容要符合chunk encoding的规定。在交互式应用程序中有1个问题，就是它并不知道将要传输的数据有多大。在HTTP1.0中，服务器就会省略response头中的Content-Length而持续写数据出去，当服务器挂了的话，它简单地断开连接。而经典的HTTP客户端会一直读数据直到碰到-1（传输结束的标识符）。为了处理这个问题，HTTP1.1中增加了一个特殊的header：Transfer-Encoding：chunked，允许响应response被分块chunked。每次向连接写数据的时候会先计算大小，最后在response的尾部以一个0长度的chunk块标志着此次传输的结束。即HTTP1.1支持chunked编码，它允许HTTP消息被分成多块后再进行传输。Chunking一般用在服务器响应response的时候，但是客户端也可以chunk大的请求request。即Chunk编码允许服务器在发送完Header后，发送更多的Body内容。Chunked编码使用若干个Chunk块串连而成，每个Chunk块都以一个表明chunk快大小的16进制数字和一个额外的CRLF（回车换行）开始，后面跟着指定大小的内容。即每个Chunk块分为头部和正文两部分，头部内容指定下一段正文的字符总数（十六进制的数字）和数量单位（一般不写），正文部分就是指定长度的实际内容，两部分之间用回车换行(CRLF)隔开。最后以一个长度为0的Chunk表明本次传输结束。查看getOutputStream方法(在org.apache.catalina.connector命名空间下)，代码如下：
+
+\begin{lstlisting}[language=Java]
+public ServletOutputStream getOutputStream() throws IOException {
+	if (usingWriter) {
+	throw new IllegalStateException(sm.getString("coyoteResponse.getOutputStream.ise"));
+	}
+	usingOutputStream = true;
+	if (outputStream == null) {
+		outputStream = new CoyoteOutputStream(outputBuffer);
+	}
+	return outputStream;
+}
+\end{lstlisting}
+
+可以看出实际是从outputBuffer中取的内容，而outputBuffer的默认长度是8*1024(在OutputBuffer类下):
+
+\begin{lstlisting}[language=Java]
+public static final int DEFAULT_BUFFER_SIZE = 8*1024;
+\end{lstlisting}
+
+可以在preHandle中手动通过代码指定长度来解决这个问题：
+
+\begin{lstlisting}[language=Java]
+/**
+* 在记录接口日志时
+* 由于有时返回的内容过长，在getResponseContent通过反射获取到的只是一部分Json
+* 导致后面Json解析失败
+* 所以这里手动修改buffer的长度
+* 使得一次能过获取较大的Json内容
+* 不过当返回的Json内容超过2048 * 20时
+* 同样只能获取部分
+* 默认的长度是8*1024    public static final int DEFAULT_BUFFER_SIZE = 8*1024;
+*/
+response.setBufferSize(2048 * 20);
+\end{lstlisting}
+
+
+
+\subsection{接口返回}
+
+接口返回的格式如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{restresponse.png}
+	\caption{Restful接口返回数据示例}
+	\label{fig:restresponse}
+\end{figure}
+
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是因为考虑到返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+@Autowired
+private MapperFacade corporationMapperFacade;
+
+public XydmResponse mapToCorporationResponse(Corporation corporation) {
+	return corporationMapperFacade.map(corporation, XydmResponse.class);
+}
+\end{lstlisting}
+
+
 
 \subsection{Code Snippets}
 
