@@ -123,11 +123,12 @@
 \thispagestyle{empty}
 %\AddToShipoutPicture*{\put(6,5){\includegraphics[scale=1]{background.pdf}}} % Image background
 \centering
-\vspace*{9cm}
+\vspace*{8cm}
 \par\normalfont\fontsize{35}{35}\sffamily\selectfont
-The Search for a Title\par % Book title
+开发记录\par % Book title
 \vspace*{1cm}
-{\Huge Dr. John Smith}\par % Author name
+{\Huge 2016-2017}\par % Author name
+{\huge jiangtingqiang@gmail.com}\par % mail
 \endgroup
 
 
@@ -365,7 +366,7 @@ public String getResponseContent(HttpServletResponse response) throws IOExceptio
 }
 \end{lstlisting}
 
-OutputBuffer的命名空间为：org.apache.catalina.connector。在获取响应Json时，有时Json数据会比较长，那么只能获取到部分Json数据，那是因为在HTTP传输时，动态传输内容时，将返回内容以chunk的形式进行传输HTTP 1.1时，Response要嘛通过Content-Length来指定要传输的内容大小，要嘛通过Transfer-Encoding: chunked来传输动态大小的内容，此时要求Response传输的内容要符合chunk encoding的规定。在交互式应用程序中有1个问题，就是它并不知道将要传输的数据有多大。 在HTTP1.0中，服务器就会省略response头中的Content-Length而持续写数据出去，当服务器挂了的话，它简单地断开连接。而经典的HTTP客户端会一直读数据直到碰到-1（传输结束的标识符）。为了处理这个问题，HTTP1.1中增加了一个特殊的header：Transfer-Encoding：chunked，允许响应response被分块chunked。每次向连接写数据的时候会先计算大小，最后在response的尾部以一个0长度的chunk块标志着此次传输的结束。即HTTP1.1支持chunked编码，它允许HTTP消息被分成多块后再进行传输。Chunking一般用在服务器响应response的时候，但是客户端也可以chunk大的请求request。即Chunk编码允许服务器在发送完Header后，发送更多的Body内容。Chunked编码使用若干个Chunk块串连而成，每个Chunk块都以一个表明chunk快大小的16进制数字和一个额外的CRLF（回车换行）开始，后面跟着指定大小的内容。即每个Chunk块分为头部和正文两部分，头部内容指定下一段正文的字符总数（十六进制的数字）和数量单位（一般不写），正文部分就是指定长度的实际内容，两部分之间用回车换行(CRLF)隔开。最后以一个长度为0的Chunk表明本次传输结束。查看getOutputStream方法(在org.apache.catalina.connector命名空间下)，代码如下：
+OutputBuffer的命名空间为：org.apache.catalina.connector。在获取响应Json时，有时Json数据会比较长，一个无法避免的问题是只能获取到部分Json数据，那是因为在HTTP传输时，动态传输内容时，将返回内容以chunk的形式进行传输。HTTP 1.1时，Response要嘛通过Content-Length来指定要传输的内容大小，要嘛通过Transfer-Encoding: chunked来传输动态大小的内容，此时要求Response传输的内容要符合chunk encoding的规定。在交互式应用程序中有1个问题，就是它并不知道将要传输的数据有多大。在HTTP1.0中，服务器就会省略response头中的Content-Length而持续写数据出去，当服务器挂了的话，它简单地断开连接。而经典的HTTP客户端会一直读数据直到碰到-1（传输结束的标识符）。为了处理这个问题，HTTP1.1中增加了一个特殊的header：Transfer-Encoding：chunked，允许响应response被分块chunked。每次向连接写数据的时候会先计算大小，最后在response的尾部以一个0长度的chunk块标志着此次传输的结束。即HTTP1.1支持chunked编码，它允许HTTP消息被分成多块后再进行传输。Chunking一般用在服务器响应response的时候，但是客户端也可以chunk大的请求request。即Chunk编码允许服务器在发送完Header后，发送更多的Body内容。Chunked编码使用若干个Chunk块串连而成，每个Chunk块都以一个表明chunk快大小的16进制数字和一个额外的CRLF（回车换行）开始，后面跟着指定大小的内容。即每个Chunk块分为头部和正文两部分，头部内容指定下一段正文的字符总数（十六进制的数字）和数量单位（一般不写），正文部分就是指定长度的实际内容，两部分之间用回车换行(CRLF)隔开。最后以一个长度为0的Chunk表明本次传输结束。查看getOutputStream方法(在org.apache.catalina.connector命名空间下)，代码如下：
 
 \begin{lstlisting}[language=Java]
 public ServletOutputStream getOutputStream() throws IOException {
