@@ -1,0 +1,787 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\select@language {english}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {I}{Framework}}{13}{part.1}
+\ttl@starttoc {default@1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {1}Spring}{15}{chapter.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.1}Common Sense}{15}{section.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.1}classpath}{15}{subsection.1.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.2}Spring Boot开发者工具}{17}{subsection.1.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.3}请求消息}{18}{subsection.1.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.4}返回消息封装}{18}{subsection.1.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.5}接口认证(Authorization)}{19}{subsection.1.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.6}日志记录(Logging)}{19}{subsection.1.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{获取Response返回内容}{19}{section*.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.7}接口返回}{21}{subsection.1.1.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.8}Code Snippets}{22}{subsection.1.1.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.9}集合操作(Collection Operate)}{23}{subsection.1.1.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{数组转换为ArrayList}{24}{section*.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1.10}jps}{24}{subsection.1.1.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.2}数据库操作}{24}{section.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.1}Could not get JDBC connection}{24}{subsection.1.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{28}{subsection.1.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{DataSource跟DriverManager区别及联系}{29}{section*.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.3}Spring Boot缓存}{30}{subsection.1.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.4}全局异常拦截器}{31}{subsection.1.2.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.5}用户重复登录问题}{31}{subsection.1.2.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.6}读取properties属性}{31}{subsection.1.2.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{读取自定义属性}{31}{section*.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.3}单元测试}{32}{section.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.3.1}Gradle中执行单元测试}{32}{subsection.1.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.3.2}TestNG单元测试}{32}{subsection.1.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.3.3}Spring mockMvc测试}{33}{subsection.1.3.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.4}常见问题}{34}{section.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{getAttribute: Session already invalidated}{34}{section*.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}{34}{section*.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}{34}{section*.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{NoClassDefFoundError}{34}{section*.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Unregistering JMX-exposed beans on shutdown}{35}{section*.11}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{AES加密失败}{35}{section*.12}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1.5}Mybatis}{36}{section.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.5.1}打印SQL}{36}{subsection.1.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.5.2}多参数传递}{37}{subsection.1.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{37}{subsection.1.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.5.4}常见问题}{37}{subsection.1.5.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Invalid bound statement (not found)}{37}{section*.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Parameter 'keys' not found. Available parameters are [list]}{38}{section*.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {2}Scala}{39}{chapter.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2.1}函数}{39}{section.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1.1}排序}{40}{subsection.2.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1.2}集合操作}{40}{subsection.2.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {3}Python}{41}{chapter.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.1}基础}{41}{subsection.3.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.2}Beautiful Soup}{42}{subsection.3.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.3}爬取豆瓣书籍}{42}{subsection.3.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.4}抓取技巧}{43}{subsection.3.0.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{防止IP被封}{43}{section*.15}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{模仿浏览器}{43}{section*.16}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{避免重复抓取}{43}{section*.17}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{海量数据}{44}{section*.18}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.5}读取Properties文件}{44}{subsection.3.0.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.0.6}sh: mysql\_config: command not found解决办法}{45}{subsection.3.0.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {4}前端}{47}{chapter.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.1}React}{47}{section.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.1}组件生命周期(Life Cycle)}{47}{subsection.4.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.2}第一个React}{47}{subsection.4.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.3}React数据的流转过程}{48}{subsection.4.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.4}规范}{48}{subsection.4.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.5}Router}{48}{subsection.4.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.6}Provider}{49}{subsection.4.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.7}Connect}{50}{subsection.4.1.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.8}Actions}{50}{subsection.4.1.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.9}Store}{50}{subsection.4.1.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.10}Reducer}{51}{subsection.4.1.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.11}Dispatcher}{51}{subsection.4.1.11}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{redux-thunk}{51}{section*.19}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.12}state}{52}{subsection.4.1.12}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{初始化state}{52}{section*.20}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{redux logger}{52}{section*.21}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.13}Props}{53}{subsection.4.1.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{React Router父子Props传递}{54}{section*.22}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.14}Reducers}{55}{subsection.4.1.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{onEnter}{55}{section*.23}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.15}Immutable}{55}{subsection.4.1.15}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{IMMUTABLE DATA}{55}{section*.24}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1.16}前端Mock}{55}{subsection.4.1.16}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.2}MobX}{56}{section.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2.1}简介}{56}{subsection.4.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.3}gulp}{56}{section.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.3.1}压缩图片}{56}{subsection.4.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.3.2}清除文件}{56}{subsection.4.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.3.3}设置默认任务}{57}{subsection.4.3.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.4}webpack}{57}{section.4.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.5}Library}{57}{section.4.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.5.1}lodash}{57}{subsection.4.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{去除重复数据}{57}{section*.25}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{分组}{57}{section*.26}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.5.2}Axios}{58}{subsection.4.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.5.3}Axios请求}{58}{subsection.4.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.5.4}Axios拦截响应}{59}{subsection.4.5.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.5.5}Promise}{59}{subsection.4.5.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.6}Cookie}{59}{section.4.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Max Age}{60}{section*.27}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.7}Javascript}{61}{section.4.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.7.1}prototype}{61}{subsection.4.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.7.2}常用函数}{61}{subsection.4.7.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.7.3}日期处理}{62}{subsection.4.7.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4.8}常见问题}{63}{section.4.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{index.js:83 TypeError: Cannot read property 'get' of undefined}{63}{section*.28}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Each child in an array or iterator should have a unique "key" prop. Check the render method of `CreditDataPeopleMain`}{63}{section*.29}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Cannot read property 'apply' of undefined}{64}{section*.30}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Module build failed: SyntaxError: Unexpected token ...}{64}{section*.31}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Store does not have a valid reducer}{65}{section*.32}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {II}{OS}}{67}{part.2}
+\ttl@stoptoc {default@1}
+\ttl@starttoc {default@2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {5}Linux}{69}{chapter.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.1}shell}{69}{subsection.5.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{快捷键}{69}{section*.33}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{source}{69}{section*.34}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{修改登录路径}{70}{section*.35}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{输入长命令}{70}{section*.36}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{创建路径}{70}{section*.37}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{与控制操作符组合使用}{70}{section*.38}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{source文件路径}{70}{section*.39}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{读取配置文件}{71}{section*.40}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{文件是否存在}{71}{section*.41}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{大小写不敏感}{71}{section*.42}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{统计代码行数}{71}{section*.43}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{查看端口情况}{72}{section*.44}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.2}命令}{73}{subsection.5.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ls}{73}{section*.45}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{find}{73}{section*.46}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{kill}{73}{section*.47}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{tar}{73}{section*.48}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{grep}{74}{section*.49}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{sed}{74}{section*.50}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ag}{75}{section*.51}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{apt}{75}{section*.52}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.3}自动部署}{75}{subsection.5.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.4}环境变量}{77}{subsection.5.0.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{screen}{78}{section*.53}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{查看Linux信息}{78}{section*.54}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.5}XFCE桌面}{79}{subsection.5.0.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.6}Fedora访问Windows共享文件夹}{79}{subsection.5.0.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.7}Ubuntu访问Windows共享文件夹}{79}{subsection.5.0.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.8}软件包管理}{79}{subsection.5.0.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {5.0.9}输入法(Input Method)}{80}{subsection.5.0.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {III}{Tool}}{81}{part.3}
+\ttl@stoptoc {default@2}
+\ttl@starttoc {default@3}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {6}Intellij Idea}{83}{chapter.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.0.1}Intellij Idea远程调试}{83}{subsection.6.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.0.2}Intellij Idea调试慢}{83}{subsection.6.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {6.0.3}Tips}{84}{subsection.6.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Class JavaLaunchHelper is implemented}{84}{section*.55}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{列编辑模式}{84}{section*.56}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{自动换行}{84}{section*.57}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{匹配文件}{84}{section*.58}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{智能提示}{85}{section*.59}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Template}{85}{section*.60}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {7}Gradle}{87}{chapter.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.1}基础}{87}{section.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.1}初始化项目}{87}{subsection.7.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.2}引用本地文件}{87}{subsection.7.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.3}执行流程}{88}{subsection.7.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.4}默认JVM}{88}{subsection.7.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.5}repositories}{88}{subsection.7.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.1.6}常见问题}{89}{subsection.7.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{could not find method compile()}{89}{section*.61}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {7.2}Gradle对象}{89}{section.7.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.1}属性(Properties)}{89}{subsection.7.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Extra Properties}{89}{section*.62}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{定义目标jar包名}{89}{section*.63}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.2}Task}{90}{subsection.7.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{拷贝文件}{90}{section*.64}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {7.2.3}同时连接内外网}{91}{subsection.7.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Mac同时连内网外网}{91}{section*.65}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Fedora同时连接内外网}{91}{section*.66}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Ubuntu同时连接内外网}{93}{section*.67}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{Windows同时连接内外网}{93}{section*.68}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {8}youtube-dl}{95}{chapter.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {9}Fiddler}{97}{chapter.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {9.0.1}Fiddler替换Host}{97}{subsection.9.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {10}Charles}{99}{chapter.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.0.1}title}{99}{subsection.10.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {11}OpenVPN}{101}{chapter.11}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.1}安装}{101}{subsection.11.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.2}生成客户端证书}{102}{subsection.11.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.3}Mac Book客户端配置}{103}{subsection.11.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.4}Ubuntu远程Raspberry}{104}{subsection.11.0.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.5}Ubuntu远程Ubuntu}{105}{subsection.11.0.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.6}Mac Book远程Fedora}{105}{subsection.11.0.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {11.0.7}常见问题}{106}{subsection.11.0.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{ssl3\_get\_server\_certificate:certificate verify failed}{106}{section*.69}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{OpenVPN is connected to the server but your IP address does not change}{106}{section*.70}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {12}Nmap(GNU General Public License)}{107}{chapter.12}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {12.0.1}主机发现（Host Discovery）}{107}{subsection.12.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {12.0.2}端口扫描（Port Scanning）}{108}{subsection.12.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{"ppp0" is not an ethernet device}{109}{section*.71}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {12.0.3}版本侦测（Version Detection）}{110}{subsection.12.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {12.0.4}Zenmap}{110}{subsection.12.0.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {12.1}tmux}{110}{section.12.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {13}Raspberry Pi}{111}{chapter.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {13.0.1}Raspberry Pi远程}{111}{subsection.13.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {14}Widgets}{113}{chapter.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.1}Little Tool}{113}{section.14.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.1.1}Pandoc}{113}{subsection.14.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.1.2}Zeal}{113}{subsection.14.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.1.3}jq}{113}{subsection.14.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{常用模式}{114}{section*.72}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.2}Nginx}{114}{section.14.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.1}X-Forwarded-For}{115}{subsection.14.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.2}Nginx获取真实IP}{115}{subsection.14.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.3}Nginx并发}{117}{subsection.14.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.4}URI长度限制}{118}{subsection.14.2.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.5}开启gzip压缩}{119}{subsection.14.2.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.6}Nginx配置}{119}{subsection.14.2.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.2.7}常见问题}{120}{subsection.14.2.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}{120}{section*.73}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{error while loading shared libraries: libpcre.so.3: cannot open shared object file}{120}{section*.74}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}{121}{section*.75}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.3}Ansible}{121}{section.14.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.3.1}Ansible模块}{121}{subsection.14.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Ansible配置}{121}{section*.76}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{shell模块}{122}{section*.77}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{copy模块}{122}{section*.78}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.4}ssh}{122}{section.14.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.4.1}免密登陆}{122}{subsection.14.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.4.2}ssh连接慢}{122}{subsection.14.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.4.3}Permission denied (publickey)}{123}{subsection.14.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.4.4}Session时间}{123}{subsection.14.4.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ClientAliveInterval}{123}{section*.79}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ClientAliveCountMax}{123}{section*.80}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ControlPersist 4h}{124}{section*.81}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.4.5}代理转发}{124}{subsection.14.4.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{本地转发Local Forward}{124}{section*.82}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{远程转发Remote Forward}{124}{section*.83}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.5}VisualVM}{124}{section.14.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.5.1}VisualVM远程监控}{124}{subsection.14.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.5.2}autojump}{125}{subsection.14.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.6}Graphviz}{126}{section.14.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.6.1}编译}{126}{subsection.14.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.7}MyBatis Generator}{127}{section.14.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.7.1}title}{127}{subsection.14.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {14.8}Curl}{127}{section.14.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {15}Git}{129}{chapter.15}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {15.1}基础}{129}{section.15.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.1}配置}{129}{subsection.15.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.2}返回到指定版本}{129}{subsection.15.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.3}查看修改历史}{130}{subsection.15.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.4}常见问题}{130}{subsection.15.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{error setting certificate verify location}{130}{section*.84}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.5}rsync}{131}{subsection.15.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {15.1.6}merge}{131}{subsection.15.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {16}Google Chrome}{133}{chapter.16}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {16.1}DevTools}{133}{section.16.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.1}Console}{133}{subsection.16.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Log XMLHttpRequests}{133}{section*.85}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{脚本添加到黑盒}{133}{section*.86}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{定位按钮触发代码}{134}{section*.87}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Async调试}{134}{section*.88}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{查找成员函数}{134}{section*.89}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{打印对象数组}{134}{section*.90}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.2}Source Map}{135}{subsection.16.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.3}Network}{135}{subsection.16.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Replay XHR}{135}{section*.91}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Disable cache}{135}{section*.92}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Preserve Log}{135}{section*.93}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{DOMContentLoaded和load事件信息}{136}{section*.94}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{资源的发起者(请求源)和依赖项}{136}{section*.95}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.4}Elements}{136}{subsection.16.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.5}Performance}{136}{subsection.16.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.6}Sources}{136}{subsection.16.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{面板中查看变量}{136}{section*.96}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Snippets}{138}{section*.97}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Others}{138}{section*.98}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{查看Render区域}{138}{section*.99}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.7}Audits}{138}{subsection.16.1.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.1.8}Google Chrome SSH}{138}{subsection.16.1.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {16.2}Zentao}{138}{section.16.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {16.2.1}常见问题}{138}{subsection.16.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {17}LaTex}{139}{chapter.17}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {17.1}安装}{139}{section.17.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {17.1.1}字体}{139}{subsection.17.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {17.1.2}版面}{139}{subsection.17.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{换行}{139}{section*.100}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {17.1.3}支持语言}{139}{subsection.17.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {17.1.4}常见问题}{140}{subsection.17.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{infoBulle.sty not found}{140}{section*.101}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {IV}{DB}}{141}{part.4}
+\ttl@stoptoc {default@3}
+\ttl@starttoc {default@4}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {18}性能(Performance)}{143}{chapter.18}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {18.1}索引(Index)}{143}{section.18.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {18.1.1}索引常识}{143}{subsection.18.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{B+树}{143}{section*.102}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{索引原则}{144}{section*.103}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{最左前缀匹配原则}{144}{section*.104}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{=和in可以乱序}{144}{section*.105}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{尽量选择区分度高的列作为索引}{144}{section*.106}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{索引列不能参与计算}{144}{section*.107}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{尽量的扩展索引}{144}{section*.108}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {18.1.2}索引类型}{145}{subsection.18.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{位图索引(Bitmap Index)}{145}{section*.109}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{散列索引Or哈希索引(Hash Index)}{145}{section*.110}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{聚集索引(Cluster Index)}{145}{section*.111}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{非聚集索引(Non-Cluster Index)}{145}{section*.112}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{全文索引(Full-text Search)}{145}{section*.113}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{联合索引}{145}{section*.114}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {18.1.3}like查询优化}{145}{subsection.18.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{采用函数}{145}{section*.115}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{全文索引(Full-text Search)}{146}{section*.116}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {18.2}Redis}{147}{section.18.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {18.2.1}安装}{147}{subsection.18.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {19}PostgreSQL}{149}{chapter.19}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {19.1}基础操作}{149}{section.19.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {20}MySQL}{151}{chapter.20}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.1}查询}{151}{subsection.20.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{MySQL远程连接}{151}{section*.117}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.2}Mac中MySQL初始密码}{152}{subsection.20.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.3}基础}{152}{subsection.20.0.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.4}备份}{153}{subsection.20.0.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.5}存储过程}{153}{subsection.20.0.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.6}mycli}{154}{subsection.20.0.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.7}常见问题}{154}{subsection.20.0.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock'}{154}{section*.118}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {20.0.8}中文查询}{154}{subsection.20.0.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {21}达梦}{155}{chapter.21}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {21.1}SQL}{155}{section.21.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.1.1}索引}{155}{subsection.21.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.1.2}函数}{155}{subsection.21.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.1.3}常用SQL记录}{156}{subsection.21.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {21.2}通用知识}{156}{section.21.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.2.1}查询优化}{156}{subsection.21.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{增加缓存}{157}{section*.119}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{分库分表}{157}{section*.120}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{分区表}{157}{section*.121}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{采用NoSQL数据库}{157}{section*.122}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.2.2}系统架构}{158}{subsection.21.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {21.2.3}注意事项}{158}{subsection.21.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{不要ORDER BY RAND()}{158}{section*.123}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {V}{Network}}{159}{part.5}
+\ttl@stoptoc {default@4}
+\ttl@starttoc {default@5}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {22}WebService}{161}{chapter.22}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {22.1}Axis2}{161}{section.22.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {22.1.1}Axis2 Web Service}{161}{subsection.22.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {23}HTTP}{163}{chapter.23}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.0.1}性能分析}{163}{subsection.23.0.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{慢的SQL查询}{163}{section*.124}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{大的Javascript脚本}{163}{section*.125}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{去掉Javascript注释}{164}{section*.126}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{添加插件}{164}{section*.127}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{webpack-bundle-analyzer}{164}{section*.128}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{React切换到产品环境}{164}{section*.129}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{查看Webpack输出}{164}{section*.130}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{利用浏览器缓存}{165}{section*.131}
+\defcounter {refsection}{0}\relax 
+\contentsline {subparagraph}{开启Gzip压缩}{165}{section*.132}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{字体文件加载}{166}{section*.133}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{耗时长的请求}{167}{section*.134}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.0.2}Session}{167}{subsection.23.0.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {23.1}PAC}{168}{section.23.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.1.1}PAC简介}{168}{subsection.23.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.1.2}PAC实例}{168}{subsection.23.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {VI}{Engneering}}{171}{part.6}
+\ttl@stoptoc {default@5}
+\ttl@starttoc {default@6}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {23.2}通用规范}{173}{section.23.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.2.1}版本管理}{173}{subsection.23.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {23.3}T\kern -.1667em\lower .5ex\hbox {E}\kern -.125emX\spacefactor \@m {},\LaTeX , and \LaTeXe }{174}{section.23.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {23.4}Citation}{174}{section.23.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {23.5}Lists}{174}{section.23.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.5.1}Numbered List}{174}{subsection.23.5.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.5.2}Bullet Points}{174}{subsection.23.5.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {23.5.3}Descriptions and Definitions}{175}{subsection.23.5.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {24}In-text Elements}{177}{chapter.24}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.1}Theorems}{177}{section.24.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.1.1}Several equations}{177}{subsection.24.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.1.2}Single Line}{177}{subsection.24.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.2}Definitions}{177}{section.24.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.3}Notations}{178}{section.24.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.4}Remarks}{178}{section.24.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.5}Corollaries}{178}{section.24.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.6}Propositions}{178}{section.24.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.6.1}Several equations}{178}{subsection.24.6.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.6.2}Single Line 中文测试}{179}{subsection.24.6.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.7}Examples}{179}{section.24.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.7.1}Equation and Text}{179}{subsection.24.7.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {24.7.2}Paragraph of Text}{179}{subsection.24.7.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.8}Exercises}{179}{section.24.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.9}Problems}{179}{section.24.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {24.10}Vocabulary}{179}{section.24.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {part}{\@mypartnumtocformat {VII}{Part Two}}{181}{part.7}
+\ttl@stoptoc {default@6}
+\ttl@starttoc {default@7}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\numberline {25}Presenting Information}{183}{chapter.25}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {25.1}Table}{183}{section.25.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {25.2}Figure}{183}{section.25.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {chapter}{\leavevmode {\color {ocre}Bibliography}}{185}{chapter*.135}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Books}{185}{section*.136}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{Articles}{185}{section*.137}
+\contentsfinish 
