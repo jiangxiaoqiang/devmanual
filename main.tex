@@ -897,11 +897,11 @@ if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
 
 \begin{lstlisting}[language=Java]
 f (!"".equals(name)) {
-//将""写在前头，这样，不管name是否为null，都不会出错
+	//将""写在前头，这样，不管name是否为null，都不会出错
 }
 
 if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-//用String强制转换也不会报空指针异常
+	//用String强制转换也不会报空指针异常
 } 
 \end{lstlisting}
 
@@ -916,8 +916,8 @@ String total = json.getString("totalElementsCondition1");
 
 \begin{lstlisting}[language=Java]
 List<AccessLog> logs = operationLogs.stream()
-.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-.collect(Collectors.toList());
+									.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+									.collect(Collectors.toList());
 \end{lstlisting}
 
 peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
@@ -1023,22 +1023,6 @@ dbcp 发展滞后
 
 \begin{lstlisting}[language=Bash]
 lsof -i:5236
-\end{lstlisting}
-
-输出的结果如下：
-
-\begin{lstlisting}
-COMMAND   PID USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-java    20026   hl   38u  IPv4 2197171      0t0  TCP localhost:58220->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   42u  IPv4 2197527      0t0  TCP localhost:58222->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   43u  IPv4 2197176      0t0  TCP localhost:58224->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   44u  IPv4 2197177      0t0  TCP localhost:58226->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   45u  IPv4 2197178      0t0  TCP localhost:58228->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   46u  IPv4 2197179      0t0  TCP localhost:58230->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   47u  IPv4 2197180      0t0  TCP localhost:58232->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   48u  IPv4 2197181      0t0  TCP localhost:58234->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   49u  IPv4 2197182      0t0  TCP localhost:58236->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   50u  IPv4 2197536      0t0  TCP localhost:58238->localhost:padl2sim (ESTABLISHED)
 \end{lstlisting}
 
 在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设启连接池连接池时，初始建立的连接数量为5个：

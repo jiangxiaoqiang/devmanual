@@ -37,13 +37,13 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.2.1}Could not get JDBC connection}{24}{subsection.1.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{28}{subsection.1.2.2}
+\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{27}{subsection.1.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{DataSource跟DriverManager区别及联系}{29}{section*.5}
+\contentsline {paragraph}{DataSource跟DriverManager区别及联系}{28}{section*.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.3}Spring Boot缓存}{30}{subsection.1.2.3}
+\contentsline {subsection}{\numberline {1.2.3}Spring Boot缓存}{29}{subsection.1.2.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.4}全局异常拦截器}{31}{subsection.1.2.4}
+\contentsline {subsection}{\numberline {1.2.4}全局异常拦截器}{30}{subsection.1.2.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.2.5}用户重复登录问题}{31}{subsection.1.2.5}
 \defcounter {refsection}{0}\relax 
@@ -51,17 +51,17 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{读取自定义属性}{31}{section*.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.3}单元测试}{32}{section.1.3}
+\contentsline {section}{\numberline {1.3}单元测试}{31}{section.1.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.3.1}Gradle中执行单元测试}{32}{subsection.1.3.1}
+\contentsline {subsection}{\numberline {1.3.1}Gradle中执行单元测试}{31}{subsection.1.3.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.3.2}TestNG单元测试}{32}{subsection.1.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.3.3}Spring mockMvc测试}{33}{subsection.1.3.3}
+\contentsline {subsection}{\numberline {1.3.3}Spring mockMvc测试}{32}{subsection.1.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.4}常见问题}{34}{section.1.4}
+\contentsline {section}{\numberline {1.4}常见问题}{33}{section.1.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{getAttribute: Session already invalidated}{34}{section*.7}
+\contentsline {paragraph}{getAttribute: Session already invalidated}{33}{section*.7}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}{34}{section*.8}
 \defcounter {refsection}{0}\relax 
@@ -69,17 +69,17 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{NoClassDefFoundError}{34}{section*.10}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Unregistering JMX-exposed beans on shutdown}{35}{section*.11}
+\contentsline {paragraph}{Unregistering JMX-exposed beans on shutdown}{34}{section*.11}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{AES加密失败}{35}{section*.12}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.5}Mybatis}{36}{section.1.5}
+\contentsline {section}{\numberline {1.5}Mybatis}{35}{section.1.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.1}打印SQL}{36}{subsection.1.5.1}
+\contentsline {subsection}{\numberline {1.5.1}打印SQL}{35}{subsection.1.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.2}多参数传递}{37}{subsection.1.5.2}
+\contentsline {subsection}{\numberline {1.5.2}多参数传递}{36}{subsection.1.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{37}{subsection.1.5.3}
+\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{36}{subsection.1.5.3}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.5.4}常见问题}{37}{subsection.1.5.4}
 \defcounter {refsection}{0}\relax 
