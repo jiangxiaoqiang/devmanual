@@ -37,7 +37,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.2.1}Could not get JDBC connection}{24}{subsection.1.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{27}{subsection.1.2.2}
+\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{28}{subsection.1.2.2}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{DataSource跟DriverManager区别及联系}{28}{section*.5}
 \defcounter {refsection}{0}\relax 
@@ -69,7 +69,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{NoClassDefFoundError}{34}{section*.10}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Unregistering JMX-exposed beans on shutdown}{34}{section*.11}
+\contentsline {paragraph}{Unregistering JMX-exposed beans on shutdown}{35}{section*.11}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{AES加密失败}{35}{section*.12}
 \defcounter {refsection}{0}\relax 
@@ -79,13 +79,13 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.5.2}多参数传递}{36}{subsection.1.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{36}{subsection.1.5.3}
+\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{37}{subsection.1.5.3}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.5.4}常见问题}{37}{subsection.1.5.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Invalid bound statement (not found)}{37}{section*.13}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Parameter 'keys' not found. Available parameters are [list]}{38}{section*.14}
+\contentsline {paragraph}{Parameter 'keys' not found. Available parameters are [list]}{37}{section*.14}
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {2}Scala}{39}{chapter.2}
 \defcounter {refsection}{0}\relax 
@@ -405,57 +405,59 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.1.1}Pandoc}{113}{subsection.14.1.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.1.2}Zeal}{113}{subsection.14.1.2}
+\contentsline {subsection}{\numberline {14.1.2}Curl}{113}{subsection.14.1.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.1.3}jq}{113}{subsection.14.1.3}
+\contentsline {subsection}{\numberline {14.1.3}Zeal}{114}{subsection.14.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {14.1.4}jq}{114}{subsection.14.1.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{常用模式}{114}{section*.72}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.2}Nginx}{114}{section.14.2}
+\contentsline {section}{\numberline {14.2}Nginx}{115}{section.14.2}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.2.1}X-Forwarded-For}{115}{subsection.14.2.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.2.2}Nginx获取真实IP}{115}{subsection.14.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.2.3}Nginx并发}{117}{subsection.14.2.3}
+\contentsline {subsection}{\numberline {14.2.3}Nginx并发}{118}{subsection.14.2.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.2.4}URI长度限制}{118}{subsection.14.2.4}
+\contentsline {subsection}{\numberline {14.2.4}URI长度限制}{119}{subsection.14.2.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.2.5}开启gzip压缩}{119}{subsection.14.2.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.2.6}Nginx配置}{119}{subsection.14.2.6}
+\contentsline {subsection}{\numberline {14.2.6}Nginx配置}{120}{subsection.14.2.6}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.2.7}常见问题}{120}{subsection.14.2.7}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}{120}{section*.73}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{error while loading shared libraries: libpcre.so.3: cannot open shared object file}{120}{section*.74}
+\contentsline {paragraph}{error while loading shared libraries: libpcre.so.3: cannot open shared object file}{121}{section*.74}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}{121}{section*.75}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.3}Ansible}{121}{section.14.3}
+\contentsline {section}{\numberline {14.3}Ansible}{122}{section.14.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.3.1}Ansible模块}{121}{subsection.14.3.1}
+\contentsline {subsection}{\numberline {14.3.1}Ansible模块}{122}{subsection.14.3.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Ansible配置}{121}{section*.76}
+\contentsline {paragraph}{Ansible配置}{122}{section*.76}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{shell模块}{122}{section*.77}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{copy模块}{122}{section*.78}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.4}ssh}{122}{section.14.4}
+\contentsline {section}{\numberline {14.4}ssh}{123}{section.14.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.4.1}免密登陆}{122}{subsection.14.4.1}
+\contentsline {subsection}{\numberline {14.4.1}免密登陆}{123}{subsection.14.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.4.2}ssh连接慢}{122}{subsection.14.4.2}
+\contentsline {subsection}{\numberline {14.4.2}ssh连接慢}{123}{subsection.14.4.2}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {14.4.3}Permission denied (publickey)}{123}{subsection.14.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.4.4}Session时间}{123}{subsection.14.4.4}
+\contentsline {subsection}{\numberline {14.4.4}Session时间}{124}{subsection.14.4.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{ClientAliveInterval}{123}{section*.79}
+\contentsline {paragraph}{ClientAliveInterval}{124}{section*.79}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{ClientAliveCountMax}{123}{section*.80}
+\contentsline {paragraph}{ClientAliveCountMax}{124}{section*.80}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{ControlPersist 4h}{124}{section*.81}
 \defcounter {refsection}{0}\relax 
@@ -463,23 +465,19 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{本地转发Local Forward}{124}{section*.82}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{远程转发Remote Forward}{124}{section*.83}
+\contentsline {paragraph}{远程转发Remote Forward}{125}{section*.83}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.5}VisualVM}{124}{section.14.5}
+\contentsline {section}{\numberline {14.5}VisualVM}{125}{section.14.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.5.1}VisualVM远程监控}{124}{subsection.14.5.1}
+\contentsline {subsection}{\numberline {14.5.1}VisualVM远程监控}{125}{subsection.14.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.5.2}autojump}{125}{subsection.14.5.2}
+\contentsline {subsection}{\numberline {14.5.2}autojump}{126}{subsection.14.5.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.6}Graphviz}{126}{section.14.6}
+\contentsline {section}{\numberline {14.6}Graphviz}{127}{section.14.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.6.1}编译}{126}{subsection.14.6.1}
+\contentsline {subsection}{\numberline {14.6.1}编译}{127}{subsection.14.6.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {14.7}MyBatis Generator}{127}{section.14.7}
-\defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {14.7.1}title}{127}{subsection.14.7.1}
-\defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {14.8}Curl}{127}{section.14.8}
 \defcounter {refsection}{0}\relax 
 \contentsline {chapter}{\numberline {15}Git}{129}{chapter.15}
 \defcounter {refsection}{0}\relax 
