@@ -601,6 +601,8 @@ addtohook={%
 
 \section{Common Sense}\index{Common Sense}
 
+Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.
+
 \subsection{classpath}\index{classpath}
 
 理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
@@ -897,11 +899,11 @@ if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
 
 \begin{lstlisting}[language=Java]
 f (!"".equals(name)) {
-//将""写在前头，这样，不管name是否为null，都不会出错
+	//将""写在前头，这样，不管name是否为null，都不会出错
 }
 
 if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-//用String强制转换也不会报空指针异常
+	//用String强制转换也不会报空指针异常
 } 
 \end{lstlisting}
 
@@ -916,8 +918,8 @@ String total = json.getString("totalElementsCondition1");
 
 \begin{lstlisting}[language=Java]
 List<AccessLog> logs = operationLogs.stream()
-.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-.collect(Collectors.toList());
+									.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+									.collect(Collectors.toList());
 \end{lstlisting}
 
 peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
@@ -1025,22 +1027,6 @@ dbcp 发展滞后
 lsof -i:5236
 \end{lstlisting}
 
-输出的结果如下：
-
-\begin{lstlisting}
-COMMAND   PID USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-java    20026   hl   38u  IPv4 2197171      0t0  TCP localhost:58220->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   42u  IPv4 2197527      0t0  TCP localhost:58222->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   43u  IPv4 2197176      0t0  TCP localhost:58224->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   44u  IPv4 2197177      0t0  TCP localhost:58226->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   45u  IPv4 2197178      0t0  TCP localhost:58228->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   46u  IPv4 2197179      0t0  TCP localhost:58230->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   47u  IPv4 2197180      0t0  TCP localhost:58232->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   48u  IPv4 2197181      0t0  TCP localhost:58234->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   49u  IPv4 2197182      0t0  TCP localhost:58236->localhost:padl2sim (ESTABLISHED)
-java    20026   hl   50u  IPv4 2197536      0t0  TCP localhost:58238->localhost:padl2sim (ESTABLISHED)
-\end{lstlisting}
-
 在程序启动时，并没有真正建立TCP连接。只有真正的接受到请求查询数据库时，程序才与数据库建立TCP连接。此处建立了10个TCP连接。而Hikari默认的最大连接池数量也为10个。如下配置设启连接池连接池时，初始建立的连接数量为5个：
 
 \begin{lstlisting}
@@ -1076,32 +1062,32 @@ nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceConfig {
 
-private String jdbcUrl;
-
-private String username;
-
-private String driverClassName;
-
-private String password;
-
-@Bean
-@Primary
-public DataSource primaryDataSource() {
-HikariConfig hikariConfig = new HikariConfig();
-hikariConfig.setDriverClassName(driverClassName);
-hikariConfig.setJdbcUrl(jdbcUrl);
-hikariConfig.setUsername(username);
-hikariConfig.setPassword(password);
-hikariConfig.setMaximumPoolSize(5);
-hikariConfig.setConnectionTestQuery("SELECT 1");
-hikariConfig.setPoolName("springHikariCP");
-hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
-hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
-hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
-hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
-HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-return dataSource;
-}
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+	
+	@Bean
+	@Primary
+	public DataSource primaryDataSource() {
+		HikariConfig hikariConfig = new HikariConfig();
+		hikariConfig.setDriverClassName(driverClassName);
+		hikariConfig.setJdbcUrl(jdbcUrl);
+		hikariConfig.setUsername(username);
+		hikariConfig.setPassword(password);
+		hikariConfig.setMaximumPoolSize(5);
+		hikariConfig.setConnectionTestQuery("SELECT 1");
+		hikariConfig.setPoolName("springHikariCP");
+		hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+		hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+		HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+		return dataSource;
+	}
 }
 \end{lstlisting}
 
@@ -1158,7 +1144,7 @@ SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。
 
 \begin{lstlisting}[language=XML]
 <ehcache>
-<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
+	<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
 </ehcache>
 \end{lstlisting}
 
@@ -1193,14 +1179,14 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 @ControllerAdvice(basePackages = "creditsystem.web.controllers")
 public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
 
-@Override
-protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
-request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
-}
-logger.error("系统错误", ex);
-return new ResponseEntity<>(ApiResult.error(status.value(), "系统错误"), headers, HttpStatus.OK);
-}
+	@Override
+	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
+			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
+		}
+		logger.error("系统错误", ex);
+		return new ResponseEntity<>(ApiResult.error(status.value(), "系统错误"), headers, HttpStatus.OK);
+	}
 }
 \end{lstlisting}
 
@@ -1225,7 +1211,7 @@ spring.datasource.hikari.jdbc-url=jdbc:dm://dn4:5236/DMSERVER
 @Data
 @ConfigurationProperties(prefix = "spring.datasource.hikari")
 public class DataSourceConfig {
-private String jdbcUrl;
+	private String jdbcUrl;
 }
 \end{lstlisting}
 
@@ -1239,9 +1225,9 @@ private String jdbcUrl;
 
 \begin{lstlisting}[language=Java]
 project(':cc-api') {	
-test{
-include('**/*Test.class')
-}
+	test{
+		include('**/*Test.class')
+	}
 }
 \end{lstlisting}
 
@@ -1258,7 +1244,7 @@ include('**/*Test.class')
 */
 @Test(groups = "xycq-api")
 public void testGetXzcfList() throws Exception {
-TestPublicVariable.test("/xzcf?xdr=dolphin");
+	TestPublicVariable.test("/xzcf?xdr=dolphin");
 }
 \end{lstlisting}
 
@@ -1289,25 +1275,25 @@ testCompile group: 'junit', name: 'junit', version: '4.12'
 @Transactional
 public class BookControllerTest {
 
-private MockMvc mockMvc;
-
-@Autowired
-private WebApplicationContext wac;
-
-@Before
-public void setUp() {
-this.mockMvc = webAppContextSetup(this.wac).build();
-}
-
-@Test
-public void getBooksByName() throws Exception {
-String responseString = mockMvc.perform(
-get("/api/book?name=小学生")
-).andExpect(status().isOk())    
-.andDo(print())         
-.andReturn().getResponse().getContentAsString();
-System.out.println("--------返回的json = " + responseString);
-}
+	private MockMvc mockMvc;
+	
+	@Autowired
+	private WebApplicationContext wac;
+	
+	@Before
+	public void setUp() {
+		this.mockMvc = webAppContextSetup(this.wac).build();
+	}
+	
+	@Test
+	public void getBooksByName() throws Exception {
+		String responseString = mockMvc.perform(
+										get("/api/book?name=小学生")
+										).andExpect(status().isOk())    
+										.andDo(print())         
+										.andReturn().getResponse().getContentAsString();
+		System.out.println("--------返回的json = " + responseString);
+	}
 }
 \end{lstlisting}
 
@@ -1333,7 +1319,7 @@ Tomcat 的内部日志使用 JULI 组件，这是一个 Apache Commons 日志的
 
 \begin{lstlisting}[language=Bash]
 dependencies{
-compile group: 'org.apache.tomcat', name: 'tomcat-juli', version: property('tomcat.version')
+	compile group: 'org.apache.tomcat', name: 'tomcat-juli', version: property('tomcat.version')
 }
 \end{lstlisting}
 
@@ -1415,10 +1401,10 @@ mybatis.config-location=classpath:mybatis-config.xml
 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-<settings>
-<!-- 打印查询语句 -->
-<setting name="logImpl" value="STDOUT_LOGGING" />
-</settings>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
 </configuration>
 \end{lstlisting}
 
@@ -3760,6 +3746,24 @@ pandoc -s interface.tex -o example30.docx
 
 另外使用\LaTeX{}还有一个比较方便的地方是可以容易的以模块来管理文档，比如接口文档分为公共部分，所有调用方都可以看到，但是针对每个调用方可能会有一些定制的内容，当要修改公共部分时，如果是采用Word文件分散管理会出现不一致的情况，有的文件修改了，有的没有改。使用\LaTeX{}就只需要改动一个公共模块即可。其他引用公共的地方自动更新。
 
+\subsection{Curl}
+
+内部接口测试：
+
+\begin{lstlisting}[language=Bash]
+
+\end{lstlisting}
+
+使用如下命令上传文件：
+
+\begin{lstlisting}[language=Bash]
+curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/file/upload
+curl -i -X POST host:port/post-file -H "Content-Type: text/xml" --data-binary "@path/to/file"
+\end{lstlisting}
+
+The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。
+
+
 \subsection{Zeal}
 
 Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息，示例如图\ref{fig:zealsearch}所示。搜索以nginx和冒号开始，表示搜索与Nignx相关的信息。
@@ -4301,23 +4305,6 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
 
 \section{MyBatis Generator}
-
-\subsection{title}
-
-\section{Curl}
-
-内部接口测试：
-
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
-
-外部接口测试：
-
-
-\begin{lstlisting}[language=Bash]
-
-\end{lstlisting}
 
 \chapter{Git}
 
