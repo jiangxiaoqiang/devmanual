@@ -1764,13 +1764,13 @@ import React from "react";
 import {BrowserRouter, Route} from 'react-router-dom'
 
 const User = ({match}) => {
-return <h1>Hello {match.params.username}!</h1>
+	return <h1>Hello {match.params.username}!</h1>
 }
 
 const routes = (
-<BrowserRouter>
-<Route path="/user/:username" component={User}/>
-</BrowserRouter>
+	<BrowserRouter>
+		<Route path="/user/:username" component={User}/>
+	</BrowserRouter>
 );
 
 export default routes;
@@ -1784,6 +1784,22 @@ export default routes;
 	\caption{React Route效果}
 	\label{fig:firstroute}
 \end{figure}
+
+\paragraph{传入初始值}
+
+项目中需要判断页面是否初次进入，根据是否第一次进入页面还是返回时进入的页面进行不同的逻辑操作，在链接到项目对应模块的地方增加初始参数：
+
+\begin{lstlisting}[language=Javascript]
+<Link to={'/profile/redblackLog?operation=init'}>红黑名单访问记录</Link>
+\end{lstlisting}
+
+在页面中判断是否第一次进入：
+
+\begin{lstlisting}[language=Javascript]
+if (this.props.location.query.operation === "init") {
+	//第一次进入页面
+}
+\end{lstlisting}
 
 \subsection{Provider}
 
