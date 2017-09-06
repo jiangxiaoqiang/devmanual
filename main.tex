@@ -672,17 +672,7 @@ public class DataSourceConfig {
 }
 \end{lstlisting}
 
-在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。程序启动命令：
-
-\begin{lstlisting}[language=Bash]
-java -jar -Xmx2g credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
-\end{lstlisting}
-
-启动的同时启动远程调试：
-
-\begin{lstlisting}[language=Bash]
-java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.28.jar --spring.config.location=application-jenkins.properties
-\end{lstlisting}
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
 \subsection{Spring Boot开发者工具}
 
@@ -715,7 +705,7 @@ String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8")
 \end{lstlisting}
 
 
-\subsection{返回消息封装}
+\subsection{返回消息封装(Message Encapsulation)}
 
 一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。这也是Restful接口及接口采用Json交互的优势之一，在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
 
@@ -733,15 +723,26 @@ RestApiResponse为统一定义的返回实体，所有的接口都会返回标�
 
 目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
 发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
-过期判断，容易遭受重放攻击(Replay Attack)。采用如下脚本生成认证请求的Key。
+过期判断，容易遭受重放攻击(Replay Attack)。而且从流量中是可以轻松拿到请求头，对于专业选手来说，相当于大门敞开。采用如下shell脚本生成认证请求的Key。
 
 \begin{lstlisting}[language=Bash]
 # Mac生成sha256串
 echo -n "foobar" | shasum -a 256
+# Mac生成sha1串
+echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 curl -X POST -H "Content-Type: application/json" -d \
 '{"elem":"'"$TOKEN"'"}' "https://httpbin.org/post"; \
+
+#!/bin/sh
+
+readonly APP_ID=""
+readonly APP_KEY=""
+ECHOSTR=
+CURRENT_TIME=`date '+%Y%m%d%H%M%S'`
 \end{lstlisting}
+
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。传闻二战时德国通讯由于偷懒，传输时使用了重复的“密钥”，导致盟军找到加密规律，破解了通讯的内容。
 
 \subsection{日志记录(Logging)}
 
