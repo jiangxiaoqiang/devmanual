@@ -13,53 +13,55 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.1.2}Spring Boot开发者工具}{17}{subsection.1.1.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.3}请求消息}{18}{subsection.1.1.3}
+\contentsline {section}{\numberline {1.2}接口(Application Interface)}{18}{section.1.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.4}返回消息封装}{18}{subsection.1.1.4}
+\contentsline {subsection}{\numberline {1.2.1}请求消息}{18}{subsection.1.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.5}接口认证(Authorization)}{19}{subsection.1.1.5}
+\contentsline {subsection}{\numberline {1.2.2}返回消息封装}{18}{subsection.1.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.6}日志记录(Logging)}{19}{subsection.1.1.6}
+\contentsline {subsection}{\numberline {1.2.3}接口认证(Authorization)}{19}{subsection.1.2.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2.4}日志记录(Logging)}{19}{subsection.1.2.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{获取Response返回内容}{19}{section*.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.7}接口返回}{21}{subsection.1.1.7}
+\contentsline {subsection}{\numberline {1.2.5}接口返回}{21}{subsection.1.2.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.8}Code Snippets}{22}{subsection.1.1.8}
+\contentsline {subsection}{\numberline {1.2.6}Code Snippets}{22}{subsection.1.2.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.9}集合操作(Collection Operate)}{23}{subsection.1.1.9}
+\contentsline {subsection}{\numberline {1.2.7}集合操作(Collection Operate)}{23}{subsection.1.2.7}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{数组转换为ArrayList}{24}{section*.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1.10}jps}{24}{subsection.1.1.10}
+\contentsline {subsection}{\numberline {1.2.8}jps}{24}{subsection.1.2.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.2}数据库操作}{24}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.9}异常处理(Exception Handle)}{25}{subsection.1.2.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.1}Could not get JDBC connection}{24}{subsection.1.2.1}
+\contentsline {section}{\numberline {1.3}数据库操作}{25}{section.1.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.2}HikariCP数据库连接}{28}{subsection.1.2.2}
+\contentsline {subsection}{\numberline {1.3.1}Could not get JDBC connection}{25}{subsection.1.3.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{DataSource跟DriverManager区别及联系}{28}{section*.5}
+\contentsline {subsection}{\numberline {1.3.2}HikariCP数据库连接}{28}{subsection.1.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.3}Spring Boot缓存}{29}{subsection.1.2.3}
+\contentsline {paragraph}{DataSource跟DriverManager区别及联系}{29}{section*.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.4}全局异常拦截器}{30}{subsection.1.2.4}
+\contentsline {subsection}{\numberline {1.3.3}Spring Boot缓存}{30}{subsection.1.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.5}用户重复登录问题}{31}{subsection.1.2.5}
+\contentsline {subsection}{\numberline {1.3.4}用户重复登录问题}{31}{subsection.1.3.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.2.6}读取properties属性}{31}{subsection.1.2.6}
+\contentsline {subsection}{\numberline {1.3.5}读取properties属性}{31}{subsection.1.3.5}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{读取自定义属性}{31}{section*.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.3}单元测试}{31}{section.1.3}
+\contentsline {section}{\numberline {1.4}单元测试}{31}{section.1.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.3.1}Gradle中执行单元测试}{31}{subsection.1.3.1}
+\contentsline {subsection}{\numberline {1.4.1}Gradle中执行单元测试}{31}{subsection.1.4.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.3.2}TestNG单元测试}{32}{subsection.1.3.2}
+\contentsline {subsection}{\numberline {1.4.2}TestNG单元测试}{32}{subsection.1.4.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.3.3}Spring mockMvc测试}{32}{subsection.1.3.3}
+\contentsline {subsection}{\numberline {1.4.3}Spring mockMvc测试}{33}{subsection.1.4.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.4}常见问题}{33}{section.1.4}
+\contentsline {section}{\numberline {1.5}常见问题}{33}{section.1.5}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{getAttribute: Session already invalidated}{33}{section*.7}
 \defcounter {refsection}{0}\relax 
@@ -73,15 +75,15 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{AES加密失败}{35}{section*.12}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1.5}Mybatis}{35}{section.1.5}
+\contentsline {section}{\numberline {1.6}Mybatis}{35}{section.1.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.1}打印SQL}{35}{subsection.1.5.1}
+\contentsline {subsection}{\numberline {1.6.1}打印SQL}{36}{subsection.1.6.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.2}多参数传递}{36}{subsection.1.5.2}
+\contentsline {subsection}{\numberline {1.6.2}多参数传递}{36}{subsection.1.6.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.3}resultMap和resultType区别}{37}{subsection.1.5.3}
+\contentsline {subsection}{\numberline {1.6.3}resultMap和resultType区别}{37}{subsection.1.6.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5.4}常见问题}{37}{subsection.1.5.4}
+\contentsline {subsection}{\numberline {1.6.4}常见问题}{37}{subsection.1.6.4}
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Invalid bound statement (not found)}{37}{section*.13}
 \defcounter {refsection}{0}\relax 

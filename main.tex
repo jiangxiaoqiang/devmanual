@@ -2,52 +2,38 @@
 
 %XeLatex使用xeCJK支持中文
 \usepackage{xeCJK}
-
 %代码块
 \usepackage{listings}
-
 \usepackage{multirow}
 \usepackage{longtable}
 \usepackage{ctex}
-
 \usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a4paper]{geometry} % Page margins
-
 \usepackage{graphicx} % Required for including pictures
 \graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
-
 \usepackage{lipsum} % Inserts dummy text
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage[english]{babel} % English language/hyphenation
-
 \usepackage{enumitem} % Customize lists
 \setlist{nolistsep} % Reduce spacing between bullet points and numbered lists
-
 \usepackage{booktabs} % Required for nicer horizontal rules in tables
-
 \usepackage{xcolor} % Required for specifying colors by name
 \definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
-
 \usepackage{avant} % Use the Avantgarde font for headings
 %\usepackage{times} % Use the Times font for headings
 \usepackage{mathptmx} % Use the Adobe Times Roman as the default text font together with math symbols from the Sym­bol, Chancery and Com­puter Modern fonts
-
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 \usepackage[utf8]{inputenc} % Required for including letters with accents
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
-
 \usepackage[style=alphabetic,citestyle=numeric,
 			sorting=nyt,sortcites=true,autopunct=true,
 			babel=hyphen,hyperref=true,abbreviate=false,
 			backref=true,backend=biber]{biblatex}
 \addbibresource{bibliography.bib} % BibTeX bibliography file
 \defbibheading{bibempty}{}
-
 \usepackage{calc} % 简单的计算功能
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
-
 \usepackage{titletoc} % 目录操作
-
 \contentsmargin{0cm} % Removes the default margin
 
 \lstdefinelanguage{JavaScript}{
@@ -70,7 +56,6 @@
 
 \setcounter{tocdepth}{2}
 
-
 %Set Code Format%
 \lstloadlanguages{C, csh, make,python,Java,JavaScript}
 \lstset{	  
@@ -88,7 +73,7 @@
 	numbers=left,%左侧显示行号 往左靠,还可以为right，或none，即不加行号  
 	stepnumber=1,%若设置为2，则显示行号为1,3,5，即stepnumber为公差,默认stepnumber=1  
 	%numberstyle=\tiny, %行号字体用小号  
-	numberstyle={\color[RGB]{0,192,192}\tiny} ,%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
+	numberstyle={\color[RGB]{0,192,192}\tiny},%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
 	numbersep=8pt,  %设置行号与代码的距离，默认是5pt  
 	basicstyle=\footnotesize, % 这句设置代码的大小  
 	showspaces=false, % 
@@ -106,8 +91,12 @@
 	%% added by http://bbs.ctex.org/viewthread.php?tid=53451  
 	fontadjust,  
 	captionpos=t,  
-	framextopmargin=2pt,framexbottommargin=2pt,abovecaptionskip=-3pt,belowcaptionskip=3pt,  
-	xleftmargin=4em,xrightmargin=4em, % 设定listing左右的空白  
+	framextopmargin=2pt,
+	framexbottommargin=2pt,
+	abovecaptionskip=-3pt,
+	belowcaptionskip=3pt,  
+	xleftmargin=4em,
+	xrightmargin=4em, % 设定listing左右的空白  
 	texcl=true
 }
 
@@ -533,9 +522,9 @@ addtohook={%
 \node at (current page.north west)
 {\begin{tikzpicture}[remember picture,overlay]
 \node[anchor=north west,inner sep=0pt] at (0,0) {\includegraphics[width=\paperwidth]{background}}; % Background image
-\draw[anchor=north] (midpoint) node [fill=ocre!30!white,fill opacity=0.6,text opacity=1,inner sep=1cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centering The So Long Introduction to \LaTeX \\[15pt] % Book title
-{\Large \LaTeX Study Notes Based On Tobias Oetiker's Excellent Book}\\[20pt] % Subtitle
-{\huge Roger Young}}}; % Author name
+\draw[anchor=north] (midpoint) node [fill=ocre!30!white,fill opacity=0.6,text opacity=1,inner sep=1cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centering 开发记录 \\[15pt] % Book title
+{\Large 卷一}\\[20pt] % Subtitle
+{\large Dolphin}}}; % Author name
 \end{tikzpicture}};
 \end{tikzpicture}
 \vfill
@@ -558,11 +547,11 @@ addtohook={%
 ~\vfill
 \thispagestyle{empty}
 
-\noindent Copyright \textcopyright\ 2017 Roger Young\\ % Copyright notice
+\noindent Copyright \textcopyright\ 2017 Xiaoqian Jiang\\ % Copyright notice
 
-\noindent \textsc{Edited by Roger Young}\\ % Publisher
+\noindent \textsc{Edited by Xiaoqiang Jiang}\\ % Publisher
 
-\noindent \textsc{\url{https://hiatcg.github.io/}}\\ % URL
+\noindent \textsc{\url{http://jiangxiaoqiang.com/}}\\ % URL
 
 \noindent All Rights Unreserved.\\ % License information
 
@@ -586,6 +575,13 @@ addtohook={%
 \pagestyle{fancy} % Print headers again
 
 %----------------------------------------------------------------------------------------
+%	BLANK PAGE
+%----------------------------------------------------------------------------------------
+
+
+
+
+%----------------------------------------------------------------------------------------
 %	PART
 %----------------------------------------------------------------------------------------
 
@@ -607,7 +603,7 @@ Java 8 (codename: Spider) was released on 18 March 2014,and included some featur
 
 理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
 
-\begin{lstlisting}[language=Java]
+\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
 public class Application {
 	public static void main(String[] args) {
 		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -697,6 +693,8 @@ compile "org.springframework.boot:spring-boot-devtools"
 \end{lstlisting}
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
+
+\section{接口(Application Interface)}
 
 \subsection{请求消息}
 
@@ -951,6 +949,25 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
+\subsection{异常处理(Exception Handle)}
+
+在系统中，异常处理一般通过全局异常捕获，这样就几乎不用在代码中使用异常捕获块，过多的异常捕获代码块也会造成代码的污染和重复。在Spring中，可以在class注解上@ControllerAdvice来捕获全局异常：
+
+\begin{lstlisting}[language=Java]
+@ControllerAdvice(basePackages = "creditsystem.web.controllers")
+public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
+
+	@ExceptionHandler(HlValidateException.class)
+	@ResponseBody
+	ResponseEntity<?> handleValidateException(HttpServletRequest request, HlBaseException ex) {
+	HttpStatus status = HttpStatus.OK;
+	return new ResponseEntity<>(ApiResult.error(ex.getErrCode(), ex.getErrMsg(), ex.getData()), status);
+	}
+}
+\end{lstlisting}
+
+这样在业务逻辑层面遇到异常，只需要抛出异常即可，具体的异常处理流程由全局的异常处理模块来负责。以上代码还有一个问题，在添加了basePackages的扫描范围限制后，在拦截器中抛出异常时，全局异常处理类无法捕获异常。即使将拦截器的包空间加入到basePackages中也无效，暂时未找到原因。去掉basePackages的限制是可以捕获到异常的，这里捕获到异常时，接口返回标准的Json格式内容，这样调用方就方便解析并处理异常了。ExceptionHandler指定捕获的异常类型，不同的异常类型会进入到不同的方法来处理。
+
 \section{数据库操作}
 
 \subsection{Could not get JDBC connection}
@@ -1171,24 +1188,7 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 	\item{子类调用父类中有缓存注解的方法}
 \end{itemize}
 
-\subsection{全局异常拦截器}
 
-在class注解上@ControllerAdvice
-
-\begin{lstlisting}[language=Java]
-@ControllerAdvice(basePackages = "creditsystem.web.controllers")
-public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
-
-	@Override
-	protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-		if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
-			request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
-		}
-		logger.error("系统错误", ex);
-		return new ResponseEntity<>(ApiResult.error(status.value(), "系统错误"), headers, HttpStatus.OK);
-	}
-}
-\end{lstlisting}
 
 \subsection{用户重复登录问题}
 
@@ -1485,7 +1485,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not found. Available parameters are [list]
 \end{lstlisting}
 
-传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时 候,MyBatis 会自动将它包装在一个Map中,用名称在作为键。List 实例将会以“list” 作为键,而数组实例将会以“array”作为键。因为此时传的参数只有一个，而且传入的是一个List集合，所以mybatis会自动封装成Map<"list",keys>。在解析的时候会通过“list”作为Map的key值去寻找。但是我在xml中却声明成keys了，所以自然会报错找不到。解决办法就是修改Mapper.xml文件。或者将List封装到Map里面传递。第一种方式以后如果要扩展该方法，增加集合参数的时候，需要修改xml中的内容。
+传递一个 List 实例或者数组作为参数对象传给 MyBatis。当你这么做的时 候,MyBatis 会自动将它包装在一个Map中,用名称在作为键。List 实例将会以“list” 作为键,而数组实例将会以“array”作为键。因为此时传的参数只有一个，而且传入的是一个List集合，所以mybatis会自动封装成Map<"list",keys>。在解析的时候会通过“list”作为Map的key值去寻找。但是在xml中却声明成keys了，所以自然会报错找不到。解决办法就是修改Mapper.xml文件。或者将List封装到Map里面传递。第一种方式以后如果要扩展该方法，增加集合参数的时候，需要修改xml中的内容。
 
 \newpage
 
