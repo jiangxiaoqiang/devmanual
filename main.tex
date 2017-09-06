@@ -1429,12 +1429,12 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 
 \begin{lstlisting}[language=XML]
 <update id="batchUpdate" parameterType="java.util.List">
-UPDATE TD_S_ORG
-SET STATUS = #{status}
-WHERE ORG_ID IN
-<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
-#{item}
-</foreach>
+	UPDATE TD_S_ORG
+	SET STATUS = #{status}
+	WHERE ORG_ID IN
+	<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+		#{item}
+	</foreach>
 </update>
 \end{lstlisting}
 
@@ -1932,20 +1932,20 @@ Redux Logger是一个中间件，它会打印出当前应用的state变化，配
 import {createLogger} from 'redux-logger';
 
 if (process.env.NODE_ENV === 'development') {
-const logger = createLogger({
-stateTransformer: (state) => {
-let newState = {};
-for (let i of Object.keys(state)) {
-if (Iterable.isIterable(state[i])) {
-newState[i] = state[i].toJS();
-} else {
-newState[i] = state[i];
-}
-}
-return newState;
-}
-});
-middleware.push(logger);
+	const logger = createLogger({
+	stateTransformer: (state) => {
+		let newState = {};
+		for (let i of Object.keys(state)) {
+			if (Iterable.isIterable(state[i])) {
+					newState[i] = state[i].toJS();
+				} else {
+					newState[i] = state[i];
+				}
+			}
+			return newState;
+		}
+	});
+	middleware.push(logger);
 }
 \end{lstlisting}
 
@@ -1971,11 +1971,11 @@ middleware.push(logger);
 \begin{lstlisting}[language=Javascript]
 const routes = (
 <BrowserRouter>
-<BookContainer>
-<switch>
-<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
-</switch>
-</BookContainer>
+	<BookContainer>
+		<switch>
+			<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
+		</switch>
+	</BookContainer>
 </BrowserRouter>
 );
 \end{lstlisting}
@@ -1988,9 +1988,9 @@ const routes = (
 * 通过props把状态传递给内层组件
 */
 class BookContainer extends Component {
-render() {
-return React.cloneElement(this.props.children, {...this.props});
-}
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
 }
 \end{lstlisting}
 
@@ -3767,17 +3767,19 @@ pandoc -s interface.tex -o example30.docx
 内部接口测试：
 
 \begin{lstlisting}[language=Bash]
-
+curl -i -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" http://localhost:28080/api/article
 \end{lstlisting}
 
 使用如下命令上传文件：
 
 \begin{lstlisting}[language=Bash]
-curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/file/upload
+curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/api/article
 curl -i -X POST host:port/post-file -H "Content-Type: text/xml" --data-binary "@path/to/file"
+# 使用curl將文件上傳到服務器，文件類型可以任意
+curl -i -X POST -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -F "upfile=@main.synctex.gz" http://localhost:28080/api/article
 \end{lstlisting}
 
-The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。
+The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。
 
 
 \subsection{Zeal}
@@ -5156,196 +5158,193 @@ new webpack.optimize.AggressiveMergingPlugin()//Merge chunks
 ]
 \end{lstlisting}
 
-\subparagraph{webpack-bundle-analyzer}
 
-\url{http://www.reactpeixun.com/reactganhuo/2017-06-05/304.html?nsukey=Oif9ieNi7kisvaq%2B0aDH46Tl37niZVItuq2VKmhdkz7Z%2F%2F2PmtYFX6EdwDLkcMg8ajYX9XxOUXO5ykezqUerb45blihPXZ3BgEZSQUlk25d4qkfLibGwVsIWSBdG9ByTmNG11Da14liYOc%2BB9tmOVI1FbAE%2FohPpzfc2kVRHQMk%3D}
-	
-	\subparagraph{React切换到产品环境}
-	
-	\subparagraph{查看Webpack输出}
-	
-	最最直接的，可以直接阅读Webpack的输出，里面有模块的文件大小，在package.json文件中添加--display-chunks参数，配置如下：
-	
-	\begin{lstlisting}[language=Javascript]
-	"scripts": {
-	"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
-	}
-	\end{lstlisting}
-	
-	
-	输出如图\ref{fig:webpackcheckingfilesize}所示。也可以在输出中查找是否包含重复依赖。
-	
-	\begin{figure}[htbp]
-		\centering
-		\includegraphics[scale=0.7]{webpackcheckingfilesize.png}
-		\caption{Webpack查看输出文件大小}
-		\label{fig:webpackcheckingfilesize}
-	\end{figure}
-	
-	
-	\subparagraph{利用浏览器缓存}
-	
-	有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要频繁的访问服务器下载Javascript脚本，提升 本地加载速度的同时也减轻了服务端的压力，如图\ref{fig:scriptusingdiskcache}所示。
-	
-	\begin{figure}[htbp]
-		\centering
-		\includegraphics[scale=0.45]{scriptusingdiskcache.png}
-		\caption{Javascript脚本利用浏览器缓存}
-		\label{fig:scriptusingdiskcache}
-	\end{figure}
-	
-	由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是用户无法忍受的。
-	
-	\subparagraph{开启Gzip压缩}
-	
-	同时可以考虑在服务端开启Gzip压缩，開啓Gzip壓縮配置如下：
-	
-	\begin{lstlisting}[language=Bash]
-	#僅僅開啓Gzip還不行，需要各項詳細配置
-	gzip on;
-	gzip_min_length 1k;
-	gzip_buffers 4 16k;
-	gzip_comp_level 2;
-	gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
-	gzip_vary off;
-	gzip_disable "MSIE [1-6]\.";
-	\end{lstlisting}
-	
-	开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
-	
-	\begin{figure}[htbp]
-		\centering
-		\includegraphics[scale=0.5]{openservercompress.png}
-		\caption{开启服务端压缩效果}
-		\label{fig:openservercompress}
-	\end{figure}
-	
-	图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
-	
-	\paragraph{字体文件加载}
-	
-	發現一個字體文件(fontawesome-webfont.woff2)在Linux下的Chrone中是從磁盤中加載(from disk cache)的，花費了220ms左右。在Windows平臺下的360浏览器中是從内存中加載(from cache)的。diskCache顾名思义，就是将资源缓存到磁盘中，等待下次访问时不需要重新下载资源，而直接从磁盘中获取，它的直接操作对象为CurlCacheManager。它与memoryCache最大的区别在于，当退出进程时，内存中的数据会被清空，而磁盘的数据不会，所以，当下次再进入该进程时，该进程仍可以从diskCache中获得数据，而memoryCache则不行。diskCache与memoryCache相似之处就是也只能存储一些派生类资源文件。它的存储形式为一个index.dat文件，记录存储数据的url，然后再分别存储该url的response信息和content内容。Response信息最大作用就是用于判断服务器上该url的content内容是否被修改。
-	
-	\paragraph{耗时长的请求}
-	
-	查看首页中一个耗时最长的请求，一般情况下耗时都稳定在1s左右。如图\ref{fig:longtimerequest}所示。可以看出挂起(stalled)304ms，等待服务端响应581ms，此两项的时间是最长的。Stalled从HTTP连接建立到请求能够被发出送出去(真正传输数据)之间的时间花费。包含用于处理代理的时间，如果有已经建立好的连接，这个时间还包括等待已建立连接被复用的时间。挂起时间长是由于浏览器对同一个主机域名的并发连接数有限制，因此如果当前的连接数已经超过上限，那么其余请求就会被阻塞，等待新的可用连接；此外脚本也会阻塞其他组件的下载。另外在不同的平台上挂起时间时长也不一定，在Windows平台的360浏览器上挂起时长(stalled)仅仅为0.458ms。
-	
-	\begin{figure}[htbp]
-		\centering
-		\includegraphics[scale=0.6]{longtimerequest.png}
-		\caption{耗时长的请求}
-		\label{fig:longtimerequest}
-	\end{figure}
-	
-	针对服务器端耗时长的请求，使用VisualVM查看服务端调用的耗时最长的方法。VisualVM 是一款免费的性能分析工具。它通过 jvmstat、JMX、SA（Serviceability Agent）以及 Attach API 等多种方式从程序运行时获得实时数据，从而进行动态的性能分析。同时，它能自动选择更快更轻量级的技术尽量减少性能分析对应用程序造成的影响，提高性能分析的精度。
-	
-	\subsection{Session}
-	
-	当浏览器第一次请求时，服务器创建一个session对象，同时生成一个sessionId，并在此次响应中将sessionId 以响应报文的方式传回客户端浏览器内存或以重写url方式送回客户端，来保持整个会话。关闭此浏览器窗口，其内存中的sessionId也就随之销毁。session.invalidate()是将session设置为失效，一般在退出时使用，但要注意的是：session失效的同时 浏览器会立即创建一个新的session的，你第一个session已经失效了 所以调用它的getAttribute方法时候一定会抛出NullPointerException。jsessionid只是tomcat中对session id的叫法，在其它容器里面，不一定就是叫jsessionid。
-	
-	
-	\section{PAC}
-	
-	\subsection{PAC简介}
-	
-	PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就是JavaScript文件。PAC最简单的格式就是包含一个叫FindProxyForURL的JavaScript函数，IE通过传入两个变量来调用这个函数。一个是用户流量的地址的URL全路径，一个是这个URL中的主机名host。在日常生活中浏览器中设置代理很简单，但是当你来回切换时总是觉得很烦，你可以使用pac脚本自动判断是否走代理，方便省去了来回手动切换的烦恼。
-	
-	\subsection{PAC实例}
-	
-	一个最简单的PAC脚本：
-	
-	\begin{lstlisting}[language=JavaScript]
-	function FindProxyForURL(url,host){
-	return "DIRECT";
-	}
-	\end{lstlisting}
-	
-	参数url是用户输入的url，参数host是url中的主机名。PAC文件返回值有三种类型：
-	
-	\begin{itemize}
-		\item{DIRECT直连不通过代理}
-		\item{PROXY www.lybbn.cn:8080 http通过8080端口代理上网，也可以使用ip:port的形式}
-		\item{SOCKS5 www.lybbn.cn:8080 socks通过8080端口代理上网，可以使用ip:port形式}
-	\end{itemize}
-	
-	\begin{lstlisting}[language=VBScript]
-	var FindProxyForURL = function(init, profiles) {
-	return function(url, host) {
-	"use strict";
-	var result = init, scheme = url.substr(0, url.indexOf(":"));
-	do {
-	result = profiles[result];
-	if (typeof result === "function") result = result(url, host, scheme);
-	} while (typeof result !== "string" || result.charCodeAt(0) === 43);
-	return result;
-	};
-	}("+dolphin2", {
-	"+dolphin2": function(url, host, scheme) {
-	"use strict";
-	if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
-	if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
-	return "DIRECT";
-	},
-	"+dolphin-proxy": function(url, host, scheme) {
-	"use strict";
-	if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
-	return "PROXY 10.55.10.2:8888";
-	}
-	});
-	\end{lstlisting}
-	
-	以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
-	
-	\part{Engneering}
-	
-	\section{通用规范}
-	
-	\subsection{版本管理}
-	
-	在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号，方便测试进行问题识别。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
-	
-	\begin{itemize}
-		\item{MAJOR version when you make incompatible API changes,}
-		\item{MINOR version when you add functionality in a backwards-compatible manner}
-		\item{PATCH version when you make backwards-compatible bug fixes.}
-	\end{itemize}
-	
-	Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.在项目的根目录下新建version.properties文件，文件中定义版本号：
-	
-	\begin{lstlisting}
-	VERSION_CODE=1.0.2
-	\end{lstlisting}
-	
-	在Gradle中读取版本号：
-	
-	\begin{lstlisting}
-	version = getVersionCode()
-	
-	def getVersionCode() {
-	def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
-	if (versionFile.canRead()) {
-	def Properties versionProps = new Properties()
-	versionProps.load(new FileInputStream(versionFile))
-	def versionCode = versionProps['VERSION_CODE'].toString()
-	/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
-	if ('assembleRelease' in runTasks) {
-	versionProps['VERSION_CODE'] = (++versionCode).toString()
-	versionProps.store(versionFile.newWriter(), null)
-	}*/
-	return versionCode
-	} else {
-	throw new GradleException("Could not find version.properties!")
-	}
-	}
-	\end{lstlisting}
-	
-	此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，不同的成员使用的操作系统有区别，项目存放的路径也不一样，所以写成相对路径会比较妥当。可以写成如下：
-	
-	\begin{lstlisting}
-	File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
-	\end{lstlisting}
-	
-	其中\$rootDir表示项目的根目录，比如有一个叫做dolphin的项目，那么rootDir就是dolphin目录，另外还有一个projectDir的变量和buildDir的变量。projectDir就是dolphin/src目录，buildDir就是dolphin/src/build目录。如果是多个Project组成的项目，那么projectDir就是rootDir/projectName，buildDir就是dolphin/projectName/build。
+\subparagraph{React切换到产品环境}
+
+\subparagraph{查看Webpack输出}
+
+最最直接的，可以直接阅读Webpack的输出，里面有模块的文件大小，在package.json文件中添加--display-chunks参数，配置如下：
+
+\begin{lstlisting}[language=Javascript]
+"scripts": {
+"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
+}
+\end{lstlisting}
+
+
+输出如图\ref{fig:webpackcheckingfilesize}所示。也可以在输出中查找是否包含重复依赖。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{webpackcheckingfilesize.png}
+	\caption{Webpack查看输出文件大小}
+	\label{fig:webpackcheckingfilesize}
+\end{figure}
+
+
+\subparagraph{利用浏览器缓存}
+
+有时优化之后Javascript的大小还是不够理想，此时可以考虑将Javascript的文件名用Hash进行标识，Hash是经过文件计算出来的唯一值，在文件有改动后，会自动更新，浏览器仅仅在首次请求时下载较大的Javascript脚本，以后就可以直接利用本地缓存。此种方式不需要频繁的访问服务器下载Javascript脚本，提升 本地加载速度的同时也减轻了服务端的压力，如图\ref{fig:scriptusingdiskcache}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{scriptusingdiskcache.png}
+	\caption{Javascript脚本利用浏览器缓存}
+	\label{fig:scriptusingdiskcache}
+\end{figure}
+
+由于应用是SPA(Single Page Application)，上图中单单一个main.js脚本都会有5MB之巨，加上其他的大大小小的Javascript脚本，在未经过服务端压缩的情况下会有10MB以上的大小，在普通的网络环境下肯定是非常慢。如果下载速度时1MB/s，打开应用至少需要10s，将是用户无法忍受的。
+
+\subparagraph{开启Gzip压缩}
+
+同时可以考虑在服务端开启Gzip压缩，開啓Gzip壓縮配置如下：
+
+\begin{lstlisting}[language=Bash]
+#僅僅開啓Gzip還不行，需要各項詳細配置
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]\.";
+\end{lstlisting}
+
+开启服务端压缩后效果非常显著，如图\ref{fig:openservercompress}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{openservercompress.png}
+	\caption{开启服务端压缩效果}
+	\label{fig:openservercompress}
+\end{figure}
+
+图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
+
+\paragraph{字体文件加载}
+
+發現一個字體文件(fontawesome-webfont.woff2)在Linux下的Chrone中是從磁盤中加載(from disk cache)的，花費了220ms左右。在Windows平臺下的360浏览器中是從内存中加載(from cache)的。diskCache顾名思义，就是将资源缓存到磁盘中，等待下次访问时不需要重新下载资源，而直接从磁盘中获取，它的直接操作对象为CurlCacheManager。它与memoryCache最大的区别在于，当退出进程时，内存中的数据会被清空，而磁盘的数据不会，所以，当下次再进入该进程时，该进程仍可以从diskCache中获得数据，而memoryCache则不行。diskCache与memoryCache相似之处就是也只能存储一些派生类资源文件。它的存储形式为一个index.dat文件，记录存储数据的url，然后再分别存储该url的response信息和content内容。Response信息最大作用就是用于判断服务器上该url的content内容是否被修改。
+
+\paragraph{耗时长的请求}
+
+查看首页中一个耗时最长的请求，一般情况下耗时都稳定在1s左右。如图\ref{fig:longtimerequest}所示。可以看出挂起(stalled)304ms，等待服务端响应581ms，此两项的时间是最长的。Stalled从HTTP连接建立到请求能够被发出送出去(真正传输数据)之间的时间花费。包含用于处理代理的时间，如果有已经建立好的连接，这个时间还包括等待已建立连接被复用的时间。挂起时间长是由于浏览器对同一个主机域名的并发连接数有限制，因此如果当前的连接数已经超过上限，那么其余请求就会被阻塞，等待新的可用连接；此外脚本也会阻塞其他组件的下载。另外在不同的平台上挂起时间时长也不一定，在Windows平台的360浏览器上挂起时长(stalled)仅仅为0.458ms。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{longtimerequest.png}
+	\caption{耗时长的请求}
+	\label{fig:longtimerequest}
+\end{figure}
+
+针对服务器端耗时长的请求，使用VisualVM查看服务端调用的耗时最长的方法。VisualVM 是一款免费的性能分析工具。它通过 jvmstat、JMX、SA（Serviceability Agent）以及 Attach API 等多种方式从程序运行时获得实时数据，从而进行动态的性能分析。同时，它能自动选择更快更轻量级的技术尽量减少性能分析对应用程序造成的影响，提高性能分析的精度。
+
+\subsection{Session}
+
+当浏览器第一次请求时，服务器创建一个session对象，同时生成一个sessionId，并在此次响应中将sessionId 以响应报文的方式传回客户端浏览器内存或以重写url方式送回客户端，来保持整个会话。关闭此浏览器窗口，其内存中的sessionId也就随之销毁。session.invalidate()是将session设置为失效，一般在退出时使用，但要注意的是：session失效的同时 浏览器会立即创建一个新的session的，你第一个session已经失效了 所以调用它的getAttribute方法时候一定会抛出NullPointerException。jsessionid只是tomcat中对session id的叫法，在其它容器里面，不一定就是叫jsessionid。
+
+
+\section{PAC}
+
+\subsection{PAC简介}
+
+PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就是JavaScript文件。PAC最简单的格式就是包含一个叫FindProxyForURL的JavaScript函数，IE通过传入两个变量来调用这个函数。一个是用户流量的地址的URL全路径，一个是这个URL中的主机名host。在日常生活中浏览器中设置代理很简单，但是当你来回切换时总是觉得很烦，你可以使用pac脚本自动判断是否走代理，方便省去了来回手动切换的烦恼。
+
+\subsection{PAC实例}
+
+一个最简单的PAC脚本：
+
+\begin{lstlisting}[language=JavaScript]
+function FindProxyForURL(url,host){
+return "DIRECT";
+}
+\end{lstlisting}
+
+参数url是用户输入的url，参数host是url中的主机名。PAC文件返回值有三种类型：
+
+\begin{itemize}
+	\item{DIRECT直连不通过代理}
+	\item{PROXY www.lybbn.cn:8080 http通过8080端口代理上网，也可以使用ip:port的形式}
+	\item{SOCKS5 www.lybbn.cn:8080 socks通过8080端口代理上网，可以使用ip:port形式}
+\end{itemize}
+
+\begin{lstlisting}[language=VBScript]
+var FindProxyForURL = function(init, profiles) {
+return function(url, host) {
+"use strict";
+var result = init, scheme = url.substr(0, url.indexOf(":"));
+do {
+result = profiles[result];
+if (typeof result === "function") result = result(url, host, scheme);
+} while (typeof result !== "string" || result.charCodeAt(0) === 43);
+return result;
+};
+}("+dolphin2", {
+"+dolphin2": function(url, host, scheme) {
+"use strict";
+if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
+if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
+return "DIRECT";
+},
+"+dolphin-proxy": function(url, host, scheme) {
+"use strict";
+if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
+return "PROXY 10.55.10.2:8888";
+}
+});
+\end{lstlisting}
+
+以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\part{Engneering}
+
+\section{通用规范}
+
+\subsection{版本管理}
+
+在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号，方便测试进行问题识别。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
+
+\begin{itemize}
+	\item{MAJOR version when you make incompatible API changes,}
+	\item{MINOR version when you add functionality in a backwards-compatible manner}
+	\item{PATCH version when you make backwards-compatible bug fixes.}
+\end{itemize}
+
+Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.在项目的根目录下新建version.properties文件，文件中定义版本号：
+
+\begin{lstlisting}
+VERSION_CODE=1.0.2
+\end{lstlisting}
+
+在Gradle中读取版本号：
+
+\begin{lstlisting}
+version = getVersionCode()
+
+def getVersionCode() {
+def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
+if (versionFile.canRead()) {
+def Properties versionProps = new Properties()
+versionProps.load(new FileInputStream(versionFile))
+def versionCode = versionProps['VERSION_CODE'].toString()
+/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
+if ('assembleRelease' in runTasks) {
+versionProps['VERSION_CODE'] = (++versionCode).toString()
+versionProps.store(versionFile.newWriter(), null)
+}*/
+return versionCode
+} else {
+throw new GradleException("Could not find version.properties!")
+}
+}
+\end{lstlisting}
+
+此处文件路径写的是绝对路径，如果仅仅在本机进行构建问题不大，但是一般都是团队协作，不同的成员使用的操作系统有区别，项目存放的路径也不一样，所以写成相对路径会比较妥当。可以写成如下：
+
+\begin{lstlisting}
+File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properties")
+\end{lstlisting}
+
+其中\$rootDir表示项目的根目录，比如有一个叫做dolphin的项目，那么rootDir就是dolphin目录，另外还有一个projectDir的变量和buildDir的变量。projectDir就是dolphin/src目录，buildDir就是dolphin/src/build目录。如果是多个Project组成的项目，那么projectDir就是rootDir/projectName，buildDir就是dolphin/projectName/build。
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
