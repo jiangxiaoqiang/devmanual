@@ -865,6 +865,32 @@ public XydmResponse mapToCorporationResponse(Corporation corporation) {
 }
 \end{lstlisting}
 
+\subsection{异常处理(Exception Handle)}
+
+在系统中，异常处理一般通过全局异常捕获，这样就几乎不用在代码中使用异常捕获块，过多的异常捕获代码块也会造成代码的污染和重复。在Spring中，可以在class注解上@ControllerAdvice来捕获全局异常：
+
+\begin{lstlisting}[language=Java]
+@ControllerAdvice(basePackages = "creditsystem.web.controllers")
+public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
+
+	@ExceptionHandler(HlValidateException.class)
+	@ResponseBody
+	ResponseEntity<?> handleValidateException(HttpServletRequest request, HlBaseException ex) {
+		HttpStatus status = HttpStatus.OK;
+		return new ResponseEntity<>(ApiResult.error(ex.getErrCode(), ex.getErrMsg(), ex.getData()), status);
+	}
+}
+\end{lstlisting}
+
+这样在业务逻辑层面遇到异常，只需要抛出异常即可，具体的异常处理流程由全局的异常处理模块来负责。以上代码还有一个问题，在添加了basePackages的扫描范围限制后，在拦截器中抛出异常时，全局异常处理类无法捕获异常。即使将拦截器的包空间加入到basePackages中也无效，暂时未找到原因。去掉basePackages的限制是可以捕获到异常的，这里捕获到异常时，接口返回标准的Json格式内容，这样调用方就方便解析并处理异常了。ExceptionHandler指定捕获的异常类型，不同的异常类型会进入到不同的方法来处理。
+
+\subsection{接口版本管理(Interface Version Control)}
+
+接口升级时，有的时候的修改是会影响到下游调用的，无法做到完全兼容，当升级了接口之后，原来的接口调用逻辑就无法正常使用了。所以，考虑做接口的版本管理，当发布接口时，发布一版新的接口，旧有的接口继续提供服务。升级接口由下游的用户来决定，这样在做不兼容升级时，不会影响原来的接口。
+
+
+
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -971,24 +997,6 @@ java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临�
 nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
 \end{lstlisting}
 
-\subsection{异常处理(Exception Handle)}
-
-在系统中，异常处理一般通过全局异常捕获，这样就几乎不用在代码中使用异常捕获块，过多的异常捕获代码块也会造成代码的污染和重复。在Spring中，可以在class注解上@ControllerAdvice来捕获全局异常：
-
-\begin{lstlisting}[language=Java]
-@ControllerAdvice(basePackages = "creditsystem.web.controllers")
-public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
-
-	@ExceptionHandler(HlValidateException.class)
-	@ResponseBody
-	ResponseEntity<?> handleValidateException(HttpServletRequest request, HlBaseException ex) {
-	HttpStatus status = HttpStatus.OK;
-	return new ResponseEntity<>(ApiResult.error(ex.getErrCode(), ex.getErrMsg(), ex.getData()), status);
-	}
-}
-\end{lstlisting}
-
-这样在业务逻辑层面遇到异常，只需要抛出异常即可，具体的异常处理流程由全局的异常处理模块来负责。以上代码还有一个问题，在添加了basePackages的扫描范围限制后，在拦截器中抛出异常时，全局异常处理类无法捕获异常。即使将拦截器的包空间加入到basePackages中也无效，暂时未找到原因。去掉basePackages的限制是可以捕获到异常的，这里捕获到异常时，接口返回标准的Json格式内容，这样调用方就方便解析并处理异常了。ExceptionHandler指定捕获的异常类型，不同的异常类型会进入到不同的方法来处理。
 
 \section{数据库操作(Database Operate)}
 
