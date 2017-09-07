@@ -740,7 +740,7 @@ RestApiResponse为统一定义的返回实体，所有的接口都会返回标�
 
 目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
 发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
-过期判断，容易遭受重放攻击(Replay Attack)。而且从流量中是可以轻松拿到请求头，对于专业选手来说，相当于大门敞开。采用如下shell脚本生成认证请求的Key。
+过期判断，容易遭受重放攻击(Replay Attack\footnote{\url{https://en.wikipedia.org/wiki/Replay_attack}})。而且从流量中是可以轻松拿到请求头，对于专业选手来说，相当于大门敞开。采用如下shell脚本生成SHA1串。
 
 \begin{lstlisting}[language=Bash]
 # Mac生成sha256串
@@ -748,18 +748,22 @@ echo -n "foobar" | shasum -a 256
 # Mac生成sha1串
 echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
-curl -X POST -H "Content-Type: application/json" -d \
-'{"elem":"'"$TOKEN"'"}' "https://httpbin.org/post"; \
-
-#!/bin/sh
-
-readonly APP_ID=""
-readonly APP_KEY=""
-ECHOSTR=
-CURRENT_TIME=`date '+%Y%m%d%H%M%S'`
 \end{lstlisting}
 
-脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。传闻二战时德国通讯由于偷懒，传输时使用了重复的“密钥”，导致盟军找到加密规律，破解了通讯的内容。
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。传闻二战时德国通讯由于偷懒，传输时使用了重复的“密钥”，导致盟军找到加密规律，破解了通讯的内容。使用如下脚本生成随机token：
+
+\begin{lstlisting}[language=Bash]
+#!/bin/sh
+
+readonly APP_ID="jiang"
+readonly APP_KEY="xiaoqiang"
+ECHOSTR=`head -n 1 /dev/urandom|sed 's/[^a-z0-9]//g'`
+CURRENT_TIME=`date '+%Y-%m-%d %H:%M:%S'`
+TOKEN=`echo -n ${APP_ID}${APP_KEY}${CURRENT_TIME}${ECHOSTR}|shasum -a 1|awk '{print $1}'`
+COMMAND=`curl -H "APPID:hlb11529c136998cb6" -H "TIMESTAMP:$CURRENT_TIME" -H "ECHOSTR:$ECHOSTR" -H "TOKEN:$TOKEN" http://localhost:28080/api/blacklist/page?xdr= | jq '.'`	
+\end{lstlisting}
+
+echo加上-n(newline)参数表示不换行输出。Linux中的随机数可以从两个特殊的文件中产生，一个是/dev/urandom.另外一个是/dev/random。他们产生随机数的原理是利用当前系统的熵池来计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，熵指的是一个系统的混乱程度，系统噪音可以通过很多参数来评估，如内存的使用，文件的使用量，不同类型的进程数量等等。如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。这就是为什么会有/dev/urandom和/dev/random这两种不同的文件，后者在不能产生新的随机数时会阻塞程序，而前者不会（ublock），当然产生的随机数效果就不太好了，这对加密解密这样的应用来说就不是一种很好的选择。/dev/random会阻塞当前的程序，直到根据熵池产生新的随机字节之后才返回，所以使用/dev/random比使用/dev/urandom产生大量随机数的速度要慢。
 
 \subsection{日志记录(Logging)}
 
@@ -839,7 +843,7 @@ public static final int DEFAULT_BUFFER_SIZE = 8*1024;
 response.setBufferSize(2048 * 20);
 \end{lstlisting}
 
-\subsection{接口返回}
+\subsection{接口返回(Interface Response)}
 
 接口返回的格式如图所示：
 
@@ -986,7 +990,7 @@ public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler
 
 这样在业务逻辑层面遇到异常，只需要抛出异常即可，具体的异常处理流程由全局的异常处理模块来负责。以上代码还有一个问题，在添加了basePackages的扫描范围限制后，在拦截器中抛出异常时，全局异常处理类无法捕获异常。即使将拦截器的包空间加入到basePackages中也无效，暂时未找到原因。去掉basePackages的限制是可以捕获到异常的，这里捕获到异常时，接口返回标准的Json格式内容，这样调用方就方便解析并处理异常了。ExceptionHandler指定捕获的异常类型，不同的异常类型会进入到不同的方法来处理。
 
-\section{数据库操作}
+\section{数据库操作(Database Operate)}
 
 \subsection{Could not get JDBC connection}
 
@@ -1235,7 +1239,7 @@ public class DataSourceConfig {
 
 由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
-\section{单元测试}
+\section{单元测试(Unit Test)}
 
 \subsection{Gradle中执行单元测试}
 
@@ -2644,6 +2648,16 @@ lsof（list open files）是一个列出当前系统打开文件的工具。FD(F
 \begin{lstlisting}[language=Bash]
 ps pid
 \end{lstlisting}
+
+\subsection{调试Bash脚本(Bash Debugging)}
+
+有时，我们想看看Bash脚本到底执行了哪些语句，可以在执行前添加-x选项来运行：
+
+\begin{lstlisting}[language=Bash]
+bash -x ./auth.sh
+\end{lstlisting}
+
+命令行前面的+号表示嵌套。
 
 \subsection{命令}
 
@@ -5286,27 +5300,27 @@ return "DIRECT";
 
 \begin{lstlisting}[language=VBScript]
 var FindProxyForURL = function(init, profiles) {
-return function(url, host) {
-"use strict";
-var result = init, scheme = url.substr(0, url.indexOf(":"));
-do {
-result = profiles[result];
-if (typeof result === "function") result = result(url, host, scheme);
-} while (typeof result !== "string" || result.charCodeAt(0) === 43);
-return result;
-};
-}("+dolphin2", {
-"+dolphin2": function(url, host, scheme) {
-"use strict";
-if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
-if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
-return "DIRECT";
-},
-"+dolphin-proxy": function(url, host, scheme) {
-"use strict";
-if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
-return "PROXY 10.55.10.2:8888";
-}
+	return function(url, host) {
+		"use strict";
+		var result = init, scheme = url.substr(0, url.indexOf(":"));
+		do {
+			result = profiles[result];
+			if (typeof result === "function") result = result(url, host, scheme);
+		} while (typeof result !== "string" || result.charCodeAt(0) === 43);
+			return result;
+		};
+		}("+dolphin2", {
+		"+dolphin2": function(url, host, scheme) {
+			"use strict";
+			if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
+			if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
+			return "DIRECT";
+		},
+		"+dolphin-proxy": function(url, host, scheme) {
+		"use strict";
+		if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
+		return "PROXY 10.55.10.2:8888";
+	}
 });
 \end{lstlisting}
 
@@ -5338,20 +5352,20 @@ VERSION_CODE=1.0.2
 version = getVersionCode()
 
 def getVersionCode() {
-def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
-if (versionFile.canRead()) {
-def Properties versionProps = new Properties()
-versionProps.load(new FileInputStream(versionFile))
-def versionCode = versionProps['VERSION_CODE'].toString()
-/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
-if ('assembleRelease' in runTasks) {
-versionProps['VERSION_CODE'] = (++versionCode).toString()
-versionProps.store(versionFile.newWriter(), null)
-}*/
-return versionCode
-} else {
-throw new GradleException("Could not find version.properties!")
-}
+	def versionFile = file('/Users/dolphin/source/credit-system/gradle/version.properties')
+	if (versionFile.canRead()) {
+		def Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		def versionCode = versionProps['VERSION_CODE'].toString()
+		/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
+		if ('assembleRelease' in runTasks) {
+			versionProps['VERSION_CODE'] = (++versionCode).toString()
+			versionProps.store(versionFile.newWriter(), null)
+		}*/
+		return versionCode
+		} else {
+		throw new GradleException("Could not find version.properties!")
+	}
 }
 \end{lstlisting}
 
