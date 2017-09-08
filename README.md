@@ -14,5 +14,11 @@ devmanual(Develop Manual)是开发手册的意思，记录的是开发中遇到�
  xelatex -synctex=1 -interaction=nonstopmode "main".tex
 ```
 
+书籍目录效果：
+
+
+
+
+
 书籍模板要感谢模板制作者。
 
