@@ -18,7 +18,10 @@ devmanual(Develop Manual)是开发手册的意思，记录的是开发中遇到�
 
 
 
+![获取数据结果](https://github.com/jiangxiaoqiang/devmanual/blob/master/Image/book_content.png)
 
+![获取数据结果](https://raw.githubusercontent.com/jiangxiaoqiang/devmanual/master/Image/book_content.png)
+https://raw.githubusercontent.com/hualongdata/spring-examples/master/spring-mybatis-starter/image/Selection_002.png
 
 书籍模板要感谢模板制作者。
 
