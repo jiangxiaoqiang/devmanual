@@ -773,6 +773,9 @@ CONST_STR="ysf"
 # 生成TOKEN
 # hlb1451j6d136334gh2接口各项认证参数的排列顺序是：
 # 时间戳(timestamp)、AppKey、随机字符串(echostr)
+# \$1接收来自命令行传入的参数
+# 第二个参数用\$2接收，以此类推
+# \$@表示所有的参数，相当于Java中main函数中定义的参数数组
 #
 TOKEN=`echo -n ${APP_ID}${APP_KEY}${CURRENT_TIME}${CONST_STR}|md5sum|awk '{print $1}'`
 SEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}${APP_ID}${APP_KEY}${CONST_STR}|shasum -a 1|awk '{print $1}'`
@@ -906,6 +909,39 @@ public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler
 \subsection{接口版本管理(Interface Version Control)}
 
 接口升级时，有的时候的修改是会影响到下游调用的，无法做到完全兼容，当升级了接口之后，原来的接口调用逻辑就无法正常使用了。所以，考虑做接口的版本管理，当发布接口时，发布一版新的接口，旧有的接口继续提供服务。升级接口由下游的用户来决定，这样在做不兼容升级时，不会影响原来的接口。
+
+\paragraph{URI Parameter Versioning}
+
+将Api的版本信息放到URI的参数里：
+
+\begin{lstlisting}[language=HTML]
+http://example.com/api/user?version=v1.1.30
+\end{lstlisting}
+
+这种方式被Amazon、Google、Netflix采用，流行度高。这种方式有一个优点是，客户端可以选择调用服务端的版本，比如服务端提供v1、v2版本，当v1不可用时，可以在接口调用时指定v2版本的接口。
+
+\paragraph{URI Versioning}
+
+将Api的版本信息放到URI里：
+
+\begin{lstlisting}[language=HTML]
+http://example.com/api/v1.1.30/user
+\end{lstlisting}
+
+这种方式被Twitter、Facebook\footnote{\url{https://developers.facebook.com/docs/marketing-api/versions}}采用。
+
+\paragraph{Header Versioning}
+
+通过添加自定义请求头来指定Api的版本：
+
+\begin{lstlisting}[language=HTML]
+x-ms-version:2017-04-17
+\end{lstlisting}
+
+这种方式被Microsoft使用\footnote{\url{https://docs.microsoft.com/en-us/rest/api/storageservices/Versioning-for-the-Azure-Storage-Services?redirectedfrom=MSDN}}。
+
+
+
 
 \subsection{Code Snippets}
 
@@ -1044,7 +1080,7 @@ spring.datasource.maximumPoolSize=200
 \end{lstlisting}
 
 
-\subsection*{JDBC数据库重连}
+\subsection{JDBC数据库重连(JDBC Database Reconnect)}
 
 在数据库重启后，程序无法重新连接到数据库。程序使用的是Hikari，找到了如下属性：
 
@@ -1537,7 +1573,7 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 
 \chapter{Scala}
 
-\section{函数}
+\section{函数(Function)}
 
 Scala有两种变量，val和var。val就不能再赋值了。与之对应的，var可以在它生命周期中被多次赋值。数据转换：
 
@@ -2513,7 +2549,7 @@ sudo apt-get -f install
 
 f参数表示尝试修正系统依赖损坏处。
 
-\subsection{shell}
+\section{shell}
 
 \paragraph{快捷键}
 
