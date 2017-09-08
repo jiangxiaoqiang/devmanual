@@ -980,8 +980,8 @@ String total = json.getString("totalElementsCondition1");
 
 \begin{lstlisting}[language=Java]
 List<AccessLog> logs = operationLogs.stream()
-						.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-						.collect(Collectors.toList());
+				.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+				.collect(Collectors.toList());
 \end{lstlisting}
 
 peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
@@ -1551,17 +1551,17 @@ val dstArray: Array[String] = errorCode.toString.split(',')
 
 \begin{lstlisting}[language=Scala]
 case class User(  
-id: Int,  
-firstName: String,  
-lastName: String,  
-age: Int,  
-gender: Option[String])  
-
-object UserRepository {  
-private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
-2 -> User(2, "Johanna", "Doe", 30, None))  
-def findById(id: Int): Option[User] = users.get(id)  
-def findAll = users.values  
+	id: Int,  
+	firstName: String,  
+	lastName: String,  
+	age: Int,  
+	gender: Option[String])  
+	
+	object UserRepository {  
+	private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
+		2 -> User(2, "Johanna", "Doe", 30, None))  
+		def findById(id: Int): Option[User] = users.get(id)  
+		def findAll = users.values  
 }  
 \end{lstlisting}
 
@@ -1585,11 +1585,11 @@ Scala集合操作如下：
 
 \begin{lstlisting}[language=Scala]
 processResult = errorCode.get.split(',')
-.filter(s => StringUtils.isNoneBlank(s))
-.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
-.filter(_ != null)
-.map(eet => eet.getErrDesc)
-.mkString("；")
+		.filter(s => StringUtils.isNoneBlank(s))
+		.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
+		.filter(_ != null)
+		.map(eet => eet.getErrDesc)
+		.mkString("；")
 \end{lstlisting}
 
 mkString把集合元素转化为字符串，可以添加分隔符，前缀，后缀。
@@ -1650,18 +1650,18 @@ find方法直接返回结果，findAll方法返回符合条件的结果。Python
 
 \begin{lstlisting}[language=Python]
 def save_to_mysql():
-try:
-conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
-cur = conn.cursor()
-conn.select_db('dolphin')
-value = ['hi rollen']
-cur.execute('insert into book(name) values(%s)', value)
-conn.commit()
-cur.close()
-conn.close()
-
-except MySQLdb.Error, e:
-print "Mysql Error %d: %s" % (e.args[0], e.args[1])
+	try:
+		conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
+		cur = conn.cursor()
+		conn.select_db('dolphin')
+		value = ['hi rollen']
+		cur.execute('insert into book(name) values(%s)', value)
+		conn.commit()
+		cur.close()
+		conn.close()
+	
+	except MySQLdb.Error, e:
+		print "Mysql Error %d: %s" % (e.args[0], e.args[1])
 \end{lstlisting}
 
 在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
@@ -1692,17 +1692,17 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \begin{lstlisting}[language=Python]
 def getVersion():
-#
-#动态从版本配置文件中读取当前最新版本号
-#
-file_path = VERSION_CONFIG_PATH
-props = parse(file_path)   #读取文件
-print('version:'+props.get('VERSION'))
-#根据key读取value
-return props.get('VERSION')            
+	#
+	#动态从版本配置文件中读取当前最新版本号
+	#
+	file_path = VERSION_CONFIG_PATH
+	props = parse(file_path)   #读取文件
+	print('version:'+props.get('VERSION'))
+	#根据key读取value
+	return props.get('VERSION')            
 
 def parse(file_name):
-return Properties(file_name)
+	return Properties(file_name)
 \end{lstlisting}
 
 Propertise类的代码如下：
@@ -1715,27 +1715,27 @@ import tempfile
 class Properties:
 
 def __init__(self, file_name):
-self.file_name = file_name
-self.properties = {}
-try:
-fopen = open(self.file_name, 'r')
-for line in fopen:
-line = line.strip()
-if line.find('=') > 0 and not line.startswith('#'):
-strs = line.split('=')
-self.properties[strs[0].strip()] = strs[1].strip()
-except Exception, e:
-raise e
-else:
-fopen.close()
+	self.file_name = file_name
+	self.properties = {}
+	try:
+		fopen = open(self.file_name, 'r')
+		for line in fopen:
+		line = line.strip()
+		if line.find('=') > 0 and not line.startswith('#'):
+		strs = line.split('=')
+		self.properties[strs[0].strip()] = strs[1].strip()
+	except Exception, e:
+		raise e
+	else:
+		fopen.close()
 
 def has_key(self, key):
-return key in self.properties
+	return key in self.properties
 
 def get(self, key, default_value=''):
-if key in self.properties:
-return self.properties[key]
-return default_value
+	if key in self.properties:
+		return self.properties[key]
+	return default_value
 \end{lstlisting}
 
 
@@ -1776,8 +1776,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 ReactDOM.render(
-<div>Hello World!</div>,
-document.getElementById('root')
+	<div>Hello World!</div>,
+	document.getElementById('root')
 );
 \end{lstlisting}
 
@@ -1785,10 +1785,10 @@ document.getElementById('root')
 
 \begin{lstlisting}[language=HTML]
 <body>
-<!-- 容器 -->
-<div id="root"></div>
-<!-- 引入编译好的js文件 -->
-<script type="text/javascript" src="./bundle.js"></script>
+	<!-- 容器 -->
+	<div id="root"></div>
+	<!-- 引入编译好的js文件 -->
+	<script type="text/javascript" src="./bundle.js"></script>
 </body>
 \end{lstlisting}
 
@@ -1853,8 +1853,8 @@ Provider方法会在react组件外边包一层名为provider的组件，使其�
 
 \begin{lstlisting}[language=Javascript]
 ReactDOM.render(
-<Provider store={store}>{routes}</Provider>,
-document.getElementById('root')
+	<Provider store={store}>{routes}</Provider>,
+	document.getElementById('root')
 );
 \end{lstlisting}
 
@@ -1875,25 +1875,25 @@ connect(mapStateToProps, mapDispatchToProps, mergeProps)(MyComponent)
 * mapStateToProps:这个函数的作用是确定哪些 Redux 全局的 state 是我们组件想要通过 props 获取
 */
 const mapStateToProps = (state) => {
-return {
-book: state.book
-}
+	return {
+		book: state.book
+	}
 }
 
 /**
 * mapDispatchToProps:这个方法的作用是确定 哪些action创建函数是我们想要通过props获取
 */
 const mapDispatchToProps = (dispatch) =>{
-return{
-bookService: bindActionCreators(bookService, dispatch)
-}
+	return{
+		bookService: bindActionCreators(bookService, dispatch)
+	}
 }
 
 connect(mapStateToProps, mapDispatchToProps)
-class BookContainer extends Component {
-render() {
-return React.cloneElement(this.props.children, {...this.props});
-}
+	class BookContainer extends Component {
+	render() {
+		return React.cloneElement(this.props.children, {...this.props});
+	}
 }
 \end{lstlisting}
 
@@ -1919,14 +1919,14 @@ const store = createStore(reducer, 1);
 
 \begin{lstlisting}[language=Javascript]
 const reducer = (state, action) => {
-switch (action.type) {
-case "ADD":
-state = state + action.payload;
-break;
-case "SUBTRACT":
-break;
-}
-return state;
+	switch (action.type) {
+		case "ADD":
+			state = state + action.payload;
+			break;
+		case "SUBTRACT":
+			break;
+	}
+	return state;
 };
 \end{lstlisting}
 
