@@ -785,7 +785,19 @@ COMMAND=`curl -H "APPID:$APP_ID" -H "TIMESTAMP:$CURRENT_TIME" -H "ECHOSTR:$CONST
 http://localhost:28080/api/blacklist/page?xdr= | jq '.'`
 \end{lstlisting}
 
-echo加上-n(newline)参数表示不换行输出。Linux中的随机数可以从两个特殊的文件中产生，一个是/dev/urandom.另外一个是/dev/random。他们产生随机数的原理是利用当前系统的熵池来计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，熵指的是一个系统的混乱程度，系统噪音可以通过很多参数来评估，如内存的使用，文件的使用量，不同类型的进程数量等等。如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。这就是为什么会有/dev/urandom和/dev/random这两种不同的文件，后者在不能产生新的随机数时会阻塞程序，而前者不会（ublock），当然产生的随机数效果就不太好了，这对加密解密这样的应用来说就不是一种很好的选择。/dev/random会阻塞当前的程序，直到根据熵池产生新的随机字节之后才返回，所以使用/dev/random比使用/dev/urandom产生大量随机数的速度要慢。
+将APPID、APPKEY、时间戳，随机字符串采用SHA1加密后，生成Token发送给服务端，服务端再按照同样的步骤产生Token，两个Token进行比对，这里的关键是APPKEY只有服务端和客户端知道，其他非法用户不知道APPKEY，无法伪造Token。echo加上-n(newline)参数表示不换行输出。Linux中的随机数可以从两个特殊的文件中产生，一个是/dev/urandom.另外一个是/dev/random。他们产生随机数的原理是利用当前系统的熵池来计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，熵指的是一个系统的混乱程度，系统噪音可以通过很多参数来评估，如内存的使用，文件的使用量，不同类型的进程数量等等。如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。这就是为什么会有/dev/urandom和/dev/random这两种不同的文件，后者在不能产生新的随机数时会阻塞程序，而前者不会（ublock），当然产生的随机数效果就不太好了，这对加密解密这样的应用来说就不是一种很好的选择。/dev/random会阻塞当前的程序，直到根据熵池产生新的随机字节之后才返回，所以使用/dev/random比使用/dev/urandom产生大量随机数的速度要慢。
+
+
+不过在接口中还多了一个排序的步骤，就是将APPID、APPKEY、时间戳，随机字符串按照一定的规则排序，因为随机字符串每次都是不同的，那么加密的APPID、APPKEY、时间戳，随机字符串顺序也会相应的发生变化。在Shell中，采用如下命令对APPID、APPKEY、时间戳，随机字符串进行排序：
+
+\begin{lstlisting}[language=Bash]
+# 测试排序语句
+echo -n 'b a'|tr ' ' '\t' |sort|tr -d '\040\011\012\015'
+# 实际排序语句
+aSEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${CONST_STR}|tr '_' '\t'|sort|tr -d '\011'`
+\end{lstlisting}
+
+040表示空格，011表示制表符，012表示换行符(carriage returns)，015表示新行(newlines)。最后的tr命令去掉排序后字符串中的制表符，这样排序后的语句就可以直接使用md5sum命令生成Token了。通过使用 tr，可以非常容易地实现 sed 的许多最基本功能。您可以将 tr 看作为 sed 的（极其）简化的变体：它可以用一个字符来替换另一个字符，或者可以完全除去一些字符。您也可以用它来除去重复字符。这就是所有 tr 所能够做的。
 
 \subsection{日志记录(Logging)}
 
@@ -919,6 +931,25 @@ http://example.com/api/user?version=v1.1.30
 \end{lstlisting}
 
 这种方式被Amazon、Google、Netflix采用，流行度高。客户端可以通过指定参数选择调用服务端的Api版本，比如服务端提供v1、v2版本，当v1不可用时，可以在接口调用时指定v2版本的接口。项目也选用这种实现方式，后端部署多个版本对应部署多个服务，在Nginx中根据URL的传入参数路由到不同版本的服务上。
+
+\begin{lstlisting}
+server{
+	location /api {
+		if($query_string ~ version=v1.1.30){
+			//如果query string中包含"version=v1.1.30"
+			//流量转发到18081端口
+			proxy_pass http://10.10.1.12:18081;
+			proxy_redirect off;
+		}else{
+			proxy_pass http://10.10.1.12:18082;
+			proxy_redirect off;
+		}
+	}
+}
+\end{lstlisting}
+
+根据URL请求的版本参数路由到后端不同版本的服务。\$query\_string是Nginx的内置变量。$\sim$表示区分大小写到正则匹配，$\sim$*表示不区分大小写的正则匹配。
+
 
 \paragraph{URI Versioning}
 
@@ -1793,7 +1824,7 @@ PATH="$PATH":/usr/local/mysql/bin
 sudo pip install mysql-python
 \end{lstlisting}
 
-\chapter{前端}
+\chapter{前端(Front End)}
 
 \section{React}
 
@@ -3389,24 +3420,6 @@ sudo route del default gw 10.55.10.1
 
 此时可以同时访问互联网和局域网中的主机，但是无法访问A网络。访问A网络可通过局域网代理的方式访问，将局域网的一台主机作为代理服务器，本机访问局域网中的代理服务器，代理服务器再将请求转发给A网络。在本机只需要在浏览器中配置好代理服务器即可。以FireFox浏览器为例，在Preference->Advance->Network->Connection->Settings中，增加手动代理配置，地址填写代理主机的地址，端口填写8888，代理服务器运行的是Fiddler。以后，访问内网时就使用FireFox浏览器，访问外网时就使用Google Chrome浏览器。
 
-
-\subsubsection{Ubuntu同时连接内外网}
-
-\subsubsection{Windows同时连接内外网}
-
-\chapter{youtube-dl}
-
-\chapter{Fiddler}
-
-\subsection{Fiddler替换Host}
-
-\chapter{Charles}
-
-Charles是Mac端的一款截取与分析网络请求的工具，在网络开发中使用其作分析，可以大大提高我们的开发效率。Charles是收费软件，一般可以试用三十天。Charles is an HTTP proxy / HTTP monitor / Reverse Proxy that enables a developer to view all of the HTTP and SSL / HTTPS traffic between their machine and the Internet. This includes requests, responses and the HTTP headers (which contain the cookies and caching information).
-
-\subsection{title}
-
-
 \chapter{OpenVPN}
 
 OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
@@ -4111,24 +4124,24 @@ worker_processes 4;
 pid /run/nginx.pid;
 
 events {
-worker_connections 768;
+	worker_connections 768;
 }
 
 http {
-server{
-listen 80;
-# 定义网站默认根目录
-root /opt/dolphin/frontend/dist;
-
-location /api {
-proxy_pass http://localhost:8011;
-}
-
-location / {
-root /opt/dolphin/frontend/dist;
-index index.html;
-} 
-}
+	server{
+		listen 80;
+		# 定义网站默认根目录
+		root /opt/dolphin/frontend/dist;
+		
+		location /api {
+			proxy_pass http://localhost:8011;
+		}
+		
+		location / {
+			root /opt/dolphin/frontend/dist;
+			index index.html;
+		} 
+	}
 }
 \end{lstlisting}
 
@@ -4400,12 +4413,12 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \begin{lstlisting}
 digraph G {
-node [peripheries=2 style=filled color="#eecc80"]
-edge [color="sienna" fontcolor="green"]
-"componentWillMount" -> "serviceComponent";
-"serviceComponent" -> "axios";
-"axios" -> "dishatch data to store"[label="XHR(GET/POST/PUT/DELETE)"] ;
-"dishatch data to store" -> "props get data";
+	node [peripheries=2 style=filled color="#eecc80"]
+	edge [color="sienna" fontcolor="green"]
+	"componentWillMount" -> "serviceComponent";
+	"serviceComponent" -> "axios";
+	"axios" -> "dishatch data to store"[label="XHR(GET/POST/PUT/DELETE)"] ;
+	"dishatch data to store" -> "props get data";
 }
 \end{lstlisting}
 
@@ -4640,9 +4653,6 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 
 
-\paragraph{Snippets}
-
-\paragraph{Others}
 
 \subparagraph{查看Render区域}
 
@@ -4710,18 +4720,18 @@ Latex原生不支持JavaScript语言，添加如下定义：
 \begin{lstlisting}[language=Tex]
 %lstlisting包JavaScript语言设置
 \lstdefinelanguage{JavaScript}{
-keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-keywordstyle=\color{blue}\bfseries,
-ndkeywords={class, export, boolean, throw, implements, import, this},
-ndkeywordstyle=\color{darkgray}\bfseries,
-identifierstyle=\color{black},
-sensitive=false,
-comment=[l]{//},
-morecomment=[s]{/*}{*/},
-commentstyle=\color{purple}\ttfamily,
-stringstyle=\color{red}\ttfamily,
-morestring=[b]',
-morestring=[b]"
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
 }
 \end{lstlisting}
 
