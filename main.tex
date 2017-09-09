@@ -918,7 +918,7 @@ public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler
 http://example.com/api/user?version=v1.1.30
 \end{lstlisting}
 
-这种方式被Amazon、Google、Netflix采用，流行度高。这种方式有一个优点是，客户端可以选择调用服务端的版本，比如服务端提供v1、v2版本，当v1不可用时，可以在接口调用时指定v2版本的接口。
+这种方式被Amazon、Google、Netflix采用，流行度高。客户端可以通过指定参数选择调用服务端的Api版本，比如服务端提供v1、v2版本，当v1不可用时，可以在接口调用时指定v2版本的接口。项目也选用这种实现方式，后端部署多个版本对应部署多个服务，在Nginx中根据URL的传入参数路由到不同版本的服务上。
 
 \paragraph{URI Versioning}
 
@@ -1833,7 +1833,7 @@ ReactDOM.render(
 通过Axios向服务端发送HTTP请求，获取到服务端返回端Json数据后，触发对应Type的dispatch(serviceCommon.js)去更新state。当 state 变化，或者 ownProps 变化的时候，mapStateToProps(connect方法的第一个参数)都会被调用，计算出一个新的 stateProps，（在与 ownProps merge 后）更新给对应的组件。
 
 
-\subsection{规范}
+\subsection{规范(Specification)}
 
 React模块使用.jsx扩展名，如BookMain.jsx。对于JSX属性值总是使用双引号("), 其他均使用单引号。为什么? JSX属性 不能包括转译的引号, 因此在双引号里包括像 "don't" 的属性值更容易输入。HTML属性也是用双引号，所以JSX属性也遵循同样的语法。
 
@@ -2551,7 +2551,7 @@ f参数表示尝试修正系统依赖损坏处。
 
 \section{shell}
 
-\paragraph{快捷键}
+\paragraph{快捷键(Shortcut)}
 
 Shell中常用的快捷键如下：
 
@@ -2719,7 +2719,7 @@ bash -x ./auth.sh
 
 命令行前面的+号表示嵌套。
 
-\subsection{命令}
+\subsection{命令(Command)}
 
 \paragraph{ls}
 
