@@ -736,6 +736,28 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 
 RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
 
+\paragraph{接口返回(Interface Response)}
+
+接口返回的格式如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{restresponse.png}
+	\caption{Restful接口返回数据示例}
+	\label{fig:restresponse}
+\end{figure}
+
+其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是因为考虑到返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+@Autowired
+private MapperFacade corporationMapperFacade;
+
+public XydmResponse mapToCorporationResponse(Corporation corporation) {
+return corporationMapperFacade.map(corporation, XydmResponse.class);
+}
+\end{lstlisting}
+
 \subsection{接口认证(Authorization)}
 
 目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
@@ -885,27 +907,7 @@ public static final int DEFAULT_BUFFER_SIZE = 8*1024;
 response.setBufferSize(2048 * 20);
 \end{lstlisting}
 
-\subsection{接口返回(Interface Response)}
 
-接口返回的格式如图所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.6]{restresponse.png}
-	\caption{Restful接口返回数据示例}
-	\label{fig:restresponse}
-\end{figure}
-
-其中，message可能缩写为mesg、msg等，为了避免歧义，没有使用缩写，也没有命名为errorMessage，是因为考虑到返回时不仅仅只有错误消息。针对不同的接口返回不同的字段，可以使用MapperFacade的Mapper方法进行映射，如下代码片段所示：
-
-\begin{lstlisting}[language=Java]
-@Autowired
-private MapperFacade corporationMapperFacade;
-
-public XydmResponse mapToCorporationResponse(Corporation corporation) {
-	return corporationMapperFacade.map(corporation, XydmResponse.class);
-}
-\end{lstlisting}
 
 \subsection{异常处理(Exception Handle)}
 
@@ -926,7 +928,7 @@ public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler
 
 这样在业务逻辑层面遇到异常，只需要抛出异常即可，具体的异常处理流程由全局的异常处理模块来负责。以上代码还有一个问题，在添加了basePackages的扫描范围限制后，在拦截器中抛出异常时，全局异常处理类无法捕获异常。即使将拦截器的包空间加入到basePackages中也无效，暂时未找到原因。去掉basePackages的限制是可以捕获到异常的，这里捕获到异常时，接口返回标准的Json格式内容，这样调用方就方便解析并处理异常了。ExceptionHandler指定捕获的异常类型，不同的异常类型会进入到不同的方法来处理。
 
-\subsection{接口版本管理(Interface Version Control)}
+\subsection{版本管理(Interface Version Control)}
 
 接口升级时，有的时候的修改是会影响到下游调用的，无法做到完全兼容，当升级了接口之后，原来的接口调用逻辑就无法正常使用了。所以，考虑做接口的版本管理，当发布接口时，发布一版新的接口，旧有的接口继续提供服务。升级接口由下游的用户来决定，这样在做不兼容升级时，不会影响原来的接口。
 
@@ -1419,7 +1421,7 @@ public class BookControllerTest {
 \end{lstlisting}
 
 
-\section{常见问题}
+\section{常见问题(Frequently Encounted Question)}
 
 \paragraph{getAttribute: Session already invalidated}
 
@@ -1578,7 +1580,7 @@ org.apache.ibatis.builder.IncompleteElementException: Could not find result map 
 
 出现这个错误的原因是在resultMap里面指定的是RedBalckLog(大写)，而Mapper中定义的是redBalckLog(小写)。这里resultMap指定的Bean需要和Mapper文件中定义的Bean的id一致。
 
-\subsection{常见问题}
+\subsection{MyBaits常见问题}
 
 \paragraph{Invalid bound statement (not found)}
 
@@ -3317,116 +3319,6 @@ rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + v
 
 在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
 
-\subsection{同时连接内外网}
-
-在工作中，有时需要同时连接封闭的网络和互联网，开发环境需要依赖封闭的内网，与远程的同事交流需要依赖互联网，而封闭的内网与互联网切换是一大痛点，不仅影响效率，同时也影响心情，宝贵的时间就在这样无意义的开关中白白浪费掉了。制造障碍很容易，清除障碍很艰难。
-
-解决双网卡问题，既能保证内网访问的安全，又能避免频繁切换网卡带来的时间开销，可谓一举两得。一般的计算机有有线网卡，也有无线网卡。一般情况下要么使用有线网卡，要么使用无线网卡，在使用无线时，连接上了有线，因为有线网卡的优先级高，故此时仅有有线能够工作，无线网卡可连接但是无法传送数据。实现双网卡的基本思路是删除默认网关，配置各自的网关即可。
-
-\subsubsection{Mac同时连内网外网}
-
-输入如下命令查看Mac的所有网络连接方式：
-
-\begin{lstlisting}[language=Bash]
-networksetup -listallnetworkservices
-\end{lstlisting}
-
-输出的结果如下：
-
-\begin{lstlisting}
-An asterisk (*) denotes that a network service is disabled.
-Apple USB Ethernet Adapter
-Wi-Fi
-Bluetooth PAN
-Thunderbolt Bridge
-\end{lstlisting}
-
-可以看出Mac可以通过Wi-Fi联网，也可以通过USB有线联网。给指定的网络连接方式设定DNS服务器代码如下：
-
-\begin{lstlisting}[language=Bash]
-sudo networksetup -setdnsservers AirPort 192.168.10.200
-\end{lstlisting}
-
-清空DNS缓存代码如下：
-
-\begin{lstlisting}[language=Bash]
-dscacheutil –flushcache
-\end{lstlisting}
-
-输入如下命令查看MacBook的路由表：
-
-\begin{lstlisting}[language=Bash]
-netstat -nr
-\end{lstlisting}
-
-\subsubsection{Fedora同时连接内外网}
-
-给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.4]{route-table.jpg}
-	\caption{查看Kernel路由表}
-	\label{fig:routetable}
-\end{figure}
-
-其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如下：
-
-\begin{tabular}{cp{10cm}c}
-	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c}{名称}  \\
-	\hline			
-	U  & Up表示此路由当前为启动状态 \\	
-	H & Host，表示此网关为一主机 \\
-	G & Gateway，表示此网关为一路由器\\
-	R & Reinstate Route，使用动态路由重新初始化的路由\\
-	D & Dynamically,此路由是动态性地写入\\
-	M & Modified，此路由是由路由守护程序或导向器动态修改\\
-	! & 表示此路由当前为关闭状态\\
-	\hline
-\end{tabular}
-
-删除默认网关的命令如下：
-
-\begin{lstlisting}[language=Bash]
-sudo route del default
-\end{lstlisting}
-
-删除一条路由：
-
-\begin{lstlisting}[language=Bash]
-sudo route del -net 192.168.122.0 netmask 255.255.255.0
-\end{lstlisting}
-
-如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
-
-\begin{lstlisting}[language=Bash]
-sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
-\end{lstlisting}
-
-其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
-
-\begin{lstlisting}[language=Bash]
-vim /etc/rc.local
-\end{lstlisting}
-
-添加删除默认网关：
-
-\begin{lstlisting}[language=Bash]
-#添加默认网关
-sudo route add default gw 10.55.10.1
-#删除默认网关
-sudo route del default gw 10.55.10.1
-\end{lstlisting}
-
-重启网络服务：
-
-\begin{lstlisting}[language=Bash]
-/etc/init.d/networking restart
-\end{lstlisting}
-
-此时可以同时访问互联网和局域网中的主机，但是无法访问A网络。访问A网络可通过局域网代理的方式访问，将局域网的一台主机作为代理服务器，本机访问局域网中的代理服务器，代理服务器再将请求转发给A网络。在本机只需要在浏览器中配置好代理服务器即可。以FireFox浏览器为例，在Preference->Advance->Network->Connection->Settings中，增加手动代理配置，地址填写代理主机的地址，端口填写8888，代理服务器运行的是Fiddler。以后，访问内网时就使用FireFox浏览器，访问外网时就使用Google Chrome浏览器。
 
 \chapter{OpenVPN}
 
@@ -5352,7 +5244,7 @@ gzip_disable "MSIE [1-6]\.";
 当浏览器第一次请求时，服务器创建一个session对象，同时生成一个sessionId，并在此次响应中将sessionId 以响应报文的方式传回客户端浏览器内存或以重写url方式送回客户端，来保持整个会话。关闭此浏览器窗口，其内存中的sessionId也就随之销毁。session.invalidate()是将session设置为失效，一般在退出时使用，但要注意的是：session失效的同时 浏览器会立即创建一个新的session的，你第一个session已经失效了 所以调用它的getAttribute方法时候一定会抛出NullPointerException。jsessionid只是tomcat中对session id的叫法，在其它容器里面，不一定就是叫jsessionid。
 
 
-\section{PAC}
+\section{PAC(Proxy Auto-Configuration)}
 
 \subsection{PAC简介}
 
@@ -5364,7 +5256,7 @@ PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就
 
 \begin{lstlisting}[language=JavaScript]
 function FindProxyForURL(url,host){
-return "DIRECT";
+	return "DIRECT";
 }
 \end{lstlisting}
 
@@ -5403,6 +5295,137 @@ var FindProxyForURL = function(init, profiles) {
 \end{lstlisting}
 
 以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+
+\subsection{同时连接内外网}
+
+在工作中，有时需要同时连接封闭的网络和互联网，开发环境需要依赖封闭的内网，与远程的同事交流需要依赖互联网，而封闭的内网与互联网切换是一大痛点，不仅影响效率，同时也影响心情，宝贵的时间就在这样无意义的开关中白白浪费掉了。制造障碍很容易，清除障碍很艰难。
+
+解决双网卡问题，既能保证内网访问的安全，又能避免频繁切换网卡带来的时间开销，可谓一举两得。一般的计算机有有线网卡，也有无线网卡。一般情况下要么使用有线网卡，要么使用无线网卡，在使用无线时，连接上了有线，因为有线网卡的优先级高，故此时仅有有线能够工作，无线网卡可连接但是无法传送数据。实现双网卡的基本思路是删除默认网关，配置各自的网关即可。
+
+\paragraph{Mac同时连内网外网}
+
+输入如下命令查看Mac的所有网络连接方式：
+
+\begin{lstlisting}[language=Bash]
+networksetup -listallnetworkservices
+\end{lstlisting}
+
+输出的结果如下：
+
+\begin{lstlisting}
+An asterisk (*) denotes that a network service is disabled.
+Apple USB Ethernet Adapter
+Wi-Fi
+Bluetooth PAN
+Thunderbolt Bridge
+\end{lstlisting}
+
+可以看出Mac可以通过Wi-Fi联网，也可以通过USB有线联网。给指定的网络连接方式设定DNS服务器代码如下：
+
+\begin{lstlisting}[language=Bash]
+sudo networksetup -setdnsservers AirPort 192.168.10.200
+\end{lstlisting}
+
+清空DNS缓存代码如下：
+
+\begin{lstlisting}[language=Bash]
+dscacheutil –flushcache
+\end{lstlisting}
+
+输入如下命令查看MacBook的路由表：
+
+\begin{lstlisting}[language=Bash]
+netstat -nr
+\end{lstlisting}
+
+\paragraph{Fedora同时连接内外网}
+
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{route-table.jpg}
+	\caption{查看Kernel路由表}
+	\label{fig:routetable}
+\end{figure}
+
+其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如下：
+
+\begin{tabular}{cp{10cm}c}
+	\hline
+	\multirow{1}{*}{序号}
+	& \multicolumn{1}{c}{名称}  \\
+	\hline			
+	U  & Up表示此路由当前为启动状态 \\	
+	H & Host，表示此网关为一主机 \\
+	G & Gateway，表示此网关为一路由器\\
+	R & Reinstate Route，使用动态路由重新初始化的路由\\
+	D & Dynamically,此路由是动态性地写入\\
+	M & Modified，此路由是由路由守护程序或导向器动态修改\\
+	! & 表示此路由当前为关闭状态\\
+	\hline
+\end{tabular}
+
+删除默认网关的命令如下：
+
+\begin{lstlisting}[language=Bash]
+sudo route del default
+\end{lstlisting}
+
+删除一条路由：
+
+\begin{lstlisting}[language=Bash]
+sudo route del -net 192.168.122.0 netmask 255.255.255.0
+\end{lstlisting}
+
+如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
+
+\begin{lstlisting}[language=Bash]
+sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
+\end{lstlisting}
+
+其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
+
+\begin{lstlisting}[language=Bash]
+vim /etc/rc.local
+\end{lstlisting}
+
+添加删除默认网关：
+
+\begin{lstlisting}[language=Bash]
+#添加默认网关
+sudo route add default gw 10.55.10.1
+#删除默认网关
+sudo route del default gw 10.55.10.1
+\end{lstlisting}
+
+重启网络服务：
+
+\begin{lstlisting}[language=Bash]
+/etc/init.d/networking restart
+\end{lstlisting}
+
+此时可以同时访问互联网和局域网中的主机，但是无法访问A网络。访问A网络可通过局域网代理的方式访问，将局域网的一台主机作为代理服务器，本机访问局域网中的代理服务器，代理服务器再将请求转发给A网络。在本机只需要在浏览器中配置好代理服务器即可。以FireFox浏览器为例，在Preference->Advance->Network->Connection->Settings中，增加手动代理配置，地址填写代理主机的地址，端口填写8888，代理服务器运行的是Fiddler。以后，访问内网时就使用FireFox浏览器，访问外网时就使用Google Chrome浏览器。
+
+\paragraph{SSH代理(SSH Proxy)}
+
+数据库部署在A服务器上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，是在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
+
+\begin{lstlisting}[language=Bash]
+ssh -L <local port>:<remote host>:<remote port> <SSH hostname>
+\end{lstlisting}
+
+在B服务器上建立一个本地端口转发：
+
+\begin{lstlisting}[language=Bash]
+ssh -L 5236:10.55.10.2:5236 58.214.215.6
+\end{lstlisting}
+
+以上的语句只能在B服务器上使用，如果其他机器想将流量发送到B服务器是无法利用隧道的。在主流 SSH 实现中，本地端口转发绑定的是 lookback 接口，这意味着只有 localhost 或者 127.0.0.1 才能使用本机的端口转发 , 其他机器发起的连接只会得到“ connection refused. ”。好在 SSH 同时提供了 GatewayPorts 关键字，我们可以通过指定它与其他机器共享这个本地端口转发。
+
+\begin{lstlisting}[language=Bash]
+ssh -g -L 5236:10.55.10.2:5236 58.214.215.6
+\end{lstlisting}
 
 \part{Engneering}
 
