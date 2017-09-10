@@ -738,9 +738,9 @@ RestApiResponse为统一定义的返回实体，所有的接口都会返回标�
 
 \subsection{接口认证(Authorization)}
 
-目前接口认证采用根据timestamp、echostr、appkey生成的Token，将之
-发送到服务端，服务端采用同样的加密方式来进行认证。但是目前未做Token时间
-过期判断，容易遭受重放攻击(Replay Attack\footnote{\url{https://en.wikipedia.org/wiki/Replay_attack}})。而且从流量中是可以轻松拿到请求头，对于专业选手来说，相当于大门敞开。采用如下shell脚本生成SHA1串。
+目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
+发送到服务端，服务端采用同样的加密方式生成Token来进行比对认证。但是目前未做Token时间
+过期判断，容易遭受重放攻击(Replay Attack\footnote{\url{https://en.wikipedia.org/wiki/Replay_attack}})。而且从流量中是可以轻松拿到请求头，对于专业选手来说，相当于大门敞开。采用如下Shell脚本\footnote{风格参考Google Shell风格指南：\url{http://zh-google-styleguide.readthedocs.io/en/latest/google-shell-styleguide/formatting/}}生成SHA1串。
 
 \begin{lstlisting}[language=Bash]
 # Mac生成sha256串
@@ -753,22 +753,29 @@ readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。使用如下脚本生成随机token：
 
 \begin{lstlisting}[language=Bash]
-#!/usr/bin/env bash
+#!/bin/bash
 
 #
-# 认证请求测试脚本
-# Author:dolphin
+# 认证请求脚本
 # 根据时间戳生成请求，每次请求使用不同Token
 # 避免重放攻击(Replay Attack)
-#
+# Author:
+# 		dolphin
+# Globals:
+#   APP\_ID:
+# Arguments:
+#   None
+# Returns:
+#   接口调用返回结果
 # TODO:根据不同的随机串排序，生成不同Toekn
 #
 
 readonly APP_ID="hlb1451j6d136334gh2"
 readonly APP_KEY="test"
+
 ECHOSTR=`head -n 1 /dev/urandom|sed 's/[^a-z0-9]//g'|md5sum|awk '{print $1}'`
 CURRENT_TIME=`date '+%Y-%m-%d %H:%M:%S'`
-CONST_STR="ysf"
+
 #
 # 生成TOKEN
 # hlb1451j6d136334gh2接口各项认证参数的排列顺序是：
@@ -777,6 +784,7 @@ CONST_STR="ysf"
 # 第二个参数用\$2接收，以此类推
 # \$@表示所有的参数，相当于Java中main函数中定义的参数数组
 #
+SORTED_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${ECHOSTR}|tr '_' '\t'|sort|tr -d '\011'`
 TOKEN=`echo -n ${APP_ID}${APP_KEY}${CURRENT_TIME}${CONST_STR}|md5sum|awk '{print $1}'`
 SEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}${APP_ID}${APP_KEY}${CONST_STR}|shasum -a 1|awk '{print $1}'`
 
@@ -797,7 +805,7 @@ echo -n 'b a'|tr ' ' '\t' |sort|tr -d '\040\011\012\015'
 aSEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${CONST_STR}|tr '_' '\t'|sort|tr -d '\011'`
 \end{lstlisting}
 
-040表示空格，011表示制表符，012表示换行符(carriage returns)，015表示新行(newlines)。最后的tr命令去掉排序后字符串中的制表符，这样排序后的语句就可以直接使用md5sum命令生成Token了。通过使用 tr，可以非常容易地实现 sed 的许多最基本功能。您可以将 tr 看作为 sed 的（极其）简化的变体：它可以用一个字符来替换另一个字符，或者可以完全除去一些字符。您也可以用它来除去重复字符。这就是所有 tr 所能够做的。
+040表示空格，011表示制表符，012表示换行符(carriage returns)，015表示新行(newlines)。最后的tr命令去掉排序后字符串中的制表符，这样排序后的语句就可以直接使用md5sum命令生成Token了。通过使用 tr，可以非常容易地实现 sed 的许多最基本功能。您可以将 tr 看作为 sed 的（极其）简化的变体：它可以用一个字符来替换另一个字符，或者可以完全除去一些字符。您也可以用它来除去重复字符。这就是所有 tr 所能够做的。-d参数表示删除(delete)。
 
 \subsection{日志记录(Logging)}
 
