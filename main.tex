@@ -2824,13 +2824,15 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 
 这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
 
-\paragraph{sed}
+\paragraph{sed(Stream Editor)}
 
 sed全名叫stream editor，流编辑器，用程序的方式来编辑文本，相当的hacker啊。sed基本上就是玩正则模式匹配，所以，玩sed的人，正则表达式一般都比较强。過濾某一個時間段的日志：
 
 \begin{lstlisting}[language=Bash]
 sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> filter.log
 \end{lstlisting}
+
+-n∶取消默认的输出,使用安静(silent)模式。在一般sed的用法中，所有来自 STDIN的资料一般都会被列出到屏幕上。但如果加上 -n 参数后，则只有经过sed特殊处理的那一行(或者动作)才会被列出来。\^{}匹配一行的开始。-n选项和p命令一起使用表示只打印那些发生替换的行。
 
 \paragraph{ag}
 
@@ -2856,6 +2858,8 @@ yum info wget
 
 \subsection{自动部署}
 
+将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，启动执行。
+
 \begin{lstlisting}[language=Bash]
 #!/usr/bin/env bash
 
@@ -2864,7 +2868,7 @@ yum info wget
 # 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
 # 注：本机需要安装Ansible并与服务器做免密登录
 #
-# 2017-05-25 dolphin 增加动态读取版本号，根据版本自动发布程序
+# 2017-05-25 增加动态读取版本号，根据版本自动发布程序
 #
 
 # 当使用未初始化的变量时，程序自动退出
@@ -2922,7 +2926,9 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-\subsection{环境变量}
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。
+
+\subsection{环境变量(Environment Variable)}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
 
@@ -2934,24 +2940,30 @@ env
 unset http_proxy
 \end{lstlisting}
 
-set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。
+set命令显示(设置)shell变量 包括的私有变量以及用户变量，不同类的shell有不同的私有变量 bash,ksh,csh每中shell私有变量都不一样。env命令显示(设置)用户变量变量。export命令显示(设置)当前导出成用户变量的shell变量。Linux profile文件如表\ref{table:linuxconfigfile}所示。
 
-\begin{tabular}{cp{8cm}c}
-	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c}{名称}  \\
-	\hline			
-	/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
-	\hline	
-	/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
-	\hline
-	/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
-	\hline
-	~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
-	\hline
-	~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
-	\hline
-\end{tabular}
+\begin{table}
+	\caption{Linux profile配置文件}
+	\label{table:linuxconfigfile}
+	\begin{center}
+	\begin{tabular}{cp{8cm}c}
+		\hline
+		\multirow{1}{*}{序号}
+		& \multicolumn{1}{c}{名称}  \\
+		\hline			
+		/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
+		\hline	
+		/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+		\hline
+		/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+		\hline
+		~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+		\hline
+		~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
+		\hline
+	\end{tabular}	
+	\end{center}
+\end{table}
 
 有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
 
@@ -3013,7 +3025,7 @@ uname －a
 
 \subsection{Fedora访问Windows共享文件夹}
 
-在局域网里，有时需要使用Fedora 24访问Windows共享文件夹。在Fedora中输入命令：
+在局域网里，有时需要使用Fedora 24访问Windows 7共享文件夹。在Fedora中输入命令：
 
 \begin{lstlisting}[language=Bash]
 #密码aaa321
@@ -3024,7 +3036,7 @@ sudo mount -t cifs -o username="aaa",uid="dolphin",gid="dolphin" //10.55.10.2/da
 
 \subsection{Ubuntu访问Windows共享文件夹}
 
-在文件管理器中，点击左侧的“Connect to Server”选项卡，填写Windows的IP，示例如下：
+在Windows 7中设置了文件夹共享后，在Ubuntu文件管理器中，点击左侧的“Connect to Server”选项卡，填写Windows的IP，示例如下：
 
 \begin{lstlisting}[language=HTML]
 smb://10.55.10.2
@@ -3032,7 +3044,7 @@ smb://10.55.10.2
 
 点击确定后，在弹出的对话框中输入相应的用户名和密码即可。
 
-\subsection{软件包管理}
+\subsection{软件包管理(Package Management)}
 
 根据软件包的名称模糊匹配，查看系统已经安装了哪些软件包：
 
@@ -3065,6 +3077,9 @@ sudo apt install fcitx-googlepinyin
 \end{lstlisting}
 
 安装好后需要重新登入系统，添加输入法配置时才可以选择Google输入法。
+
+\newpage
+~\vfil 
 
 \part{Tool}
 
@@ -3211,14 +3226,14 @@ Finally, evaluate each Project by executing its "build.gradle" file, if present,
 \begin{lstlisting}[language=Java]
 repositories {
 maven {
-url 'http://www.eveoh.nl/files/maven2'
+	url 'http://www.eveoh.nl/files/maven2'
 }
 maven {
-url 'http://repox.gtan.com:8078'
+	url 'http://repox.gtan.com:8078'
 }
 mavenCentral()
-jcenter()
-maven { url 'http://repo.spring.io/plugins-release' }
+	jcenter()
+	maven { url 'http://repo.spring.io/plugins-release' }
 }
 \end{lstlisting}
 
