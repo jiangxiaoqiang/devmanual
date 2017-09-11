@@ -3256,13 +3256,13 @@ extra属性一般用于定义常量，All extra properties\footnote{\url{https:/
 
 \begin{lstlisting}[language=Java]
 buildscript {
-ext {
-springBootVersion = '1.4.5.RELEASE'
-jacksonVersion = '2.8.7'
-springfoxVersion = '2.6.1'
-poiVersion = "3.14"
-aspectjVersion = '1.7.4'
-}
+	ext {
+		springBootVersion = '1.4.5.RELEASE'
+		jacksonVersion = '2.8.7'
+		springfoxVersion = '2.6.1'
+		poiVersion = "3.14"
+		aspectjVersion = '1.7.4'
+	}
 }
 \end{lstlisting}
 
@@ -3281,11 +3281,11 @@ if (isSnapshot) {
 \begin{lstlisting}[language=Java]
 project(":web"){
 
-description = "web"
-
-jar{
-baseName = "dolphin-web"
-}
+	description = "web"
+	
+	jar{
+		baseName = "dolphin-web"
+	}
 }
 \end{lstlisting}
 
@@ -3302,9 +3302,9 @@ baseName = "dolphin-web"
 
 \begin{lstlisting}[language=Java]
 buildscript {
-ext {
-projectVersion = '1.1.11'
-}
+	ext {
+		projectVersion = '1.1.11'
+	}
 }
 \end{lstlisting}
 
@@ -3312,7 +3312,7 @@ projectVersion = '1.1.11'
 
 \begin{lstlisting}[language=Java]
 task copyfile(){
-println(projectVersion)
+	println(projectVersion)
 }
 \end{lstlisting}
 
@@ -3326,9 +3326,9 @@ apply from: ccCommonBuildScript
 * 接口与平台单独部署，避免互相影响
 */
 task copyTask(type: Copy) {
-from 'build/libs/credit-system-web-boot-' + version + '.jar'
-into 'build/libs/api'
-rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
+	from 'build/libs/credit-system-web-boot-' + version + '.jar'
+	into 'build/libs/api'
+	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
 }
 \end{lstlisting}
 
@@ -3970,19 +3970,20 @@ HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit
 
 \begin{lstlisting}[language=bash]
 http {
-limit_conn_log_level error;
-limit_conn_status 503;
-#Zone=one或allips表示设置了名为“one”或“allips”的存储区
-#大小为10兆字节
-limit_conn_zone $binary_remote_addr zone=one:10m;
-limit_conn_zone $server_name zone=perserver:10m;
-#rate=10r/s 的意思是允许1秒钟不超过1000个请求
-limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
-server {
-limit_conn one 100;
-limit_conn perserver 3000;
-limit_req zone=allips  burst=5  nodelay;
-}
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	#Zone=one或allips表示设置了
+	#名为“one”或“allips”的存储区
+	#大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=10r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s;  
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
 }
 \end{lstlisting}
 
