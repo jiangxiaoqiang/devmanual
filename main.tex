@@ -684,6 +684,114 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
+\subsection{集合操作(Collection Operate)}
+
+List移除空元素，移除重复元素：
+
+\begin{lstlisting}[language=Java]
+request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
+if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
+
+});
+\end{lstlisting}
+
+对象做非空判断：
+
+\begin{lstlisting}[language=Java]
+f (!"".equals(name)) {
+	//将""写在前头，这样，不管name是否为null，都不会出错
+}
+
+if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
+	//用String强制转换也不会报空指针异常
+} 
+\end{lstlisting}
+
+获取Json单个值：
+
+\begin{lstlisting}[language=Java]
+JSONObject json = new JSONObject(responseContent);
+String total = json.getString("totalElementsCondition1");
+\end{lstlisting}
+
+去除List元素中的特殊字符：
+
+\begin{lstlisting}[language=Java]
+List<AccessLog> logs = operationLogs.stream()
+		.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+		.collect(Collectors.toList());
+\end{lstlisting}
+
+peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
+
+\paragraph{数组转换为ArrayList}
+
+数组转List有如下方式：
+
+\begin{lstlisting}[language=Java]
+Integer[] integers = new Integer[] {1,2,3,4,5};
+// Cannot modify returned list
+List<Integer> list21 =  Arrays.asList(integers); 
+// good
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+//Java 8
+List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
+\end{lstlisting}
+
+采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
+
+\subsection{Code Snippets}
+
+有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{visualstudiocodesnippet.png}
+	\caption{Visual Studio Code代码草稿}
+	\label{fig:visualstudiocodesnippet}
+\end{figure}
+
+ArrayList分页：
+
+\begin{lstlisting}[language=Java]
+return new Page<>(pageable, menuList.subList((page - 1) * size, page * size));
+\end{lstlisting}
+
+Optional避免空指针：
+
+\begin{lstlisting}[language=Java]
+public static String getChampionName(Competition comp) throws IllegalArgumentException {
+	return Optional.ofNullable(comp)
+		.map(c->c.getResult())
+		.map(r->r.getChampion())
+		.map(u->u.getName())
+		.orElseThrow(()->new IllegalArgumentException("The value of param comp isn't available."));
+}
+\end{lstlisting}
+
+Optional参数验证：
+
+\begin{lstlisting}[language=Java]
+public void setName(String name) throws IllegalArgumentException{
+	this.name = Optional.ofNullable(name)
+				.filter(User::isNameValid)
+				.orElseThrow(()->new IllegalArgumentException("Invalid username."));
+}
+\end{lstlisting}
+
+
+
+\subsection{jps}
+
+jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
+
+java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
+
+\begin{lstlisting}[language=Bash]
+nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
+\end{lstlisting}
+
+
 \section{接口(Application Interface)}
 
 \subsection{请求消息(Request)}
@@ -718,9 +826,20 @@ public ApiResult createArticle(@RequestBody Article article) {
 @RequestBody需要把所有请求参数作为json解析，因此，不能包含key=value这样的写法在请求url中，所有的请求参数都是一个Json。使用curl模拟POST请求:
 
 \begin{lstlisting}[language=Bash]
-curl 'http://localhost:28080/api/article/create' -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389e9 16 (tel:2016121916):58:02" -H 'Accept-Encoding: gzip, deflate' -H 'Cookie:'  --data '{"title":"a123","content":"123456","category":12,"parentCategory":1}' --compressed
+curl -X POST -H "APPID:hlb1451j6d136334gh2" \
+-H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" \
+-H "ECHOSTR:sdsaasf" \
+-H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" \
+-H 'Content-Type: application/json;charset=UTF-8' \
+http://59.214.215.6:28080/api/article/create \
+--data-binary $'{"title":"a123","content":"123456","category":12,"publisher":"ab"}'|jq '.'
 \end{lstlisting}
 
+需要传递请求头Content-Type，否则会提示如下错误：
+
+\begin{lstlisting}
+Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported
+\end{lstlisting}
 
 \subsection{返回消息封装(Message Encapsulation)}
 
@@ -981,115 +1100,16 @@ x-ms-version:2017-04-17
 
 这种方式被Microsoft使用\footnote{\url{https://docs.microsoft.com/en-us/rest/api/storageservices/Versioning-for-the-Azure-Storage-Services?redirectedfrom=MSDN}}。
 
+\subsection{接口缓存(Interface Cache)}
 
+由于每次接口请求都需要调用认证信息，认证数据一旦生成，变动较少，所以将接口认证数据缓存。
 
-
-\subsection{Code Snippets}
-
-有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.5]{visualstudiocodesnippet.png}
-	\caption{Visual Studio Code代码草稿}
-	\label{fig:visualstudiocodesnippet}
-\end{figure}
-
-ArrayList分页：
-
-\begin{lstlisting}[language=Java]
-return new Page<>(pageable, menuList.subList((page - 1) * size, page * size));
-\end{lstlisting}
-
-Optional避免空指针：
-
-\begin{lstlisting}[language=Java]
-public static String getChampionName(Competition comp) throws IllegalArgumentException {
-	return Optional.ofNullable(comp)
-					.map(c->c.getResult())
-					.map(r->r.getChampion())
-					.map(u->u.getName())
-					.orElseThrow(()->new IllegalArgumentException("The value of param comp isn't available."));
+\begin{lstlisting}
+@Cacheable(value = "appAccount", key = "#id")
+public Optional<AppAccount> findAppAccountById(String id){
+	return Optional.ofNullable(appAccountMapper.findOne(id));
 }
 \end{lstlisting}
-
-Optional参数验证：
-
-\begin{lstlisting}[language=Java]
-public void setName(String name) throws IllegalArgumentException {
-	this.name = Optional.ofNullable(name).filter(User::isNameValid)
-	.orElseThrow(()->new IllegalArgumentException("Invalid username."));
-}
-\end{lstlisting}
-
-
-\subsection{集合操作(Collection Operate)}
-
-List移除空元素，移除重复元素：
-
-\begin{lstlisting}[language=Java]
-request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
-if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
-
-});
-\end{lstlisting}
-
-对象做非空判断：
-
-\begin{lstlisting}[language=Java]
-f (!"".equals(name)) {
-	//将""写在前头，这样，不管name是否为null，都不会出错
-}
-
-if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-	//用String强制转换也不会报空指针异常
-} 
-\end{lstlisting}
-
-获取Json单个值：
-
-\begin{lstlisting}[language=Java]
-JSONObject json = new JSONObject(responseContent);
-String total = json.getString("totalElementsCondition1");
-\end{lstlisting}
-
-去除List元素中的特殊字符：
-
-\begin{lstlisting}[language=Java]
-List<AccessLog> logs = operationLogs.stream()
-				.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-				.collect(Collectors.toList());
-\end{lstlisting}
-
-peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
-
-\paragraph{数组转换为ArrayList}
-
-数组转List有如下方式：
-
-\begin{lstlisting}[language=Java]
-Integer[] integers = new Integer[] {1,2,3,4,5};
-// Cannot modify returned list
-List<Integer> list21 =  Arrays.asList(integers); 
-// good
-List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
-//Java 8
-List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
-\end{lstlisting}
-
-采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
-
-
-\subsection{jps}
-
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
-
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
-
-\begin{lstlisting}[language=Bash]
-nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
-\end{lstlisting}
-
 
 \section{数据库操作(Database Operate)}
 
@@ -2175,10 +2195,10 @@ Gulp基于Node.js的前端构建工具，通过Gulp的插件可以实现前端�
 
 \begin{lstlisting}[language=JavaScript]
 gulp.task('images', function() {
-return gulp.src('src/images/**/*')
-.pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
-.pipe(gulp.dest('dist/assets/img'))
-.pipe(notify({ message: 'Images task complete' }));
+	return gulp.src('src/images/**/*')
+			.pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+			.pipe(gulp.dest('dist/assets/img'))
+			.pipe(notify({ message: 'Images task complete' }));
 });
 \end{lstlisting}
 
@@ -2194,7 +2214,7 @@ gulp images
 
 \begin{lstlisting}[language=JavaScript]
 gulp.task('clean', function(cb) {
-del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
+	del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
 });
 \end{lstlisting}
 
@@ -2204,7 +2224,7 @@ del(['dist/assets/css', 'dist/assets/js', 'dist/assets/img'], cb)
 
 \begin{lstlisting}[language=JavaScript]
 gulp.task('default', ['clean'], function() {
-gulp.start('styles', 'scripts', 'images');
+	gulp.start('styles', 'scripts', 'images');
 });
 \end{lstlisting}
 
@@ -2279,17 +2299,17 @@ Promise 也有一些缺点。首先，无法取消 Promise，一旦新建它就�
 import axios from 'axios';
 
 export function request() {
-return axios({
-method: 'get', url: 'http://localhost:8011/api/book/111'
-}).then(
-response => {
-console.log(response)
-}
-).catch(
-error => {
-console.error(error);
-}
-);
+	return axios({
+			method: 'get', url: 'http://localhost:8011/api/book/111'
+		}).then(
+		response => {
+			console.log(response)
+		}
+		).catch(
+			error => {
+			console.error(error);
+		}
+	);
 }
 \end{lstlisting}
 
@@ -2305,19 +2325,19 @@ console.error(error);
 * axios响应拦截器
 */
 axios.interceptors.response.use(
-response =>{
-return response;
-},
-error => {
-if(error.response){
-switch (error.response.status){
-case 401:
-responseError401PreHandle(error.response.data);
-break;
-case 403:
-}
-}
-}
+		response =>{
+		return response;
+	},
+	error => {
+		if(error.response){
+			switch (error.response.status){
+				case 401:
+					responseError401PreHandle(error.response.data);
+					break;
+				case 403:
+			}
+		}
+	}
 );
 \end{lstlisting}
 
@@ -2372,8 +2392,8 @@ prototype是用于解决实例对象之间无法共享属性和方法的。
 
 \begin{lstlisting}[language=Javascript]
 function Tiger(name){
-this.name = name;
-this.species = "猫科";
+	this.name = name;
+	this.species = "猫科";
 }
 var tigerA = new Tiger("大虎");
 var tigerB = new Tiger("二虎");
@@ -5379,38 +5399,51 @@ dscacheutil –flushcache
 netstat -nr
 \end{lstlisting}
 
-\paragraph{Fedora同时连接内外网}
+\paragraph{Fedora、Ubuntu同时连接内外网}
 
 给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网是有线网络，外网是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{route-table.jpg}
+	\includegraphics[scale=0.5]{route-table.jpg}
 	\caption{查看Kernel路由表}
 	\label{fig:routetable}
 \end{figure}
 
-其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如下：
+其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如表\ref{table:flagmeaning}所示。
 
-\begin{tabular}{cp{10cm}c}
-	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c}{名称}  \\
-	\hline			
-	U  & Up表示此路由当前为启动状态 \\	
-	H & Host，表示此网关为一主机 \\
-	G & Gateway，表示此网关为一路由器\\
-	R & Reinstate Route，使用动态路由重新初始化的路由\\
-	D & Dynamically,此路由是动态性地写入\\
-	M & Modified，此路由是由路由守护程序或导向器动态修改\\
-	! & 表示此路由当前为关闭状态\\
-	\hline
-\end{tabular}
+\begin{table}
+	\begin{center}
+		\caption{flag含义}
+		\bigskip
+		\label{table:flagmeaning}
+		\begin{tabular}{cp{10cm}c}
+			\hline
+			\multirow{1}{*}{序号}
+			& \multicolumn{1}{c}{名称}  \\
+			\hline			
+			U  & Up表示此路由当前为启动状态 \\	
+			H & Host，表示此网关为一主机 \\
+			G & Gateway，表示此网关为一路由器\\
+			R & Reinstate Route，使用动态路由重新初始化的路由\\
+			D & Dynamically,此路由是动态性地写入\\
+			M & Modified，此路由是由路由守护程序或导向器动态修改\\
+			! & 表示此路由当前为关闭状态\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
 删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
 sudo route del default
+# Ubuntu中删除默认网关
+# 先连接内网，删除默认网关即可内外网同时连接
+# 10.55.10.1为内网默认网关
+# enx000ec6c8c163为本地有线网卡的名称
+# dev为随意的命名
+sudo route del default gw 10.55.10.1 dev enx000ec6c8c163
 \end{lstlisting}
 
 删除一条路由：
@@ -5450,22 +5483,22 @@ sudo route del default gw 10.55.10.1
 
 \paragraph{SSH代理(SSH Proxy)}
 
-数据库部署在A服务器上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，是在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
+数据库部署在A服务器(58.214.215.*)上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，实在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
 
 \begin{lstlisting}[language=Bash]
 ssh -L <local port>:<remote host>:<remote port> <SSH hostname>
 \end{lstlisting}
 
-在B服务器上建立一个本地端口转发：
+在B服务器(10.55.10.77)上建立一个本地端口转发：
 
 \begin{lstlisting}[language=Bash]
-ssh -L 5236:10.55.10.2:5236 58.214.215.6
+ssh -L 5236:58.214.215.*:5236 10.55.10.77
 \end{lstlisting}
 
 以上的语句只能在B服务器上使用，如果其他机器想将流量发送到B服务器是无法利用隧道的。在主流 SSH 实现中，本地端口转发绑定的是 lookback 接口，这意味着只有 localhost 或者 127.0.0.1 才能使用本机的端口转发 , 其他机器发起的连接只会得到“ connection refused. ”。好在 SSH 同时提供了 GatewayPorts 关键字，我们可以通过指定它与其他机器共享这个本地端口转发。
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:10.55.10.2:5236 58.214.215.6
+ssh -g -L 5236:10.55.10.2:5236 58.214.215.*
 \end{lstlisting}
 
 \part{Engneering}
