@@ -5213,12 +5213,12 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \begin{lstlisting}[language=Javascript]
 new UglifyJsPlugin({
-output: {
-comments: false,//去掉Javascript中的注释
-},
-compress: {
-warnings: false
-}
+	output: {
+		comments: false,//去掉Javascript中的注释
+	},
+	compress: {
+		warnings: false
+	}
 })
 \end{lstlisting}
 
@@ -5230,14 +5230,18 @@ warnings: false
 
 \begin{lstlisting}[language=Javascript]
 plugins: [
-new webpack.DefinePlugin({ // <-- key to reducing React's size
-'process.env': {
-'NODE_ENV': JSON.stringify('production')
-}
-}),
-new webpack.optimize.DedupePlugin(), //dedupe similar code 
-new webpack.optimize.UglifyJsPlugin(), //minify everything
-new webpack.optimize.AggressiveMergingPlugin()//Merge chunks 
+	// <-- key to reducing React's size
+	new webpack.DefinePlugin({ 
+		'process.env': {
+			'NODE_ENV': JSON.stringify('production')
+		}
+	}),
+	//dedupe similar code
+	new webpack.optimize.DedupePlugin(),
+	//minify everything  
+	new webpack.optimize.UglifyJsPlugin(), 
+	//Merge chunks
+	new webpack.optimize.AggressiveMergingPlugin() 
 ]
 \end{lstlisting}
 
@@ -5250,7 +5254,7 @@ new webpack.optimize.AggressiveMergingPlugin()//Merge chunks
 
 \begin{lstlisting}[language=Javascript]
 "scripts": {
-"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
+	"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
 }
 \end{lstlisting}
 
@@ -5376,7 +5380,7 @@ var FindProxyForURL = function(init, profiles) {
 });
 \end{lstlisting}
 
-以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+以上脚本说明，当IP为58.214.215.*或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
 
 \subsection{同时连接内外网}
 
@@ -5477,13 +5481,13 @@ sudo route del default gw 10.55.10.1 dev enx000ec6c8c163
 sudo route del -net 192.168.122.0 netmask 255.255.255.0
 \end{lstlisting}
 
-如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
+如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有58.214.*.*开头的，全部走enp0s26u1u2:
 
 \begin{lstlisting}[language=Bash]
-sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
+sudo route add -net 58.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
 \end{lstlisting}
 
-其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
+其中58.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
 
 \begin{lstlisting}[language=Bash]
 vim /etc/rc.local
@@ -5509,7 +5513,7 @@ sudo route del default gw 10.55.10.1
 \paragraph{SSH代理(SSH Proxy)}
 \label{paragraph:sshproxy}
 
-数据库部署在A服务器(58.214.215.*)上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，实在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
+数据库部署在A服务器(58.214.215.*)上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，实在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器(10.55.10.*)为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
 
 \begin{lstlisting}[language=Bash]
 ssh -L <local port>:<remote host>:<remote port> <SSH hostname>
@@ -5524,10 +5528,16 @@ ssh -L 5236:58.214.215.*:5236 10.55.10.77
 -L参数表示做本地映射端口。将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 以上的语句只能在B服务器上使用，如果其他机器想将流量发送到B服务器是无法利用隧道的。在主流 SSH 实现中，本地端口转发绑定的是 loopback 接口，这意味着只有 localhost 或者 127.0.0.1 才能使用本机的端口转发 , 其他机器发起的连接只会得到“ connection refused. ”。好在 SSH 同时提供了 GatewayPorts 关键字，我们可以通过指定它与其他机器共享这个本地端口转发。
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:10.55.10.2:5236 58.214.215.*
+ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 \end{lstlisting}
 
--g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.
+-g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
+
+\begin{lstlisting}[language=]
+ssh -g -L 5236:58.214.215.*:5236 10.55.10.77 -L 22:58.214.215.*:22 10.55.10.77 -L 3800:58.214.215.*:3800 10.55.10.77
+\end{lstlisting}
+
+
 
 \newpage
 ~\vfill
