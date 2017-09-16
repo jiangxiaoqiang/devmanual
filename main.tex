@@ -5534,7 +5534,7 @@ sudo route add -net 58.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1
 vim /etc/rc.local
 \end{lstlisting}
 
-添加删除默认网关：
+%添加删除默认网关：
 
 \begin{lstlisting}[language=Bash]
 #添加默认网关
@@ -5575,10 +5575,10 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
 \begin{lstlisting}[language=]
-ssh -g -L 5236:58.214.215.*:5236 -L 22:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
+ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
-
+在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。
 
 \newpage
 ~\vfill
