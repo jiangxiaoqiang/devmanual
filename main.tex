@@ -1026,8 +1026,6 @@ public static final int DEFAULT_BUFFER_SIZE = 8*1024;
 response.setBufferSize(2048 * 20);
 \end{lstlisting}
 
-
-
 \subsection{异常处理(Exception Handle)}
 
 在系统中，异常处理一般通过全局异常捕获，这样就几乎不用在代码中使用异常捕获块，过多的异常捕获代码块也会造成代码的污染和重复。在Spring中，可以在class注解上@ControllerAdvice来捕获全局异常：
@@ -1523,12 +1521,12 @@ md5sum local_policy.jar
 
 
 
-\section{Mybatis}
+\section{MyBatis}
 
 mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
 
 
-\subsection{打印SQL}
+\subsection{打印SQL(Print SQL)}
 
 开发中，配置日志中打印SQL语句，在application.properties文件中指定mybatis配置文件路径：
 
@@ -1560,7 +1558,20 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	\label{fig:mybatisprintsql}
 \end{figure}
 
-\subsection{多参数传递}
+\subsection{多数据源(Multi-Datasource)}
+
+项目开始的时候是将日志写在主数据库中，过程中考虑到数据库到压力，决定将日志单独放在另一台数据库中。目前还没有到需要使用MQ到程度。项目中数据持久化使用的是MyBatis，所以此时就需要配置MyBatis的多数据源支持。多数据源可以采用AOP动态切换的方式来实现。一种最简便的方式是初始化多个数据源，在创建jdbcTemplate实例时指定某个数据源即可，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+@Autowired
+@Qualifier("secondaryJdbcTemplate")
+private JdbcTemplate jdbcTemplate1;
+\end{lstlisting}
+
+那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。
+
+
+\subsection{多参数传递(Multi-Parameter)}
 
 在使用Mybatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
 
@@ -4214,6 +4225,11 @@ ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-soft/"
 \end{lstlisting}
 
+\subsection{Ansible代理(Ansible Proxy)}
+
+
+
+
 \section{ssh}
 
 \subsection{免密登陆}
@@ -5211,12 +5227,12 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \begin{lstlisting}[language=Javascript]
 new UglifyJsPlugin({
-output: {
-comments: false,//去掉Javascript中的注释
-},
-compress: {
-warnings: false
-}
+	output: {
+		comments: false,//去掉Javascript中的注释
+	},
+	compress: {
+		warnings: false
+	}
 })
 \end{lstlisting}
 
@@ -5228,14 +5244,18 @@ warnings: false
 
 \begin{lstlisting}[language=Javascript]
 plugins: [
-new webpack.DefinePlugin({ // <-- key to reducing React's size
-'process.env': {
-'NODE_ENV': JSON.stringify('production')
-}
-}),
-new webpack.optimize.DedupePlugin(), //dedupe similar code 
-new webpack.optimize.UglifyJsPlugin(), //minify everything
-new webpack.optimize.AggressiveMergingPlugin()//Merge chunks 
+	// <-- key to reducing React's size
+	new webpack.DefinePlugin({ 
+		'process.env': {
+			'NODE_ENV': JSON.stringify('production')
+		}
+	}),
+	//dedupe similar code
+	new webpack.optimize.DedupePlugin(),
+	//minify everything  
+	new webpack.optimize.UglifyJsPlugin(), 
+	//Merge chunks
+	new webpack.optimize.AggressiveMergingPlugin() 
 ]
 \end{lstlisting}
 
@@ -5248,7 +5268,7 @@ new webpack.optimize.AggressiveMergingPlugin()//Merge chunks
 
 \begin{lstlisting}[language=Javascript]
 "scripts": {
-"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
+	"dev": "webpack --display-chunks --watch --progress --colors --display-error-details --config webpack/dev.config.js",
 }
 \end{lstlisting}
 
@@ -5326,11 +5346,11 @@ gzip_disable "MSIE [1-6]\.";
 
 \section{PAC(Proxy Auto-Configuration)}
 
-\subsection{PAC简介}
+\subsection{PAC简介(Pac Introduce)}
 
 PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就是JavaScript文件。PAC最简单的格式就是包含一个叫FindProxyForURL的JavaScript函数，IE通过传入两个变量来调用这个函数。一个是用户流量的地址的URL全路径，一个是这个URL中的主机名host。在日常生活中浏览器中设置代理很简单，但是当你来回切换时总是觉得很烦，你可以使用pac脚本自动判断是否走代理，方便省去了来回手动切换的烦恼。
 
-\subsection{PAC实例}
+\subsection{PAC实例(PAC Example)}
 
 一个最简单的PAC脚本：
 
@@ -5374,7 +5394,7 @@ var FindProxyForURL = function(init, profiles) {
 });
 \end{lstlisting}
 
-以上脚本说明，当IP为59.214.215.6或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
+以上脚本说明，当IP为58.214.215.*或10.10.1.11时，使用代理dolphin-proxy，而代理dolphin-proxy设置的是代理机器的相关信息，代理机器的IP为10.55.10.2，代理的端口是8888。
 
 \subsection{同时连接内外网}
 
@@ -5418,16 +5438,22 @@ netstat -nr
 
 \paragraph{Fedora、Ubuntu同时连接内外网}
 
-给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网通过网线连接，是有线网络，外网通过无线网卡连接路由器，是无线网络。使用route命令查看默认路由，输出如图\ref{fig:routetable}所示：
+给有线网卡配置地址信息时，内网网卡不要加默认网关，外网网卡加默认网关，并查看无线网卡分配到的地址信息中是否有默认网关。在这里内网通过网线连接，是有线网络，外网通过无线网卡连接路由器，是无线网络。使用route命令查看默认路由(在Mac下使用netstate -nr命令)，输出如图\ref{fig:routetable}所示：
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale=0.5]{route-table.jpg}
-	\caption{查看Kernel路由表}
+	\caption{查看Linux Kernel路由表}
 	\label{fig:routetable}
 \end{figure}
 
-其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如表\ref{table:flagmeaning}所示。
+IP路由选择主要完成以下这些步骤：
+1)搜索路由表，寻找能与目的IP地址完全匹配的表目（网络号和主机号\footnote{当前使用的IP地址有4个字节（32bit）组成，即IPV4编码方式。每个IP地址包括两部分：网络号和主机号。当分配给主机号的二进制位越多，则能标识的主机数就越多，相应地能标识的网络数就越少，反之同理。}都要匹配）。如果找到，则把报文发送给该表目指定的下一站路由器或直接连接的网络接口（取决于标志字段的值）。
+2) 搜索路由表，寻找能与目的网络号相匹配的表目。如果找到，则把报文发送给该表目指定的下一站路由器或直接连接的网络接口（取决于标志字段的值）。目的网络上的所有主机都可以通过这个表目来处置。例如，一个以太网上的所有主机都是通过这种表目进行寻径的。这种搜索网络的匹配方法必须考虑可能的子网掩码。
+3)搜索路由表，寻找标为“默认（default）”的表目。如果找到，则把报文发送给该表目指定的下一站路由器。如果上面这些步骤都没有成功，那么该数据报就不能被传送。如果不能传送的数据报来自本机，那么一般会向生成数据报的应用程序返回一个“主机不可达”或 “网络不可达”的错误。
+完整主机地址匹配在网络号匹配之前执行。只有当它们都失败后才选择默认路由。默认路由，以及下一站路由器发送的ICMP间接报文（如果我们为数据报选择了错误的默认路由），是IP路由选择机制中功能强大的特性。
+
+其中wlp3s0是无线网卡的名称，此命名规范为v197\footnote{https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/}，说明此时的默认路由是无线网卡的路由。Destination指定该路由属于哪个网络，Gateway指定网络目标定义的地址集和子网掩码可以到达的前进或下一跃点IP地址，metric设置路由跳数，metric值越高，优先级越低。添加-p(permanent)参数永久保存此条路由信息，系统重启后路由也规则也不会丢失。flag的含义如表\ref{table:flagmeaning}所示。
 
 \begin{table}
 	\begin{center}
@@ -5469,13 +5495,13 @@ sudo route del default gw 10.55.10.1 dev enx000ec6c8c163
 sudo route del -net 192.168.122.0 netmask 255.255.255.0
 \end{lstlisting}
 
-如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有59.214.*.*开头的，全部走enp0s26u1u2:
+如果默认路由是外网网关。那么只需要单独为内网设置转发特例，所有58.214.*.*开头的，全部走enp0s26u1u2:
 
 \begin{lstlisting}[language=Bash]
-sudo route add -net 59.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
+sudo route add -net 58.214.0.0 netmask 255.255.255.0 gw 10.55.10.1 dev enp0s26u1u2
 \end{lstlisting}
 
-其中59.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
+其中58.214.0.0为内网IP的起始网段，255.255.0.0为内网的子网掩码，内网网关是10.36.40.12，eth0为内网网卡的名称。路由添加最好是添加到开机启动中：
 
 \begin{lstlisting}[language=Bash]
 vim /etc/rc.local
@@ -5501,7 +5527,7 @@ sudo route del default gw 10.55.10.1
 \paragraph{SSH代理(SSH Proxy)}
 \label{paragraph:sshproxy}
 
-数据库部署在A服务器(58.214.215.*)上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，实在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
+数据库部署在A服务器(58.214.215.*)上，而A服务器只能连接内网才能访问，每次连接数据库都需要切换网络，实在是非常不便。但是localhost可以在外网的情况下访问B机器，B机器可以访问A机器。所以考虑通过SSH代理，以B机器(10.55.10.*)为跳板，直接访问数据库服务器A。在服务器B上建立本地端口转发，本地端口转发的格式是：
 
 \begin{lstlisting}[language=Bash]
 ssh -L <local port>:<remote host>:<remote port> <SSH hostname>
@@ -5516,10 +5542,16 @@ ssh -L 5236:58.214.215.*:5236 10.55.10.77
 -L参数表示做本地映射端口。将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口. 以上的语句只能在B服务器上使用，如果其他机器想将流量发送到B服务器是无法利用隧道的。在主流 SSH 实现中，本地端口转发绑定的是 loopback 接口，这意味着只有 localhost 或者 127.0.0.1 才能使用本机的端口转发 , 其他机器发起的连接只会得到“ connection refused. ”。好在 SSH 同时提供了 GatewayPorts 关键字，我们可以通过指定它与其他机器共享这个本地端口转发。
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:10.55.10.2:5236 58.214.215.*
+ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 \end{lstlisting}
 
--g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.
+-g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
+
+\begin{lstlisting}[language=]
+ssh -g -L 5236:58.214.215.*:5236 10.55.10.77 -L 22:58.214.215.*:22 10.55.10.77 -L 3800:58.214.215.*:3800 10.55.10.77
+\end{lstlisting}
+
+
 
 \newpage
 ~\vfill
