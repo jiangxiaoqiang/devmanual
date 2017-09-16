@@ -2427,6 +2427,20 @@ tigerA.__proto__.species = '犬科';
 
 \subsection{常用函数}
 
+\paragraph{下划线命名转驼峰命名}
+
+如下函数将下划线命名的方式转成驼峰命名的方式：
+
+\begin{lstlisting}[language=Javascript]
+function camelCase(input) {
+		return input.toLowerCase().replace(/_(.)/g, function (match, group1) {
+		return group1.toUpperCase();
+	});
+}
+//XDR\_SHXYM转换结果xdrShxym
+const camelName =camelCase("XDR_SHXYM");
+\end{lstlisting}
+
 数学函数：
 
 \begin{lstlisting}[language=Javascript]
@@ -5449,7 +5463,7 @@ sudo route del default
 sudo route del default gw 10.55.10.1 dev enx000ec6c8c163
 \end{lstlisting}
 
-删除一条路由：
+10.45.10.1为内网的默认网关。Linux系统的route命令用于显示和操作IP路由表（show / manipulate the IP routing table）。要实现两个不同的子网之间的通信，需要一台连接两个网络的路由器，或者同时位于两个网络的网关来实现。删除一条路由：
 
 \begin{lstlisting}[language=Bash]
 sudo route del -net 192.168.122.0 netmask 255.255.255.0
