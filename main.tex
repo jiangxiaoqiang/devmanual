@@ -2416,10 +2416,10 @@ console.log(tigerB.species);//猫科
 
 \begin{lstlisting}[language=Javascript]
 function Tiger(name) {
-this.name = name;
+	this.name = name;
 }
 Tiger.prototype = {
-species: '犬科'
+	species: '犬科'
 };
 var tigerA = new Tiger("大虎");
 var tigerB = new Tiger("二虎");
@@ -2471,9 +2471,9 @@ Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
 
 \begin{lstlisting}[language=Javascript]
 const books = this.props.books;
-let arr = [];
-for(let i in books){
-arr.push(books[i]);
+	let arr = [];
+	for(let i in books){
+	arr.push(books[i]);
 }
 \end{lstlisting}
 
@@ -2481,20 +2481,20 @@ arr.push(books[i]);
 
 \begin{lstlisting}[language=Javascript]
 if (!value || (value + ' ').trim().length === 0) {
-/**
-* 值为空的字段在界面上不显示
-* 如果value是整数，不能使用trim()，所以加字符串手动转换成String类型
-*/
-return;
+	/**
+	* 值为空的字段在界面上不显示
+	* 如果value是整数，不能使用trim()，所以加字符串手动转换成String类型
+	*/
+	return;
 }
 
 /**
 * 如果需要判断字符串为空，直接if判断即可
 */
 if(value){
-/**
-* 此种写法等价于if(value===null||value===undefined||value==='')
-*/
+	/**
+	* 此种写法等价于if(value===null||value===undefined||value==='')
+	*/
 }
 \end{lstlisting}
 
@@ -2506,15 +2506,15 @@ Moment.js是一个JavaScript日期处理类库，如下代码片段使用moment�
 import moment from "moment";
 
 tableDataSource = (logList, orgList) => {
-const content = logList.content || [];
-return content.map((item, idx) => {
-const org = orgList.find(org => org.orgId == item.ORG_ID);
-return {
-...item,
-//格式化日期
-QUERY_DATE: moment(item.QUERY_DATE).format("YYYY-MM-DD hh:mm:ss"),
-};
-})
+	const content = logList.content || [];
+	return content.map((item, idx) => {
+		const org = orgList.find(org => org.orgId == item.ORG_ID);
+		return {
+			...item,
+			//格式化日期
+			QUERY_DATE: moment(item.QUERY_DATE).format("YYYY-MM-DD hh:mm:ss"),
+		};
+	})
 };
 \end{lstlisting}
 
@@ -2523,7 +2523,7 @@ QUERY_DATE: moment(item.QUERY_DATE).format("YYYY-MM-DD hh:mm:ss"),
 \begin{lstlisting}[language=Javascript]
 moment.lang('zh-cn', {
 week: {
-dow: 1 // Monday is the first day of the week
+	dow: 1 // Monday is the first day of the week
 }
 });
 // date now is the first day of the week, (i.e., Monday)
@@ -2647,7 +2647,85 @@ sudo apt-get -f install
 
 f参数表示尝试修正系统依赖损坏处。
 
-\section{shell}
+\section{Shell}
+
+\subsection{自动部署(Auto-Deployment)}
+
+在使用Shell脚本时，最初将之用于自动化部署程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，启动执行。
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+#
+# 一键部署后端项目到远程1台或多台服务器
+# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 注：本机需要安装Ansible并与服务器做免密登录
+#
+# 2017-05-25 增加动态读取版本号，根据版本自动发布程序
+#
+
+# 当使用未初始化的变量时，程序自动退出
+set -u
+
+# 当任何一行命令执行失败时，自动退出脚本
+set -e
+
+# send=`date '+%Y-%m-%d %H:%M:%S'`
+CURRENT\_TIME=`date '+%Y%m%d%H%M%S'`
+
+echo "$CURRENT_TIME"
+
+PROGRAM_PATH_INFORMATION_CENTER="/opt/app/backend"
+SERVER_IP="192.168.1.101"
+LOGIN_USER="root"
+LOCAL_PATH="./cc-web-boot/build/libs"
+
+# Read program version number
+source version.properties
+echo "$VERSION"
+
+PROGRAM_NAME="credit-system-web-boot-$VERSION.jar"
+echo "$PROGRAM_NAME"
+
+echo "开始构建..."
+# Build project
+./gradlew -p cc-web-boot -x test build
+./gradlew -p cc-etl-sechedule -x test build
+
+echo "开始拷贝..."
+# publish project
+scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
+scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
+
+ansible webservers -m command -a "date"
+
+echo "停止站点..."
+ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
+
+echo "等待站点停止..."
+sleep 10
+
+echo "备份站点..."
+# 备份当前站点
+ansible webservers -m command -a "mv $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME-$CURRENT_TIME"
+
+echo "拷贝新文件..."
+ansible webservers -a "mv ~/app-soft/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "启动站点..."
+ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_CENTER"
+
+echo "部署完成"
+\end{lstlisting}
+
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。
+
+\paragraph{优化代理(Optimizate Proxy)}
+
+项目的一个特点是，有两个彼此独立的网络，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。
+
+
 
 \paragraph{快捷键(Shortcut)}
 
@@ -2913,77 +2991,7 @@ sudo apt remove wget
 yum info wget
 \end{lstlisting}
 
-\subsection{自动部署}
 
-将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，启动执行。
-
-\begin{lstlisting}[language=Bash]
-#!/usr/bin/env bash
-
-#
-# 一键部署后端项目到远程1台或多台服务器
-# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
-# 注：本机需要安装Ansible并与服务器做免密登录
-#
-# 2017-05-25 增加动态读取版本号，根据版本自动发布程序
-#
-
-# 当使用未初始化的变量时，程序自动退出
-set -u
-
-# 当任何一行命令执行失败时，自动退出脚本
-set -e
-
-# send=`date '+%Y-%m-%d %H:%M:%S'`
-CURRENT\_TIME=`date '+%Y%m%d%H%M%S'`
-
-echo "$CURRENT_TIME"
-
-PROGRAM_PATH_INFORMATION_CENTER="/opt/app/backend"
-SERVER_IP="192.168.1.101"
-LOGIN_USER="root"
-LOCAL_PATH="./cc-web-boot/build/libs"
-
-# Read program version number
-source version.properties
-echo "$VERSION"
-
-PROGRAM_NAME="credit-system-web-boot-$VERSION.jar"
-echo "$PROGRAM_NAME"
-
-echo "开始构建..."
-# Build project
-./gradlew -p cc-web-boot -x test build
-./gradlew -p cc-etl-sechedule -x test build
-
-echo "开始拷贝..."
-# publish project
-scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
-scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
-scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
-
-ansible webservers -m command -a "date"
-
-echo "停止站点..."
-ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
-
-echo "等待站点停止..."
-sleep 10
-
-echo "备份站点..."
-# 备份当前站点
-ansible webservers -m command -a "mv $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER/$PROGRAM_NAME-$CURRENT_TIME"
-
-echo "拷贝新文件..."
-ansible webservers -a "mv ~/app-soft/$PROGRAM_NAME $PROGRAM_PATH_INFORMATION_CENTER"
-
-echo "启动站点..."
-ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_CENTER"
-
-echo "部署完成"
-\end{lstlisting}
-
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。
 
 \subsection{环境变量(Environment Variable)}
 
@@ -3994,7 +4002,8 @@ with nginx by using --with-openssl=<path> option.
 即可看到http\_realip\_module已经编译到Nginx中了。Nginx的http realip module等于Apache的mod\_rpaf，用于接受前端发来的IP head信息，从获取到真实的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
 
 \begin{lstlisting}[language=bash]
-#指令是告诉nginx，10.10.1.11是我们的反向代服务器，不是真实的用户IP
+#指令是告诉nginx，10.10.1.11是我们的反向代服务器
+#不是真实的用户IP
 set_real_ip_from 10.10.1.11;
 #告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
 real_ip_header X-Real-IP;
@@ -4915,6 +4924,24 @@ PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统
 
 \section{基础操作}
 
+\subsection{安装}
+
+由于OS发行版本特殊，没有现成Binary包，所以从源码手动编译安装，选择的是9.6.5版本，运行configure的时候出现如下错误：
+
+configure: error: readline library not found
+If you have readline already installed, see config.log for details on the
+failure.  It is possible the compiler isn't looking in the proper directory.
+Use --without-readline to disable readline support.
+
+提示缺失readline\footnote{\url{https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html}}包，GNU Readline 是一个开源的程序库，可以实现交互式的文本编辑功能。网上说安装readline-devel包和libtermcap-devel包可以解决这个问题\footnote{\url{http://www.thegeekstuff.com/2009/04/linux-postgresql-install-and-configure-from-source}}(Install the readline-devel and libtermcap-devel\footnote{\url{https://centos.pkgs.org/5/centos-x86_64/libtermcap-devel-2.0.8-46.1.x86_64.rpm.html}} to solve the above issue).
+
+\begin{lstlisting}[language=Bash]
+# 安装libtermcap
+rpm -ivh libtermcap-2.0.8-46.1.x86_64.rpm
+\end{lstlisting}
+
+termcap数据库是一个过时 (obsolete) 工具，用来描述以字符为单位的终端和打印机的功能。它之所以被保留，是为了兼容古老的程序。
+
 登录：
 
 \begin{lstlisting}[language=Bash]
@@ -5548,7 +5575,7 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
 \begin{lstlisting}[language=]
-ssh -g -L 5236:58.214.215.*:5236 10.55.10.77 -L 22:58.214.215.*:22 10.55.10.77 -L 3800:58.214.215.*:3800 10.55.10.77
+ssh -g -L 5236:58.214.215.*:5236 -L 22:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
 
