@@ -558,6 +558,14 @@ addtohook={%
 \noindent \textit{Version 20170320, \today} % Printing/edition date
 
 
+
+
+
+
+
+
+
+
 %----------------------------------------------------------------------------------------
 %	TABLE OF CONTENTS
 %----------------------------------------------------------------------------------------
@@ -579,7 +587,10 @@ addtohook={%
 %----------------------------------------------------------------------------------------
 
 
+这里记录的是一些比较杂乱的笔记，绝大多数文字皆来源于网络，不是自己的原创，这里没有高深的算法，没有宏伟的技术及系统架构，只是一些平时工作中遇到的一些问题，和解决问题的思路以及所采用的方案。由于平时工作时还没有遇到前人没有遇到过的问题需要自己发明方去解决(其实真的遇到估计也是没辙)，所以绝大部分内容是为了避免再遇到同样的问题时，又需要到处去搜寻，索性将之记录下来，以便于下次可以快刀斩乱麻，迅速解决问题。
 
+
+\mainmatter
 
 %----------------------------------------------------------------------------------------
 %	PART
@@ -4924,7 +4935,7 @@ PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统
 
 \section{基础操作}
 
-\subsection{安装}
+\subsection{安装(Install)}
 
 由于OS发行版本特殊，没有现成Binary包，所以从源码手动编译安装，选择的是9.6.5版本，运行configure的时候出现如下错误：
 
@@ -4935,12 +4946,28 @@ Use --without-readline to disable readline support.
 
 提示缺失readline\footnote{\url{https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html}}包，GNU Readline 是一个开源的程序库，可以实现交互式的文本编辑功能。网上说安装readline-devel包和libtermcap-devel包可以解决这个问题\footnote{\url{http://www.thegeekstuff.com/2009/04/linux-postgresql-install-and-configure-from-source}}(Install the readline-devel and libtermcap-devel\footnote{\url{https://centos.pkgs.org/5/centos-x86_64/libtermcap-devel-2.0.8-46.1.x86_64.rpm.html}} to solve the above issue).
 
+由于是内网，无法连接互联网，手动安装依赖太复杂(包的依赖复杂，A包依赖B包，B包依赖C包，安装几个包之后整个人都不好了，这才真的真的体会到包管理工具的方便)。所以考虑了2个方案，一是在内网搭建一个离线yum源服务器，二是在可以连接互联网的机器上采用yum下载好包之后，在另一台内网机器上手动安装。使用如下命令下载依赖包：
+
 \begin{lstlisting}[language=Bash]
-# 安装libtermcap
-rpm -ivh libtermcap-2.0.8-46.1.x86_64.rpm
+sudo yum install --downloadonly <package-name>
+yum install --downloadonly -y perl-ExtUtils-Embed readline-devel zlib-devel pam-devel libxml2-devel libxslt-devel openldap-devel python-devel gcc-c++ openssl-devel cmake
+# Ubuntu下仅仅下载而不安装软件包
+# 下载的目录一般为/var/cache/apt/archives
+sudo apt-get -d install wget
 \end{lstlisting}
 
-termcap数据库是一个过时 (obsolete) 工具，用来描述以字符为单位的终端和打印机的功能。它之所以被保留，是为了兼容古老的程序。
+参数d表示仅仅在下载模式(Dowanload Mode)，并不会安装软件，默认情况下，一个下载的RPM包会保存在下面的目录中:
+
+\begin{lstlisting}[language=Bash]
+/var/cache/yum/x86_64/[centos/fedora-version]/[repository]/packages 
+\end{lstlisting}
+
+如果想要将一个包下载到一个指定的目录(如/tmp)：
+
+\begin{lstlisting}[language=Bash]
+sudo yum install --downloadonly --downloaddir=/tmp <package-name> 
+\end{lstlisting}
+
 
 登录：
 
