@@ -4946,7 +4946,7 @@ Use --without-readline to disable readline support.
 
 提示缺失readline\footnote{\url{https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html}}包，GNU Readline 是一个开源的程序库，可以实现交互式的文本编辑功能。网上说安装readline-devel包和libtermcap-devel包可以解决这个问题\footnote{\url{http://www.thegeekstuff.com/2009/04/linux-postgresql-install-and-configure-from-source}}(Install the readline-devel and libtermcap-devel\footnote{\url{https://centos.pkgs.org/5/centos-x86_64/libtermcap-devel-2.0.8-46.1.x86_64.rpm.html}} to solve the above issue).
 
-由于是内网，无法连接互联网，手动安装依赖太复杂(包的依赖复杂，A包依赖B包，B包依赖C包，安装几个包之后整个人都不好了，这才真的真的体会到包管理工具的方便)。所以考虑了2个方案，一是在内网搭建一个离线yum源服务器，二是在可以连接互联网的机器上采用yum下载好包之后，在另一台内网机器上手动安装。使用如下命令下载依赖包：
+由于是内网，无法连接互联网，手动安装依赖太复杂(包的依赖复杂，A包依赖B包，B包依赖C包，安装几个包之后整个人都不好了，这才真的真的体会到包管理工具的方便)。所以考虑了2个方案，一是在内网搭建一个离线yum(Yellowdog Updater, Modified\footnote{\url{https://en.wikipedia.org/wiki/Yum_(.rpm)}})源服务器，二是在可以连接互联网的机器上采用yum下载好包之后，在另一台内网机器上手动安装。使用如下命令下载依赖包：
 
 \begin{lstlisting}[language=Bash]
 sudo yum install --downloadonly <package-name>
