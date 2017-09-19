@@ -3873,6 +3873,14 @@ curl -i -X POST -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e0
 
 The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。
 
+\subsection{iostat}
+
+查看磁盘的IO情况，每秒刷新一次：
+
+\begin{lstlisting}[language=Bash]
+iostat 1 -cdxk
+\end{lstlisting}
+
 
 \subsection{Zeal}
 
@@ -4472,7 +4480,7 @@ git reset --hard e4177ea9061a9726efd42d289f73553409df793d
 
 \begin{lstlisting}[language=Bash]
 # 发布时打上Tag
-git tag v1.1.31
+git tag -a v1.1.31 -m "v1.0版本发布"
 # 查看有哪些Tag
 git tag
 # 查看具体Tag的内容
@@ -4519,6 +4527,14 @@ git log --follow application-jjxxzx-test.properties
 git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \end{lstlisting}
 
+\subsection{merge}
+
+配置Meld为默认合并工具：
+
+\begin{lstlisting}[language=Bash]
+git config --global merge.tool meld
+\end{lstlisting}
+
 \subsection{常见问题}
 
 
@@ -4536,20 +4552,7 @@ env GIT_SSL_NO_VERIFY=true git clone https://<host_name/git/project.git
 git config --system http.sslverify false
 \end{lstlisting}
 
-\subsection{rsync}
 
-在使用scp命令时，无法实现断点续传。rsync是类unix系统下的数据镜像备份工具——remote sync。一款快速增量备份工具 Remote Sync，远程同步 支持本地复制，或者与其他SSH、rsync主机同步。
-
-
-
-
-\subsection{merge}
-
-配置Meld为默认合并工具：
-
-\begin{lstlisting}[language=Bash]
-git config --global merge.tool meld
-\end{lstlisting}
 
 \chapter{Google Chrome}
 
@@ -5229,6 +5232,15 @@ from (
 )
 GROUP BY ORG_ID,GNMK 
 order by ORG_ID DESC limit 0, 10
+
+--修改参数
+select * 
+from v$dm_ini
+where para_name like '%ORDER%'
+
+select * from v$sessions where state='ACTIVE';
+
+
 \end{lstlisting}
 
 
