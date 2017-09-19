@@ -1579,7 +1579,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 private JdbcTemplate jdbcTemplate1;
 \end{lstlisting}
 
-那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。
+那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
 
 
 \subsection{多参数传递(Multi-Parameter)}
