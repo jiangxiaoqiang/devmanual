@@ -54,7 +54,7 @@
 %Figure显示为中文的“图”
 \renewcommand\figurename{图}
 
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 
 %Set Code Format%
 \lstloadlanguages{C, csh, make,python,Java,JavaScript}
@@ -69,7 +69,8 @@
 	showstringspaces=false,%不显示代码字符串中间的空格标记  
 	stringstyle=\ttfamily, % 代码字符串的特殊格式  
 	keepspaces=true, %  
-	breakindent=22pt, %  
+	breakindent=22pt, % 
+	breaklines=true,%设置代码自动换行 
 	numbers=left,%左侧显示行号 往左靠,还可以为right，或none，即不加行号  
 	stepnumber=1,%若设置为2，则显示行号为1,3,5，即stepnumber为公差,默认stepnumber=1  
 	%numberstyle=\tiny, %行号字体用小号  
@@ -556,14 +557,6 @@ addtohook={%
 \noindent All Rights Unreserved.\\ % License information
 
 \noindent \textit{Version 20170320, \today} % Printing/edition date
-
-
-
-
-
-
-
-
 
 
 %----------------------------------------------------------------------------------------
@@ -4473,6 +4466,38 @@ git reset --hard e4177ea9061a9726efd42d289f73553409df793d
 	\label{fig:filemodifyhistory}
 \end{figure}
 
+\subsection{Tag}
+
+有的时候需要修复线上某个版本的问题，但是当前主分支已经合并了中途开发的部分功能，还未经过严格测试。为了满足这样的要求，需要在每次发布版本的时候打上标记(Tag)，需要修复线上问题时，可以回到标记的版本，修复线上的问题后，将fix分支合并到主干。
+
+\begin{lstlisting}[language=Bash]
+# 发布时打上Tag
+git tag v1.1.31
+# 查看有哪些Tag
+git tag
+# 查看具体Tag的内容
+git show v1.1.31
+# 将代码回退到发布时的版本
+# 实际Commit ID为
+# eb8f7df1935da2e191163610d8b0374beff011e0
+# 只需要前几位即可
+git reset --hard eb8f7d
+# 回退版本后，拉取新的分支，这里取名HotFix1.1.31分支
+git checkout -b HotFix1.1.31
+\end{lstlisting}
+
+需要注意的是，创建好HotFix分支之后，要马上回到主分支将代码前进到最新版本：
+
+\begin{lstlisting}[language=Bash]
+# 切换到主分支
+git checkout master
+# 使用reflog命名检索最新版本的commit id
+git reflog
+# 前进到最新版本
+git reset --hard 9e4c92
+\end{lstlisting}
+
+剩下的工作就是切换到刚才到HotFix1.1.31分支修复问题即可。修复之后，将问题修复后的代码合并到主干分支。
 
 \subsection{查看修改历史}
 
@@ -4860,7 +4885,7 @@ h=\log_{(m+1)} N
 
 目前数据量将近千万，模糊查询效率比较低。模糊查询通常有下面三种，前匹配：like \%abc，可以使用btree索引优化，后匹配：like abc\%，可以使用reverse函数btree索引，全匹配：like \%abc\%，可以使用pg\_trgm的gin索引。后面的2种优化方式是在PostgreSQL数据库中。还有全文索引技术也可以用来优化基于like查询的匹配。
 
-\paragraph{采用函数}
+\paragraph{采用函数(无效)}
 
 采用函数来优化查询(没有效果)：
 
@@ -4895,7 +4920,7 @@ limit 0,10;
 
 \paragraph{全文索引(Full-text Search)}
 
-在达梦数据库中创建全文索引：
+当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
 create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
