@@ -784,6 +784,18 @@ public void setName(String name) throws IllegalArgumentException{
 \end{lstlisting}
 
 
+String.ValueOf()的坑:
+
+\begin{lstlisting}[language=Java]
+String categoryId = String.valueOf(article.getCategory());
+//养成字符串写前面比较的习惯
+//避免空指针异常
+if ("null".equals(categoryId)) {
+	throw new HlValidateException(400001, "传入参数异常，栏目ID不能为空");
+}
+\end{lstlisting}
+
+String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
 
 \subsection{jps}
 
@@ -2441,6 +2453,21 @@ tigerA.__proto__.species = '犬科';
 \end{lstlisting}
 
 \subsection{常用函数}
+
+\paragraph{正则匹配定长数字}
+
+采用如下函数验证定长数字：
+
+\begin{lstlisting}[language=Javascript]
+isFixedNumber = (rule, value, callback) => {
+	if (/^\d{1,6}$/.test(value)) {
+		callback();
+	} else {
+		callback('机构ID只能是6位数字');
+	}
+}
+\end{lstlisting}
+
 
 \paragraph{下划线命名转驼峰命名}
 
@@ -4259,6 +4286,9 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+# 如果本地没有生成过ssh key
+# 使用如下命令生成ssh key
+ssh-keygen -t rsa -C "a@gmail.com"
 \end{lstlisting}
 
 \subsection{ssh连接慢}
@@ -4275,7 +4305,7 @@ GSSAPI ( Generic Security Services Application Programming Interface) 是一套�
 
 \subsection{Permission denied (publickey)}
 
-在ssh登陆机器事，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+在ssh登陆机器时，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
 
 \begin{lstlisting}[language=Bash]
 ssh -p 2222 -vvv hldev@10.0.0.22
@@ -4441,6 +4471,8 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 常用语句。
 
 \begin{lstlisting}[language=Bash]
+git config --global user.name "dolphin"
+git config --global user.email "jiangtingqiang@gmail.com"
 #增加远程库
 git remote add company-internal http://xiaoqiang.jiang@gitlab.data.com/backend/system.git
 #删除远程库
@@ -4923,7 +4955,7 @@ limit 0,10;
 
 \paragraph{全文索引(Full-text Search)}
 
-当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，在达梦数据库中创建全文索引：
+当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，一种方案是使用全文索引查询出结果后，再使用like进行匹配，在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
 create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
