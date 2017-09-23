@@ -4262,7 +4262,7 @@ Ansible主机配置：
 \paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
 
 \begin{lstlisting}[language=bash]
-ansible myservers  -a ". .bash_profile;ps -fe |grep sa_q" -m shell
+ansible myservers -a ". .bash_profile;ps -fe |grep sa_q" -m shell
 \end{lstlisting}
 
 如果在远程待执行的语句比较多，可写成一个脚本，通过copy模块传到远端，然后再执行；但这样就又涉及到两次ansible调用；对于这种需求，ansible已经为我们考虑到了，script模块就是干这事的；
@@ -4275,8 +4275,15 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 \subsection{Ansible代理(Ansible Proxy)}
 
+发布系统时，有时无法直接连接目标机器，通过设置Ansible代理地址来发布，貌似也没有许多特别的地方：
 
+\begin{lstlisting}[language=bash]
+[proxy-ic-webservers]
+#通过跳板机器访问测试环境
+10.55.10.77 ansible_ssh_port=2222 ansible_ssh_user=root
+\end{lstlisting}
 
+其中10.55.10.77是配置的代理机器，代理机器通过ssh端口转发(SSH Port Forwarding)来实现代理，2222为代理机器的监听端口。ssh代理转发将代理机器2222端口的流量转发到目标机器的ssh端口上。
 
 \section{ssh}
 
@@ -5670,11 +5677,17 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
-\begin{lstlisting}[language=]
+\begin{lstlisting}[language=Bash]
 ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
-在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。在连接到1022端口时，有可能提示Connection Refused，那么此时需要检查1022端口是否可以扫描到，是否打开，代理机器到防火墙是否允许1022端口到流量通过，以及代理机器1022的配置，是否已经做了到代理机器到免密登陆。
+在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。在连接到1022端口时，有可能提示Connection Refused，那么此时需要检查1022端口是否可以扫描到，是否打开，代理机器到防火墙是否允许1022端口到流量通过，以及代理机器1022的配置，是否已经做了到代理机器到免密登陆。最后发现改为2222端口即可。可以使用如下命令测试端口的联通：
+
+\begin{lstlisting}[language=Bash]
+# 采用222端口时，远程机器无法连接
+# 暂时不清楚原因
+telnet 10.77.10.55 2222
+\end{lstlisting}
 
 \paragraph{SSH反向代理(Reverse Proxy)}
 
