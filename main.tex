@@ -3679,7 +3679,117 @@ By default, OpenVPN only sends some traffic through the VPN — traffic that is 
 
 An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
-\chapter{Nmap(GNU General Public License)}
+
+
+
+\section{tmux}
+
+tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
+
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
+
+
+\chapter{Raspberry Pi}
+
+\subsection{Raspberry Pi远程}
+
+安装步骤：
+
+\begin{lstlisting}[language=Bash]
+＃　安装tightvncserver
+sudo apt-get install tightvncserver　－ｙ
+＃　设置密码
+vncpasswd
+\end{lstlisting}
+
+\chapter{Widgets}
+
+\section{Little Tool}
+
+\subsection{ag}
+
+
+
+\subsection{Pandoc}
+
+在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
+
+\begin{lstlisting}[language=Bash]
+pandoc -s interface.tex -o example30.docx
+\end{lstlisting}
+
+另外使用\LaTeX{}还有一个比较方便的地方是可以容易的以模块来管理文档，比如接口文档分为公共部分，所有调用方都可以看到，但是针对每个调用方可能会有一些定制的内容，当要修改公共部分时，如果是采用Word文件分散管理会出现不一致的情况，有的文件修改了，有的没有改。使用\LaTeX{}就只需要改动一个公共模块即可。其他引用公共的地方自动更新。
+
+\subsection{Curl}
+
+内部接口测试：
+
+\begin{lstlisting}[language=Bash]
+curl -i -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" http://localhost:28080/api/article
+\end{lstlisting}
+
+使用如下命令上传文件：
+
+\begin{lstlisting}[language=Bash]
+curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/api/article
+curl -i -X POST host:port/post-file -H "Content-Type: text/xml" --data-binary "@path/to/file"
+# 使用curl將文件上傳到服務器，文件類型可以任意
+curl -i -X POST -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -F "upfile=@main.synctex.gz" http://localhost:28080/api/article
+\end{lstlisting}
+
+The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。
+
+\subsection{iostat}
+
+查看磁盘的IO情况，每秒刷新一次：
+
+\begin{lstlisting}[language=Bash]
+iostat 1 -cdxk
+\end{lstlisting}
+
+
+\subsection{Zeal}
+
+Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息，示例如图\ref{fig:zealsearch}所示。搜索以nginx和冒号开始，表示搜索与Nignx相关的信息。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{zealsearch}
+	\caption{Zeal文档搜索示例}
+	\label{fig:zealsearch}
+\end{figure}
+
+\subsection{jq}
+
+项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
+
+
+\paragraph{常用模式}
+
+获取所有的key：
+
+\begin{lstlisting}[language=Bash]
+echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
+# 获取某一个value的值
+echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
+\end{lstlisting}
+
+嵌套数据查看：
+
+\begin{lstlisting}[language=Bash]
+curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.data.totalElements'
+\end{lstlisting}
+
+\section{Nmap(GNU General Public License)}
 
 Nmap(Network Mapper)，网络映射器，是一款开放源代码的网络探测和安全审核的工具。
 它的设计目标是快速地扫描大型网络，当然用它扫描单个主机也没有问题。
@@ -3709,9 +3819,9 @@ grep "Status: Up" Discovery.gnmap | cut -f 2 -d ' ' > LiveHosts.txt
 	比默认模式扫描更少的端口（Scan fewer ports than the default scan），
 	如果需要扫描更多的端口，指定p参数，如下命令行片段所示：
 	
-	\begin{lstlisting}[language=Bash]
-	nmap -p 0-10000 -A -v <Host>
-	\end{lstlisting}
+\begin{lstlisting}[language=Bash]
+nmap -p 0-10000 -A -v <Host>
+\end{lstlisting}
 	
 	端口号最好分段指定，否则扫描的速度会非常缓慢，
 	例如需要扫描0-65535端口，可以先扫描0-10000端口，
@@ -3836,114 +3946,6 @@ Zenmap是Nmap的官方GUI，可以运行在Linux, Windows, Mac OS X, BSD等操�
 \begin{lstlisting}[language=Bash]
 # Mac下获取Zenmap安装文件
 wget -c https://nmap.org/dist/nmap-7.31.dmg
-\end{lstlisting}
-
-
-\section{tmux}
-
-tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
-
-\begin{tabular}{|c|p{8cm}|c|}
-	\hline
-	\multirow{1}{*}{键}
-	& \multicolumn{1}{c|}{作用}  \\			
-	\cline{1-2}
-	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
-	\hline
-	C-b ? & 显示快捷键帮助\\
-	\hline
-\end{tabular}
-
-
-\chapter{Raspberry Pi}
-
-\subsection{Raspberry Pi远程}
-
-安装步骤：
-
-\begin{lstlisting}[language=Bash]
-＃　安装tightvncserver
-sudo apt-get install tightvncserver　－ｙ
-＃　设置密码
-vncpasswd
-\end{lstlisting}
-
-\chapter{Widgets}
-
-\section{Little Tool}
-
-\subsection{ag}
-
-
-
-\subsection{Pandoc}
-
-在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
-
-\begin{lstlisting}[language=Bash]
-pandoc -s interface.tex -o example30.docx
-\end{lstlisting}
-
-另外使用\LaTeX{}还有一个比较方便的地方是可以容易的以模块来管理文档，比如接口文档分为公共部分，所有调用方都可以看到，但是针对每个调用方可能会有一些定制的内容，当要修改公共部分时，如果是采用Word文件分散管理会出现不一致的情况，有的文件修改了，有的没有改。使用\LaTeX{}就只需要改动一个公共模块即可。其他引用公共的地方自动更新。
-
-\subsection{Curl}
-
-内部接口测试：
-
-\begin{lstlisting}[language=Bash]
-curl -i -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" http://localhost:28080/api/article
-\end{lstlisting}
-
-使用如下命令上传文件：
-
-\begin{lstlisting}[language=Bash]
-curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/api/article
-curl -i -X POST host:port/post-file -H "Content-Type: text/xml" --data-binary "@path/to/file"
-# 使用curl將文件上傳到服務器，文件類型可以任意
-curl -i -X POST -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -F "upfile=@main.synctex.gz" http://localhost:28080/api/article
-\end{lstlisting}
-
-The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。
-
-\subsection{iostat}
-
-查看磁盘的IO情况，每秒刷新一次：
-
-\begin{lstlisting}[language=Bash]
-iostat 1 -cdxk
-\end{lstlisting}
-
-
-\subsection{Zeal}
-
-Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息，示例如图\ref{fig:zealsearch}所示。搜索以nginx和冒号开始，表示搜索与Nignx相关的信息。
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.4]{zealsearch}
-	\caption{Zeal文档搜索示例}
-	\label{fig:zealsearch}
-\end{figure}
-
-\subsection{jq}
-
-项目里同事根据接口返回的数据建立数据库表格时，需要看格式化后的Json，由于只能在终端中请求接口数据，未格式化的Json返回根本没法阅读。由于目前还未发现Json格式化工具，所以只能时粘贴Json到网络上的在线网页里面进行格式化，由于网络用的是物理隔离的内网，甭提有多麻烦了，而且都是重复劳动，而jq采用C语言编写(开始还以为是用Python写的)，没有运行时依赖(jq is written in portable C, and it has zero runtime dependencies.)，直接在服务器上源码编译安装即可(服务器物理隔离，只能源码安装)。没有它，估计耗费的时间不下几个小时。jq直接在终端中就可以查看格式化好的Json。需要说明的是 jq 只能接受 well form 的 JSON 字符串作为输入内容。也就是说输入内容必须严格遵循 JSON 格式的标准。所有的属性名必须是以双引号包括的字符串。对象的最后一个属性的末尾或者数组的最后一个元素的末尾不能有逗号。否则 jq 会抛出无法解析 JSON 的错误。
-
-
-\paragraph{常用模式}
-
-获取所有的key：
-
-\begin{lstlisting}[language=Bash]
-echo '{"foo": 42, "bar": "less interesting data"}' | jq 'keys'
-# 获取某一个value的值
-echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
-\end{lstlisting}
-
-嵌套数据查看：
-
-\begin{lstlisting}[language=Bash]
-curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.data.totalElements'
 \end{lstlisting}
 
 \section{Nginx}
