@@ -857,6 +857,11 @@ http://59.214.215.6:28080/api/article/create \
 Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported
 \end{lstlisting}
 
+\paragraph{编辑请求(Edit Request)}
+
+有时在写好接口之后，修改可能是非常细小的，比如原来的接口路径是/page，但是现在需要返回全部的数据可能就是/page/all(也可以在原来的接口方法改造，这里不考虑哪种方法实现更优)。需要测试一下新接口的返回，一种可以在浏览器的Network页中拷贝出curl请求命令来修改，修改后直接通过curl请求;一种方法在浏览器中安装tamper插件，抓取请求修改;一种方法可以使用Zed Attack Proxy\footnote{\url{https://github.com/zaproxy/zaproxy}}代理，在代理中编辑HTTP请求信息。
+
+
 \subsection{返回消息封装(Message Encapsulation)}
 
 一个完整的标准化服务描述性语言SOAP（Simple Object Access Protocol，简单对象访问协议）在某些环境下表现的还不错。尽管如此，SOAP产品的性能开销很大，它是一个巨大的性能杀手。这也是Restful接口及接口采用Json交互的优势之一，在编写Restful接口时，需要将返回的内容用标准格式进行封装。通过编写统一的返回实体来实现:
