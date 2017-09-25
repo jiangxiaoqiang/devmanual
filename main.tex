@@ -5696,7 +5696,22 @@ ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:38
 telnet 10.77.10.55 2222
 \end{lstlisting}
 
-telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。
+telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。以上配置在Fedora 24下工作良好。
+
+
+\paragraph{Windows代理设置}
+
+Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用putty工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{puttyportforwarding.png}
+	\caption{Windows下设置SSH端口转发}
+	\label{fig:puttyportforwarding}
+\end{figure}
+
+当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。
+
 
 \paragraph{SSH反向代理(Reverse Proxy)}
 
