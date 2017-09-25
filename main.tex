@@ -34,7 +34,10 @@
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
+\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+
 \contentsmargin{0cm} % Removes the default margin
+
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -4800,6 +4803,15 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 
 \subsection{版面}
+
+\paragraph{PDF导航深度}
+
+\LaTeX{}生成的pdf导航默认深度是3，如果需要显示更深层次。那么可以使用hyperref包，如下代码片段。
+
+\begin{lstlisting}[language=latex]
+\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\end{lstlisting}
+
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
