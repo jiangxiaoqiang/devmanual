@@ -34,7 +34,10 @@
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
+\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+
 \contentsmargin{0cm} % Removes the default margin
+
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -3709,9 +3712,9 @@ grep "Status: Up" Discovery.gnmap | cut -f 2 -d ' ' > LiveHosts.txt
 	比默认模式扫描更少的端口（Scan fewer ports than the default scan），
 	如果需要扫描更多的端口，指定p参数，如下命令行片段所示：
 	
-	\begin{lstlisting}[language=Bash]
-	nmap -p 0-10000 -A -v <Host>
-	\end{lstlisting}
+\begin{lstlisting}[language=Bash]
+nmap -p 0-10000 -A -v <Host>
+\end{lstlisting}
 	
 	端口号最好分段指定，否则扫描的速度会非常缓慢，
 	例如需要扫描0-65535端口，可以先扫描0-10000端口，
@@ -4799,6 +4802,15 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \subsection{版面}
 
+\paragraph{PDF导航深度}
+
+\LaTeX{}生成的pdf导航默认深度是3，如果需要显示更深层次。那么可以使用hyperref包，如下代码片段。
+
+\begin{lstlisting}[language=latex]
+\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\end{lstlisting}
+
+
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
 \subsection{支持语言}
@@ -5683,7 +5695,7 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
+ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
 在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。在连接到1022端口时，有可能提示Connection Refused，那么此时需要检查1022端口是否可以扫描到，是否打开，代理机器到防火墙是否允许1022端口到流量通过，以及代理机器1022的配置，是否已经做了到代理机器到免密登陆。最后发现改为2222端口即可。可以使用如下命令测试端口的联通：
@@ -5694,14 +5706,21 @@ ssh -g -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:38
 telnet 10.77.10.55 2222
 \end{lstlisting}
 
-telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。判断ssh代理是否已经生效，也可以通过nmap扫描代理服务器，如图\ref{fig:scanproxyserver}所示：
+telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。以上配置在Fedora 24下工作良好。
+
+
+\paragraph{Windows代理设置}
+
+Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用putty工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{scanproxyserver.png}
-	\caption{Nmap扫描代理服务器}
-	\label{fig:scanproxyserver}
+	\includegraphics[scale=0.6]{puttyportforwarding.png}
+	\caption{Windows下设置SSH端口转发}
+	\label{fig:puttyportforwarding}
 \end{figure}
+
+当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。
 
 
 \paragraph{SSH反向代理(Reverse Proxy)}
