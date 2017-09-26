@@ -5696,7 +5696,7 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
+ssh -g -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
 在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。在连接到1022端口时，有可能提示Connection Refused，那么此时需要检查1022端口是否可以扫描到，是否打开，代理机器到防火墙是否允许1022端口到流量通过，以及代理机器1022的配置，是否已经做了到代理机器到免密登陆。最后发现改为2222端口即可。可以使用如下命令测试端口的联通：
@@ -5720,7 +5720,7 @@ Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下
 	\label{fig:puttyportforwarding}
 \end{figure}
 
-当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在 Connection 里面有个 Seconds between keepaliaves，这里就是每间隔指定的秒数，就给服务器发送一个空的数据包，来保持连接。以免登录的主机那边在长时间没接到数据后，会自动断开SSH的连接。也可以在putty的Connection选项里，选择每隔一定事件发送空的数据包来保持连接(Sending of null packets to keep session alive)。使用如下命令查看Windows端口是状态：
+当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在putty的Connection选项里，选择每隔一定事件发送空的数据包来保持连接(Sending of null packets to keep session alive)。使用如下命令查看Windows端口是状态：
 
 \begin{lstlisting}[language=Bash]
 netstat -ano|findstr "3800"
