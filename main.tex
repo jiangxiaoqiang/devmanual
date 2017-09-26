@@ -5720,11 +5720,13 @@ Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下
 	\label{fig:puttyportforwarding}
 \end{figure}
 
-当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在 Connection 里面有个 Seconds between keepaliaves，这里就是每间隔指定的秒数，就给服务器发送一个空的数据包，来保持连接。以免登录的主机那边在长时间没接到数据后，会自动断开SSH的连接。使用如下命令查看Windows端口是状态：
+当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在 Connection 里面有个 Seconds between keepaliaves，这里就是每间隔指定的秒数，就给服务器发送一个空的数据包，来保持连接。以免登录的主机那边在长时间没接到数据后，会自动断开SSH的连接。也可以在putty的Connection选项里，选择每隔一定事件发送空的数据包来保持连接(Sending of null packets to keep session alive)。使用如下命令查看Windows端口是状态：
 
 \begin{lstlisting}[language=Bash]
 netstat -ano|findstr "3800"
 \end{lstlisting}
+
+
 
 
 \paragraph{SSH反向代理(Reverse Proxy)}
