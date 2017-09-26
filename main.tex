@@ -5683,7 +5683,7 @@ ssh -g -L 5236:58.214.215.*:5236 10.55.10.*
 -g allows remote hosts to connect to local forwarded ports.  If used on a multiplexed connection, then this option must be specified on the master process.有时我们希望转发的不止一个端口，那么可以用如下的命令多端口转发：
 
 \begin{lstlisting}[language=Bash]
-ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
+ssh -g -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
 \end{lstlisting}
 
 在做端口转发时，需要保证端口转发的机器(10.55.10.77)所使用的转发端口未被已经运行的程序占用。例如10.55.10.77已经运行了sshd，那么22端口就不能作为转发端口，可以选择1022等任意未被使用的端口。在连接到1022端口时，有可能提示Connection Refused，那么此时需要检查1022端口是否可以扫描到，是否打开，代理机器到防火墙是否允许1022端口到流量通过，以及代理机器1022的配置，是否已经做了到代理机器到免密登陆。最后发现改为2222端口即可。可以使用如下命令测试端口的联通：
@@ -5694,7 +5694,15 @@ ssh -g -L 5236:58.214.215.*:5236 -L 1022:58.214.215.*:22 -L 3800:58.214.215.*:38
 telnet 10.77.10.55 2222
 \end{lstlisting}
 
-telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。
+telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。判断ssh代理是否已经生效，也可以通过nmap扫描代理服务器，如图\ref{fig:scanproxyserver}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{scanproxyserver.png}
+	\caption{Nmap扫描代理服务器}
+	\label{fig:scanproxyserver}
+\end{figure}
+
 
 \paragraph{SSH反向代理(Reverse Proxy)}
 
