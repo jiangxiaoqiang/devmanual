@@ -2958,7 +2958,11 @@ find . -type f -size +1000k
 find . -type f -size +100M
 \end{lstlisting}
 
-size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。
+size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2048，如果不想自己转换，可以使用其他单位，如c、K、M等。如何查找指定大小的文件，并列出实际文件的大小。find查找文件时需要添加通配符：
+
+\begin{lstlisting}[language=Bash]
+find / -name "*工作*"
+\end{lstlisting}
 
 \paragraph{kill}
 
@@ -3029,6 +3033,28 @@ sudo apt remove wget
 # CentOS显示包信息
 yum info wget
 \end{lstlisting}
+
+\paragraph{traceroute}
+
+如果目标系统在 3 秒的超时间隔内没有响应，所有的查询都会发生超时，结果会采用星号（*）显示，由此可以断定是目标系统的问题。
+
+\begin{lstlisting}[language=Bash]
+# Linux
+traceroute 10.55.10.9
+# Windows
+tracert 10.55.10.9
+\end{lstlisting}
+
+在traceroute输出中，收到了 ICMP\footnote{\url{https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol}}错误信息（不包括时间超限和不能到达的端口），！H表示不能到达的主机。在同一局域网里面的2台主机，ping会偶尔出现丢包的情况。使用Wireshark监听ping流量如图\ref{fig:wiresharkcaptureping}所示。其中10.55.10.8表示ping主机，10.55.10.9表示目标主机。在图中提示no response found的，会在ping主机上提示“请求超时”。这里的Wireshark监听条件是host==10.55.10.8.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{wiresharkcaptureping.png}
+	\caption{Wireshark监听Ping}
+	\label{fig:wiresharkcaptureping}
+\end{figure}
+
+
 
 
 
