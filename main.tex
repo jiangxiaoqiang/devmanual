@@ -3894,7 +3894,10 @@ pandoc -s interface.tex -o example30.docx
 内部接口测试：
 
 \begin{lstlisting}[language=Bash]
-curl -i -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" http://localhost:28080/api/article
+curl -i -H "APPID:hlb1451j6d136334gh2" \ 
+-H "ECHOSTR:sdsaasf" \
+-H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" \
+-H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" http://localhost:28080/api/article
 \end{lstlisting}
 
 使用如下命令上传文件：
@@ -3903,10 +3906,34 @@ curl -i -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4a
 curl -i -X POST -F "filename=@example.tar.gz;filename1=@example1.tar.gz" http://localhost:28080/api/article
 curl -i -X POST host:port/post-file -H "Content-Type: text/xml" --data-binary "@path/to/file"
 # 使用curl將文件上傳到服務器，文件類型可以任意
-curl -i -X POST -H "APPID:hlb1451j6d136334gh2" -H "ECHOSTR:sdsaasf" -H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -F "upfile=@main.synctex.gz" http://localhost:28080/api/article
+curl -i -X POST -H "APPID:hlb1451j6d136334gh2" \
+-H "ECHOSTR:sdsaasf" \
+-H "TOKEN:e02016ed4adfda9d9743ab70cf389ef9877c4a0e" \
+-H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" \
+-F "upfile=@main.synctex.gz" http://localhost:28080/api/article
 \end{lstlisting}
 
-The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。
+The -i option tells curl to show the response headers as well。如果使用了-F参数，curl就会以 multipart/form-data的方式发送POST请求。-F参数以name=value的方式来指定参数内容，如果值是一个文件，则需要以name=@file的方式来指定。文件的路径需要有一个@符号，所以curl知道从文件中读取。upfile對應服務端的方法參數。有时需要查看接口详细的响应时间，采用如下命令：
+
+\begin{lstlisting}[language=Bash]
+# 文件curl-format.txt写入的内容
+time_namelookup:  %{time_namelookup}\n
+time_connect:  %{time_connect}\n
+time_appconnect:  %{time_appconnect}\n
+time_pretransfer:  %{time_pretransfer}\n
+time_redirect:  %{time_redirect}\n
+time_starttransfer:  %{time_starttransfer}\n
+----------\n
+time_total:  %{time_total}\n
+
+curl -w "@curl-format.txt" -s -H "APPID:" \
+-H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" \
+-H "ECHOSTR:sdsaasf" -H "TOKEN:" \
+-H "Accept: application/json, text/plain" \
+http://localhost:28080/api/xysj/search?qymc=长安福特
+\end{lstlisting}
+
+
 
 \subsection{iostat}
 
@@ -4734,7 +4761,7 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \subparagraph{查看Render区域}
 
-有时需要查看浏览器重绘制的区域，页面的绘制时间（paint time）是每一个前端开发都需要关注的的重要指标，它决定了你的页面流畅程度。而如何去观察页面的绘制时间，找到性能瓶颈，可以借助Chrome的开发者工具，激活页面绘制区域显示如图\ref{fig:pagepainting}所示。
+有时需要查看浏览器重绘制的区域，页面的绘制时间（paint time）是每一个前端开发都需要关注的的重要指标，它决定了你的页面流畅程度。使用Ctrl + Shift + P，输入Render打开对应页面即可。而如何去观察页面的绘制时间，找到性能瓶颈，可以借助Chrome的开发者工具，激活页面绘制区域显示如图\ref{fig:pagepainting}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -4748,29 +4775,6 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 
 \subsection{Google Chrome SSH}
-
-\section{Zentao}
-
-\subsection{常见问题}
-
-运行禅道需要PHP环境，在Ubuntu 16.04上面安装PHP：
-
-\begin{lstlisting}[language=Bash]
-sudo apt-get install php7.0 -y
-\end{lstlisting}
-
-由于80端口已经被占用，修改禅道的默认端口，在文件文件中。
-
-\begin{lstlisting}
-/opt/zbox/etc/apache/http.conf
-\end{lstlisting}
-
-由于以前电脑有安装MySQL，所以3306端口被占用了。所以在启动禅道是会提示MySQL端口已经被占用，执行如下命令修改禅道的MySQL端口即可：
-
-\begin{lstlisting}[language=Bash]
-/opt/zbox/zbox -mp 3307
-\end{lstlisting}
-
 
 \chapter{LaTex}
 
@@ -4903,9 +4907,21 @@ h=\log_{(m+1)} N
 
 当b+树的数据项是复合的数据结构，比如(name,age,sex)的时候，b+数是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道下一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。比如当(张三,F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age的缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了， 这个是非常重要的性质，即索引的最左匹配特性\footnote{\url{参考链接:http://tech.meituan.com/mysql-index.html}}。
 
-\paragraph{索引原则}
+\paragraph{索引原则(Index Principle)}
 
-\subparagraph{最左前缀匹配原则}最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。
+\subparagraph{最左前缀匹配原则}
+
+最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。组合索引的第一个字段必须出现在查询组句中，这个索引才会被用到。举个例子：
+
+\begin{lstlisting}[language=SQL]
+select * 
+from DOLPHIN  
+where DFBM = '500101'  
+order by JDRQ DESC 
+limit 0, 10
+\end{lstlisting}
+
+在建立索引时，DFBM列一定要排在前面，建立(DFBM,JDRQ)这样的索引DB才会利用索引。如果顺序不对(JDRQ,DFBM)，那么DB将不会采用索引。在mysql中执行查询时，只能使用一个索引，如果我们在lname,fname,age上分别建索引,执行查询时，只能使用一个索引，mysql会选择一个最严格(获得结果集记录数最少)的索引。
 
 \subparagraph{=和in可以乱序}=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式
 
@@ -4984,6 +5000,8 @@ limit 0,10;
 
 \begin{lstlisting}[language=SQL]
 create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
+alter context index xzcffulltextindex on TS_B_XZCF rebuild;
 \end{lstlisting}
 
 填充索引：
@@ -5726,7 +5744,7 @@ Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下
 netstat -ano|findstr "3800"
 \end{lstlisting}
 
-
+设置好后，始终需要在前端运行一个界面。不是非常方便，所以可以让putty运行在后台。
 
 
 \paragraph{SSH反向代理(Reverse Proxy)}
