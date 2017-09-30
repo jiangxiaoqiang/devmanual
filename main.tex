@@ -5672,6 +5672,9 @@ IP路由选择主要完成以下这些步骤：
 删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
+# 在Windows下增加路由
+route print
+route -p add 10.55.10.0 mask 255.255.255.0 10.55.10.1
 # 在Fedora里面执此命令删除默认网关
 # Fedora 24
 sudo route del default
