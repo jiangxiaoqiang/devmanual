@@ -902,6 +902,7 @@ return corporationMapperFacade.map(corporation, XydmResponse.class);
 \end{lstlisting}
 
 \subsection{接口认证(Authorization)}
+\label{sec:authorization}
 
 目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
 发送到服务端，服务端采用同样的加密方式生成Token来进行比对认证。但是目前未做Token时间
@@ -2693,9 +2694,9 @@ f参数表示尝试修正系统依赖损坏处。
 
 \section{Shell}
 
-\subsection{自动部署(Auto-Deployment)}
+\subsection{自动部署(Auto Deploy)}
 
-在使用Shell脚本时，最初将之用于自动化部署程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，启动执行。
+最初使用Shell脚本是将之用于自动化部署应用程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，自动启动应用程序。
 
 \begin{lstlisting}[language=Bash]
 #!/usr/bin/env bash
@@ -2763,13 +2764,11 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{优化代理(Optimizate Proxy)}
 
-项目的一个特点是，有两个彼此独立的网络，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。
-
-
+项目的一个特点是，有两个彼此独立的网络，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。可以保证只要启动任意一个代理机，即可调试部署程序，后面发现暂时没有写脚本的必要，所以未实现。
 
 \paragraph{快捷键(Shortcut)}
 
@@ -5677,8 +5676,13 @@ IP路由选择主要完成以下这些步骤：
 删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
+# 在Windows下增加路由
+route print
+route -p add 10.55.10.0 mask 255.255.255.0 10.55.10.1
+# 在Fedora里面执此命令删除默认网关
+# Fedora 24
 sudo route del default
-# Ubuntu中删除默认网关
+# Ubuntu 16.04 LTS中删除默认网关
 # 先连接内网，删除默认网关即可内外网同时连接
 # 10.55.10.1为内网默认网关
 # enx000ec6c8c163为本地有线网卡的名称
