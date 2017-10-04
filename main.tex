@@ -3890,7 +3890,15 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \chapter{Raspberry Pi}
 
-\subsection{Raspberry Pi远程}
+\section{基础}
+
+\subsection{连接}
+
+Raspberry可以通过网线直接与PC连接，输入如下命令查看Raspberry的IP：
+
+\begin{lstlisting}[language=Bash]
+arp -a
+\end{lstlisting}
 
 安装步骤：
 
@@ -3900,6 +3908,9 @@ sudo apt-get install tightvncserver　－ｙ
 ＃　设置密码
 vncpasswd
 \end{lstlisting}
+
+Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.conf文件。
+
 
 \chapter{Widgets}
 
