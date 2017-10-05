@@ -2821,7 +2821,9 @@ cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 
 \paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
-\paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
+\paragraph{读取配置文件}
+
+在编写自动化部署脚本时，需要通过shell脚本读取配置文件version.properties中的版本号，直接使用source命令即可：
 
 \begin{lstlisting}[language=Bash]
 # version.properties文件中直接写VERSION\_CODE=1.0.2即可
@@ -2830,7 +2832,7 @@ source /Users/dolphin/source/credit-system/gradle/version.properties
 echo $VERSION_CODE
 \end{lstlisting}
 
-在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
+点空格点斜杠执行脚本(. ./)，是相当于source ./执行脚本，source是执行脚本当中的命令，也就是说在当前进程中执行命令，所以其中的环境变量的设置会对当前Shell其作用。点斜杠执行脚本是启动了另一个Shell去执行脚本（另一个进程），所以点斜杠执行脚本时，设置的环境变量会随着进程的退出而结束，其中的环境变量设置对当前Shell不起作用。在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
 
 \paragraph{文件是否存在}
 
@@ -2844,15 +2846,17 @@ if [ -f "$myFile" ]; then
 fi
 \end{lstlisting}
 
-\paragraph{大小写不敏感}
+\paragraph{Terminal自动提示大小写不敏感}
 
-有时文件前缀是大写字母，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell大小写不敏感，就不需要再重复做一次大小写转换操作了：
+有时文件或者文件夹是以大写字母开头，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell智能提升时大小写不敏感，就不需要再重复做一次大小写转换操作了：
 
 \begin{lstlisting}[language=Bash]
+# Mac OS X和Linux下皆可
 echo "set completion-ignore-case on">>~/.inputrc
+echo "set show-all-if-ambiguous on">> ~/.inputrc
 \end{lstlisting}
 
-设置完毕后重新打开终端即可。
+设置完毕后重新打开终端即可，必须要重新打开终端才会生效。
 
 \paragraph{统计代码行数}
 
@@ -2887,41 +2891,37 @@ lsof -i:18080
 
 lsof（list open files）是一个列出当前系统打开文件的工具。FD(File Descriptor)：文件描述符，应用程序通过文件描述符识别该文件。在Linux系统中一切皆可以看成是文件，文件又可分为：普通文件、目录文件、链接文件和设备文件。文件描述符（file descriptor）是内核为了高效管理已被打开的文件所创建的索引，其是一个非负整数（通常是小整数），用于指代被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。程序刚刚启动的时候，0是标准输入，1是标准输出，2是标准错误。如果此时去打开一个新的文件，它的文件描述符会是3。
 
-\begin{tabular}{cp{8cm}c}
-	\hline
-	\multirow{1}{*}{文件描述符}
-	& \multicolumn{1}{c}{说明}  \\
-	\hline			
-	cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
-	txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
-	lnn & library references （AIX） \\
-	ltx & shared  library text（code and  data） \\
-	er & FD  information  error （see  NAME  column） \\
-	jld & jail  directory（FreeBSD） \\	
-	\hline
-\end{tabular}
+\begin{table}
+	\caption{文件描述符}
+	\label{table:filedescriptor}
+	\bigskip
+	\begin{tabular}{cp{12cm}c}
+		\hline
+		\multirow{1}{*}{文件描述符}
+		& \multicolumn{1}{c}{说明}  \\
+		\hline			
+		cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
+		txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
+		lnn & library references （AIX） \\
+		ltx & shared  library text（code and  data） \\
+		er & FD  information  error （see  NAME  column） \\
+		jld & jail  directory（FreeBSD） \\
+		mxx & hex  memory-mapped  type number  xx\\
+		m86 & DOS  Merge  mapped  file\\
+		mem & memory-mapped  file\\
+		mmap & memory-mapped device\\
+		d & parent  directory\\
+		rtd & root  directory\\
+		tr & kernel  trace file(OpenBSD)\\
+		v86 & VP/ix  mapped  file\\
+		0 & 表示标准输出\\
+		1 & 表示标准输入\\
+		2 & 表示标准错误\\	
+		\hline
+	\end{tabular}
+\end{table}
 
-（7）mxx： hex  memory-mapped  type number  xx.
 
-（8）m86：DOS  Merge  mapped  file
-
-（9） mem: memory-mapped  file 
-
-（10）mmap: memory-mapped device
-
-（11）pd: parent  directory
-
-（12）rtd: root  directory
-
-（13）tr: kernel  trace file （OpenBSD）
-
-（14）v86  VP/ix  mapped  file
-
-（15）0：表示标准输出
-
-（16）1：表示标准输入
-
-（17）2：表示标准错误。
 根据具体操作系统的不同，将文件和目录称为 REG 和 DIR（在 Solaris 中，称为 VREG 和 VDIR）。其他可能的取值为 CHR 和 BLK，分别表示字符和块设备；或者 UNIX、FIFO 和 IPv4，分别表示 UNIX 域套接字、先进先出 (FIFO) 队列和网际协议 (IP) 套接字。
 进而查看被哪个程序占用：
 
