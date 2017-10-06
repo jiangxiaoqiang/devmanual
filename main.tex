@@ -258,6 +258,9 @@
 \renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
 \makeatother
 
+%When compile under liunx% 
+\setmainfont{WenQuanYi Micro Hei} 
+
 % Defines the theorem text style for each type of theorem to one of the three styles above
 \newcounter{dummy} 
 \numberwithin{dummy}{section}
@@ -3154,6 +3157,8 @@ screen -r 12865
 uname －a 
 \end{lstlisting}
 
+\section{常用设置}
+
 \subsection{XFCE桌面}
 
 占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
@@ -3192,7 +3197,7 @@ openssl version -a
 yum list installed
 \end{lstlisting}
 
-在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改source.list文件和通过Software\&Updater图形界面调整。
 
 \subsection{输入法(Input Method)}
 
