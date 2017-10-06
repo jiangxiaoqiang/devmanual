@@ -36,8 +36,10 @@
 \usepackage{titletoc} % 目录操作
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
 
-\contentsmargin{0cm} % Removes the default margin
+%When compile under liunx% 
+\setmainfont{WenQuanYi Micro Hei}
 
+\contentsmargin{0cm} % Removes the default margin
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -256,10 +258,7 @@
 {\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
 	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
 \renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
-\makeatother
-
-%When compile under liunx% 
-\setmainfont{WenQuanYi Micro Hei} 
+\makeatother 
 
 % Defines the theorem text style for each type of theorem to one of the three styles above
 \newcounter{dummy} 
@@ -2788,7 +2787,9 @@ Shell终端中常用的快捷键如下：
 	\hline
 \end{tabular}
 
-\paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
+\paragraph{source}
+
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
 
 \paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在当前用户的.bashrc中添加如下设置：
 
@@ -3197,7 +3198,7 @@ openssl version -a
 yum list installed
 \end{lstlisting}
 
-在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改source.list文件和通过Software\&Updater图形界面调整。
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改/etc/apt/source.list文件和通过Software\&Updater图形界面调整。其中/etc/apt/source.list.d中存放了第三方软件的源。
 
 \subsection{输入法(Input Method)}
 
@@ -3946,7 +3947,11 @@ rsync -avz pi@10.42.0.22:app-soft .
 
 \subsection{ag}
 
-递归搜索文件内容。
+silversearcher-ag可递归搜索文件内容。
+
+\begin{lstlisting}[language=Bash]
+apt-get install silversearcher-ag
+\end{lstlisting}
 
 \subsection{Pandoc}
 
