@@ -1672,6 +1672,8 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 
 \chapter{Scala}
 
+截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。
+
 \section{函数(Function)}
 
 Scala有两种变量，val和var。val就不能再赋值了。与之对应的，var可以在它生命周期中被多次赋值。数据转换：
@@ -2990,6 +2992,10 @@ tar -czvf mybatisDemo.tar.gz mybatisDemo
 \begin{lstlisting}[language=Bash]
 xz -d xxx.tar.xz
 tar xvf xxx.tar
+# 解压tgz文件
+# 其实tgz文件和tar.gz文件是一样的
+# 可以使用相同的命令解压	
+tar -zxcf example.tgz
 \end{lstlisting}
 
 \paragraph{grep}
@@ -3028,19 +3034,6 @@ ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜�
 \begin{lstlisting}[language=Bash]
 apt-get install silversearcher-ag
 dnf install the_silver_searcher
-\end{lstlisting}
-
-\paragraph{apt}
-
-apt(Advance Package Tool)是Ubuntu的包管理工具：
-
-\begin{lstlisting}[language=Bash]
-# Ubuntu显示包的详细信息
-sudo apt show wget
-# 移除安装包
-sudo apt remove wget
-# CentOS显示包信息
-yum info wget
 \end{lstlisting}
 
 \paragraph{traceroute}
@@ -3196,9 +3189,25 @@ yum list installed|grep openssl
 openssl version -a
 # yum查看已经安装的软件包
 yum list installed
+# 下载指定版本软件
+sudo apt-get install scala=2.12.3
+# Ubuntu显示包的详细信息
+sudo apt show wget
+# 删除软件及其配置文件
+sudo apt-get --purge -y remove <package>
 \end{lstlisting}
 
-在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改/etc/apt/source.list文件和通过Software\&Updater图形界面调整。其中/etc/apt/source.list.d中存放了第三方软件的源。
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改/etc/apt/source.list文件和通过Software\&Updater图形界面调整。其中/etc/apt/source.list.d中存放了第三方软件的源。升级时，默认会下载服务器上最新版本的软件包，但是有时候对下载的包的版本有要求，必须是指定版本，那么可以提前查看服务器的版本，以决定是否需要下载还是手动安装：
+
+\begin{lstlisting}[language=Bash]
+# 查看服务器Scala版本
+sudo apt-cache madison scala
+sudo apt-cache policy scala
+# 查看版本
+apt-show-versions -a scala
+\end{lstlisting}
+
+madison是一个apt-cache子命令。
 
 \subsection{输入法(Input Method)}
 
