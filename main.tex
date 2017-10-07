@@ -3964,7 +3964,7 @@ apt-get install silversearcher-ag
 
 \subsection{Pandoc}
 
-在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
+Pandoc使用haskell开发的一个文档格式转换软件。在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
 
 \begin{lstlisting}[language=Bash]
 pandoc -s interface.tex -o example30.docx
@@ -4255,7 +4255,7 @@ curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
 curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
 \end{lstlisting}
 
-开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+-I选项与-header选项是等价的，表示只打印出HTTP头部。开启压缩成功后，可以看到一句：Content-Encoding: gzip。
 
 \subsection{Nginx配置}
 
