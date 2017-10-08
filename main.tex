@@ -2947,6 +2947,14 @@ bash -x ./auth.sh
 
 \subsection{命令(Command)}
 
+which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
+
+
+\begin{lstlisting}[language=Bash]
+which scala
+\end{lstlisting}
+
+
 \paragraph{ls}
 
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
@@ -3236,6 +3244,16 @@ sudo apt install fcitx-googlepinyin
 \newpage
 
 \chapter{Intellij Idea}
+
+第一次配置JDK在Configure->Project Defaults->Project Structure设置里。Mac OS X的路径一般如下：
+
+\begin{lstlisting}[language=Bash]
+# 查看Java路径
+echo $JAVA_HOME
+/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk
+# Mac OS X下Gradle的路径
+/usr/local/Cellar/gradle/3.2.1/libexec
+\end{lstlisting}
 
 \subsection{Intellij Idea远程调试}
 
@@ -4416,6 +4434,12 @@ ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.s
 ssh-keygen -t rsa -C "a@gmail.com"
 \end{lstlisting}
 
+在Mac OS X中，有时自动登陆需要反复输入密码，解决问题的方法是可以配置Serria记住密码：
+
+\begin{lstlisting}[language=Bash]
+usekeychain yes
+\end{lstlisting}
+
 \subsection{ssh连接慢}
 
 在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
@@ -5179,7 +5203,7 @@ PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，sele
 
 \subsection{查询}
 
-\paragraph{MySQL远程连接}
+\paragraph{MySQL远程连接(MySQL Remote Connection)}
 
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
