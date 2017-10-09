@@ -3040,6 +3040,7 @@ sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> f
 ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜索文件内容，输入如下命令安装：
 
 \begin{lstlisting}[language=Bash]
+# Ubuntu安装ag
 apt-get install silversearcher-ag
 dnf install the_silver_searcher
 \end{lstlisting}
@@ -3212,6 +3213,26 @@ apt-show-versions -a scala
 \end{lstlisting}
 
 madison是一个apt-cache子命令。
+
+\subsection{Ubuntu打印}
+
+在使用ProjectLibre撰写项目计划时，竟然无法打印中文。第一步安装cups-pdf：
+
+\begin{lstlisting}[language=Bash]
+# 安装cups-pdf
+sudo apt-get install cups-pdf -y --fix-missing
+\end{lstlisting}
+
+cups-pdf是Ubuntu下的PDF虚拟打印机。第二步安装ghostscript将生成的ps文件转换为pdf：
+
+\begin{lstlisting}[language=Bash]
+# 安装ghostscript包
+sudo apt-get install ghostscript
+# 将ps转换为pdf
+ps2pdf out.ps out.pdf
+\end{lstlisting}
+
+ghostscript package contains a group of command line tools, in which ps2pdf converts .ps file to .pdf file. The package also contains other command tools, they’re dumphint, dvipdf, eps2eps, font2c, ghostscript, gs, gsbj, gsdj, gsdj500, gslj, gslp, gsnd, pdf2dsc, pdf2ps, pdfopt, pf2afm, pfbtopfa, pphs, printafm, ps2ascii, ps2epsi, ps2pdf, ps2pdf12, ps2pdf13, ps2pdf14, ps2pdfwr, ps2ps, ps2ps2, ps2txt, update-gsfontmap, wftopfa.
 
 \subsection{输入法(Input Method)}
 
