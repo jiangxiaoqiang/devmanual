@@ -36,8 +36,10 @@
 \usepackage{titletoc} % 目录操作
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
 
-\contentsmargin{0cm} % Removes the default margin
+%When compile under liunx% 
+%\setmainfont{WenQuanYi Micro Hei}
 
+\contentsmargin{0cm} % Removes the default margin
 
 \lstdefinelanguage{JavaScript}{
 	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
@@ -256,7 +258,7 @@
 {\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
 	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
 \renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
-\makeatother
+\makeatother 
 
 % Defines the theorem text style for each type of theorem to one of the three styles above
 \newcounter{dummy} 
@@ -902,6 +904,7 @@ return corporationMapperFacade.map(corporation, XydmResponse.class);
 \end{lstlisting}
 
 \subsection{接口认证(Authorization)}
+\label{sec:authorization}
 
 目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
 发送到服务端，服务端采用同样的加密方式生成Token来进行比对认证。但是目前未做Token时间
@@ -1668,6 +1671,8 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 \newpage
 
 \chapter{Scala}
+
+截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。
 
 \section{函数(Function)}
 
@@ -2571,6 +2576,11 @@ const date = moment().weekday(0);
 
 \section{常见问题}
 
+\paragraph{页面卡顿}
+
+一次页面卡顿是由于服务端某一个页面返回了过多的数据6w多。
+
+
 \paragraph{index.js:83 TypeError: Cannot read property 'get' of undefined}
 
 出現此錯誤的原因是獲取到的參數爲空。
@@ -2688,9 +2698,9 @@ f参数表示尝试修正系统依赖损坏处。
 
 \section{Shell}
 
-\subsection{自动部署(Auto-Deployment)}
+\subsection{自动部署(Auto Deploy)}
 
-在使用Shell脚本时，最初将之用于自动化部署程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，启动执行。
+最初使用Shell脚本是将之用于自动化部署应用程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，自动启动应用程序。
 
 \begin{lstlisting}[language=Bash]
 #!/usr/bin/env bash
@@ -2758,17 +2768,15 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{优化代理(Optimizate Proxy)}
 
-项目的一个特点是，有两个彼此独立的网络，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。
+项目的一个特点是，有两个彼此独立的网络，网络之间互相切换非常麻烦，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。可以保证只要启动任意一个代理机，即可调试部署程序，后面发现暂时没有写脚本的必要，所以未实现。
 
+\paragraph{终端快捷键(Terminal Shortcut)}
 
-
-\paragraph{快捷键(Shortcut)}
-
-Shell中常用的快捷键如下：
+Shell终端中常用的快捷键如下：
 
 \begin{tabular}{cp{8cm}c}
 	\hline
@@ -2776,11 +2784,14 @@ Shell中常用的快捷键如下：
 	& \multicolumn{1}{c}{说明}  \\
 	\hline			
 	Alt + F & 向前移动一个单词 \\
-	Alt + B & 向后移动一个单词 \\	
+	Alt + B & 向后移动一个单词 \\
+	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\	
 	\hline
 \end{tabular}
 
-\paragraph{source}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。
+\paragraph{source}
+
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的shell，如果需要全局生效，还是需要重新登陆当前用户。
 
 \paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在当前用户的.bashrc中添加如下设置：
 
@@ -2816,7 +2827,9 @@ cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 
 \paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
-\paragraph{读取配置文件}在编写自动化部署脚本的时候需要读取配置文件version.properties中的版本号，直接使用source命令即可：
+\paragraph{读取配置文件}
+
+在编写自动化部署脚本时，需要通过shell脚本读取配置文件version.properties中的版本号，直接使用source命令即可：
 
 \begin{lstlisting}[language=Bash]
 # version.properties文件中直接写VERSION\_CODE=1.0.2即可
@@ -2825,7 +2838,7 @@ source /Users/dolphin/source/credit-system/gradle/version.properties
 echo $VERSION_CODE
 \end{lstlisting}
 
-在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
+点空格点斜杠执行脚本(. ./)，是相当于source ./执行脚本，source是执行脚本当中的命令，也就是说在当前进程中执行命令，所以其中的环境变量的设置会对当前Shell其作用。点斜杠执行脚本是启动了另一个Shell去执行脚本（另一个进程），所以点斜杠执行脚本时，设置的环境变量会随着进程的退出而结束，其中的环境变量设置对当前Shell不起作用。在Gradle中也可以直接读取version.properties中的内容，这样编译打包发布就可以通过脚本自动化完成。
 
 \paragraph{文件是否存在}
 
@@ -2839,15 +2852,17 @@ if [ -f "$myFile" ]; then
 fi
 \end{lstlisting}
 
-\paragraph{大小写不敏感}
+\paragraph{Terminal自动提示大小写不敏感}
 
-有时文件前缀是大写字母，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell大小写不敏感，就不需要再重复做一次大小写转换操作了：
+有时文件或者文件夹是以大写字母开头，在使用Tab按键自动提示时就必须首先输入大写字母匹配才有效果，总体来说不是非常方便。所以可以设置shell智能提升时大小写不敏感，就不需要再重复做一次大小写转换操作了：
 
 \begin{lstlisting}[language=Bash]
+# Mac OS X和Linux下皆可
 echo "set completion-ignore-case on">>~/.inputrc
+echo "set show-all-if-ambiguous on">> ~/.inputrc
 \end{lstlisting}
 
-设置完毕后重新打开终端即可。
+设置完毕后重新打开终端即可，必须要重新打开终端才会生效。
 
 \paragraph{统计代码行数}
 
@@ -2882,41 +2897,37 @@ lsof -i:18080
 
 lsof（list open files）是一个列出当前系统打开文件的工具。FD(File Descriptor)：文件描述符，应用程序通过文件描述符识别该文件。在Linux系统中一切皆可以看成是文件，文件又可分为：普通文件、目录文件、链接文件和设备文件。文件描述符（file descriptor）是内核为了高效管理已被打开的文件所创建的索引，其是一个非负整数（通常是小整数），用于指代被打开的文件，所有执行I/O操作的系统调用都通过文件描述符。程序刚刚启动的时候，0是标准输入，1是标准输出，2是标准错误。如果此时去打开一个新的文件，它的文件描述符会是3。
 
-\begin{tabular}{cp{8cm}c}
-	\hline
-	\multirow{1}{*}{文件描述符}
-	& \multicolumn{1}{c}{说明}  \\
-	\hline			
-	cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
-	txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
-	lnn & library references （AIX） \\
-	ltx & shared  library text（code and  data） \\
-	er & FD  information  error （see  NAME  column） \\
-	jld & jail  directory（FreeBSD） \\	
-	\hline
-\end{tabular}
+\begin{table}
+	\caption{文件描述符}
+	\label{table:filedescriptor}
+	\bigskip
+	\begin{tabular}{cp{12cm}c}
+		\hline
+		\multirow{1}{*}{文件描述符}
+		& \multicolumn{1}{c}{说明}  \\
+		\hline			
+		cwd & 表示 current  work dirctory,即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改 \\
+		txt & 该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的/sbin/init程序 \\
+		lnn & library references （AIX） \\
+		ltx & shared  library text（code and  data） \\
+		er & FD  information  error （see  NAME  column） \\
+		jld & jail  directory（FreeBSD） \\
+		mxx & hex  memory-mapped  type number  xx\\
+		m86 & DOS  Merge  mapped  file\\
+		mem & memory-mapped  file\\
+		mmap & memory-mapped device\\
+		d & parent  directory\\
+		rtd & root  directory\\
+		tr & kernel  trace file(OpenBSD)\\
+		v86 & VP/ix  mapped  file\\
+		0 & 表示标准输出\\
+		1 & 表示标准输入\\
+		2 & 表示标准错误\\	
+		\hline
+	\end{tabular}
+\end{table}
 
-（7）mxx： hex  memory-mapped  type number  xx.
 
-（8）m86：DOS  Merge  mapped  file
-
-（9） mem: memory-mapped  file 
-
-（10）mmap: memory-mapped device
-
-（11）pd: parent  directory
-
-（12）rtd: root  directory
-
-（13）tr: kernel  trace file （OpenBSD）
-
-（14）v86  VP/ix  mapped  file
-
-（15）0：表示标准输出
-
-（16）1：表示标准输入
-
-（17）2：表示标准错误。
 根据具体操作系统的不同，将文件和目录称为 REG 和 DIR（在 Solaris 中，称为 VREG 和 VDIR）。其他可能的取值为 CHR 和 BLK，分别表示字符和块设备；或者 UNIX、FIFO 和 IPv4，分别表示 UNIX 域套接字、先进先出 (FIFO) 队列和网际协议 (IP) 套接字。
 进而查看被哪个程序占用：
 
@@ -2935,6 +2946,14 @@ bash -x ./auth.sh
 命令行前面的+号表示嵌套。
 
 \subsection{命令(Command)}
+
+which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
+
+
+\begin{lstlisting}[language=Bash]
+which scala
+\end{lstlisting}
+
 
 \paragraph{ls}
 
@@ -2981,6 +3000,10 @@ tar -czvf mybatisDemo.tar.gz mybatisDemo
 \begin{lstlisting}[language=Bash]
 xz -d xxx.tar.xz
 tar xvf xxx.tar
+# 解压tgz文件
+# 其实tgz文件和tar.gz文件是一样的
+# 可以使用相同的命令解压	
+tar -zxcf example.tgz
 \end{lstlisting}
 
 \paragraph{grep}
@@ -3019,19 +3042,6 @@ ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜�
 \begin{lstlisting}[language=Bash]
 apt-get install silversearcher-ag
 dnf install the_silver_searcher
-\end{lstlisting}
-
-\paragraph{apt}
-
-apt(Advance Package Tool)是Ubuntu的包管理工具：
-
-\begin{lstlisting}[language=Bash]
-# Ubuntu显示包的详细信息
-sudo apt show wget
-# 移除安装包
-sudo apt remove wget
-# CentOS显示包信息
-yum info wget
 \end{lstlisting}
 
 \paragraph{traceroute}
@@ -3145,6 +3155,8 @@ screen -r 12865
 uname －a 
 \end{lstlisting}
 
+\section{常用设置}
+
 \subsection{XFCE桌面}
 
 占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
@@ -3181,9 +3193,25 @@ yum list installed|grep openssl
 openssl version -a
 # yum查看已经安装的软件包
 yum list installed
+# 下载指定版本软件
+sudo apt-get install scala=2.12.3
+# Ubuntu显示包的详细信息
+sudo apt show wget
+# 删除软件及其配置文件
+sudo apt-get --purge -y remove <package>
 \end{lstlisting}
 
-在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。
+在升级软件包的时候，可以注意软件包管理器下方的提示，在网络速度不是很理想的情况下，可以优先升级已经下载完毕后的软件包。下载软件包一个比较头疼的问题就是下载速度有时非常慢，此时如果是国外的镜像源(默认是US的镜像源)，可以替换为国内的镜像源。可以直接修改/etc/apt/source.list文件和通过Software\&Updater图形界面调整。其中/etc/apt/source.list.d中存放了第三方软件的源。升级时，默认会下载服务器上最新版本的软件包，但是有时候对下载的包的版本有要求，必须是指定版本，那么可以提前查看服务器的版本，以决定是否需要下载还是手动安装：
+
+\begin{lstlisting}[language=Bash]
+# 查看服务器Scala版本
+sudo apt-cache madison scala
+sudo apt-cache policy scala
+# 查看版本
+apt-show-versions -a scala
+\end{lstlisting}
+
+madison是一个apt-cache子命令。
 
 \subsection{输入法(Input Method)}
 
@@ -3212,6 +3240,16 @@ sudo apt install fcitx-googlepinyin
 \newpage
 
 \chapter{Intellij Idea}
+
+第一次配置JDK在Configure->Project Defaults->Project Structure设置里。Mac OS X的路径一般如下：
+
+\begin{lstlisting}[language=Bash]
+# 查看Java路径
+echo $JAVA_HOME
+/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk
+# Mac OS X下Gradle的路径
+/usr/local/Cellar/gradle/3.2.1/libexec
+\end{lstlisting}
 
 \subsection{Intellij Idea远程调试}
 
@@ -3459,6 +3497,18 @@ task copyTask(type: Copy) {
 \end{lstlisting}
 
 在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
+
+
+\chapter{OWASP ZAP}
+
+\section{基础}
+
+\subsection{调整}
+
+OWASP消息体太长默认无法显示，可在Option/Display下调整消息体的长度。
+
+\subsection{分析}
+
 
 
 \chapter{OpenVPN}
@@ -3882,7 +3932,15 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \chapter{Raspberry Pi}
 
-\subsection{Raspberry Pi远程}
+\section{基础}
+
+\subsection{连接}
+
+Raspberry可以通过网线直接与PC连接，输入如下命令查看Raspberry的IP：
+
+\begin{lstlisting}[language=Bash]
+arp -a
+\end{lstlisting}
 
 安装步骤：
 
@@ -3893,17 +3951,34 @@ sudo apt-get install tightvncserver　－ｙ
 vncpasswd
 \end{lstlisting}
 
+Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.conf文件。
+
+
 \chapter{Widgets}
 
 \section{Little Tool}
 
+\subsection{rsync}
+
+rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多台主机间的文件。rsync使用所谓的“rsync算法”来使本地和远程两个主机之间的文件达到同步，这个算法只传送两个文件的不同部分，而不是每次都整份传送，因此速度相当快。使用一个远程shell程序(如rsh、ssh)来实现将本地机器的内容拷贝到远程机器。当DST路径地址包含单个冒号":"分隔符时启动该模式。
+
+\begin{lstlisting}[language=Bash]
+rsync -avz pi@10.42.0.22:app-soft .
+\end{lstlisting}
+
+
+
 \subsection{ag}
 
+silversearcher-ag可递归搜索文件内容。
 
+\begin{lstlisting}[language=Bash]
+apt-get install silversearcher-ag
+\end{lstlisting}
 
 \subsection{Pandoc}
 
-在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
+Pandoc使用haskell开发的一个文档格式转换软件。在编写文档时习惯使用\LaTeX{}来编写，\LaTeX{}生成的pdf文档美观，Word格式在不同平台(Mac OS X/Linux/Windows)不同的软件(Microsft Office/金山/Libre Office)打开格式可能会不一致，但是有许多同事习惯使用Word，有时发给对方时也需要作一些编辑和调整，Pandoc就可以满足既可以用\LaTeX{}来编辑文档，也可以将Tex文档转换为Word方便同事：
 
 \begin{lstlisting}[language=Bash]
 pandoc -s interface.tex -o example30.docx
@@ -4194,7 +4269,7 @@ curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
 curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
 \end{lstlisting}
 
-开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+-I选项与-header选项是等价的，表示只打印出HTTP头部。开启压缩成功后，可以看到一句：Content-Encoding: gzip。
 
 \subsection{Nginx配置}
 
@@ -4353,6 +4428,12 @@ ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.s
 # 如果本地没有生成过ssh key
 # 使用如下命令生成ssh key
 ssh-keygen -t rsa -C "a@gmail.com"
+\end{lstlisting}
+
+在Mac OS X中，有时自动登陆需要反复输入密码，解决问题的方法是可以配置Serria记住密码：
+
+\begin{lstlisting}[language=Bash]
+usekeychain yes
 \end{lstlisting}
 
 \subsection{ssh连接慢}
@@ -5118,7 +5199,7 @@ PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，sele
 
 \subsection{查询}
 
-\paragraph{MySQL远程连接}
+\paragraph{MySQL远程连接(MySQL Remote Connection)}
 
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
@@ -5668,8 +5749,13 @@ IP路由选择主要完成以下这些步骤：
 删除默认网关的命令如下：
 
 \begin{lstlisting}[language=Bash]
+# 在Windows下增加路由
+route print
+route -p add 10.55.10.0 mask 255.255.255.0 10.55.10.1
+# 在Fedora里面执此命令删除默认网关
+# Fedora 24
 sudo route del default
-# Ubuntu中删除默认网关
+# Ubuntu 16.04 LTS中删除默认网关
 # 先连接内网，删除默认网关即可内外网同时连接
 # 10.55.10.1为内网默认网关
 # enx000ec6c8c163为本地有线网卡的名称
