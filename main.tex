@@ -4545,8 +4545,19 @@ ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
 
 \paragraph{远程转发Remote Forward}
 
+\subsection{ssh查看日志}
 
+如果需要查看ssh日志，可在/etc/ssh/sshd\_config配置日志输出：
 
+\begin{lstlisting}[language=Bash]
+SysLogFacility LOCAL7
+\end{lstlisting}
+
+Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志进行分类，并由专门的工作负责记录相对应的信息，分类有：auth(授权)，authpriv，cron(定时任务)，daemon(守护进程)，kern(内核),lpr,mail(邮件相关),mark,news,security(安全),syslog,user,uucp,local0,local7。多线程，多协议（udp/tcp/ssl/tls/relp）；mysql,pgsql,oracle等多种关系数据中，强大的过滤器，可实现过滤系统信息中的任意部分。自定义输出格式。适用于企业级别日志记录需求。ssh配置文件配置后，在/etc/rsyslog.conf文件中作如下配置：
+
+\begin{lstlisting}[language=Bash]
+LOCAL7.*	/var/log/sshd.log
+\end{lstlisting}
 
 \section{VisualVM}
 
