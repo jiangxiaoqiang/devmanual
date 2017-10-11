@@ -3355,16 +3355,6 @@ public class ${NAME} {
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
-\begin{tabular}{cp{10cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{作用}  \\
-	\hline			
-	fastjson & compile('com.alibaba:fastjson:1.2.35') \\
-	httpclient & compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'\\
-	\hline
-\end{tabular}
-
 \section{基础}
 
 \subsection{初始化项目}
@@ -3385,7 +3375,7 @@ gradle init
 def ccDataLibs = fileTree(dir: "$rootDir/cc-data/lib", include: '*.jar')
 
 dependencies {
-compile ccDataLibs
+	compile ccDataLibs
 }
 \end{lstlisting}
 
@@ -3402,7 +3392,7 @@ Finally, evaluate each Project by executing its "build.gradle" file, if present,
 
 \subsection{默认JVM}
 
-在Intellij Idea中导入Gradle项目时，可能提示未设置Gradle JVM，此时选择select Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
+在Intellij Idea中首次导入Gradle项目时，可能提示未设置Gradle JVM，此时在项目初始选择页面选择Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
 
 \subsection{repositories}
 
@@ -3410,19 +3400,19 @@ Finally, evaluate each Project by executing its "build.gradle" file, if present,
 
 \begin{lstlisting}[language=Java]
 repositories {
-maven {
-	url 'http://www.eveoh.nl/files/maven2'
-}
-maven {
-	url 'http://repox.gtan.com:8078'
-}
-mavenCentral()
+	maven {
+		url 'http://www.eveoh.nl/files/maven2'
+	}
+	maven {
+		url 'http://repox.gtan.com:8078'
+	}
+	mavenCentral()
 	jcenter()
 	maven { url 'http://repo.spring.io/plugins-release' }
 }
 \end{lstlisting}
 
-总的来说，只有两个标准的Android library文件服务器：Jcenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成jcenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，jcenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{常见问题}
 
@@ -4526,7 +4516,48 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 
 将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口。应用实例可以参看\ref{paragraph:sshproxy}。
 
+\begin{lstlisting}[language=Bash]
+# Mac OS X端口转发
+/usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
+\end{lstlisting}
+
+有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
+
+\begin{lstlisting}[language=Bash]
+# Mac OS X启动sshd
+sudo /usr/bin/sshd
+# Ubuntu启动sshd
+sudo /etc/init.d/ssh
+\end{lstlisting}
+
+启动SSHD 的时候系统提示:Could not load host key: /etc/ssh/ssh\_ed25519\_key。新版的opensshd 中添加了Ed25519 做签名验证，而之前系统里没这个算法的证书，所以办法也很简单新生成下证书即可。
+
+\begin{lstlisting}[language=Bash]
+sudo ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+sudo ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
+sudo ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
+ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
+\end{lstlisting}
+
+
+
+
+
 \paragraph{远程转发Remote Forward}
+
+\subsection{ssh查看日志}
+
+如果需要查看ssh日志，可在/etc/ssh/sshd\_config配置日志输出：
+
+\begin{lstlisting}[language=Bash]
+SysLogFacility LOCAL7
+\end{lstlisting}
+
+Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志进行分类，并由专门的工作负责记录相对应的信息，分类有：auth(授权)，authpriv，cron(定时任务)，daemon(守护进程)，kern(内核),lpr,mail(邮件相关),mark,news,security(安全),syslog,user,uucp,local0,local7。多线程，多协议（udp/tcp/ssl/tls/relp）；mysql,pgsql,oracle等多种关系数据中，强大的过滤器，可实现过滤系统信息中的任意部分。自定义输出格式。适用于企业级别日志记录需求。ssh配置文件配置后，在/etc/rsyslog.conf文件中作如下配置：
+
+\begin{lstlisting}[language=Bash]
+LOCAL7.*	/var/log/sshd.log
+\end{lstlisting}
 
 \section{VisualVM}
 
@@ -4538,7 +4569,7 @@ jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供
 
 \begin{lstlisting}[language=Bash]
 grant codebase "file:${java.home}/../lib/tools.jar" {  
-permission java.security.AllPermission;  
+	permission java.security.AllPermission;  
 }; 
 \end{lstlisting}
 
