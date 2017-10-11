@@ -2778,14 +2778,15 @@ start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器�
 
 Shell终端中常用的快捷键如下：
 
-\begin{tabular}{cp{8cm}c}
+\begin{tabular}{cp{12cm}c}
 	\hline
 	\multirow{1}{*}{快捷键}
 	& \multicolumn{1}{c}{说明}  \\
 	\hline			
 	Alt + F & 向前移动一个单词 \\
 	Alt + B & 向后移动一个单词 \\
-	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\	
+	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
+	Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
 	\hline
 \end{tabular}
 
@@ -4519,6 +4520,8 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 \begin{lstlisting}[language=Bash]
 # Mac OS X端口转发
 /usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
+# 接口服务器设置代理转发
+ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
 \end{lstlisting}
 
 有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
@@ -4538,10 +4541,6 @@ sudo ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
 sudo ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
 \end{lstlisting}
-
-
-
-
 
 \paragraph{远程转发Remote Forward}
 
