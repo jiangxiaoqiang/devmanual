@@ -4049,9 +4049,10 @@ http://localhost:28080/api/xysj/search?qymc=长安福特
 查看磁盘的IO情况，每秒刷新一次：
 
 \begin{lstlisting}[language=Bash]
-iostat 1 -cdxk
+iostat 2 -cdxk
 \end{lstlisting}
 
+参数 -d(Device)表示，显示设备（磁盘）使用状态；-k某些使用block为单位的列强制使用Kilobytes为单位；2表示，数据显示每隔2秒刷新一次。iostat还有一个比较常用的选项-x，该选项将用于显示和io相关的扩展数据。-c用来获取cpu部分状态值。为显示更详细的io设备统计信息，可以使用-x选项。
 
 \subsection{Zeal}
 
@@ -5468,9 +5469,15 @@ from v$dm_ini
 where para_name like '%ORDER%'
 
 select * from v$sessions where state='ACTIVE';
-
-
 \end{lstlisting}
+
+删除数据库ID重复的记录，只保留其中一条记录：
+
+\begin{lstlisting}[language=SQL]
+delete from dolphin where rowid not in(select max(rowid) from dolphin group by id) 
+\end{lstlisting}
+
+
 
 
 \section{通用知识}
@@ -5972,19 +5979,19 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 
 \subsection{项目发布(Publish)}
 
-在项目的版本管理上，可以引进Alpha、Beta、Pre-release和Release的机制。
+在项目的版本管理上，可以引进Alpha、Beta、Pre-release和Release的机制。自动发布、灰度发布、自动回滚等。
 
 \paragraph{撰写Change Log}
 
-根据git log，生成项目的修改记录，前提是git log需要有编写规范。或者手动编写项目的修改记录，一般为修改(Modify)、新特性(Feature)、bug修复(Bugfix)等。
+在项目管理平台(禅道、Readmine等)上新建版本号，便于测试小组做测试。根据git log，生成项目的修改记录，前提是git log需要有编写规范。或者手动编写项目的修改记录，一般为修改(Modify)、新特性(Feature)、bug修复(Bugfix)等。
 
 \paragraph{同步数据库(Sync Database)}
 
-将涉及到本次发布的需要添加的字段在生产环境添加。这里就需要在开发时，记录修改数据库的SQL脚本，发布时执行脚本即可。
+将涉及到本次发布的需要添加的字段、表等等在生产环境添加。这里就需要在开发时，记录修改数据库的SQL脚本，发布时执行脚本即可。
 
 \paragraph{打标签(Tag)}
 
-将此次发布的正式版本标记，便于以后的Hotfix。
+将此次发布的正式版本打上标记(tag)，一般的命名是版本号加上特点，例如1.1.35版本的，便于以后的Hotfix。
 
 \paragraph{发布程序(Publish)}
 
