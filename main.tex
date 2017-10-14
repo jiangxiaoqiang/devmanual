@@ -3963,8 +3963,11 @@ sudo apt-get install tightvncserver　－ｙ
 vncpasswd
 \end{lstlisting}
 
-Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.conf文件。
+Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.conf文件。编辑后重启网络：
 
+\begin{lstlisting}[language=Bash]
+/etc/init.d/networking restart
+\end{lstlisting}
 
 \chapter{Widgets}
 
