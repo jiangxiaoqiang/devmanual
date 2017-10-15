@@ -749,6 +749,16 @@ List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList());
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
 
+\subsection{正则表达式(Regular Expression)}
+
+匹配电话号码的正则表达式：
+
+\begin{lstlisting}
+"^1(3[4-9]|4[7]|5[0-27-9]|7[08]|8[2-478])\\d{8}$"
+\end{lstlisting}
+
+[]匹配模式能够匹配方括号内任意字符，[08]可匹配0或者8。以上匹配电话号码的正则表达式会随着时间过期，比如某些号码段新开放时，相应的正则表达式会过期，比如以上正则表达式就无法匹配17623083674这个电话号码。
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
