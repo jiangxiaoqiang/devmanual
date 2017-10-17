@@ -2109,8 +2109,8 @@ const reducer = (state, action) => {
 
 \begin{lstlisting}[language=Javascript]
 store.dispatch({
-type: "ADD",
-payload: 10
+	type: "ADD",
+	payload: 10
 });
 \end{lstlisting}
 
@@ -2121,7 +2121,27 @@ payload: 10
 
 \subsection{state}
 
-State (也称为 state tree) 是一个宽泛的概念，但是在 Redux API 中，通常是指一个唯一的 state 值，由 store 管理且由 getState() 方法获得。它表示了 Redux 应用的全部状态，通常为一个多层嵌套的对象。约定俗成，顶层 state 或为一个对象，或像 Map 那样的键-值集合，也可以是任意的数据类型。然而你应尽可能确保 state 可以被序列化，而且不要把什么数据都放进去，导致无法轻松地把 state 转换成 JSON\footnote{来源：\url{http://cn.redux.js.org/docs/Glossary.html}}。state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).简单来说,就是用户界面会随着state变化而变化.而Action不会引起state的变化，引起state变化的是reducer。如果用 redux，就没有 state 和 props 的区分了。组件都应该用 props，不应该有任何组件私有的 state。尽量使用props当作数据源，state用来存放状态值。
+State (也称为 state tree) 是一个宽泛的概念，但是在 Redux API 中，通常是指一个唯一的 state 值，由 store 管理且由 getState() 方法获得。它表示了 Redux 应用的全部状态，通常为一个多层嵌套的对象。约定俗成，顶层 state 或为一个对象，或像 Map 那样的键-值集合，也可以是任意的数据类型。然而你应尽可能确保 state 可以被序列化，而且不要把什么数据都放进去，导致无法轻松地把 state 转换成 JSON\footnote{来源：\url{http://cn.redux.js.org/docs/Glossary.html}}。state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).
+
+\begin{lstlisting}[language=Javascript]
+//会重新渲染页面
+this.setState({query: query});
+/*
+ * 不会重新渲染页面
+ * 调用this.forceUpdate()手动强制重新渲染页面
+ */
+this.setState.query = query;
+this.forceUpdate();
+\end{lstlisting}
+
+一般情况下应该用setState来设置state值，不应该对state直接赋值\footnote{\url{参考：https://reactjs.org/docs/state-and-lifecycle.html}}(It is better to use this.setState because it is init native check-state mecanizm of React engine which is better then force update.If you just update any param of this.state directly without setState react render mecanizm will not know that some params of state is updated.)，对state直接赋值可以在构造方法中(The only place where you can assign this.state is the constructor)。还有一点需要注意的是setState方法是异步的，可以使用回调(Callback)函数来获取最终结果：
+
+\begin{lstlisting}[language=Javascript]
+//使用回调函数获取设置的值
+this.setState({data: data}, function(){
+	console.log(this.state.data);
+}.bind(this));
+\end{lstlisting}
 
 \paragraph{初始化state}
 
