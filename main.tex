@@ -5074,7 +5074,11 @@ sty文件拷贝到指定目录后，运行命令：
 sudo texhash
 \end{lstlisting}
 
-即可使用命令引用包。
+即可使用命令引用包。有时会提示缺少sty文件,遇到一次是因为没有完全安装latex,输入完整包安装命令:
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install texlive-full
+\end{lstlisting}
 
 \part{DB}
 
