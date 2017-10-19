@@ -749,6 +749,27 @@ List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList());
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
 
+\paragraph{List分组}
+
+如下代码片段按照responsekey对集合进行分组：
+
+\begin{lstlisting}[language=Java]
+Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
+		.stream()
+		.collect(Collectors.groupingBy(FeedbackRecord::getResponsekey));
+\end{lstlisting}
+
+\paragraph{查找}
+
+如下代码片段查找第一个符合条件的元素：
+
+\begin{lstlisting}[language=Java]
+Optional<FeedbackRecord> filterFeedbackRecord = entry.getValue()
+	.stream()
+	.filter(feedbackRecord -> "0".equals(feedbackRecord.getIsFeedback()))
+	.findFirst();
+\end{lstlisting}
+
 \subsection{正则表达式(Regular Expression)}
 
 匹配电话号码的正则表达式：
@@ -2646,7 +2667,6 @@ const date = moment().weekday(0);
 
 一次页面卡顿是由于服务端某一个页面返回了过多的数据6w多。
 
-
 \paragraph{index.js:83 TypeError: Cannot read property 'get' of undefined}
 
 出現此錯誤的原因是獲取到的參數爲空。
@@ -2673,6 +2693,8 @@ at Object.mountComponent (ReactReconciler.js:46)
 	\caption{undefined錯誤}
 	\label{fig:getundefineerror}
 \end{figure}
+
+由于采用的是React，说明获取到的数据没有映射到对象里面。在store.js里面添加对应的缺少的实体即可。
 
 \paragraph{Each child in an array or iterator should have a unique "key" prop. Check the render method of `CreditDataPeopleMain`}
 
