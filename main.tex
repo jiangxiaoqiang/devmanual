@@ -695,7 +695,7 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 \subsection{集合操作(Collection Operate)}
 
-List移除空元素，移除重复元素：
+Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
 
 \begin{lstlisting}[language=Java]
 request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
@@ -768,6 +768,8 @@ Optional<FeedbackRecord> filterFeedbackRecord = entry.getValue()
 	.stream()
 	.filter(feedbackRecord -> "0".equals(feedbackRecord.getIsFeedback()))
 	.findFirst();
+//更加直接的方式判断是否有符合条件的元素
+boolean isChild = users.stream().anyMatch(t->t.age<18);
 \end{lstlisting}
 
 \subsection{正则表达式(Regular Expression)}
