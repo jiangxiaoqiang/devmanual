@@ -1501,18 +1501,7 @@ dependencies{
 }
 \end{lstlisting}
 
-
-
-\paragraph{Java.lang.NoClassDefFoundError: javax/transaction/TransactionManager}
-
-添加如下引用即可：
-
-
-
-
-\paragraph{NoClassDefFoundError}
-
-连接时从内存找不到需要的class就出现NoClassDefFoundError，当Java虚拟机或 ClassLoader 实例试图在类的定义中加载（作为通常方法调用的一部分或者作为使用 new 表达式创建的新实例的一部分），但无法找到该类的定义时，抛出此异常。 
+连接时从内存找不到需要的class就出现NoClassDefFoundError，当Java虚拟机或 ClassLoader实例试图在类的定义中加载（作为通常方法调用的一部分或者作为使用 new 表达式创建的新实例的一部分），但无法找到该类的定义时，抛出此异常。 
 
 Java事务的类型有三种：JDBC事务、JTA(Java Transaction API)事务、容器事务。 常见的容器事务如Spring事务，容器事务主要是J2EE应用服务器提供的，容器事务大多是基于JTA完成，这是一个基于JNDI的，相当复杂的API实现。在本机请求会报此错误，但是部署到服务器上是OK的。在本地引入如下2个jar包即可修复此问题：
 
@@ -1521,7 +1510,31 @@ compile group: 'javax.transaction', name: 'jta', version: '1.1'
 compile group: 'ma.glasnost.orika', name: 'orika-core', version: '1.5.1'
 \end{lstlisting}
 
-Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等
+Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另一个。对于开发多层应用程序时，非常有用。Java 事务编程接口（JTA：Java Transaction API）和 Java 事务服务 (JTS；Java Transaction Service) 为 J2EE 平台提供了分布式事务服务。分布式事务（Distributed Transaction）包括事务管理器（Transaction Manager）和一个或多个支持 XA 协议的资源管理器 ( Resource Manager )。我们可以将资源管理器看做任意类型的持久化数据存储；事务管理器承担着所有事务参与单元的协调与控制。JTA 事务有效的屏蔽了底层事务资源，使应用可以以透明的方式参入到事务处理中；但是与本地事务相比，XA 协议的系统开销大，在系统开发过程中应慎重考虑是否确实需要分布式事务。若确实需要分布式事务以协调多个事务资源，则应实现和配置所支持 XA 协议的事务资源，如 JMS、JDBC 数据库连接池等。如果是引用包里面的类的路径找不到(例如：org/Spring/Application)，那么就可以先查看项目的CLASSPATH是否包含引用包的路径：
+
+\begin{lstlisting}[language=Java]
+//打印项目的CLASSPATH
+ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+URL[] urls = ((URLClassLoader) classLoader).getURLs();
+for (URL url : urls) {
+	System.out.println(url.getFile());
+}
+\end{lstlisting}
+
+可以看到CLASSPATH路径里面没有包含引用包的路径，所以会提示找不到类。
+
+\paragraph{no Scala SDK found in module}
+
+项目编译的时候提示module里没有找到Scala SDK,因为module没有指定Scala SDK(或者是原来的配置由于某种原因实效了)。此时可以将Scala SDK添加到指定module里，File->Project Structure->Project Settings->Modules，在对应的module上右键添加Scala SDK，如图\ref{fig:addscalasdk}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{addscalasdk.jpg}
+	\caption{Intellij Idea中添加Scala SDK}
+	\label{fig:addscalasdk}
+\end{figure}
+
+添加了Scala SDK后，编译的时候就可以编译module里面的scala文件了。
 
 \paragraph{Unregistering JMX-exposed beans on shutdown}
 
