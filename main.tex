@@ -4739,13 +4739,14 @@ git reset --hard e4177ea9061a9726efd42d289f73553409df793d
 	\label{fig:filemodifyhistory}
 \end{figure}
 
-\subsection{Tag}
+\subsection{标签(Tag)}
 
 有的时候需要修复线上某个版本的问题，但是当前主分支已经合并了中途开发的部分功能，还未经过严格测试。为了满足这样的要求，需要在每次发布版本的时候打上标记(Tag)，需要修复线上问题时，可以回到标记的版本，修复线上的问题后，将fix分支合并到主干。
 
 \begin{lstlisting}[language=Bash]
-# 发布时打上Tag
+# 发布时打上Tag，带有信息
 git tag -a v1.1.31 -m "v1.0版本发布"
+git tag -a v1.1.35 -m "v1.1.35-Release版本"
 # 查看有哪些Tag
 git tag
 # 查看具体Tag的内容
@@ -6019,7 +6020,7 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 
 \paragraph{撰写Change Log}
 
-在项目管理平台(禅道、Readmine等)上新建版本号，便于测试小组做测试。根据git log，生成项目的修改记录，前提是git log需要有编写规范。或者手动编写项目的修改记录，一般为修改(Modify)、新特性(Feature)、bug修复(Bugfix)等。
+在项目管理平台(禅道、Readmine等)上新建版本号，便于测试小组做测试。根据git log，生成项目的修改记录，前提是git log需要有编写规范。或者手动编写项目的修改记录，一般为优化(Optimize)、修改(Modify)、新特性(Feature)、bug修复(Bugfix)等。
 
 \paragraph{同步数据库(Sync Database)}
 
