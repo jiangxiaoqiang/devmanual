@@ -5551,6 +5551,8 @@ GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
 
 \subsection{常用SQL记录}
 
+嵌套查询：
+
 \begin{lstlisting}[language=SQL]
 select GNMK,
 max(ORG_NAME) as ORG_NAME,
@@ -5585,6 +5587,8 @@ select * from v$sessions where state='ACTIVE';
 \begin{lstlisting}[language=SQL]
 delete from dolphin where rowid not in(select max(rowid) from dolphin group by id) 
 \end{lstlisting}
+
+拼接列：
 
 
 
