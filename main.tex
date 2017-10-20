@@ -749,6 +749,17 @@ List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList());
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
 
+\paragraph{获取数据}
+
+获取Lis对象对象的某一个字段：
+
+\begin{lstlisting}[language=Java]
+List<String> redblackLogKeys = redBlackLogs.stream()
+	.map(redBalckLog -> redBalckLog.getResponseKey())
+	.collect(Collectors.toList());
+\end{lstlisting}
+
+
 \paragraph{List分组}
 
 如下代码片段按照responsekey对集合进行分组：
