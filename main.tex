@@ -760,7 +760,7 @@ List<String> redblackLogKeys = redBlackLogs.stream()
 \end{lstlisting}
 
 
-\paragraph{List分组}
+\paragraph{List}
 
 如下代码片段按照responsekey对集合进行分组：
 
@@ -769,6 +769,15 @@ Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
 		.stream()
 		.collect(Collectors.groupingBy(FeedbackRecord::getResponsekey));
 \end{lstlisting}
+
+如果需要在创建List时对其初始化：
+
+\begin{lstlisting}[language=Java]
+new ArrayList<String>() {{
+	add(feedback.getResponsekey());
+}}
+\end{lstlisting}
+
 
 \paragraph{查找}
 
@@ -851,11 +860,6 @@ String.valueOf中如果对象为空，就返回字符串的"null"，注意不是
 jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
 
 java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
-
-\begin{lstlisting}[language=Bash]
-nohup java -jar -Xmx2g credit-system-web-boot-1.0.0.jar --spring.config.location=application-jenkins.properties &
-\end{lstlisting}
-
 
 \section{接口(Application Interface)}
 
@@ -2286,6 +2290,17 @@ class BookContainer extends Component {
 	\label{fig:bookserviceprops}
 \end{figure}
 
+还可以传递函数，例如有时候在子组件上操作后需要更新父组件的界面，可以将更新方法通过Props传递给子组件，子组件直接调用函数进行更新即可。
+
+\begin{lstlisting}[language=Javascript]
+/**
+* refreshFetch是父组件定义的函数
+*/
+return <FeedbackPanel query={query}
+						refreshFetch={this.refreshFetch}
+						creditFormTable={creditFormTable}
+						key={i}/>
+\end{lstlisting}
 
 \subsection{Reducers}
 
@@ -2888,6 +2903,8 @@ Shell终端中常用的快捷键如下：
 	Alt + B & 向后移动一个单词 \\
 	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
 	Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
+	Ctrl + K & 从光标当前位置向后删除所有字符\\
+	Ctrl + U & 从光标当前位置向前删除所有字符\\
 	\hline
 \end{tabular}
 
