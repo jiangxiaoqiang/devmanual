@@ -2135,9 +2135,49 @@ const store = createStore(reducer, 1);
 
 第一个参数为reducer，第二个参数是初始化的状态(initialState)，这里为1。
 
+\subsection{Dispatcher}
+
+接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
+
+\begin{lstlisting}[language=Javascript]
+store.dispatch({
+	type: "ARTICLE_PAGE",
+	payload: 10
+});
+\end{lstlisting}
+
+dispatch的参数是一个Action。如下代码片段定义一个Action：
+
+\begin{lstlisting}[language=Javascript]
+const action = {
+	type: "ARTICLE_PAGE",
+	payload: 10
+};
+\end{lstlisting}
+
+其中的type属性是必须的，表示 Action 的名称。上面代码中，Action 的名称是ARTICLE\_PAGE，它携带的信息是数字10。
+
+\paragraph{redux-thunk}
+
+解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。例如：
+
+\begin{lstlisting}[language=Javascript]
+export function findPage(params) {
+	return dispatch =>
+		requestJSON(
+			dispatch,
+			{method: 'get', url: '/pubapi/article/page', params: {...params}},
+			{type: articleTYPE.ARTICLE_PAGE},
+			{type: articleTYPE.ARTICLE_PAGE_ERROR, message: '获取文章列表失败'});
+}
+\end{lstlisting}
+
+在异步Action时也需要使用thunder中间件。
+
 \subsection{Reducer}
 
-如下语句创建一个简单的Reducer：
+Store收到Action以后，必须给出一个新的State，这样View才会发生变化。这种State的计算过程就叫做Reducer。
+Reducer是一个函数，它接受Action和当前State作为参数，返回一个新的State。如下语句创建一个简单的Reducer：
 
 \begin{lstlisting}[language=Javascript]
 const reducer = (state, action) => {
@@ -2151,25 +2191,6 @@ const reducer = (state, action) => {
 	return state;
 };
 \end{lstlisting}
-
-
-
-
-\subsection{Dispatcher}
-
-接收action，并且向注册的回调函数广播payloads。Facebook还提供了Dispatcher的开源库。你可以将Dispatcher认为是一种全局pub/sub系统的事件处理器，用于向所注册的回调函数广播payloads。通常情况下，如果你使用Flux架构，你可以借助于Facebook提供的这个Dispatcher实现，并且可以借助NodeJS中的EventEmitter模块来配置事件系统， 从而帮助管理应用程序的状态。Store中包括了注册给Dispatcher的回调函数。actionCreator还有很简洁的用法：对actionCreator做dispatch级别的封装，这个过程我们可以使用 redux 提供的 bindActionCreators 函数自动完成。然后就可以直接调用action，而不需要使用dispatch方法去调用actionCreator。dispatch调用如下代码片段所示。
-
-\begin{lstlisting}[language=Javascript]
-store.dispatch({
-	type: "ADD",
-	payload: 10
-});
-\end{lstlisting}
-
-
-\paragraph{redux-thunk}
-
-解决了dispatch不好获取的问题。Redux官网说，action就是Plain JavaScript Object。Thunk允许action creator返回一个函数，而且这个函数第一个参数是dispatch。在异步Action时也需要使用thunder中间件。
 
 \subsection{state}
 
