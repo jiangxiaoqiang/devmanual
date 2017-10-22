@@ -825,6 +825,7 @@ public void setName(String name) throws IllegalArgumentException{
 String.ValueOf()的坑:
 
 \begin{lstlisting}[language=Java]
+//如果article.getCategory()为空返回null字符串
 String categoryId = String.valueOf(article.getCategory());
 //养成字符串写前面比较的习惯
 //避免空指针异常
