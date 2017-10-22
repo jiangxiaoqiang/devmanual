@@ -2125,7 +2125,7 @@ Action向store派发指令，action 函数会返回一个带有 type 属性的 J
 
 \subsection{Store}
 
-store 是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起，如下语句创建一个简单的store。
+为什么要使用store？如果不使用store，那么各个组件的数据必须由各个组件来维护，这种情况会出现一些问题，第一就是组件之间的数据可能会有重复，比如一个组件父组件统计子组件的数据，父组件需要存储子组件的数据，子组件也会存储自己的数据，数据重复又会带来问题，数据之间的维护需要大量的工作(子组件数据更新后父组件的数据也要更新)，多份数据的情况下非常容易造成数据不一致。这也就是为什么要使用store，而且整个应用中只能有一个store的原因\footnote{参考《深入浅出React和Redux》2.5小节}。store是应用的状态管理中心，保存着是应用的状态（state），当收到状态的更新时，会触发视觉组件进行更新。Provider是react-redux提供的组件，它的作用是把store和视图绑定在了一起，如下语句创建一个简单的store。
 
 \begin{lstlisting}[language=Javascript]
 import {createStore} from 'redux';
@@ -2172,7 +2172,7 @@ export function findPage(params) {
 }
 \end{lstlisting}
 
-在异步Action时也需要使用thunder中间件。
+在异步Action时也需要使用thunder中间件。以上代码片段就是一个更好的例子，以上代码表示想服务器发送一个请求获取文章列表，但是这里返回的是一个函数，而不是一个对象，redux-thunder的工作就是检查action对象是不是函数，如果不是函数就放行，让其执行完整的action-reducer-view生命周期。如果发现对象是函数，就执行这个函数，并把Store的dispatch函数和getState函数作为参数传递到函数中去，处理过程到此为止，不会让异步对象再派发到reducer函数。异步调用的API再根据合适的时机派发Action，触发界面Render\footnote{参考《深入浅出React和Redux》7.2.2节}。
 
 \subsection{Reducer}
 
