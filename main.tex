@@ -6,6 +6,7 @@
 \usepackage{listings}
 \usepackage{multirow}
 \usepackage{longtable}
+\usepackage{fontspec}
 \usepackage{ctex}
 \usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a4paper]{geometry} % Page margins
 \usepackage{graphicx} % Required for including pictures
@@ -37,7 +38,8 @@
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
 
 %When compile under liunx% 
-%\setmainfont{WenQuanYi Micro Hei}
+
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -5079,6 +5081,8 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \section{安装}
 
+输入如下命令安装TexLive:
+
 \begin{lstlisting}[language=Bash]
 # Ubuntu下安装Texlive
 sudo apt-get install texlive -y
@@ -5087,7 +5091,6 @@ sudo apt-get install texlive -y
 \subsection{字体}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
-
 
 \paragraph{lstlisting字体}
 
@@ -5166,6 +5169,15 @@ sudo texhash
 
 \begin{lstlisting}[language=Bash]
 sudo apt-get install texlive-full
+\end{lstlisting}
+
+\paragraph{中文支持}
+
+在Ubuntu 14.04 LTS下编译无法显示中文,在\LaTeX{}中指定中文字体即可:
+
+\begin{lstlisting}[language=Tex]
+% 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} 
 \end{lstlisting}
 
 \part{DB}
