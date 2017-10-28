@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -4133,12 +4133,23 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \section{基础}
 
-\subsection{连接}
+\subsection{连接(Connection)}
 
 Raspberry可以通过网线直接与PC连接，输入如下命令查看Raspberry的IP：
 
 \begin{lstlisting}[language=Bash]
 arp -a
+\end{lstlisting}
+
+初次登录需要通过有线连接,设置完成后,如果是连接的是隐藏网络,有可能无线无法获取IP.此时网络设置需要添加scan\_ssid:
+
+\begin{lstlisting}[language=Bash]
+network={
+  ssid="爱生活"
+  scan_ssid=1
+  psk="15023396614"
+  priority=3
+}
 \end{lstlisting}
 
 安装步骤：
