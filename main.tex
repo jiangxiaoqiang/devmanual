@@ -1652,7 +1652,16 @@ md5sum local_policy.jar
 java.lang.OutOfMemoryError:GC overhead limit exceeded
 \end{lstlisting}
 
-这种情况是当系统处于高频的GC状态，而且回收的效果依然不佳的情况，就会开始报这个错误，这种情况一般是产生了很多不可以被释放的对象，有可能是引用使用不当导致，或申请大对象导致，但是java heap space的内存溢出有可能提前不会报这个错误，也就是可能内存就直接不够导致，而不是高频GC。
+这种情况是当系统处于高频的GC状态，而且回收的效果依然不佳的情况，就会开始报这个错误，这种情况一般是产生了很多不可以被释放的对象，有可能是引用使用不当导致，或申请大对象导致，但是java heap space的内存溢出有可能提前不会报这个错误，也就是可能内存就直接不够导致，而不是高频GC。JVM在启动的时候会自动设置Heap size的值，其初始空间(即-Xms)是物理内存的1/64，最大空间(-Xmx)是物理内存的1/4。可以利用JVM提供的-Xmn -Xms -Xmx等选项可进行设置。例如：
+
+\begin{lstlisting}[language=Bash]
+nohup $JAVA_HOME/bin/java -Xmx8192M -Xms4096M -jar \
+-Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5006 \
+$APP_PATH/credit-system-web-api-$VERSION.jar \
+--spring.config.location=application-api.properties>/dev/null &
+\end{lstlisting}
+
+以上启动项设置初始( initial size)Heap Size(Xms)是4096MB最大空间xmx(maximum size)8192MB。一种查明方法是不间断地监控GC的活动，确定内存使用量是否随着时间增加。如果确实如此，就可能发生了内存泄漏。
 
 
 \section{MyBatis}
@@ -2219,7 +2228,7 @@ export function findPage(params) {
 }
 \end{lstlisting}
 
-在异步Action时也需要使用thunder中间件。以上代码片段就是一个更好的例子，以上代码表示想服务器发送一个请求获取文章列表，但是这里返回的是一个函数，而不是一个对象，redux-thunder的工作就是检查action对象是不是函数，如果不是函数就放行，让其执行完整的action-reducer-view生命周期。如果发现对象是函数，就执行这个函数，并把Store的dispatch函数和getState函数作为参数传递到函数中去，处理过程到此为止，不会让异步对象再派发到reducer函数。异步调用的API再根据合适的时机派发Action，触发界面Render\footnote{参考《深入浅出React和Redux》7.2.2节}。
+在异步Action时也需要使用thunder中间件。以上代码片段就是一个更好的例子，以上代码表示向服务器发送一个请求获取文章列表，但是这里返回的是一个函数，而不是一个对象，redux-thunder的工作就是检查action对象是不是函数，如果不是函数就放行，让其执行完整的action-reducer-view生命周期。如果发现对象是函数，就执行这个函数，并把Store的dispatch函数和getState函数作为参数传递到函数中去，处理过程到此为止，不会让异步对象再派发到reducer函数。异步调用的API再根据合适的时机派发Action，触发界面Render\footnote{参考《深入浅出React和Redux》7.2.2节}。
 
 \subsection{Reducer}
 
