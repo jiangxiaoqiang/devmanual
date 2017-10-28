@@ -6,6 +6,7 @@
 \usepackage{listings}
 \usepackage{multirow}
 \usepackage{longtable}
+\usepackage{fontspec}
 \usepackage{ctex}
 \usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a4paper]{geometry} % Page margins
 \usepackage{graphicx} % Required for including pictures
@@ -37,7 +38,8 @@
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
 
 %When compile under liunx% 
-%\setmainfont{WenQuanYi Micro Hei}
+
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -742,7 +744,7 @@ Integer[] integers = new Integer[] {1,2,3,4,5};
 // Cannot modify returned list
 List<Integer> list21 =  Arrays.asList(integers); 
 // good
-List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+	List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
 //Java 8
 List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
 \end{lstlisting}
@@ -776,6 +778,41 @@ Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
 new ArrayList<String>() {{
 	add(feedback.getResponsekey());
 }}
+\end{lstlisting}
+
+有时需要将List对象按照对象某一个字段是否重复进行去重，可以先重写对象的equals方法：
+
+
+\begin{lstlisting}[language=Java]
+@Override
+public boolean equals(Object o) {
+	if (this == o) return true;
+	if (!(o instanceof UnitedAwardsPenalties)) return false;
+	UnitedAwardsPenalties stu = (UnitedAwardsPenalties) o;
+	return implementContent != null ? implementContent.equals(stu.implementContent) : stu.implementContent == null;
+}
+
+@Override
+public int hashCode() {
+	int result = id.hashCode();
+	result = 31 * result + memo.hashCode();
+	return result;
+}
+\end{lstlisting}
+
+就可以对对象进行直接比较：
+
+\begin{lstlisting}[language=Java]
+/**
+* 去重
+*/
+unitedAPMapper.pageUnitedAPList(paramsMap)
+				.stream()
+				.forEach(element -> {
+	if (!distinctUnitedAwardsPenaltiesList.contains(element)) {
+		distinctUnitedAwardsPenaltiesList.add(element);
+	}
+});
 \end{lstlisting}
 
 
@@ -1607,7 +1644,24 @@ MD5 local_policy.jar
 md5sum local_policy.jar
 \end{lstlisting}
 
+\subsection{java.lang.OutOfMemoryError: Java heap space	}
 
+内存溢出是指应用系统中存在无法回收的内存或使用的内存过多，最终使得程序运行要用到的内存大于虚拟机能提供的最大内存。看到heap相关的时候就肯定是堆栈溢出了，此时如果代码没有问题的情况下，适当调整-Xmx和-Xms是可以避免的，不过一定是代码没有问题的前提，为什么会溢出呢，要么代码有问题，要么访问量太多并且每个访问的时间太长或者数据太多，导致数据释放不掉，因为垃圾回收器是要找到那些是垃圾才能回收，这里它不会认为这些东西是垃圾，自然不会去回收了；主意这个溢出之前，可能系统会提前先报错关键字为：
+
+\begin{lstlisting}
+java.lang.OutOfMemoryError:GC overhead limit exceeded
+\end{lstlisting}
+
+这种情况是当系统处于高频的GC状态，而且回收的效果依然不佳的情况，就会开始报这个错误，这种情况一般是产生了很多不可以被释放的对象，有可能是引用使用不当导致，或申请大对象导致，但是java heap space的内存溢出有可能提前不会报这个错误，也就是可能内存就直接不够导致，而不是高频GC。JVM在启动的时候会自动设置Heap size的值，其初始空间(即-Xms)是物理内存的1/64，最大空间(-Xmx)是物理内存的1/4。可以利用JVM提供的-Xmn -Xms -Xmx等选项可进行设置。例如：
+
+\begin{lstlisting}[language=Bash]
+nohup $JAVA_HOME/bin/java -Xmx8192M -Xms4096M -jar \
+-Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5006 \
+$APP_PATH/credit-system-web-api-$VERSION.jar \
+--spring.config.location=application-api.properties>/dev/null &
+\end{lstlisting}
+
+以上启动项设置初始( initial size)Heap Size(Xms)是4096MB最大空间xmx(maximum size)8192MB。一种查明方法是不间断地监控GC的活动，确定内存使用量是否随着时间增加。如果确实如此，就可能发生了内存泄漏。
 
 
 \section{MyBatis}
@@ -1658,6 +1712,8 @@ private JdbcTemplate jdbcTemplate1;
 \end{lstlisting}
 
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
+动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
+
 
 
 \subsection{多参数传递(Multi-Parameter)}
@@ -2744,7 +2800,7 @@ at Object.mountComponent (ReactReconciler.js:46)
 	\label{fig:getundefineerror}
 \end{figure}
 
-由于采用的是React，说明获取到的数据没有映射到对象里面。在store.js里面添加对应的缺少的实体即可。
+由于采用的是React，说明获取到的数据没有映射到对象里面。在store.js里面添加对应的缺少的实体即可。在错误处点击进去跟踪到相应的实体值为undefine的，添加到store文件中即可。
 
 \paragraph{Each child in an array or iterator should have a unique "key" prop. Check the render method of `CreditDataPeopleMain`}
 
@@ -4113,6 +4169,10 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \section{Little Tool}
 
+\subsection{transmission}
+
+在使用磁力链接下载元素据时，如果下载时间太长，一般是网络的问题，电信的网络普遍优于长城等。
+
 \subsection{rsync}
 
 rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多台主机间的文件。rsync使用所谓的“rsync算法”来使本地和远程两个主机之间的文件达到同步，这个算法只传送两个文件的不同部分，而不是每次都整份传送，因此速度相当快。使用一个远程shell程序(如rsh、ssh)来实现将本地机器的内容拷贝到远程机器。当DST路径地址包含单个冒号":"分隔符时启动该模式。
@@ -4800,7 +4860,14 @@ digraph G {
 dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
 
+\subsection{subgraph}
+
+
+
 \section{MyBatis Generator}
+
+
+
 
 \chapter{Git}
 
@@ -5079,6 +5146,8 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \section{安装}
 
+输入如下命令安装TexLive:
+
 \begin{lstlisting}[language=Bash]
 # Ubuntu下安装Texlive
 sudo apt-get install texlive -y
@@ -5087,7 +5156,6 @@ sudo apt-get install texlive -y
 \subsection{字体}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
-
 
 \paragraph{lstlisting字体}
 
@@ -5166,6 +5234,15 @@ sudo texhash
 
 \begin{lstlisting}[language=Bash]
 sudo apt-get install texlive-full
+\end{lstlisting}
+
+\paragraph{中文支持}
+
+在Ubuntu 14.04 LTS下编译无法显示中文,在\LaTeX{}中指定中文字体即可:
+
+\begin{lstlisting}[language=Tex]
+% 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} 
 \end{lstlisting}
 
 \part{DB}
