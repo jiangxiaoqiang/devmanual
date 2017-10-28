@@ -2172,7 +2172,7 @@ export function findPage(params) {
 }
 \end{lstlisting}
 
-在异步Action时也需要使用thunder中间件。以上代码片段就是一个更好的例子，以上代码表示想服务器发送一个请求获取文章列表，但是这里返回的是一个函数，而不是一个对象，redux-thunder的工作就是检查action对象是不是函数，如果不是函数就放行，让其执行完整的action-reducer-view生命周期。如果发现对象是函数，就执行这个函数，并把Store的dispatch函数和getState函数作为参数传递到函数中去，处理过程到此为止，不会让异步对象再派发到reducer函数。异步调用的API再根据合适的时机派发Action，触发界面Render\footnote{参考《深入浅出React和Redux》7.2.2节}。
+在异步Action时也需要使用thunder中间件。以上代码片段就是一个更好的例子，以上代码表示向服务器发送一个请求获取文章列表，但是这里返回的是一个函数，而不是一个对象，redux-thunder的工作就是检查action对象是不是函数，如果不是函数就放行，让其执行完整的action-reducer-view生命周期。如果发现对象是函数，就执行这个函数，并把Store的dispatch函数和getState函数作为参数传递到函数中去，处理过程到此为止，不会让异步对象再派发到reducer函数。异步调用的API再根据合适的时机派发Action，触发界面Render\footnote{参考《深入浅出React和Redux》7.2.2节}。
 
 \subsection{Reducer}
 
