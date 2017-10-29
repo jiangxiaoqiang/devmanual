@@ -1,0 +1,30 @@
+% This file was created with JabRef 2.11.1.
+% Encoding: UTF-8
+
+
+@Book{book_key,
+  Title                    = {Book title},
+  Author                   = {Smith, John},
+  Publisher                = {Publisher},
+  Year                     = {2012},
+  Address                  = {City},
+  Edition                  = {1},
+  Month                    = {January},
+  Series                   = {2},
+  Volume                   = {3},
+  Pages                    = {123--200}
+}
+
+@Article{gougudingli,
+  Title                    = {商高、赵爽关于勾股定理的证明},
+  Author                   = {曲安京},
+  Journal                  = {数学传播},
+  Year                     = {2013},
+  Month                    = {March},
+  Number                   = {6},
+  Pages                    = {1--8},
+  Volume                   = {14},
+  Address                  = {City},
+  Publisher                = {Publisher}
+}
+
