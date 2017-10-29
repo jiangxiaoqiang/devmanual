@@ -1661,8 +1661,11 @@ $APP_PATH/credit-system-web-api-$VERSION.jar \
 --spring.config.location=application-api.properties>/dev/null &
 \end{lstlisting}
 
-以上启动项设置初始( initial size)Heap Size(Xms)是4096MB最大空间xmx(maximum size)8192MB。一种查明方法是不间断地监控GC的活动，确定内存使用量是否随着时间增加。如果确实如此，就可能发生了内存泄漏。
+以上启动项设置初始( initial size)Heap Size(Xms)是4096MB最大空间xmx(maximum size)8192MB。一种查明方法是不间断地监控GC的活动，确定内存使用量是否随着时间增加。如果确实如此，就可能发生了内存泄漏。如果发生了内存泄漏,可以使用JMap生成dump文件以供分析:
 
+\begin{lstlisting}
+jmap -dump:format=b,file=heap.bin <pid> 
+\end{lstlisting}
 
 \section{MyBatis}
 
