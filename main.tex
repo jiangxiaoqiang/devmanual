@@ -4523,12 +4523,14 @@ http {
 
 \begin{lstlisting}[language=bash]
 /opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+/opt/home/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
 
 其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
 
 \begin{lstlisting}[language=bash]
-./nginx -p /opt/app/local/tengine -s reload
+#重新加载配置
+/home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
 
@@ -4759,7 +4761,7 @@ LOCAL7.*	/var/log/sshd.log
 
 \subsection{VisualVM远程监控}
 
-jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器上建立一个指定安全策略的文件jstatd.all.policy ，文件内容如下：
+jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器的JDK根目录(如：/opt/app/local/jdk1.8.0\_111)上建立一个指定安全策略的文件jstatd.all.policy，文件内容如下：
 
 \begin{lstlisting}[language=Bash]
 grant codebase "file:${java.home}/../lib/tools.jar" {  
@@ -4768,10 +4770,10 @@ grant codebase "file:${java.home}/../lib/tools.jar" {
 \end{lstlisting}
 
 
-在服务端运行jstatd守护程序：
+建立好安全策略文件后，在服务端运行jstatd守护程序，jstatd在JDK目录下：
 
 \begin{lstlisting}[language=Bash]
-./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.1.101 -J-Djava.rmi.server.logCalls=true -p 1011
+./bin/jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=10.10.1.12 -J-Djava.rmi.server.logCalls=true -p 1011
 #在树莓派上启动jstatd
 sudo /usr/bin/jstatd -J-Djava.security.policy=/opt/dolphin/backend/jstatd.all.policy -J-Djava.rmi.server.hostname=192.168.31.25 -J-Djava.rmi.server.logCalls=true -p 1011
 \end{lstlisting}
@@ -4785,7 +4787,15 @@ sudo /usr/bin/jstatd -J-Djava.security.policy=/opt/dolphin/backend/jstatd.all.po
 	\label{fig:visualvmconnectremote}
 \end{figure}
 
-目前可以通过VisualVM远程监控实现查看远程应用的PID、查看远程应用的启动参数、所使用的配置文件、JVM的版本以及路径、GC信息等等。
+目前可以通过VisualVM远程监控实现查看远程应用的PID、查看远程应用的启动参数、所使用的配置文件、JVM的版本以及路径、GC信息等等。Java的对象分为年轻代(Young Generation)和老年代(Old Generation)。年轻代又分为Eden(伊甸园)区和Survivor Space(幸存者)，年老代是Tenured。当JVM无法在Eden区创建新对象时，则会出现Out of memory错误。使用JVM监控系统如图\ref{fig:monitorsystemmemory}所示：
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.3]{monitorsystemmemory.png}
+	\caption{VisualVM远程监控GC}
+	\label{fig:monitorsystemmemory}
+\end{figure}
 
 
 \subsection{autojump}
@@ -5623,6 +5633,15 @@ character-set-server=utf8
 
 
 \chapter{达梦}
+
+启动达梦：
+
+\begin{lstlisting}[language=Bash]
+/home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
+\end{lstlisting}
+
+
+
 
 \section{SQL}
 
