@@ -4941,6 +4941,12 @@ git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
 git config --list
 \end{lstlisting}
 
+克隆指定的分支：
+
+\begin{lstlisting}[language=Bash]
+git clone -b v1.3 <url>
+\end{lstlisting}
+
 \subsection{返回到指定版本}
 
 查看提交历史：
@@ -5284,7 +5290,7 @@ sudo texhash
 即可使用命令引用包。有时会提示缺少sty文件,遇到一次是因为没有完全安装latex,输入完整包安装命令:
 
 \begin{lstlisting}[language=Bash]
-sudo apt-get install texlive-full
+sudo apt-get install texlive-full -y
 \end{lstlisting}
 
 \paragraph{中文支持}
