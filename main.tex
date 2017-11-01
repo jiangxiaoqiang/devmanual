@@ -829,6 +829,29 @@ Optional<FeedbackRecord> filterFeedbackRecord = entry.getValue()
 boolean isChild = users.stream().anyMatch(t->t.age<18);
 \end{lstlisting}
 
+\paragraph{parallelStream}
+
+在采用parallelStream时，不能使用全局的可变对象，要么使用不可变对象，要么使用局部对象，如下代码片段所示：
+
+\begin{lstlisting}[language=Java]
+List<String> example = new ArrayList<>();
+example.add("a");
+example.add("b");
+example.add("c");
+example.add("d");
+Pageable pageable = DataUtils.pageable(1, 2, "a", "asc");
+for (int i = 0; i < 10000; i++) {
+	example.parallelStream().forEach(element -> {
+		pageable.addSomeParam("a", element);
+		if ("a".equals(element)) {
+			System.out.println(pageable.getParams().get("a"));
+		}
+	});
+}
+\end{lstlisting}
+
+运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
+
 \subsection{正则表达式(Regular Expression)}
 
 匹配电话号码的正则表达式：
