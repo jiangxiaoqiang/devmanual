@@ -1,4 +1,4 @@
-\documentclass[11pt]{book}
+\documentclass[12pt]{book}
 
 %XeLatex使用xeCJK支持中文
 \usepackage{xeCJK}
@@ -555,7 +555,7 @@ addtohook={%
 ~\vfill
 \thispagestyle{empty}
 
-\noindent Copyright \textcopyright\ 2017 Xiaoqian Jiang\\ % Copyright notice
+\noindent Copyright \textcopyright\ 2017 Xiaoqiang Jiang\\ % Copyright notice
 
 \noindent \textsc{Edited by Xiaoqiang Jiang}\\ % Publisher
 
@@ -1450,7 +1450,7 @@ condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') 
 
 \subsection{读取properties属性}
 
-\subsubsection{读取自定义属性}
+\paragraph{读取自定义属性}
 
 有时需要读取自定义属性，以配置HikariCP连接池为例，在application.properties文件指定指定配置：
 
@@ -1681,7 +1681,7 @@ jmap -dump:format=b,file=heap.bin <pid>
 # 需要慎重使用；
 -XX:+HeapDumpOnOutOfMemoryError
 # dump文件存放路径
- -XX:HeapDumpPath=/home/app
+-XX:HeapDumpPath=/home/app
 \end{lstlisting}
 
 一般说来，一个正常的系统在其运行稳定后其内存的占用量是基本稳定的，不应该是无限制的增长的。同样，对任何一个类的对象的使用个数也有一个相对稳定的上限，不应该是持续增长的。根据这样的基本假设，我们持续地观察系统运行时使用的内存的大小和各实例的个数，如果内存的大小持续地增长，则说明系统存在内存泄漏，如果特定类的实例对象个数随时间而增长(就是所谓的“增长率”)，则说明这个类的实例可能存在泄漏情况。
