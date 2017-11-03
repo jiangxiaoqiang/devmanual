@@ -710,7 +710,8 @@ if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
 
 \begin{lstlisting}[language=Java]
 f (!"".equals(name)) {
-	//将""写在前头，这样，不管name是否为null，都不会出错
+	//将""写在前头
+	//不管name是否为null，都不会出错
 }
 
 if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
@@ -5053,6 +5054,16 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \begin{lstlisting}[language=Bash]
 git config --global merge.tool meld
 \end{lstlisting}
+
+\subsection{合并指定分支}
+
+项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
+
+\begin{lstlisting}[language=Bash]
+git cherry-pick <commit id>
+\end{lstlisting}
+
+
 
 \subsection{常见问题}
 
