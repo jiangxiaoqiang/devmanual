@@ -3537,6 +3537,19 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
+\subsection{常见设置}
+
+有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideaaddlibraries.png}
+	\caption{Intellij Idea添加项目Library路径}
+	\label{fig:intellijideaaddlibraries}
+\end{figure}
+
+
+
 \subsection{Tips}
 
 
@@ -3608,6 +3621,28 @@ public class ${NAME} {
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
 \section{基础}
+
+Gradle使用的Groovy语言，Groovy语言字符串的表示形式很多，有一些细微的区别：
+
+
+\begin{lstlisting}
+def a = '单引号形式'
+def b = "双引号形式，${v}"
+def c = '''三个单引号形式
+支持多行
+不支持占位符'''
+def d = """三个双引号形式
+支持多行
+支持占位符，${v}"""
+def e = /反斜杠形式
+支持多行
+支持占位符，${v}/
+def f = $/美刀反斜杠形式
+支持多行
+支持占位符，${v}/$
+\end{lstlisting}
+
+建议使用'和"这两种形式。单引号''中的内容严格对应Java中的String，不对\$符号进行转义。双引号""的内容则和脚本语言的处理有点像，如果字符中有\$号的话，则它会\$表达式先求值。三个引号'''xxx'''中的字符串支持随意换行。
 
 \subsection{初始化项目}
 
@@ -5856,18 +5891,7 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \part{Network}
 
-\chapter{WebService}
-
-\section{Axis2}
-
-目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
-
-\subsection{Axis2 Web Service}
-
-在填写Web Service地址时，提示url is not valid,地址是\url{http://www.webxml.com.cn/WebServices/WeatherWebService?wsdl}，而地址\url{http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl}是有效地址。
-
 \chapter{HTTP}
-
 
 \subsection{性能分析}
 
