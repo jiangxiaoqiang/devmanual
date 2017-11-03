@@ -3522,6 +3522,16 @@ echo $JAVA_HOME
 nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.9.jar --spring.config.location=application.properties>/dev/null &
 \end{lstlisting}
 
+在远程调试Web应用时，调试时Block住了整个网站的请求，其实可以在远程调试打断点时选择阻断线程而不是整个JVM，如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{intellijideabreakthread.png}
+	\caption{Intellij Idea设置断点阻断当前Thread}
+	\label{fig:intellijideabreakthread}
+\end{figure}
+
+这样就不会阻断其他用户的正常请求了。
 
 \subsection{Intellij Idea调试慢}
 
@@ -5227,8 +5237,6 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 \end{figure}
 
 \subsection{Audits}
-
-
 
 \subsection{Google Chrome SSH}
 
