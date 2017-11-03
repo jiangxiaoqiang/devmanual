@@ -3368,7 +3368,6 @@ shopt -s histappend
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
 
-
 \subsubsection{screen}
 
 GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
@@ -4699,7 +4698,7 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 其中10.55.10.77是配置的代理机器，代理机器通过ssh端口转发(SSH Port Forwarding)来实现代理，2222为代理机器的监听端口。ssh代理转发将代理机器2222端口的流量转发到目标机器的ssh端口上。
 
-\section{ssh}
+\section{ssh(Secure Shell)}
 
 \subsection{免密登陆}
 
