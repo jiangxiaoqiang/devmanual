@@ -3539,7 +3539,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 \subsection{常见设置}
 
-有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries。
+有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径。
 
 \begin{figure}[htbp]
 	\centering
@@ -3562,7 +3562,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	Command + Shift + A(Mac) & Find Action \\
 	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
 	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
-	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方，列编辑时需要用到\\
 	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
 	\hline
 \end{tabular}
@@ -3595,9 +3595,11 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 *.java,*.log
 \end{lstlisting}
 
+需要同时匹配多种文件类型时，多种类型的文件以逗号隔开。
+
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -3620,7 +3622,7 @@ public class ${NAME} {
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
-\section{基础}
+\section{基础(Foundation)}
 
 Gradle使用的Groovy语言，Groovy语言字符串的表示形式很多，有一些细微的区别：
 
@@ -3707,6 +3709,16 @@ repositories {
 
 gradle项目配置中引用java插件。
 
+\paragraph{项目文件夹不存在}
+
+有时在使用Gradle编译项目时，会提示项目文件夹不存在，可以使用如下命令打印项目文件夹：
+
+\begin{lstlisting}[language=Java]
+task printVarible(){
+	println("rootDir:$rootDir")
+	println("projectDir:$projectDir")
+}
+\end{lstlisting}
 
 \section{Gradle对象}
 
