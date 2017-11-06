@@ -587,7 +587,7 @@ addtohook={%
 %----------------------------------------------------------------------------------------
 
 
-这里记录的是一些比较杂乱的笔记，绝大多数文字皆来源于网络，不是自己的原创，这里没有高深的算法，没有宏伟的技术及系统架构，只是一些平时工作中遇到的一些问题，和解决问题的思路以及所采用的方案。由于平时工作时还没有遇到前人没有遇到过的问题需要自己发明方去解决(其实真的遇到估计也是没辙)，所以绝大部分内容是为了避免再遇到同样的问题时，又需要到处去搜寻，索性将之记录下来，以便于下次可以快刀斩乱麻，迅速解决问题。
+这里记录的是一些比较杂乱的笔记，绝大多数文字皆来源于网络，不是自己的原创，这里没有高深的算法，没有宏伟的技术及系统架构，只是一些平时工作中遇到的问题，和解决问题的思路以及所采用的方案。由于平时工作时还没有遇到前人没有遇到过的问题需要自己发明方去解决(其实真的遇到估计也是没辙)，所以绝大部分内容是为了避免再遇到同样的问题时，又需要到处去搜寻，索性将之记录下来，以便于下次可以快刀斩乱麻，迅速解决问题。
 
 
 \mainmatter
@@ -700,22 +700,13 @@ compile "org.springframework.boot:spring-boot-devtools"
 Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
 
 \begin{lstlisting}[language=Java]
-request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
-if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
-
-});
-\end{lstlisting}
-
-对象做非空判断：
-
-\begin{lstlisting}[language=Java]
-f (!"".equals(name)) {
-	//将""写在前头，这样，不管name是否为null，都不会出错
-}
-
-if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-	//用String强制转换也不会报空指针异常
-} 
+request.getParamList().stream()
+		.filter(StringUtils::isNotEmpty)
+		.distinct()
+		.forEach(param -> {
+			if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
+			
+			});
 \end{lstlisting}
 
 获取Json单个值：
@@ -744,31 +735,19 @@ Integer[] integers = new Integer[] {1,2,3,4,5};
 // Cannot modify returned list
 List<Integer> list21 =  Arrays.asList(integers); 
 // good
-	List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
 //Java 8
 List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
 \end{lstlisting}
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
 
-\paragraph{获取数据}
-
-获取Lis对象对象的某一个字段：
-
-\begin{lstlisting}[language=Java]
-List<String> redblackLogKeys = redBlackLogs.stream()
-	.map(redBalckLog -> redBalckLog.getResponseKey())
-	.collect(Collectors.toList());
-\end{lstlisting}
-
-
-\paragraph{List}
+\paragraph{List分组}
 
 如下代码片段按照responsekey对集合进行分组：
 
 \begin{lstlisting}[language=Java]
-Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
-		.stream()
+Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords.stream()
 		.collect(Collectors.groupingBy(FeedbackRecord::getResponsekey));
 \end{lstlisting}
 
@@ -915,12 +894,6 @@ if ("null".equals(categoryId)) {
 \end{lstlisting}
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
-
-\subsection{jps}
-
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
-
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
 
 \section{接口(Application Interface)}
 
@@ -3191,9 +3164,11 @@ bash -x ./auth.sh
 
 which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
 
-
 \begin{lstlisting}[language=Bash]
 which scala
+# 按内存资源的使用量对进程进行排序
+# ps命令是Process Status的缩写
+ps -aux|sort -rnk 4:
 \end{lstlisting}
 
 
@@ -3368,7 +3343,6 @@ shopt -s histappend
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
 
-
 \subsubsection{screen}
 
 GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
@@ -3522,10 +3496,33 @@ echo $JAVA_HOME
 nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005 /home/app/backend/credit-system-web-boot-1.1.9.jar --spring.config.location=application.properties>/dev/null &
 \end{lstlisting}
 
+在远程调试Web应用时，调试时Block住了整个网站的请求，大多数时候远程调试主要是定位线上问题，调试的同时有其他人在访问，一下阻断了整个JVM肯定要不得，为了避免此种情况，可以在远程调试打断点时选择阻断当前线程而不是整个JVM，如图\ref{fig:intellijideabreakthread}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{intellijideabreakthread.png}
+	\caption{Intellij Idea设置断点阻断当前Thread}
+	\label{fig:intellijideabreakthread}
+\end{figure}
+
+这样在调试定位问题的同时，不会阻断其他用户的正常请求。
 
 \subsection{Intellij Idea调试慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
+
+\subsection{常见设置}
+
+有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideaaddlibraries.png}
+	\caption{Intellij Idea添加项目Library路径}
+	\label{fig:intellijideaaddlibraries}
+\end{figure}
+
+
 
 \subsection{Tips}
 
@@ -3539,7 +3536,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	Command + Shift + A(Mac) & Find Action \\
 	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
 	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
-	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方，列编辑时需要用到\\
 	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
 	\hline
 \end{tabular}
@@ -3572,9 +3569,11 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 *.java,*.log
 \end{lstlisting}
 
+需要同时匹配多种文件类型时，多种类型的文件以逗号隔开。
+
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -3597,7 +3596,29 @@ public class ${NAME} {
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
-\section{基础}
+\section{基础(Foundation)}
+
+Gradle使用的Groovy语言，Groovy语言字符串的表示形式很多，有一些细微的区别：
+
+
+\begin{lstlisting}
+def a = '单引号形式'
+def b = "双引号形式，${v}"
+def c = '''三个单引号形式
+支持多行
+不支持占位符'''
+def d = """三个双引号形式
+支持多行
+支持占位符，${v}"""
+def e = /反斜杠形式
+支持多行
+支持占位符，${v}/
+def f = $/美刀反斜杠形式
+支持多行
+支持占位符，${v}/$
+\end{lstlisting}
+
+建议使用'和"这两种形式。单引号''中的内容严格对应Java中的String，不对\$符号进行转义。双引号""的内容则和脚本语言的处理有点像，如果字符中有\$号的话，则它会\$表达式先求值。三个引号'''xxx'''中的字符串支持随意换行。
 
 \subsection{初始化项目}
 
@@ -3662,6 +3683,16 @@ repositories {
 
 gradle项目配置中引用java插件。
 
+\paragraph{项目文件夹不存在}
+
+有时在使用Gradle编译项目时，会提示项目文件夹不存在，可以使用如下命令打印项目文件夹：
+
+\begin{lstlisting}[language=Java]
+task printVarible(){
+	println("rootDir:$rootDir")
+	println("projectDir:$projectDir")
+}
+\end{lstlisting}
 
 \section{Gradle对象}
 
@@ -4699,7 +4730,7 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 其中10.55.10.77是配置的代理机器，代理机器通过ssh端口转发(SSH Port Forwarding)来实现代理，2222为代理机器的监听端口。ssh代理转发将代理机器2222端口的流量转发到目标机器的ssh端口上。
 
-\section{ssh}
+\section{ssh(Secure Shell)}
 
 \subsection{免密登陆}
 
@@ -5055,6 +5086,16 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 git config --global merge.tool meld
 \end{lstlisting}
 
+\subsection{合并指定分支}
+
+项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
+
+\begin{lstlisting}[language=Bash]
+git cherry-pick <commit id>
+\end{lstlisting}
+
+
+
 \subsection{常见问题}
 
 
@@ -5217,8 +5258,6 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 \end{figure}
 
 \subsection{Audits}
-
-
 
 \subsection{Google Chrome SSH}
 
@@ -5838,18 +5877,7 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \part{Network}
 
-\chapter{WebService}
-
-\section{Axis2}
-
-目前开发Web Service的几个框架，分别为Axis，axis2，Xfire，CXF以及JWS(也就是前面所述的JAX-WS，这是Java6发布所提供的对Web Service服务的一种实现。)前面几项都为开源项目，而其中又以axis2与cxf所最为常用，Axis与XFire已随着技术不断的更替慢慢落幕，而目前也只有axis2和cxf官方有更新，Axis与XFire都已不再更新。
-
-\subsection{Axis2 Web Service}
-
-在填写Web Service地址时，提示url is not valid,地址是\url{http://www.webxml.com.cn/WebServices/WeatherWebService?wsdl}，而地址\url{http://www.webxml.com.cn/WebServices/WeatherWebService.asmx?wsdl}是有效地址。
-
 \chapter{HTTP}
-
 
 \subsection{性能分析}
 
