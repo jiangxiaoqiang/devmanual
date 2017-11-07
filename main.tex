@@ -893,7 +893,16 @@ if ("null".equals(categoryId)) {
 }
 \end{lstlisting}
 
-String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
+String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。常用启动命令：
+
+\begin{lstlisting}[language=Bash]
+#启动WebService
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5010 /home/app/backend/api/credit-system-web-api-1.1.26.jar --spring.config.location=application-jjxxzx-test.properties>/dev/null &
+#启动API
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug  -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5010  /home/app/backend/api/credit-system-web-api-1.1.26.jar  --spring.config.location=application-shuitu-api.properties>/dev/null &
+\end{lstlisting}
+
+dt表示Data Transport。-Xdebug是通知JVM工作在Debug模式下。-Xrunjdwp是通知JVM使用(Java Debug Wire Protocol)来运行调试环境。suspend指示是否在调试客户端建立起来后，再执行JVM。server参数是指是否支持在server模式的JVM中。
 
 \section{接口(Application Interface)}
 
