@@ -3513,7 +3513,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 \subsection{常见设置}
 
-有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径。
+有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径(未解决问题)。
 
 \begin{figure}[htbp]
 	\centering
@@ -3522,7 +3522,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	\label{fig:intellijideaaddlibraries}
 \end{figure}
 
-
+也可以重新选择Gradle文件，重新导入项目(可解决问题)。
 
 \subsection{Tips}
 
@@ -3573,7 +3573,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启Intellij Idea。 情况三配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -3728,9 +3728,7 @@ if (isSnapshot) {
 
 \begin{lstlisting}[language=Java]
 project(":web"){
-
 	description = "web"
-	
 	jar{
 		baseName = "dolphin-web"
 	}
@@ -3746,7 +3744,7 @@ project(":web"){
 
 \paragraph{拷贝文件}
 
-在项目中需要根据不同的用途生成不同的文件，比如api需要单独打包，平台需要单独打包，但是api和平台的代码都是一套代码，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包名称，使用copy功能来实现。首先定义项目的动态属性：
+在项目中需要根据不同的应用场景生成不同的文件，比如专门的提供外部接口的api需要单独打包，内部平台的接口需要单独打包，但是api和平台的代码都是一套代码，在一个仓库，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包，使用copy功能来实现。首先定义项目的动态属性：
 
 \begin{lstlisting}[language=Java]
 buildscript {
@@ -5498,7 +5496,8 @@ limit 0,10;
 当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，一种方案是使用全文索引查询出结果后，再使用like进行匹配，在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
-create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index qymcindex on TS_F_CORPORATION(qymc) lexer CHINESE_VGRAM_LEXER;
+alter context index qymcindex on TS_F_CORPORATION rebuild;
 create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
 alter context index xzcffulltextindex on TS_B_XZCF rebuild;
 \end{lstlisting}
