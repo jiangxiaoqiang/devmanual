@@ -5093,15 +5093,68 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 git config --global merge.tool meld
 \end{lstlisting}
 
-\subsection{合并指定分支}
+\subsection{Cherry Pick}
 
 项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
 
 \begin{lstlisting}[language=Bash]
 git cherry-pick <commit id>
+git cherry-pick e6abef4e3e6a6e5112527bf84214eb38ad08cec5
+8f4ecc61f31828f5c971a7274e7a223f665a1f01
+db5f9c122caae92a3af927efa1174fca97f96fbf
+1aec54572ea728ed512ec39e834238537f1db3a8
 \end{lstlisting}
 
+有时commit比较多，一个一个合并比较麻烦，Git从1.7.2版本开始支持批量cherry-pick，就是一次可以cherry-pick一个区间的commit，此时可以指定提交区间。
 
+\begin{lstlisting}[language=Bash]
+git cherry-pick <start-commit-id>..<end-commit-id>
+git cherry-pick -x 472d65eb76299c6cba32635c2e578e8267c31e8d..8f4ecc61f31828f5c971a7274e7a223f665a1f01
+\end{lstlisting}
+
+error: Commit cb82fbb5a24211ba60f4826c5ceff25e31d397b9 is a merge but no -m option was given。cherry-pick合并时需要制定Parent Number。目前还没有搞清楚Parent Number如何查看，目前直接指定的1。
+
+\begin{lstlisting}[language=Bash]
+git log --pretty=format:"%P %H - %an, %ar : %s" --graph
+\end{lstlisting}
+
+\%H  提交对象（commit）的完整哈希字串
+\%h  提交对象的简短哈希字串
+\%T  树对象（tree）的完整哈希字串
+\%t  树对象的简短哈希字串
+\%P  父对象（parent）的完整哈希字串
+\%p  父对象的简短哈希字串
+\%an 作者（author）的名字
+\%ae 作者的电子邮件地址
+\%ad 作者修订日期（可以用 -date= 选项定制格式）
+\%ar 作者修订日期，按多久以前的方式显示
+\%cn 提交者(committer)的名字
+\%ce 提交者的电子邮件地址
+\%cd 提交日期
+\%cr 提交日期，按多久以前的方式显示
+
+\subsection{Reflog}
+
+第一次使用Cherry Pick时没有注意当前的分支，导致许多历史Commit消失了，此时可以使用reflog命令，还好重新clone时没有删除原来的仓库。Reference logs, or "reflogs", record when the tips of branches and other references were updated in the local repository. Reflogs are useful in various Git commands, to specify the old value of a reference.每一次当前HEAD发生改变（包括切换branch, pull, 添加新commit）一个新的纪录就会被添加到reflog。使用如下命令查看所有Commit：
+
+\begin{lstlisting}[language=Bash]
+git reflog
+\end{lstlisting}
+
+结果如图\ref{fig:gitreflogfindcommit}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{gitreflogfindcommit.png}
+	\caption{Git查看所有Commit}
+	\label{fig:gitreflogfindcommit}
+\end{figure}
+
+将当前分支reset到指定的<commit>或者HEAD:
+
+\begin{lstlisting}[language=Bash]
+git reset --hard e6abef4
+\end{lstlisting}
 
 \subsection{常见问题}
 
