@@ -1,0 +1,418 @@
+\documentclass[11pt]{book}  
+\usepackage{geometry}  
+\usepackage{amsmath}  
+\usepackage{acronym}  
+\usepackage{times}  
+\usepackage{epstopdf}  
+\usepackage{amssymb}  
+\usepackage{mathrsfs}  
+\usepackage{latexsym}  
+\usepackage{wrapfig}  
+\usepackage[font={footnotesize,it}]{caption}  
+\usepackage{url}  
+\usepackage{xcolor} % Required for specifying colors by name
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
+\usepackage{float}    
+\usepackage{titling}    
+\renewcommand{\thechapter}{\Roman{chapter}}  
+\renewcommand{\thesection}{\arabic{chapter}.\arabic{section}}  
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}  
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}  
+\usepackage{hyperref}  
+\usepackage{cleveref}  
+\usepackage{graphics}
+\usepackage{calc}
+\usepackage{tikz}
+%代码块
+\usepackage{listings}  
+\usepackage{graphicx}
+\graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored  
+\usepackage{siunitx}  
+\usepackage{booktabs}  
+\usepackage{microtype}  
+\usepackage{subfigure}  
+\usepackage[english]{babel}\addto\captionsenglish  
+{\renewcommand{\bibname}{References}}  
+\usepackage[backend=bibtex,style=numeric]{biblatex}  %backend=biber is 'better'  
+\usepackage{multirow}  
+\usepackage{textcomp}  
+\usepackage{csquotes} %Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.  
+\usepackage{listings}
+\usepackage{titletoc} 
+\usepackage{babel,blindtext}  
+%\usepackage[T1]{fontenc}   
+\geometry{a4paper} % ... or letter or a4paper or a5paper or ...  %\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent  
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}  
+\hypersetup{colorlinks,
+            citecolor=black,  
+            filecolor=black,  
+            linkcolor=black,  
+            urlcolor=blue }  
+\setlength{\textwidth}{420pt}  
+\oddsidemargin = 0.5cm  
+\def \m{$\mu$}   
+\def \g{$\gamma$}  
+\def \b{$\beta^-$}  
+\def \a{$\alpha$}  
+\newcommand{\unicode}[1]{{}}  
+
+
+%Set Code Format%
+%\lstloadlanguages{C, csh, make,python,Java,JavaScript}
+\lstset{	  
+	alsolanguage= XML,  
+	tabsize=4, %  
+	frame=shadowbox, %把代码用带有阴影的框圈起来  
+	commentstyle=\color{red!50!green!50!blue!50},%浅灰色的注释
+	frameround=tttt,  
+	rulesepcolor=\color{red!20!green!20!blue!20},%代码块边框为淡青色  
+	keywordstyle=\color{blue!90}\bfseries, %代码关键字的颜色为蓝色，粗体  
+	showstringspaces=false,%不显示代码字符串中间的空格标记  
+	stringstyle=\ttfamily, % 代码字符串的特殊格式  
+	keepspaces=true, %  
+	breakindent=22pt, % 
+	breaklines=true,%设置代码自动换行 
+	numbers=left,%左侧显示行号 往左靠,还可以为right，或none，即不加行号  
+	stepnumber=1,%若设置为2，则显示行号为1,3,5，即stepnumber为公差,默认stepnumber=1  
+	%numberstyle=\tiny, %行号字体用小号  
+	numberstyle={\color[RGB]{0,192,192}\tiny},%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
+	numbersep=8pt,  %设置行号与代码的距离，默认是5pt  
+	basicstyle=\ttfamily, % 这句设置代码的大小  
+	showspaces=false, % 
+	escapechar=`,
+	flexiblecolumns=true, %  
+	breaklines=true, %对过长的代码自动换行  
+	breakautoindent=true,%  
+	breakindent=4em, %  	   
+	aboveskip=1em, %代码块边框  
+	tabsize=4,  
+	showstringspaces=false, %不显示字符串中的空格  
+	backgroundcolor=\color[RGB]{245,245,244},   %代码背景色  
+	%backgroundcolor=\color[rgb]{0.91,0.91,0.91}    %添加背景色  
+	escapeinside={``}{\_},  %在``里显示中文  
+	%% added by http://bbs.ctex.org/viewthread.php?tid=53451  
+	fontadjust,  
+	captionpos=t,  
+	framextopmargin=2pt,
+	framexbottommargin=2pt,
+	abovecaptionskip=-3pt,
+	belowcaptionskip=3pt,  
+	xleftmargin=4em,
+	xrightmargin=4em, % 设定listing左右的空白  
+	texcl=true
+}
+
+
+%----------------------------------------------------------------------------------------
+%	MINI TABLE OF CONTENTS IN PART HEADS
+%----------------------------------------------------------------------------------------
+
+% Chapter text styling
+\titlecontents{lchapter}[0em] % Indenting
+{\addvspace{15pt}\large\sffamily\bfseries} % Spacing and font options for chapters
+{\color{ocre}\contentslabel[\Large\thecontentslabel]{1.25cm}\color{ocre}} % Chapter number
+{}  
+{\color{ocre}\normalsize\sffamily\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
+
+% Section text styling
+\titlecontents{lsection}[0em] % Indenting
+{\sffamily\small} % Spacing and font options for sections
+{\contentslabel[\thecontentslabel]{1.25cm}} % Section number
+{}
+{}
+
+% Subsection text styling
+\titlecontents{lsubsection}[.5em] % Indentation
+{\normalfont\footnotesize\sffamily} % Font settings
+{}
+{}
+{}
+
+%----------------------------------------------------------------------------------------
+%	PAGE HEADERS
+%----------------------------------------------------------------------------------------
+
+\usepackage{fancyhdr} % Required for header and footer configuration
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\sffamily\normalsize\bfseries\chaptername\ \thechapter.\ #1}{}} % Chapter text font settings
+\renewcommand{\sectionmark}[1]{\markright{\sffamily\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
+\fancyhf{} \fancyhead[LE,RO]{\sffamily\normalsize\thepage} % Font setting for the page number in the header
+\fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
+\fancyhead[RE]{\leftmark} % Print the current chapter name on the right side of even pages
+\renewcommand{\headrulewidth}{0.5pt} % Width of the rule under the header
+\addtolength{\headheight}{2.5pt} % Increase the spacing around the header slightly
+\renewcommand{\footrulewidth}{0pt} % Removes the rule in the footer
+\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}} % Style for when a plain pagestyle is specified
+
+% Removes the header from odd empty pages at the end of chapters
+\makeatletter
+\renewcommand{\cleardoublepage}{
+	\clearpage\ifodd\c@page\else
+	\hbox{}
+	\vspace*{\fill}
+	\thispagestyle{empty}
+	\newpage
+	\fi}
+
+%----------------------------------------------------------------------------------------
+%	THEOREM STYLES
+%----------------------------------------------------------------------------------------
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm} % For math equations, theorems, symbols, etc
+
+\newcommand{\intoo}[2]{\mathopen{]}#1\,;#2\mathclose{[}}
+\newcommand{\ud}{\mathop{\mathrm{{}d}}\mathopen{}}
+\newcommand{\intff}[2]{\mathopen{[}#1\,;#2\mathclose{]}}
+\newtheorem{notation}{Notation}[chapter]
+
+% Boxed/framed environments
+\newtheoremstyle{ocrenumbox}% % Theorem style name
+{0pt}% Space above
+{0pt}% Space below
+{\normalfont}% % Body font
+{}% Indent amount
+{\small\bf\sffamily\color{ocre}}% % Theorem head font
+{\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
+\renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
+
+\newtheoremstyle{blacknumex}% Theorem style name
+{5pt}% Space above
+{5pt}% Space below
+{\normalfont}% Body font
+{} % Indent amount
+{\small\bf\sffamily}% Theorem head font
+{\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\sffamily{\tiny\ensuremath{\blacksquare}}\nobreakspace\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries---\nobreakspace#3.}}% Optional theorem note
+
+\newtheoremstyle{blacknumbox} % Theorem style name
+{0pt}% Space above
+{0pt}% Space below
+{\normalfont}% Body font
+{}% Indent amount
+{\small\bf\sffamily}% Theorem head font
+{\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\sffamily\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries---\nobreakspace#3.}}% Optional theorem note
+
+% Non-boxed/non-framed environments
+\newtheoremstyle{ocrenum}% % Theorem style name
+{5pt}% Space above
+{5pt}% Space below
+{\normalfont}% % Body font
+{}% Indent amount
+{\small\bf\sffamily\color{ocre}}% % Theorem head font
+{\;}% Punctuation after theorem head
+{0.25em}% Space after theorem head
+{\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
+	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
+\renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
+\makeatother 
+
+% Defines the theorem text style for each type of theorem to one of the three styles above
+\newcounter{dummy} 
+\numberwithin{dummy}{section}
+\theoremstyle{ocrenumbox}
+\newtheorem{theoremeT}[dummy]{Theorem}
+\newtheorem{problem}{Problem}[chapter]
+\newtheorem{exerciseT}{Exercise}[chapter]
+\theoremstyle{blacknumex}
+\newtheorem{exampleT}{Example}[chapter]
+\theoremstyle{blacknumbox}
+\newtheorem{vocabulary}{Vocabulary}[chapter]
+\newtheorem{definitionT}{Definition}[section]
+\newtheorem{corollaryT}[dummy]{Corollary}
+\theoremstyle{ocrenum}
+\newtheorem{proposition}[dummy]{Proposition}
+
+%----------------------------------------------------------------------------------------
+%	DEFINITION OF COLORED BOXES
+%----------------------------------------------------------------------------------------
+
+\RequirePackage[framemethod=default]{mdframed} % Required for creating the theorem, definition, exercise and corollary boxes
+
+% Theorem box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+backgroundcolor=black!5,
+linecolor=ocre,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+innerbottommargin=5pt]{tBox}
+
+% Exercise box	  
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+backgroundcolor=ocre!10,
+linecolor=ocre,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+innerbottommargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt]{eBox}	
+
+% Definition box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=ocre,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=0pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=0pt]{dBox}	
+
+% Corollary box
+\newmdenv[skipabove=7pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=gray,
+backgroundcolor=black!5,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=5pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=5pt]{cBox}
+
+% Creates an environment for each type of theorem and assigns it a theorem text style from the "Theorem Styles" section above and a colored box from above
+\newenvironment{theorem}{\begin{tBox}\begin{theoremeT}}{\end{theoremeT}\end{tBox}}
+\newenvironment{exercise}{\begin{eBox}\begin{exerciseT}}{\hfill{\color{ocre}\tiny\ensuremath{\blacksquare}}\end{exerciseT}\end{eBox}}				  
+\newenvironment{definition}{\begin{dBox}\begin{definitionT}}{\end{definitionT}\end{dBox}}	
+\newenvironment{example}{\begin{exampleT}}{\hfill{\tiny\ensuremath{\blacksquare}}\end{exampleT}}		
+\newenvironment{corollary}{\begin{cBox}\begin{corollaryT}}{\end{corollaryT}\end{cBox}}	
+
+
+
+
+
+\addbibresource{Bronvermelding.bib}  
+
+\begin{document}  
+
+%----------------------------------------------------------------------------------------
+%	PART
+%----------------------------------------------------------------------------------------
+
+\part{Framework}
+
+%----------------------------------------------------------------------------------------
+%	CHAPTER 1
+%----------------------------------------------------------------------------------------
+
+%\chapterimage{chapterhead2.pdf} % Chapter heading image
+
+%\chapter{Spring}
+
+\section{Common Sense}\index{Common Sense}
+
+Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.  
+
+\subsection{classpath}\index{classpath}
+
+理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
+
+\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
+public class Application {
+	public static void main(String[] args) {
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		URL[] urls = ((URLClassLoader) classLoader).getURLs();
+		for (URL url : urls) {
+			System.out.println(url.getFile());
+		}
+	}
+}
+\end{lstlisting}
+
+从代码的输出结果即可看出，classpath具体是哪些文件夹。
+
+\begin{lstlisting}
+# 与JDK相关的文件夹
+/home/local/jdk1.8.0_111/jre/lib
+/home/local/jdk1.8.0_111/jre/lib/ext
+/home/local/jdk1.8.0_111/lib
+# 与项目相关的文件夹，这里仅仅是一个module
+/home/credit-system/cc-data/build/classes/main/
+/home/credit-system/cc-data/build/resources/main/
+# 与Gradle相关的文件夹
+/home/hldev/.gradle/caches
+\end{lstlisting}
+
+所以在项目中看到如下的配置就不难理解了：
+
+\begin{lstlisting}[language=Java]
+bean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+\end{lstlisting}
+它实际上就是映射的如图\ref{fig:classpathfile}中所示的XML文件。
+
+\begin{figure}[tbph]
+	\centering
+	\includegraphics[scale=0.7]{classpathfile}
+	\caption{MyBatis映射classpath中的文件}
+	\label{fig:classpathfile}
+\end{figure}
+
+classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.8]{javaresourcefolder.png}
+	\caption{Intellij Idea中的资源文件夹}
+	\label{fig:javaresourcefolder}
+\end{figure}
+
+仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定配置文件的位置：
+
+\begin{lstlisting}[language=Java]
+@Configuration
+@Data
+@Component
+@PropertySource("classpath:application.properties")
+@ConfigurationProperties(prefix = "spring.datasource")
+public class DataSourceConfig {
+
+	private String jdbcUrl;
+	
+	private String username;
+	
+	private String driverClassName;
+	
+	private String password;
+}
+\end{lstlisting}
+
+在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
+
+
+
+
+
+\cite{radioactivedecay2}
+\cite{DLS1}  
+
+\printbibliography
+\end{document}   

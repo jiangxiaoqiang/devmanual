@@ -2,22 +2,20 @@
 
 %XeLatex使用xeCJK支持中文
 \usepackage{xeCJK}
-%代码块
-\usepackage{listings}
+
 \usepackage{multirow}
 \usepackage{longtable}
 \usepackage{fontspec}
 \usepackage{ctex}
 \usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a4paper]{geometry} % Page margins
 \usepackage{graphicx} % Required for including pictures
-\graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
 \usepackage{lipsum} % Inserts dummy text
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{enumitem} % Customize lists
 \setlist{nolistsep} % Reduce spacing between bullet points and numbered lists
 \usepackage{booktabs} % Required for nicer horizontal rules in tables
-\usepackage{xcolor} % Required for specifying colors by name
+
 \definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
 \usepackage{avant} % Use the Avantgarde font for headings
 %\usepackage{times} % Use the Times font for headings
@@ -29,17 +27,17 @@
 			sorting=nyt,sortcites=true,autopunct=true,
 			babel=hyphen,hyperref=true,abbreviate=false,
 			backref=true,backend=biber]{biblatex}
-\addbibresource{bibliography.bib} % BibTeX bibliography file
+\addbibresource{Bronvermelding.bib}  % BibTeX bibliography file
 \defbibheading{bibempty}{}
 \usepackage{calc} % 简单的计算功能
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+ 
 
 %When compile under liunx% 
-
-\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -63,50 +61,7 @@
 
 \setcounter{tocdepth}{3}
 
-%Set Code Format%
-\lstloadlanguages{C, csh, make,python,Java,JavaScript}
-\lstset{	  
-	alsolanguage= XML,  
-	tabsize=4, %  
-	frame=shadowbox, %把代码用带有阴影的框圈起来  
-	commentstyle=\color{red!50!green!50!blue!50},%浅灰色的注释
-	frameround=tttt,  
-	rulesepcolor=\color{red!20!green!20!blue!20},%代码块边框为淡青色  
-	keywordstyle=\color{blue!90}\bfseries, %代码关键字的颜色为蓝色，粗体  
-	showstringspaces=false,%不显示代码字符串中间的空格标记  
-	stringstyle=\ttfamily, % 代码字符串的特殊格式  
-	keepspaces=true, %  
-	breakindent=22pt, % 
-	breaklines=true,%设置代码自动换行 
-	numbers=left,%左侧显示行号 往左靠,还可以为right，或none，即不加行号  
-	stepnumber=1,%若设置为2，则显示行号为1,3,5，即stepnumber为公差,默认stepnumber=1  
-	%numberstyle=\tiny, %行号字体用小号  
-	numberstyle={\color[RGB]{0,192,192}\tiny},%设置行号的大小，大小有tiny,scriptsize,footnotesize,small,normalsize,large等  
-	numbersep=8pt,  %设置行号与代码的距离，默认是5pt  
-	basicstyle=\ttfamily, % 这句设置代码的大小  
-	showspaces=false, % 
-	escapechar=`,
-	flexiblecolumns=true, %  
-	breaklines=true, %对过长的代码自动换行  
-	breakautoindent=true,%  
-	breakindent=4em, %  	   
-	aboveskip=1em, %代码块边框  
-	tabsize=4,  
-	showstringspaces=false, %不显示字符串中的空格  
-	backgroundcolor=\color[RGB]{245,245,244},   %代码背景色  
-	%backgroundcolor=\color[rgb]{0.91,0.91,0.91}    %添加背景色  
-	escapeinside={``}{\_},  %在``里显示中文  
-	%% added by http://bbs.ctex.org/viewthread.php?tid=53451  
-	fontadjust,  
-	captionpos=t,  
-	framextopmargin=2pt,
-	framexbottommargin=2pt,
-	abovecaptionskip=-3pt,
-	belowcaptionskip=3pt,  
-	xleftmargin=4em,
-	xrightmargin=4em, % 设定listing左右的空白  
-	texcl=true
-}
+\setlength\ecart{1.2cm-\esp}
 
 % Part text styling
 \titlecontents{part}[0cm]{\addvspace{20pt}\centering\large\sffamily}{}{}{}
@@ -150,208 +105,8 @@
 {\ \titlerule*[.5pc]{.}\;\thecontentspage}
 []
 
-%----------------------------------------------------------------------------------------
-%	MINI TABLE OF CONTENTS IN PART HEADS
-%----------------------------------------------------------------------------------------
 
-% Chapter text styling
-\titlecontents{lchapter}[0em] % Indenting
-{\addvspace{15pt}\large\sffamily\bfseries} % Spacing and font options for chapters
-{\color{ocre}\contentslabel[\Large\thecontentslabel]{1.25cm}\color{ocre}} % Chapter number
-{}  
-{\color{ocre}\normalsize\sffamily\bfseries\;\titlerule*[.5pc]{.}\;\thecontentspage} % Page number
 
-% Section text styling
-\titlecontents{lsection}[0em] % Indenting
-{\sffamily\small} % Spacing and font options for sections
-{\contentslabel[\thecontentslabel]{1.25cm}} % Section number
-{}
-{}
-
-% Subsection text styling
-\titlecontents{lsubsection}[.5em] % Indentation
-{\normalfont\footnotesize\sffamily} % Font settings
-{}
-{}
-{}
-
-%----------------------------------------------------------------------------------------
-%	PAGE HEADERS
-%----------------------------------------------------------------------------------------
-
-\usepackage{fancyhdr} % Required for header and footer configuration
-
-\pagestyle{fancy}
-\renewcommand{\chaptermark}[1]{\markboth{\sffamily\normalsize\bfseries\chaptername\ \thechapter.\ #1}{}} % Chapter text font settings
-\renewcommand{\sectionmark}[1]{\markright{\sffamily\normalsize\thesection\hspace{5pt}#1}{}} % Section text font settings
-\fancyhf{} \fancyhead[LE,RO]{\sffamily\normalsize\thepage} % Font setting for the page number in the header
-\fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
-\fancyhead[RE]{\leftmark} % Print the current chapter name on the right side of even pages
-\renewcommand{\headrulewidth}{0.5pt} % Width of the rule under the header
-\addtolength{\headheight}{2.5pt} % Increase the spacing around the header slightly
-\renewcommand{\footrulewidth}{0pt} % Removes the rule in the footer
-\fancypagestyle{plain}{\fancyhead{}\renewcommand{\headrulewidth}{0pt}} % Style for when a plain pagestyle is specified
-
-% Removes the header from odd empty pages at the end of chapters
-\makeatletter
-\renewcommand{\cleardoublepage}{
-	\clearpage\ifodd\c@page\else
-	\hbox{}
-	\vspace*{\fill}
-	\thispagestyle{empty}
-	\newpage
-	\fi}
-
-%----------------------------------------------------------------------------------------
-%	THEOREM STYLES
-%----------------------------------------------------------------------------------------
-
-\usepackage{amsmath,amsfonts,amssymb,amsthm} % For math equations, theorems, symbols, etc
-
-\newcommand{\intoo}[2]{\mathopen{]}#1\,;#2\mathclose{[}}
-\newcommand{\ud}{\mathop{\mathrm{{}d}}\mathopen{}}
-\newcommand{\intff}[2]{\mathopen{[}#1\,;#2\mathclose{]}}
-\newtheorem{notation}{Notation}[chapter]
-
-% Boxed/framed environments
-\newtheoremstyle{ocrenumbox}% % Theorem style name
-{0pt}% Space above
-{0pt}% Space below
-{\normalfont}% % Body font
-{}% Indent amount
-{\small\bf\sffamily\color{ocre}}% % Theorem head font
-{\;}% Punctuation after theorem head
-{0.25em}% Space after theorem head
-{\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
-	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
-\renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
-
-\newtheoremstyle{blacknumex}% Theorem style name
-{5pt}% Space above
-{5pt}% Space below
-{\normalfont}% Body font
-{} % Indent amount
-{\small\bf\sffamily}% Theorem head font
-{\;}% Punctuation after theorem head
-{0.25em}% Space after theorem head
-{\small\sffamily{\tiny\ensuremath{\blacksquare}}\nobreakspace\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
-	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries---\nobreakspace#3.}}% Optional theorem note
-
-\newtheoremstyle{blacknumbox} % Theorem style name
-{0pt}% Space above
-{0pt}% Space below
-{\normalfont}% Body font
-{}% Indent amount
-{\small\bf\sffamily}% Theorem head font
-{\;}% Punctuation after theorem head
-{0.25em}% Space after theorem head
-{\small\sffamily\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
-	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries---\nobreakspace#3.}}% Optional theorem note
-
-% Non-boxed/non-framed environments
-\newtheoremstyle{ocrenum}% % Theorem style name
-{5pt}% Space above
-{5pt}% Space below
-{\normalfont}% % Body font
-{}% Indent amount
-{\small\bf\sffamily\color{ocre}}% % Theorem head font
-{\;}% Punctuation after theorem head
-{0.25em}% Space after theorem head
-{\small\sffamily\color{ocre}\thmname{#1}\nobreakspace\thmnumber{\@ifnotempty{#1}{}\@upn{#2}}% Theorem text (e.g. Theorem 2.1)
-	\thmnote{\nobreakspace\the\thm@notefont\sffamily\bfseries\color{black}---\nobreakspace#3.}} % Optional theorem note
-\renewcommand{\qedsymbol}{$\blacksquare$}% Optional qed square
-\makeatother 
-
-% Defines the theorem text style for each type of theorem to one of the three styles above
-\newcounter{dummy} 
-\numberwithin{dummy}{section}
-\theoremstyle{ocrenumbox}
-\newtheorem{theoremeT}[dummy]{Theorem}
-\newtheorem{problem}{Problem}[chapter]
-\newtheorem{exerciseT}{Exercise}[chapter]
-\theoremstyle{blacknumex}
-\newtheorem{exampleT}{Example}[chapter]
-\theoremstyle{blacknumbox}
-\newtheorem{vocabulary}{Vocabulary}[chapter]
-\newtheorem{definitionT}{Definition}[section]
-\newtheorem{corollaryT}[dummy]{Corollary}
-\theoremstyle{ocrenum}
-\newtheorem{proposition}[dummy]{Proposition}
-
-%----------------------------------------------------------------------------------------
-%	DEFINITION OF COLORED BOXES
-%----------------------------------------------------------------------------------------
-
-\RequirePackage[framemethod=default]{mdframed} % Required for creating the theorem, definition, exercise and corollary boxes
-
-% Theorem box
-\newmdenv[skipabove=7pt,
-skipbelow=7pt,
-backgroundcolor=black!5,
-linecolor=ocre,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=5pt,
-leftmargin=0cm,
-rightmargin=0cm,
-innerbottommargin=5pt]{tBox}
-
-% Exercise box	  
-\newmdenv[skipabove=7pt,
-skipbelow=7pt,
-rightline=false,
-leftline=true,
-topline=false,
-bottomline=false,
-backgroundcolor=ocre!10,
-linecolor=ocre,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=5pt,
-innerbottommargin=5pt,
-leftmargin=0cm,
-rightmargin=0cm,
-linewidth=4pt]{eBox}	
-
-% Definition box
-\newmdenv[skipabove=7pt,
-skipbelow=7pt,
-rightline=false,
-leftline=true,
-topline=false,
-bottomline=false,
-linecolor=ocre,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=0pt,
-leftmargin=0cm,
-rightmargin=0cm,
-linewidth=4pt,
-innerbottommargin=0pt]{dBox}	
-
-% Corollary box
-\newmdenv[skipabove=7pt,
-skipbelow=7pt,
-rightline=false,
-leftline=true,
-topline=false,
-bottomline=false,
-linecolor=gray,
-backgroundcolor=black!5,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=5pt,
-leftmargin=0cm,
-rightmargin=0cm,
-linewidth=4pt,
-innerbottommargin=5pt]{cBox}
-
-% Creates an environment for each type of theorem and assigns it a theorem text style from the "Theorem Styles" section above and a colored box from above
-\newenvironment{theorem}{\begin{tBox}\begin{theoremeT}}{\end{theoremeT}\end{tBox}}
-\newenvironment{exercise}{\begin{eBox}\begin{exerciseT}}{\hfill{\color{ocre}\tiny\ensuremath{\blacksquare}}\end{exerciseT}\end{eBox}}				  
-\newenvironment{definition}{\begin{dBox}\begin{definitionT}}{\end{definitionT}\end{dBox}}	
-\newenvironment{example}{\begin{exampleT}}{\hfill{\tiny\ensuremath{\blacksquare}}\end{exampleT}}		
-\newenvironment{corollary}{\begin{cBox}\begin{corollaryT}}{\end{corollaryT}\end{cBox}}	
 
 %----------------------------------------------------------------------------------------
 %	REMARK ENVIRONMENT
@@ -505,23 +260,27 @@ innerbottommargin=5pt]{cBox}
 %	HYPERLINKS IN THE DOCUMENTS
 %----------------------------------------------------------------------------------------
 
+
+
+
 \usepackage{hyperref}
 \hypersetup{hidelinks,backref=true,pagebackref=true,hyperindex=true,colorlinks=false,breaklinks=true,urlcolor= ocre,bookmarks=true,bookmarksopen=false,pdftitle={Title},pdfauthor={Author}}
 \usepackage{bookmark}
 \bookmarksetup{
-open,
-numbered,
-addtohook={%
-\ifnum\bookmarkget{level}=0 % chapter
-\bookmarksetup{bold}%
-\fi
-\ifnum\bookmarkget{level}=-1 % part
-\bookmarksetup{color=ocre,bold}%
-\fi
-}
+	open,
+	numbered,
+	addtohook={%
+		\ifnum\bookmarkget{level}=0 % chapter
+		\bookmarksetup{bold}%
+		\fi
+		\ifnum\bookmarkget{level}=-1 % part
+		\bookmarksetup{color=ocre,bold}%
+		\fi
+	}
 }
 
-\begin{document}
+
+\begin{document} 
 
 \begingroup
 \thispagestyle{empty}
@@ -592,98 +351,9 @@ addtohook={%
 
 \mainmatter
 
-%----------------------------------------------------------------------------------------
-%	PART
-%----------------------------------------------------------------------------------------
 
-\part{Framework}
 
-%----------------------------------------------------------------------------------------
-%	CHAPTER 1
-%----------------------------------------------------------------------------------------
 
-\chapterimage{chapterhead2.pdf} % Chapter heading image
-
-\chapter{Spring}
-
-\section{Common Sense}\index{Common Sense}
-
-Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.
-
-\subsection{classpath}\index{classpath}
-
-理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
-
-\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
-public class Application {
-	public static void main(String[] args) {
-		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-		URL[] urls = ((URLClassLoader) classLoader).getURLs();
-		for (URL url : urls) {
-			System.out.println(url.getFile());
-		}
-	}
-}
-\end{lstlisting}
-
-从代码的输出结果即可看出，classpath具体是哪些文件夹。
-
-\begin{lstlisting}
-# 与JDK相关的文件夹
-/home/local/jdk1.8.0_111/jre/lib
-/home/local/jdk1.8.0_111/jre/lib/ext
-/home/local/jdk1.8.0_111/lib
-# 与项目相关的文件夹，这里仅仅是一个module
-/home/credit-system/cc-data/build/classes/main/
-/home/credit-system/cc-data/build/resources/main/
-# 与Gradle相关的文件夹
-/home/hldev/.gradle/caches
-\end{lstlisting}
-
-所以在项目中看到如下的配置就不难理解了：
-
-\begin{lstlisting}[language=Java]
-bean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
-\end{lstlisting}
-它实际上就是映射的如图\ref{fig:classpathfile}中所示的XML文件。
-
-\begin{figure}[tbph]
-	\centering
-	\includegraphics[scale=0.7]{classpathfile}
-	\caption{MyBatis映射classpath中的文件}
-	\label{fig:classpathfile}
-\end{figure}
-
-classpath是指编译过后的WEB-INF文件夹下的的classes目录。配置文件一般放在 resources 目录下, 当编译之后会自动复制到 classes 目录下。classpath*:的使用是为了多个component(最终发布成不同的jar包)并行开发,各自的bean定义文件按照一定的规则:package+filename,而使用这些component的调用者可以把这些文件都加载进来。不仅包含 classes 路径，还包括 jar 文件 classes 路径进行查找。classpath:只能加载找到的第一个文件。然而，使用classpath*:需要遍历所有的classpath，加载速度很慢，因此您应该尽量避免使用classpath*。有时提示找不到资源文件，首先检查资源文件夹的名称，资源文件夹的名称默认为resources，注意有一个s，其次是要检查此文件夹是否定义成了资源文件夹，资源文件夹与普通文件夹不同，资源文件夹有一个层叠的标识，如图\ref{fig:javaresourcefolder}所示。
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.8]{javaresourcefolder.png}
-	\caption{Intellij Idea中的资源文件夹}
-	\label{fig:javaresourcefolder}
-\end{figure}
-
-仅仅是建立一个resources文件夹是不够的，还需要将之定义成资源文件夹，在文件夹上右键，选择Mark Directionary As，将之定义为资源文件夹。定义为资源文件夹后，即可通过如下方式指定配置文件的位置：
-
-\begin{lstlisting}[language=Java]
-@Configuration
-@Data
-@Component
-@PropertySource("classpath:application.properties")
-@ConfigurationProperties(prefix = "spring.datasource")
-public class DataSourceConfig {
-
-	private String jdbcUrl;
-	
-	private String username;
-	
-	private String driverClassName;
-	
-	private String password;
-}
-\end{lstlisting}
-
-在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
 \subsection{Spring Boot开发者工具}
 
@@ -893,7 +563,16 @@ if ("null".equals(categoryId)) {
 }
 \end{lstlisting}
 
-String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
+String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。常用启动命令：
+
+\begin{lstlisting}[language=Bash]
+#启动WebService
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5010 /home/app/backend/api/credit-system-web-api-1.1.26.jar --spring.config.location=application-jjxxzx-test.properties>/dev/null &
+#启动API
+nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug  -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5010  /home/app/backend/api/credit-system-web-api-1.1.26.jar  --spring.config.location=application-shuitu-api.properties>/dev/null &
+\end{lstlisting}
+
+dt表示Data Transport。-Xdebug是通知JVM工作在Debug模式下。-Xrunjdwp是通知JVM使用(Java Debug Wire Protocol)来运行调试环境。suspend指示是否在调试客户端建立起来后，再执行JVM。server参数是指是否支持在server模式的JVM中。
 
 \section{接口(Application Interface)}
 
@@ -946,7 +625,7 @@ Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported
 
 \paragraph{编辑请求(Edit Request)}
 
-有时在写好接口之后，修改可能是非常细小的，比如原来的接口路径是/page，但是现在需要返回全部的数据可能就是/page/all(也可以在原来的接口方法改造，这里不考虑哪种方法实现更优)。需要测试一下新接口的返回，一种可以在浏览器的Network页中拷贝出curl请求命令来修改，修改后直接通过curl请求;一种方法在浏览器中安装tamper插件，抓取请求修改;一种方法可以使用Zed Attack Proxy\footnote{\url{https://github.com/zaproxy/zaproxy}}代理，在代理中编辑HTTP请求信息。
+有时在写好接口之后，修改可能是非常细小的，比如原来的接口路径是/page，但是现在需要返回全部的数据可能就是/page/all(也可以在原来的接口方法改造，这里不考虑哪种方法实现更优)。需要测试一下新接口的返回，一种可以在浏览器的Network页中拷贝出curl请求命令来修改，修改后直接通过curl请求;一种方法在浏览器中安装tamper插件，抓取请求修改;一种方法可以使用Zed Attack Proxy\footnote{\url{https://github.com/zaproxy/zaproxy}}代理，在代理中选择Resend，在Resend界面中编辑HTTP请求信息。
 
 
 \subsection{返回消息封装(Message Encapsulation)}
@@ -3513,7 +3192,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 \subsection{常见设置}
 
-有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径。
+有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries中添加库的路径(未解决问题)。
 
 \begin{figure}[htbp]
 	\centering
@@ -3522,7 +3201,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	\label{fig:intellijideaaddlibraries}
 \end{figure}
 
-
+也可以重新选择Gradle文件，重新导入项目(可解决问题)。
 
 \subsection{Tips}
 
@@ -3573,7 +3252,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启Intellij Idea。 情况三配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -3728,9 +3407,7 @@ if (isSnapshot) {
 
 \begin{lstlisting}[language=Java]
 project(":web"){
-
 	description = "web"
-	
 	jar{
 		baseName = "dolphin-web"
 	}
@@ -3746,7 +3423,7 @@ project(":web"){
 
 \paragraph{拷贝文件}
 
-在项目中需要根据不同的用途生成不同的文件，比如api需要单独打包，平台需要单独打包，但是api和平台的代码都是一套代码，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包名称，使用copy功能来实现。首先定义项目的动态属性：
+在项目中需要根据不同的应用场景生成不同的文件，比如专门的提供外部接口的api需要单独打包，内部平台的接口需要单独打包，但是api和平台的代码都是一套代码，在一个仓库，只是配置不同罢了。此时需要Gradle在构建之后根据不同的用途生成不同的包，使用copy功能来实现。首先定义项目的动态属性：
 
 \begin{lstlisting}[language=Java]
 buildscript {
@@ -3793,7 +3470,7 @@ OWASP消息体太长默认无法显示，可在Option/Display下调整消息体�
 
 \subsection{分析}
 
-
+OWASP可以方便的保存整个网站的所有请求。
 
 \chapter{OpenVPN}
 
@@ -5086,15 +4763,68 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 git config --global merge.tool meld
 \end{lstlisting}
 
-\subsection{合并指定分支}
+\subsection{Cherry Pick}
 
 项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
 
 \begin{lstlisting}[language=Bash]
 git cherry-pick <commit id>
+git cherry-pick e6abef4e3e6a6e5112527bf84214eb38ad08cec5
+8f4ecc61f31828f5c971a7274e7a223f665a1f01
+db5f9c122caae92a3af927efa1174fca97f96fbf
+1aec54572ea728ed512ec39e834238537f1db3a8
 \end{lstlisting}
 
+有时commit比较多，一个一个合并比较麻烦，Git从1.7.2版本开始支持批量cherry-pick，就是一次可以cherry-pick一个区间的commit，此时可以指定提交区间。
 
+\begin{lstlisting}[language=Bash]
+git cherry-pick <start-commit-id>..<end-commit-id>
+git cherry-pick -x 472d65eb76299c6cba32635c2e578e8267c31e8d..8f4ecc61f31828f5c971a7274e7a223f665a1f01
+\end{lstlisting}
+
+error: Commit cb82fbb5a24211ba60f4826c5ceff25e31d397b9 is a merge but no -m option was given。cherry-pick合并时需要制定Parent Number。目前还没有搞清楚Parent Number如何查看，目前直接指定的1。
+
+\begin{lstlisting}[language=Bash]
+git log --pretty=format:"%P %H - %an, %ar : %s" --graph
+\end{lstlisting}
+
+\%H  提交对象（commit）的完整哈希字串
+\%h  提交对象的简短哈希字串
+\%T  树对象（tree）的完整哈希字串
+\%t  树对象的简短哈希字串
+\%P  父对象（parent）的完整哈希字串
+\%p  父对象的简短哈希字串
+\%an 作者（author）的名字
+\%ae 作者的电子邮件地址
+\%ad 作者修订日期（可以用 -date= 选项定制格式）
+\%ar 作者修订日期，按多久以前的方式显示
+\%cn 提交者(committer)的名字
+\%ce 提交者的电子邮件地址
+\%cd 提交日期
+\%cr 提交日期，按多久以前的方式显示
+
+\subsection{Reflog}
+
+第一次使用Cherry Pick时没有注意当前的分支，导致许多历史Commit消失了，此时可以使用reflog命令，还好重新clone时没有删除原来的仓库。Reference logs, or "reflogs", record when the tips of branches and other references were updated in the local repository. Reflogs are useful in various Git commands, to specify the old value of a reference.每一次当前HEAD发生改变（包括切换branch, pull, 添加新commit）一个新的纪录就会被添加到reflog。使用如下命令查看所有Commit：
+
+\begin{lstlisting}[language=Bash]
+git reflog
+\end{lstlisting}
+
+结果如图\ref{fig:gitreflogfindcommit}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{gitreflogfindcommit.png}
+	\caption{Git查看所有Commit}
+	\label{fig:gitreflogfindcommit}
+\end{figure}
+
+将当前分支reset到指定的<commit>或者HEAD:
+
+\begin{lstlisting}[language=Bash]
+git reset --hard e6abef4
+\end{lstlisting}
 
 \subsection{常见问题}
 
@@ -5328,6 +5058,13 @@ Latex原生不支持JavaScript语言，添加如下定义：
 
 即可在文档中定义JavaScript，并支持关键字颜色区分。
 
+\subsection{参考文献管理}
+
+要在正文中引用文献，只需写 /cite{bibkey} 即可。
+
+
+
+
 \subsection{常见问题}
 
 \paragraph{infoBulle.sty not found}
@@ -5498,7 +5235,8 @@ limit 0,10;
 当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，一种方案是使用全文索引查询出结果后，再使用like进行匹配，在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
-create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index qymcindex on TS_F_CORPORATION(qymc) lexer CHINESE_VGRAM_LEXER;
+alter context index qymcindex on TS_F_CORPORATION rebuild;
 create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
 alter context index xzcffulltextindex on TS_B_XZCF rebuild;
 \end{lstlisting}
@@ -6352,23 +6090,13 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 %----------------------------------------------------------------------------------------
 
 \chapter*{Bibliography}
-\addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}}
-\section*{Books}
-\addcontentsline{toc}{section}{Books}
-\printbibliography[heading=bibempty,type=book]
-\section*{Articles}
-\addcontentsline{toc}{section}{Articles}
-\printbibliography[heading=bibempty,type=article]
 
-%----------------------------------------------------------------------------------------
-%	INDEX
-%----------------------------------------------------------------------------------------
+\cite{radioactivedecay2}
+\cite{DLS1}
 
-\cleardoublepage
-\phantomsection
-\setlength{\columnsep}{0.75cm}
-\addcontentsline{toc}{chapter}{\textcolor{ocre}{Index}}
-\printindex
+
+\printbibliography
+
 
 %----------------------------------------------------------------------------------------
 
