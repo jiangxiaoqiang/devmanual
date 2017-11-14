@@ -41,7 +41,7 @@
 
 %When compile under liunx% 
 
-\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -704,10 +704,13 @@ compile "org.springframework.boot:spring-boot-devtools"
 Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
 
 \begin{lstlisting}[language=Java]
-request.getParamList().stream().filter(StringUtils::isNotEmpty).distinct().forEach(param -> {
-if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
-
-});
+request.getParamList().stream()
+		.filter(StringUtils::isNotEmpty)
+		.distinct()
+		.forEach(param -> {
+			if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
+			
+			});
 \end{lstlisting}
 
 对象做非空判断：
@@ -780,9 +783,11 @@ Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
 如果需要在创建List时对其初始化：
 
 \begin{lstlisting}[language=Java]
-new ArrayList<String>() {{
-	add(feedback.getResponsekey());
-}}
+List<String> defaultUnion = new ArrayList<String>() {
+	{
+		add(PublicVariable.DEFALT_ACCORDING_IMPLEMENT);
+	}
+};
 \end{lstlisting}
 
 有时需要将List对象按照对象某一个字段是否重复进行去重，可以先重写对象的equals方法：
@@ -2938,7 +2943,7 @@ state[0] = bookReducer;
 sudo apt-get -f install 
 \end{lstlisting}
 
-f参数表示尝试修正系统依赖损坏处。
+f(fix)参数表示尝试修正系统依赖损坏处。
 
 \section{Shell}
 
@@ -3109,7 +3114,14 @@ echo "set completion-ignore-case on">>~/.inputrc
 echo "set show-all-if-ambiguous on">> ~/.inputrc
 \end{lstlisting}
 
-设置完毕后重新打开终端即可，必须要重新打开终端才会生效。
+设置完毕后重新打开终端即可，必须要重新打开终端才会生效。以上设置针对当前用户，如果需要在全局范围内生效，可以修改inputrc文件：
+
+\begin{lstlisting}[language=Bash]
+# Mac OS X和Linux下皆可
+echo "set completion-ignore-case on">>/etc/inputrc
+#重启系统使之生效
+reboot
+\end{lstlisting}
 
 \paragraph{统计代码行数}
 
@@ -5841,6 +5853,45 @@ GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
 
 如上语句统计接口的有效调用次数，返回数量(RETURN\_COUNT)大于0时，视为有效调用次数(VALID\_TIMES)。数量默认为整数，所以要得到小数的比率(RATIO)，就需要使用函数convert将数据转换为Double类型。
 
+\paragraph{开窗函数}
+
+使用简单函数进行统计的语句如下：
+
+\begin{lstlisting}[language=SQL]
+select org_id,
+	max(org_name) org_name,
+	sum(using_times) using_times,
+	sum(valid_times) valid_times,
+	sum(feedback_count) feedback_count,
+	sum(handle_type_count) handle_type_count
+	from (
+		select 
+		b.org_id,b.org_name,
+		SUM(count(b.responsekey)) over(partition by b.responsekey) using_times,--使用次数
+		SUM(CASE WHEN b.isokred > 0 OR b.isokblack > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,--触发反馈次数
+		sum(case when b.is_feedback = 1 then 1 else 0 end) FEEDBACK_COUNT, --反馈次数
+		sum(case when b.handle_type = 1 then 1 else 0 end) HANDLE_TYPE_COUNT --已实施奖惩次数
+		from (
+			--表联合基础信息
+			select  a.org_id,
+			a.org_name,
+			cxnr,--相对人
+			a.responsekey responsekey,--responsekey一次查询标记，统计查询次数
+			a.ISOKRED isokred,--红名单个数，统计触发次数
+			a.ISOKBALCK isokblack,--黑名单个数，统计触发次数
+			a.is_feedback, --是否反馈标志，统计反馈次数
+			c.handle_type --已实施奖惩数
+			from TI_B_REDBALCKLOG a,TI_B_FEEDBACK_LOG c
+			where c.responsekey = a.responsekey
+			and a.cxnr = c.xdr --反馈根据相对人反馈，以相对人粒度进行统计
+	) as b
+	group by b.org_id,b.org_name,b.responsekey,b.cxnr
+) d
+group by org_id
+\end{lstlisting}
+
+
+
 \subsection{常用SQL记录}
 
 嵌套查询：
@@ -5881,6 +5932,8 @@ delete from dolphin where rowid not in(select max(rowid) from dolphin group by i
 \end{lstlisting}
 
 拼接列：
+
+
 
 
 
