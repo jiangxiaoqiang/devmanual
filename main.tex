@@ -3721,6 +3721,28 @@ repositories {
 
 gradle项目配置中引用java插件。
 
+\paragraph{Gradle找不到Tasks}
+
+有时在使用Gradle命令编译时找不到相应到任务(Tasks)。比如在部署脚本在project/script/deploy目录下，当在此目录下运行脚本时，会提示在项目目录deploy下找不到任务。命令如下：
+
+\begin{lstlisting}[language=Bash]
+${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew copyTask -x test
+\end{lstlisting}
+
+此时就需要指定项目的路径，将命令调整为：
+
+\begin{lstlisting}[language=Bash]
+${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND} copyTask -x test
+\end{lstlisting}
+
+p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图\ref{fig:copyTasks}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{copyTasks}
+	\caption{Gradle查看Tasks}
+	\label{fig:copyTasks}
+\end{figure}
 
 \section{Gradle对象}
 
@@ -6377,7 +6399,7 @@ ssh -NfR 1234:localhost:2223 user1@123.123.123.123 -p2221
 
 \subsection{版本管理}
 
-在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号，方便测试进行问题识别。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
+在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
 
 \begin{itemize}
 	\item{MAJOR version when you make incompatible API changes,}
