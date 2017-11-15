@@ -862,6 +862,29 @@ for (int i = 0; i < 10000; i++) {
 
 运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
 
+\paragraph{Object转为Map}
+
+有时需要将Object实体转换为Map的方式：
+
+\begin{lstlisting}[language=Java]
+public static Map<?, ?> objectToMap(Object obj) {
+	if (obj == null)
+		return null;
+	return new org.apache.commons.beanutils.BeanMap(obj);
+}
+
+//调用
+Map<String, Object> stringObjectMap = (Map<String, Object>) objectToMap(documentList.get(i));
+\end{lstlisting}
+
+需要引用BeanUtils包，Gradle引用如下：
+
+\begin{lstlisting}[language=Java]
+compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+\end{lstlisting}
+
+BeanUtils主要提供了对于JavaBean进行各种操作。
+
 \subsection{正则表达式(Regular Expression)}
 
 匹配电话号码的正则表达式：
@@ -3737,14 +3760,14 @@ ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew copyTask -x test
 ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND} copyTask -x test
 \end{lstlisting}
 
-p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图\ref{fig:copyTasks}所示。
+p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图所示。
 
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.6]{copyTasks}
-	\caption{Gradle查看Tasks}
-	\label{fig:copyTasks}
-\end{figure}
+%\begin{figure}[htbp]
+%	\centering
+%	\includegraphics[scale=0.6]{copyTasks}
+%	\caption{Gradle查看Tasks}
+%	\label{fig:copyTasks}
+%\end{figure}
 
 \section{Gradle对象}
 
