@@ -3040,7 +3040,7 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。
 
 \paragraph{优化代理(Optimizate Proxy)}
 
@@ -3576,6 +3576,25 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
+\subsection{无法查看Scala变量}
+
+在Intellij Idea调试Scala时，无法查看Scala的Vector等变量，提示Unable to evaluate the expression java.lang.UnsupportedOperationException。解决方案是，重新安装Intellij Idea:
+
+\begin{lstlisting}[language=Bash]
+#找到Idea的安装目录
+sudo find / -name "idea.sh"
+\end{lstlisting}
+
+找到安装目录后直接删除目录即可。重装后调试即可看到相应的变量，如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{intellijideabreakthread.png}
+	\caption{Intellij Idea设置断点阻断当前Thread}
+	\label{fig:intellijideabreakthread}
+\end{figure}
+
+
 \subsection{常见设置}
 
 有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries。
@@ -3586,6 +3605,8 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	\caption{Intellij Idea添加项目Library路径}
 	\label{fig:intellijideaaddlibraries}
 \end{figure}
+
+有时在使用列编辑SQL语句时，会自动换行，而且会自动添加一些符号，导致编辑出来的SQL语句语法错误，在Settings->Editor->Code Style下的Default Options下调整最大列文字数量即可。
 
 
 
@@ -3852,6 +3873,17 @@ task copyTask(type: Copy) {
 	from 'build/libs/credit-system-web-boot-' + version + '.jar'
 	into 'build/libs/api'
 	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
+}
+
+/**
+* 复制一份接口的部署包
+* 接口与平台单独部署，避免互相影响
+* 指定路径
+*/
+task copyTask(type: Copy) {
+	from "$projectDir/build/libs/credit-system-web-boot-${version}.jar"
+	into "$projectDir/build/libs/api"
+	rename "credit-system-web-boot-${version}.jar","credit-system-web-api-${version}.jar"
 }
 \end{lstlisting}
 
