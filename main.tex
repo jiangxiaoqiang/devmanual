@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -5110,7 +5110,7 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 
 \section{基础}
 
-\subsection{配置}
+\subsection{常用Git命令}
 
 常用语句。
 
@@ -5125,6 +5125,8 @@ git remote rm company-
 git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
 #列出git配置
 git config --list
+#查看远程(remote)分支
+git branch -r
 \end{lstlisting}
 
 克隆指定的分支：
