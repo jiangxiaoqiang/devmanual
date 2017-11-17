@@ -3585,13 +3585,13 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 sudo find / -name "idea.sh"
 \end{lstlisting}
 
-找到安装目录后直接删除目录即可。重装后调试即可看到相应的变量，如图所示。
+找到安装目录后直接删除目录即可。重装后调试即可看到相应的变量，如图\ref{fig:probescalavariable}所示。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{intellijideabreakthread.png}
-	\caption{Intellij Idea设置断点阻断当前Thread}
-	\label{fig:intellijideabreakthread}
+	\includegraphics[scale=0.5]{probescalavariable.png}
+	\caption{调试查看Scala变量}
+	\label{fig:probescalavariable}
 \end{figure}
 
 
@@ -3783,12 +3783,12 @@ ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND} copyT
 
 p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图所示。
 
-%\begin{figure}[htbp]
-%	\centering
-%	\includegraphics[scale=0.6]{copyTasks}
-%	\caption{Gradle查看Tasks}
-%	\label{fig:copyTasks}
-%\end{figure}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.7]{copytasks.png}
+	\caption{Gradle查看Tasks}
+	\label{fig:copyTasks}
+\end{figure}
 
 \section{Gradle对象}
 
