@@ -1,7 +1,5 @@
 \documentclass[12pt]{book}
 
-
-
 \usepackage{xeCJK}
 \usepackage{listings}
 \usepackage{multirow}
@@ -41,7 +39,7 @@
 
 %When compile under liunx% 
 
-%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -3347,6 +3345,32 @@ tracert 10.55.10.9
 	\label{fig:wiresharkcaptureping}
 \end{figure}
 
+\subsection{tmux}
+
+tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
+
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
+
+使用终端,当然需要漂亮的字体.TeX Gyre Cursor可以作为终端的字体.The TeX Gyre Cursor family of monospaced serif fonts is based on the URW Nimbus Mono L family . and are available in PostScript, TeX and OpenType formats. 效果如图\ref{fig:fonttexgyrecursor}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{fonttexgyrecursor.png}
+	\caption{终端使用Tex Gyre Cursor字体}
+	\label{fig:fonttexgyrecursor}
+\end{figure}
+
+也可以使用TlwgMono Oblique和FreeMono字体.
+
 \subsection{环境变量(Environment Variable)}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
@@ -4305,20 +4329,8 @@ wget -c https://nmap.org/dist/nmap-7.31.dmg
 \end{lstlisting}
 
 
-\section{tmux}
 
-tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
-\begin{tabular}{|c|p{8cm}|c|}
-	\hline
-	\multirow{1}{*}{键}
-	& \multicolumn{1}{c|}{作用}  \\			
-	\cline{1-2}
-	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
-	\hline
-	C-b ? & 显示快捷键帮助\\
-	\hline
-\end{tabular}
 
 
 \chapter{Raspberry Pi}
