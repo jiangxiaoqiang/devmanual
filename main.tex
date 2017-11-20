@@ -1788,9 +1788,17 @@ private JdbcTemplate jdbcTemplate1;
 \end{lstlisting}
 
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
-动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
+动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。AbstractRoutingDataSource获取数据源之前会先调用determineCurrentLookupKey方法查找当前的lookupKey，这个lookupKey就是数据源标识。因此通过重写这个查找数据源标识的方法就可以让spring切换到指定的数据源了。
 
+\begin{itemize}
+	\item {xml<aop>拦截到数据源名称}
+	\item {执行切面DataSourceAspect中的before方法，将数据源名称放入 DynamicDataSourceHolder中}
+	\item {Spring JDBC调用determineCurrentLookupKey()方法<DynamicDataSource中重写AbstractRoutingDataSource类中的方法> ，从DynamicDataSourceHolder取出当前的数据库名称，并返回}	
+	\item {AbstractRoutingDataSource类中determineTargetDataSource()方法调用determineCurrentLookupKey()匹配到指定的数据库，并建立链接，即为切换到相应的数据库；}
+	\item {在指定的数据库中执行相应的sql}
+\end{itemize}
 
+AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的不同请求去转换不同的数据源。若service没有启动事务机制，则执行的顺序为：切面——>determineCurrentLookupKey——>Dao方法。数据源真正切换的关键是AbstractRoutingDataSource的determineCurrentLookupKey()被调用，此方法是在open connection时触发。
 
 \subsection{多参数传递(Multi-Parameter)}
 
@@ -4765,7 +4773,7 @@ http {
 其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
 
 \begin{lstlisting}[language=bash]
-#重新加载配置
+#重新加载配置(正式环境)
 /home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
