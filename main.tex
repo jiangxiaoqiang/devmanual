@@ -1788,6 +1788,9 @@ private JdbcTemplate jdbcTemplate1;
 \end{lstlisting}
 
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
+
+\paragraph{Spring Boot AOP多数据源(未成功)}
+
 动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。AbstractRoutingDataSource获取数据源之前会先调用determineCurrentLookupKey方法查找当前的lookupKey，这个lookupKey就是数据源标识。因此通过重写这个查找数据源标识的方法就可以让spring切换到指定的数据源了。
 
 \begin{itemize}
@@ -1799,6 +1802,19 @@ private JdbcTemplate jdbcTemplate1;
 \end{itemize}
 
 AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的不同请求去转换不同的数据源。若service没有启动事务机制，则执行的顺序为：切面——>determineCurrentLookupKey——>Dao方法。数据源真正切换的关键是AbstractRoutingDataSource的determineCurrentLookupKey()被调用，此方法是在open connection时触发。
+
+\subsection{不同配置文件}
+
+使用不同源配置文件的方式需要多个datasource、多个SqlSessionFactory、多个config文件。连接不同数据库的Mapper文件存放在不同的文件夹下，如何确定配置使用的不同数据源？可以直接查看Mapper的sqlSession配置，如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{seemapperdatasource.png}
+	\caption{查看Mapper使用的Datasource}
+	\label{fig:seemapperdatasource}
+\end{figure}
+
+
 
 \subsection{多参数传递(Multi-Parameter)}
 
@@ -1882,6 +1898,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 	\label{fig:mapperreourcestructure}
 \end{figure}
 
+在配置多数据源时，除了要检查包名是否对应，还要检查不同数据源不要使用同一个包路径。
 
 \paragraph{Parameter 'keys' not found. Available parameters are [list]}
 
