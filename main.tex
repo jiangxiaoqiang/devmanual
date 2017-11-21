@@ -3517,7 +3517,14 @@ sudo apt-cache policy scala
 apt-show-versions -a scala
 \end{lstlisting}
 
-madison是一个apt-cache子命令。
+madison是一个apt-cache子命令。如下命令查看服务端firefox的版本:
+
+\begin{lstlisting}[language=Bash]
+# 查看服务器firefox版本
+sudo apt-cache madison firefox
+firefox | 57.0+build4-0ubuntu0.14.04.4 | http://mirrors.aliyun.com/ubuntu/ trusty-security/main i386 Packages
+firefox | 28.0+build2-0ubuntu2 | http://mirrors.aliyun.com/ubuntu/ trusty/main i386 Packages
+\end{lstlisting}
 
 \subsection{Ubuntu打印}
 
