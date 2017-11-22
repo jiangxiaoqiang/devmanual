@@ -3234,6 +3234,20 @@ which命令用于查找并显示给定命令的绝对路径，环境变量PATH�
 which scala
 \end{lstlisting}
 
+\paragraph{rm}
+
+写个shell脚本替换rm命令，或者在需要删除文件的时候使用mv命令将文件移动到回收站。
+
+\begin{lstlisting}[language=Bash]
+TRASH_DIR="/home/username/.trash"  
+  
+for i in $*; do  
+    STAMP=`date +%s`  
+    fileName=`basename $i`  
+    mv $i $TRASH_DIR/$fileName.$STAMP  
+done
+https://www.cnblogs.com/langdashu/p/5404595.html
+\end{lstlisting}
 
 \paragraph{ls}
 
@@ -5226,6 +5240,10 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \begin{lstlisting}[language=Bash]
 git config --global merge.tool meld
 \end{lstlisting}
+
+\subsection{Git Hooks}
+
+Git钩子分为客户端钩子和服务端钩子.
 
 \subsection{合并指定分支}
 
