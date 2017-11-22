@@ -1623,6 +1623,16 @@ User user = (User) session.getAttribute("LOCAL_CLINET_USER");
 
 \paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
 
+java.lang.NoClassDefFoundError,这个报错是因为Java虚拟机在编译时能找到合适的类，而在运行时不能找到合适的类导致的错误.可以查看目标目录，是否有编译成功的example.class文件存在。在Intellij Idea中查看文件夹是module-name/build文件夹，如图\ref{fig:buildclassoutpath}所示，可以将其删除，删除之后即可触发重新编译类。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{buildclassoutpath.png}
+	\caption{构建.class文件输出目录}
+	\label{fig:buildclassoutpath}
+\end{figure}
+
+
 Tomcat 的内部日志使用 JULI 组件，这是一个 Apache Commons 日志的重命名的打包分支，默认被硬编码，使用 java.util.logging 架构。这能保证 Tomcat 内部日志与 Web 应用的日志保持独立，即使 Web 应用使用的是 Apache Commons Logging。在Gradle构建脚本中添加如下配置即可：
 
 \begin{lstlisting}[language=Bash]
@@ -1790,6 +1800,31 @@ private JdbcTemplate jdbcTemplate1;
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
 动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
 
+\paragraph{Spring Boot AOP多数据源(未成功)}
+
+动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。AbstractRoutingDataSource获取数据源之前会先调用determineCurrentLookupKey方法查找当前的lookupKey，这个lookupKey就是数据源标识。因此通过重写这个查找数据源标识的方法就可以让spring切换到指定的数据源了。
+
+\begin{itemize}
+	\item {xml<aop>拦截到数据源名称}
+	\item {执行切面DataSourceAspect中的before方法，将数据源名称放入 DynamicDataSourceHolder中}
+	\item {Spring JDBC调用determineCurrentLookupKey()方法<DynamicDataSource中重写AbstractRoutingDataSource类中的方法> ，从DynamicDataSourceHolder取出当前的数据库名称，并返回}	
+	\item {AbstractRoutingDataSource类中determineTargetDataSource()方法调用determineCurrentLookupKey()匹配到指定的数据库，并建立链接，即为切换到相应的数据库；}
+	\item {在指定的数据库中执行相应的sql}
+\end{itemize}
+
+AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的不同请求去转换不同的数据源。若service没有启动事务机制，则执行的顺序为：切面——>determineCurrentLookupKey——>Dao方法。数据源真正切换的关键是AbstractRoutingDataSource的determineCurrentLookupKey()被调用，此方法是在open connection时触发。
+
+\subsection{不同配置文件}
+
+使用不同源配置文件的方式需要多个datasource、多个SqlSessionFactory、多个config文件。连接不同数据库的Mapper文件存放在不同的文件夹下，如何确定配置使用的不同数据源？可以直接查看Mapper的sqlSession配置，如图\ref{fig:seemapperdatasource}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{seemapperdatasource.png}
+	\caption{查看Mapper使用的Datasource}
+	\label{fig:seemapperdatasource}
+\end{figure}
+
 
 
 \subsection{多参数传递(Multi-Parameter)}
@@ -1874,6 +1909,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 	\label{fig:mapperreourcestructure}
 \end{figure}
 
+在配置多数据源时，除了要检查包名是否对应，还要检查不同数据源不要使用同一个包路径。
 
 \paragraph{Parameter 'keys' not found. Available parameters are [list]}
 
@@ -3234,20 +3270,6 @@ which命令用于查找并显示给定命令的绝对路径，环境变量PATH�
 which scala
 \end{lstlisting}
 
-\paragraph{rm}
-
-写个shell脚本替换rm命令，或者在需要删除文件的时候使用mv命令将文件移动到回收站。
-
-\begin{lstlisting}[language=Bash]
-TRASH_DIR="/home/username/.trash"  
-  
-for i in $*; do  
-    STAMP=`date +%s`  
-    fileName=`basename $i`  
-    mv $i $TRASH_DIR/$fileName.$STAMP  
-done
-https://www.cnblogs.com/langdashu/p/5404595.html
-\end{lstlisting}
 
 \paragraph{ls}
 
@@ -3475,6 +3497,7 @@ screen -r 12865
 uname －a 
 \end{lstlisting}
 
+
 \section{常用设置}
 
 \subsection{XFCE桌面}
@@ -3531,14 +3554,7 @@ sudo apt-cache policy scala
 apt-show-versions -a scala
 \end{lstlisting}
 
-madison是一个apt-cache子命令。如下命令查看服务端firefox的版本:
-
-\begin{lstlisting}[language=Bash]
-# 查看服务器firefox版本
-sudo apt-cache madison firefox
-firefox | 57.0+build4-0ubuntu0.14.04.4 | http://mirrors.aliyun.com/ubuntu/ trusty-security/main i386 Packages
-firefox | 28.0+build2-0ubuntu2 | http://mirrors.aliyun.com/ubuntu/ trusty/main i386 Packages
-\end{lstlisting}
+madison是一个apt-cache子命令。
 
 \subsection{Ubuntu打印}
 
@@ -4402,6 +4418,14 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \chapter{Widgets}
 
+\section{Vim Editor}
+
+复制全部：
+
+全部删除：按esc后，然后dG
+全部复制：按esc后，然后ggyG
+全选高亮显示：按esc后，然后ggvG或者ggVG 
+
 \section{Little Tool}
 
 \subsection{You-Get}
@@ -4779,6 +4803,8 @@ http {
 也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
 
 \begin{lstlisting}[language=bash]
+#重新加载配置(测试环境)
+/opt/app/local/tengine/sbin/nginx -s reload -p /opt/app/local/tengine
 /opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
 /opt/home/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
@@ -4786,7 +4812,7 @@ http {
 其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
 
 \begin{lstlisting}[language=bash]
-#重新加载配置
+#重新加载配置(正式环境)
 /home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
@@ -5241,16 +5267,14 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 git config --global merge.tool meld
 \end{lstlisting}
 
-\subsection{Git Hooks}
-
-Git钩子分为客户端钩子和服务端钩子.
-
-\subsection{合并指定分支}
+\paragraph{合并指定分支}
 
 项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
 
 \begin{lstlisting}[language=Bash]
 git cherry-pick <commit id>
+#合并指定分支到当前分支
+git merge --no-ff v1_xiaoqiang
 \end{lstlisting}
 
 
