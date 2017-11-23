@@ -891,7 +891,38 @@ BeanUtils主要提供了对于JavaBean进行各种操作。
 "^1(3[4-9]|4[7]|5[0-27-9]|7[08]|8[2-478])\\d{8}$"
 \end{lstlisting}
 
-[]匹配模式能够匹配方括号内任意字符，[08]可匹配0或者8。以上匹配电话号码的正则表达式会随着时间过期，比如某些号码段新开放时，相应的正则表达式会过期，比如以上正则表达式就无法匹配17623083674这个电话号码。
+[]匹配模式能够匹配方括号内任意字符，[08]可匹配0或者8。以上匹配电话号码的正则表达式会随着时间过期，比如某些号码段新开放时，相应的正则表达式会过期，比如以上正则表达式就无法匹配17623083674这个电话号码。Javascript根据空格和换行做分割：
+
+\begin{lstlisting}[language=Javascript]
+let paramList = value.split(/\n+|\s+/);
+\end{lstlisting}
+
+\textbackslash{}n表示匹配一个换行符。+字符表示匹配前面的子表达式一次或多次。要匹配 + 字符，请使用 \textbackslash{}+。替换空格：
+
+\begin{lstlisting}[language=Javascript]
+/*
+ 其实不能替换空格
+ \s匹配任何不可见字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]
+ \f:form feed character
+ \n:new line character
+ \r:carriage return character
+ \t:tab character
+ \v:vertical tab character
+ \S匹配任何可见字符。等价于[^ \f\n\r\t\v]
+*/
+values.replace(/\s/g, '').split(/\n+/);
+// 方式三
+values.replace(/[ ]/g, '').split(/\n+/);
+\end{lstlisting}
+
+\textbackslash{}s元字符用于查找空白字符。
+空白字符可以是：
+空格符 (space character)
+制表符 (tab character)
+回车符 (carriage return character)
+换行符 (new line character)
+垂直换行符 (vertical tab character)
+换页符 (form feed character)。 /g是全局(Global)匹配。
 
 \subsection{Code Snippets}
 
@@ -938,20 +969,9 @@ String.ValueOf()的坑:
 \begin{lstlisting}[language=Java]
 //如果article.getCategory()为空返回null字符串
 String categoryId = String.valueOf(article.getCategory());
-//养成字符串写前面比较的习惯
-//避免空指针异常
-if ("null".equals(categoryId)) {
-	throw new HlValidateException(400001, "传入参数异常，栏目ID不能为空");
-}
 \end{lstlisting}
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
-
-\subsection{jps}
-
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
-
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
 
 \section{接口(Application Interface)}
 
@@ -4427,6 +4447,10 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \section{Little Tool}
 
+\subsection{SQuirreL SQL Client}
+
+SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库关系型和非关系型。
+
 \subsection{You-Get}
 
 有时看点视频真闹心,广告多,时间长,还有各种限制,如果网速不是很快,不稳定的话,还非常卡,还有Linux下对Flash支持的也不是很好,还要安装Flash插件,非常麻烦,You-Get工具可以解决这个问题.使用You-Get下载的命令为:
@@ -5143,12 +5167,7 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 
 \subsection{subgraph}
 
-
-
 \section{MyBatis Generator}
-
-
-
 
 \chapter{Git}
 
@@ -5274,7 +5293,9 @@ git cherry-pick <commit id>
 git merge --no-ff v1_xiaoqiang
 \end{lstlisting}
 
+\subsection{Git Hook}
 
+项目的v1分支可以合并到v1.3分支，而v1.3分支不能够合并到v1分支。为了保护有时分支失误合并，采用钩子的方式来解决，每次推送的时候验证：
 
 \subsection{常见问题}
 
@@ -6065,14 +6086,15 @@ select * from v$sessions where state='ACTIVE';
 删除数据库ID重复的记录，只保留其中一条记录：
 
 \begin{lstlisting}[language=SQL]
-delete from dolphin where rowid not in(select max(rowid) from dolphin group by id) 
+delete from dolphin where rowid not in
+(
+	select max(rowid) 
+	from dolphin 
+	group by id
+) 
 \end{lstlisting}
 
 拼接列：
-
-
-
-
 
 
 \section{通用知识}
