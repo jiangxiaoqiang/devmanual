@@ -1818,6 +1818,7 @@ private JdbcTemplate jdbcTemplate1;
 \end{lstlisting}
 
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
+动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
 
 \paragraph{Spring Boot AOP多数据源(未成功)}
 
@@ -4475,6 +4476,8 @@ rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多�
 \begin{lstlisting}[language=Bash]
 rsync -avz pi@10.42.0.22:app-soft .
 \end{lstlisting}
+
+
 
 \subsection{ag}
 
