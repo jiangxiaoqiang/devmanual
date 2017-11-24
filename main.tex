@@ -10,7 +10,7 @@
 \usepackage{graphicx} % Required for including pictures
 \graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
 \usepackage{lipsum} % Inserts dummy text
-
+\usepackage[ddmmyyyy]{datetime}
 
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage[english]{babel} % English language/hyphenation
@@ -561,11 +561,11 @@ addtohook={%
 
 \noindent \textsc{Edited by Xiaoqiang Jiang}\\ % Publisher
 
-\noindent \textsc{\url{http://jiangxiaoqiang.com/}}\\ % URL
+\noindent \textsc{\url{http://jiangxiaoqiang.github.com/}}\\ % URL
 
 \noindent All Rights Unreserved.\\ % License information
 
-\noindent \textit{Version 20170320, \today} % Printing/edition date
+\noindent \textit{Version \currenttime, \today} % Printing/edition date
 
 
 %----------------------------------------------------------------------------------------
@@ -1004,7 +1004,7 @@ public ApiResult createArticle(@RequestBody Article article) {
 }
 \end{lstlisting}
 
-@RequestBody需要把所有请求参数作为json解析，因此，不能包含key=value这样的写法在请求url中，所有的请求参数都是一个Json。使用curl模拟POST请求:
+使用curl模拟POST请求:
 
 \begin{lstlisting}[language=Bash]
 curl -X POST -H "APPID:hlb1451j6d136334gh2" \
