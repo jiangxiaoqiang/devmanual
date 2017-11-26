@@ -3096,27 +3096,29 @@ echo "部署完成"
 
 start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。
 
-\paragraph{优化代理(Optimizate Proxy)}
-
-项目的一个特点是，有两个彼此独立的网络，网络之间互相切换非常麻烦，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。可以保证只要启动任意一个代理机，即可调试部署程序，后面发现暂时没有写脚本的必要，所以未实现。
-
 \paragraph{终端快捷键(Terminal Shortcut)}
 
-Shell终端中常用的快捷键如下：
+Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
-\begin{tabular}{cp{12cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{说明}  \\
-	\hline			
-	Alt + F & 向前移动一个单词 \\
-	Alt + B & 向后移动一个单词 \\
-	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
-	Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
-	Ctrl + K & 从光标当前位置向后删除所有字符\\
-	Ctrl + U & 从光标当前位置向前删除所有字符\\
-	\hline
-\end{tabular}
+\begin{table}
+	\caption{终端快捷键}
+	\label{table:terminalshortcut}
+	\begin{center}
+	\begin{tabular}{cp{12cm}c}
+		\hline
+		\multirow{1}{*}{快捷键}
+		& \multicolumn{1}{c}{说明}  \\
+		\hline			
+		Alt + F & 向前移动一个单词 \\
+		Alt + B & 向后移动一个单词 \\
+		Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
+		Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
+		Ctrl + K & 从光标当前位置向后删除所有字符\\
+		Ctrl + U & 从光标当前位置向前删除所有字符\\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{table}
 
 \paragraph{source}
 
@@ -3809,6 +3811,28 @@ dependencies {
 
 dir表示文件所在目录，include表示包含哪些文件。
 
+\subsection{Gradle Properties支持}
+
+Gradle支持三种Properties, 这三种Properties的作用域和初始化阶段都不一样:
+
+\textbf{System Properties：}
+可通过gradle.properties文件，环境变量或命令行-D参数设置，可在setting.gradle或build.gradle中动态修改，在setting.gradle中的修改对buildscript block可见；所有工程可见，不建议在build.gradle中修改。多子工程项目中，子工程的gradle.properties会被忽略掉，只有root工程的gradle.properties有效。
+
+\textbf{Project Properties：}可通过gradle.properties文件，环境变量或命令行-P参数设置，优先级是:
+可在build.gradle中动态修改，但引用不存在的project properties会立即抛错，
+动态修改过的project properties在buildscript block中不可见。
+
+\textbf{Project ext properties：}可在项目的build.gradle中声明和使用，本工程和子工程可见，不能在setting.gradle中访问，如果有多处设置，加载次序如下（注意：gradle 2.0是这样的, 1.10~1.12有bug）, 后面的覆盖前面的设置。
+
+\begin{itemize}
+	\item {from gradle.properties located in project build dir.}
+	\item {from gradle.properties located in gradle user home.}
+	\item {from system properties, e.g. when -Dsome.property is used in the command line.}
+	\item {setting.gradle}
+	\item {build.gradle}
+\end{itemize}
+
+
 \subsection{执行流程}
 
 There is a one-to-one relationship between a Project and a "build.gradle" file. During build initialisation, Gradle assembles a Project object for each project which is to participate in the build, as follows:
@@ -4450,7 +4474,30 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \subsection{SQuirreL SQL Client}
 
-SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库关系型和非关系型。
+目前常见的数据库有几十种，每一种又有自己连接客户端，平时工作中会经常接触不同类型的数据库，一个通用的数据库客户端非常有必要。SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库，关系型和非关系型。只需要使用一个工具即可操作多种数据库。可以在Session->Session Properties->SQL中设置编辑器的字体(默认字体比较小)，还可以设置将每张表包含的数据总量显示出来，如图\ref{fig:showtableresultcount}所示。在使用数据库的过程中，还有一个比较不方便的地方就是一段时间后，数据库会断开连接，也许是安全防火墙设置的缘故。可以设置定期执行一个SQL，防止连接断开，this tab allows you to configure an SQL statement to execute periodically in the background. This can help keep the session connection alive for firewalls that terminate connections due to inactivity。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{showtableresultcount.png}
+	\caption{SQurreL SQL Client显示表总数}
+	\label{fig:showtableresultcount}
+\end{figure}
+
+\paragraph{Code Completion}
+
+SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过程中按下快捷键Ctrl + Space即可。但是Ctrl + Space快捷键有可能被输入法占用了，此时修改输入法的快捷键。在路径Text Entry->Input Method Configuration->Global Config的热键(Hotkey)设置中修改。在Session Properties中可以设置显示代码自动提示时显示列的类型，最终的效果如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{codeautocompletion.png}
+	\caption{代码自动完成}
+	\label{fig:codeautocompletion}
+\end{figure}
+
+\paragraph{DBCopy}
+
+可以在同一个数据库或不同数据库中，直接迁移一个或多个数据表！如此，我们就可以省去了不同方言的建表语句，以及数据导出成txt，再导入到另外数据库的繁琐操作。直接右键表，复制表，粘贴表即可。
+
 
 \subsection{You-Get}
 
