@@ -4474,7 +4474,7 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \subsection{SQuirreL SQL Client}
 
-目前常见的数据库有几十种，每一种又有自己连接客户端，平时工作中会经常接触不同类型的数据库，一个通用的数据库客户端非常有必要。SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库，关系型和非关系型。只需要使用一个工具即可操作多种数据库。可以在Session->Session Properties->SQL中设置编辑器的字体(默认字体比较小)，还可以设置将每张表包含的数据总量显示出来，如图\ref{fig:showtableresultcount}所示。在使用数据库的过程中，还有一个比较不方便的地方就是一段时间后，数据库会断开连接，也许是安全防火墙设置的缘故。可以设置定期执行一个SQL，防止连接断开，this tab allows you to configure an SQL statement to execute periodically in the background. This can help keep the session connection alive for firewalls that terminate connections due to inactivity。
+目前常见的数据库有几十种，每一种又有自己连接客户端，平时工作中会经常接触不同类型的数据库，一个通用的数据库客户端非常有必要。SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库，关系型和非关系型。只需要使用一个工具即可操作多种数据库。可以在Session->Session Properties->SQL中设置编辑器的字体(默认字体比较小)，还可以设置将每张表包含的数据总量显示出来(Show SQL Results Metadata)，如图\ref{fig:showtableresultcount}所示。在使用数据库的过程中，还有一个比较不方便的地方就是一段时间后，数据库会断开连接，也许是安全防火墙设置的缘故。可以设置定期执行一个SQL，防止连接断开，this tab allows you to configure an SQL statement to execute periodically in the background. This can help keep the session connection alive for firewalls that terminate connections due to inactivity。
 
 \begin{figure}[htbp]
 	\centering
@@ -4483,9 +4483,21 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 	\label{fig:showtableresultcount}
 \end{figure}
 
+如果需要在对象树上搜索对象，则可以使用类似SQL通配符的方式，如图\ref{fig:searchobject}所示。匹配的对象会高亮显示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{searchobject.png}
+	\caption{SQurreL SQL Client搜索对象}
+	\label{fig:searchobject}
+\end{figure}
+
+
+
+
 \paragraph{Code Completion}
 
-SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过程中按下快捷键Ctrl + Space即可。但是Ctrl + Space快捷键有可能被输入法占用了，此时修改输入法的快捷键。在路径Text Entry->Input Method Configuration->Global Config的热键(Hotkey)设置中修改。在Session Properties中可以设置显示代码自动提示时显示列的类型，最终的效果如图所示。
+SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过程中按下快捷键Ctrl + Space即可。但是Ctrl + Space快捷键有可能被输入法占用了，此时修改输入法的快捷键。在路径Text Entry->Input Method Configuration->Global Config的热键(Hotkey)设置中修改。在Session Properties中可以设置显示代码自动提示时显示列的类型，最终的效果如图\ref{fig:codeautocompletion}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -4496,7 +4508,14 @@ SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过�
 
 \paragraph{DBCopy}
 
-可以在同一个数据库或不同数据库中，直接迁移一个或多个数据表！如此，我们就可以省去了不同方言的建表语句，以及数据导出成txt，再导入到另外数据库的繁琐操作。直接右键表，复制表，粘贴表即可。
+可以在同一个数据库或不同数据库中，直接迁移一个或多个数据表！如此，我们就可以省去了不同方言的建表语句，以及数据导出成txt，再导入到另外数据库的繁琐操作。直接右键表，复制表，粘贴表即可，如图\ref{fig:copytabledata}所示。当数据量比较大时，拷贝速度还是比较慢的。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{copytabledata.png}
+	\caption{复制表数据示例}
+	\label{fig:copytabledata}
+\end{figure}
 
 
 \subsection{You-Get}
@@ -5196,6 +5215,8 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \section{Graphviz}
 
+Graphviz （英文：Graph Visualization Software的缩写）是一个由AT\&T实验室启动的开源工具包，用于绘制DOT语言脚本描述的图形。它也提供了供其它软件使用的库。Graphviz是一个自由软件，其授权为Eclipse Public License。
+
 \subsection{编译}
 
 一个简单的图形示例：
@@ -5211,11 +5232,37 @@ digraph G {
 }
 \end{lstlisting}
 
+编译图形：
+
 \begin{lstlisting}[language=Bash]
 dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
 
 \subsection{subgraph}
+
+子图的名称必须以cluster开头，否则graphviz无法识别。
+
+\begin{lstlisting}
+digraph G {
+	node [peripheries=2 style=filled color="#eecc80"];
+	//edge [color="sienna" fontcolor="green"];
+	//node [shape="record"];
+	edge [style="dashed"];
+	
+	
+	""[shape="none",image="chrome-512.png",color=""];
+	
+	"" -> "关键字";
+	"关键字" -> "查询视图";
+	
+	subgraph cluster1{
+		label = "展示层";
+		fillcolor = darkslategray;
+		"平台用户" -> "浏览器";
+	}
+
+}
+\end{lstlisting}
 
 \section{MyBatis Generator}
 
@@ -5240,6 +5287,8 @@ git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
 git config --list
 #查看远程(remote)分支
 git branch -r
+# 比较2个分支文件的差异
+git diff v1.3_xiaoqiang v1_xiaoqiang filename.java
 \end{lstlisting}
 
 克隆指定的分支：
@@ -5342,6 +5391,31 @@ git cherry-pick <commit id>
 #合并指定分支到当前分支
 git merge --no-ff v1_xiaoqiang
 \end{lstlisting}
+
+\paragraph{和并指定文件}
+
+在开发过程中，有一个旧的分支v1\_xiaoqiang和一个新的分支，在新旧分支同步开发的过程中，旧分支添加了一些特性，需要和并指定特性到分支上。也就是需要将旧分支的某些修改和并到新的分支，可以直接使用merge命令，但是所有的内容都会和并到新分支，也可以使用git diff命令对比两个分支。
+
+\begin{lstlisting}[language=Bash]
+git diff branch1 branch2
+\end{lstlisting}
+
+但是采用git diff命令比较头疼的是完全是文本行，不是非常直观，可以直接使用merge工具meld来和并：
+
+\begin{lstlisting}[language=Bash]
+git difftool -t meld -y v1.3_xiaoqiang v1_xiaoqiang
+\end{lstlisting}
+
+使用Meld工具对比效果如下图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{gitdiffusingmeldtool.png}
+	\caption{Git使用Meld工具对比和并不同分支文件}
+	\label{fig:gitdiffusingmeldtool}
+\end{figure}
+
+图中左侧表示v1.3\_xiaoqiang分支的文件，右侧表示v1\_xiaoqiang分支的文件。如果不想和并文件，直接关闭Meld窗体即可，如果需要和并，点击对应的箭头。
 
 \subsection{Git Hook}
 
