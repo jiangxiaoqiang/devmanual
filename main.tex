@@ -1455,6 +1455,14 @@ spring.datasource.hikari.type=com.zaxxer.hikari.HikariDataSource
 spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
 \end{lstlisting}
 
+在某些安全定义较为严格的网络，如果数据库连接经过一定时间无通信，会自动断开连接。可以设置HikariCP：
+
+\begin{lstlisting}
+hikariConfig.setConnectionTestQuery("SELECT 1");
+\end{lstlisting}
+        
+This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。
+
 
 \paragraph{DataSource跟DriverManager区别及联系}
 
@@ -3696,19 +3704,31 @@ sudo find / -name "idea.sh"
 \subsection{Tips}
 
 
-\begin{tabular}{cp{6cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{作用}  \\
-	\hline			
-	Ctrl + Left/Right & 到行首/尾 \\
-	Command + Shift + A(Mac) & Find Action \\
-	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
-	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
-	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
-	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
-	\hline
-\end{tabular}
+Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
+
+\begin{table}
+	\begin{center}
+		\caption{Intellj Idea快捷键}
+		\bigskip
+		\label{table:intellijideashortkeys}
+		\begin{tabular}{cp{6cm}c}
+			\hline
+			\multirow{1}{*}{快捷键}
+			& \multicolumn{1}{c}{作用}  \\
+			\hline			
+			Ctrl + Left/Right & 到行首/尾 \\
+			Command + Shift + A(Mac) & Find Action \\
+			Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
+			Home/End(Ubuntu) & 光标移动到行首或者行尾\\
+			Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+			Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
+			F2/Shift + F2 & 定位到下一个或者上一个错误 \\
+			Ctrl + [ /Ctrl + ] & 定位到代码块的开始、结束 \\
+			Alt + Left / Alt + Right & 回到之前的文件\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
 
 \paragraph{Class JavaLaunchHelper is implemented}
@@ -3725,7 +3745,15 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{列编辑模式}
 
-最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。
+最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。在使用列编辑模式编辑SQL的时候，如果列自动对应上了，会出现灰色的列名，这个小细节也非常有用，在调整SQL语句的时候，如图\ref{fig:intellijideasqltips}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideasqltips.png}
+	\caption{Intellij Idea SQL编辑时列匹配成功提示}
+	\label{fig:intellijideasqltips}
+\end{figure}
+
 
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
@@ -3740,7 +3768,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -4902,7 +4930,7 @@ http {
 其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
 
 \begin{lstlisting}[language=bash]
-#重新加载配置(正式环境)
+#重新加载配置(正式环境Nginx Reload)
 /home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
@@ -4956,6 +4984,10 @@ yum provides */libssl.so.1.0.0
 在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
 
 \url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
+
+\paragraph{nginx: [emerg] unknown directive "upstram"}
+
+粘贴复制时有特殊字符。
 
 \section{Ansible}
 
@@ -5373,6 +5405,11 @@ git log --follow application-jjxxzx-test.properties
 \begin{lstlisting}[language=Bash]
 git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \end{lstlisting}
+
+查看文件删除记录：
+
+
+
 
 \subsection{merge}
 
@@ -6114,9 +6151,11 @@ select *
 from "CTISYS"."SYSCONTEXTINDEXES";
 \end{lstlisting}
 
-新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
+新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
 
-在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
+\begin{lstlisting}[language=SQL]
+create index "TS_C500035_JBXX_DJXX_GTJBXX_ID" on "USER_XYCQ_ZS"."TS_C500035_JBXX_DJXX_GTJBXX"("ID") storage(initial 1,next 1,minextents 1);
+\end{lstlisting}
 
 \subsection{函数}
 
