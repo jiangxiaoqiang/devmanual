@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -4933,6 +4933,21 @@ http {
 	}
 }
 \end{lstlisting}
+
+\subsection{Load Balance}
+
+nginx 的负载均衡配置:
+
+\begin{lstlisting}[language=bash]
+upstream backend{
+    server 10.10.1.12:28080;
+    server 10.10.1.13:28080 backup;
+}
+\end{lstlisting}
+
+而反向代理实际意义就是把请求转发, 使用的时候用 proxy\_pass 实现.
+反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
+反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险
 
 \subsection{常见问题}
 
