@@ -697,6 +697,18 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
+\subsection{immutable}
+
+多线程共享变量的情况下，为了保证数据一致性，往往需要对这些变量的访问进行加锁。而锁本身又会带来一些问题和开销。Immutable Object模式使得我们可以在不使用锁的情况下，既保证共享变量访问的线程安全，又能避免引入锁可能带来的问题和开销。多线程环境中，一个对象常常会被多个线程共享。这种情况下，如果存在多个线程并发地修改该对象的状态或者一个线程读取该对象的状态而另外一个线程试图修改该对象的状态，我们不得不做一些同步访问控制以保证数据一致性。而这些同步访问控制，如显式锁和CAS操作，会带来额外的开销和问题，如上下文切换、等待时间和ABA问题等。Immutable Object模式的意图是通过使用对外可见的状态不可变的对象（即Immutable Object），使得被共享对象“天生”具有线程安全性，而无需额外的同步访问控制。从而既保证了数据一致性，又避免了同步访问控制所产生的额外开销和问题，也简化了编程。
+可以遵照以下几点来编写一个不可变类:
+1. 类应该定义成final，避免被继承。将类声明为final (强不可变类)，或者将所有类方法加上final(弱不可变类)。或者使用静态工厂并声明构造器为private。
+2. 声明属性为 private 和 final 。
+3. 不要提供任何可以修改对象状态的方法：不仅仅是set方法，还有任何其它可以改变状态的方法。
+4. 如果类有任何可变对象属性，那么当它们在类和类的调用者间传递的时候必须被保护性拷贝。如果某一个类成员不是原始变量(primitive)或者不可变类，必须通过在成员初始化(in)或者get方法(out)时通过深度clone方法，来确保类的不可变。	
+
+不可变对象有几个优点：线程安全、易于理解、比可变对象有更高的安全性。
+
+
 \subsection{集合操作(Collection Operate)}
 
 Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
@@ -4657,6 +4669,20 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 	\caption{Zeal文档搜索示例}
 	\label{fig:zealsearch}
 \end{figure}
+
+\subsection{Thunderbird邮件客户端}
+
+Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerprisemailbox}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{tencententerprisemailbox.png}
+	\caption{Thunderbird配置企业邮箱}
+	\label{fig:tencententerprisemailbox}
+\end{figure}
+
+
+
 
 \subsection{jq}
 
