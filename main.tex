@@ -5324,6 +5324,9 @@ digraph G {
 
 \section{MyBatis Generator}
 
+
+
+
 \chapter{Git}
 
 \section{基础}
@@ -5432,9 +5435,23 @@ git log --follow application-jjxxzx-test.properties
 git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \end{lstlisting}
 
-查看文件删除记录：
+\subsection{log}
+
+git log有两个用法：一是自定义提交的输出格式，二是过滤输出哪些提交。
+
+\begin{lstlisting}[language=Bash]
+[alias]
+	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+	lg = !"git lg1"
+\end{lstlisting}
 
 
+按提交信息来过滤提交，你可以使用 --grep 标记。它和上面的 --author 标记差不多，只不过它搜索的是提交信息而不是作者。比如说，你的团队规范要求在提交信息中包括相关的issue编号，你可以用下面这个命令来显示这个 issue 相关的所有提交：
+
+\begin{lstlisting}[language=Bash]
+git log --grep="JRA-224:"
+\end{lstlisting}
 
 
 \subsection{merge}
