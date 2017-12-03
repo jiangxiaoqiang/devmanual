@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -718,9 +718,8 @@ request.getParamList().stream()
 		.filter(StringUtils::isNotEmpty)
 		.distinct()
 		.forEach(param -> {
-			if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
-			
-			});
+		
+		});
 \end{lstlisting}
 
 对象做非空判断：
@@ -4672,7 +4671,7 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 
 \subsection{Thunderbird邮件客户端}
 
-Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerprisemailbox}所示。
+Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerprisemailbox}所示。途中配置采用了POP协议，但是有时候需要客户端中的操作要反映到服务端，比如在客户端删除了邮件，服务端也需要删除，这样就不用重复操作了。可以将收件协议配置为IMAP。IMAP全称是Internet Mail Access Protocol，即交互式邮件存取协议，它是跟POP3类似邮件访问标准协议之一。不同的是，开启了IMAP后，您在电子邮件客户端收取的邮件仍然保留在服务器上，同时在客户端上的操作都会反馈到服务器上，如：删除邮件，标记已读等，服务器上的邮件也会做相应的动作。所以无论从浏览器登录邮箱或者客户端软件登录邮箱，看到的邮件以及状态都是一致的。
 
 \begin{figure}[htbp]
 	\centering
