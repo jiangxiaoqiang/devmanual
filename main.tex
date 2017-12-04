@@ -3423,6 +3423,18 @@ tracert 10.55.10.9
 	\label{fig:wiresharkcaptureping}
 \end{figure}
 
+\paragraph{df(disk free)}
+
+df命令用于显示磁盘分区上的可使用的磁盘空间.
+
+
+\begin{lstlisting}[language=Bash]
+df -kh
+\end{lstlisting}
+
+-k或--kilobytes：指定区块大小为1024字节；可以用此命令查看U盘的路径.也可以使用命令mount：通过查看/etc/mtab（文章最后会对/etc/mtab有个解释）文件显示当前系统已挂载的所有设备.
+
+
 \subsection{tmux}
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
