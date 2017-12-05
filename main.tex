@@ -722,19 +722,6 @@ request.getParamList().stream()
 		});
 \end{lstlisting}
 
-对象做非空判断：
-
-\begin{lstlisting}[language=Java]
-f (!"".equals(name)) {
-	//将""写在前头
-	//不管name是否为null，都不会出错
-}
-
-if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-	//用String强制转换也不会报空指针异常
-} 
-\end{lstlisting}
-
 获取Json单个值：
 
 \begin{lstlisting}[language=Java]
@@ -758,6 +745,10 @@ peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List�
 
 \begin{lstlisting}[language=Java]
 Integer[] integers = new Integer[] {1,2,3,4,5};
+/*
+	可以采用此方法填充数组，初始化数组
+*/
+Arrays.fill(integers,1);
 // Cannot modify returned list
 List<Integer> list21 =  Arrays.asList(integers); 
 // good
@@ -1074,7 +1065,7 @@ return corporationMapperFacade.map(corporation, XydmResponse.class);
 }
 \end{lstlisting}
 
-\subsection{接口认证(Authorization)}
+\subsection{接口认证(Interface Authorization)}
 \label{sec:authorization}
 
 目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
@@ -1109,7 +1100,7 @@ readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 # TODO:根据不同的随机串排序，生成不同Toekn
 #
 
-readonly APP_ID="hlb1451j6d136334gh2"
+readonly APP_ID="hlb145"
 readonly APP_KEY="test"
 
 ECHOSTR=`head -n 1 /dev/urandom|sed 's/[^a-z0-9]//g'|md5sum|awk '{print $1}'`
@@ -1121,7 +1112,8 @@ CURRENT_TIME=`date '+%Y-%m-%d %H:%M:%S'`
 # 时间戳(timestamp)、AppKey、随机字符串(echostr)
 # \$1接收来自命令行传入的参数
 # 第二个参数用\$2接收，以此类推
-# \$@表示所有的参数，相当于Java中main函数中定义的参数数组
+# \$@表示所有的参数
+# 相当于Java中main函数中定义的参数数组
 #
 SORTED_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${ECHOSTR}|tr '_' '\t'|sort|tr -d '\011'`
 TOKEN=`echo -n ${APP_ID}${APP_KEY}${CURRENT_TIME}${CONST_STR}|md5sum|awk '{print $1}'`
@@ -1129,7 +1121,10 @@ SEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}${APP_ID}${APP_KEY}${CONST_STR}|shasum -a
 
 # 请求服务端
 COMMAND=`curl -H "APPID:$APP_ID" -H "TIMESTAMP:$CURRENT_TIME" -H "ECHOSTR:$CONST_STR" -H "TOKEN:$SEQUENCE_TOKEN" \
-http://localhost:28080/api/blacklist/page?xdr= | jq '.'`
+http://10.10.1.11:80/api/xysj/orgportal `
+
+# 输出结果
+echo ${COMMAND}|jq '.'
 \end{lstlisting}
 
 将APPID、APPKEY、时间戳，随机字符串采用SHA1加密后，生成Token发送给服务端，服务端再按照同样的步骤产生Token，两个Token进行比对，这里的关键是APPKEY只有服务端和客户端知道，其他非法用户不知道APPKEY，无法伪造Token。echo加上-n(newline)参数表示不换行输出。Linux中的随机数可以从两个特殊的文件中产生，一个是/dev/urandom.另外一个是/dev/random。他们产生随机数的原理是利用当前系统的熵池来计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，熵指的是一个系统的混乱程度，系统噪音可以通过很多参数来评估，如内存的使用，文件的使用量，不同类型的进程数量等等。如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。这就是为什么会有/dev/urandom和/dev/random这两种不同的文件，后者在不能产生新的随机数时会阻塞程序，而前者不会（ublock），当然产生的随机数效果就不太好了，这对加密解密这样的应用来说就不是一种很好的选择。/dev/random会阻塞当前的程序，直到根据熵池产生新的随机字节之后才返回，所以使用/dev/random比使用/dev/urandom产生大量随机数的速度要慢。
@@ -1483,7 +1478,7 @@ In basic terms, a data source is a facility for storing data. It can be as sophi
 Using a DataSource object is the preferred alternative to using the DriverManager for establishing a connection to a data source. They are similar to the extent that the DriverManager class and DataSource interface both have methods for creating a connection, methods for getting and setting a timeout limit for making a connection, and methods for getting and setting a stream for logging.
 
 两者不同点：
-1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a JavaTM Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
+1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a Java Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
 
 2.The second major advantage is that the DataSource facility allows developers to implement a DataSourceclass to take advantage of features like connection pooling and distributed transactions.
 
@@ -3340,7 +3335,18 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 find / -name "*工作*"
 \end{lstlisting}
 
-\paragraph{kill}
+\paragraph{sudo}
+
+sudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy. 
+
+\begin{lstlisting}[language=Bash]
+sudo -i
+sudo -u dolphin -i
+在vi/vim编辑器中,编辑文件后保存时没有修改的权限时可用
+:w !sudo tee %
+\end{lstlisting}
+
+使用上述命令，可以切换到root状态下
 
 \paragraph{tar}
 
@@ -3709,6 +3715,19 @@ sudo find / -name "idea.sh"
 \end{figure}
 
 有时在使用列编辑SQL语句时，会自动换行，而且会自动添加一些符号，导致编辑出来的SQL语句语法错误，在Settings->Editor->Code Style下的Default Options下调整最大列文字数量即可。
+
+\subsection{Plugin}
+
+\paragraph{Free Mybatis Plugin}
+
+可以快速的从Mapper.java中的方法定位到Mapper.xml对应的方法，另外在字段写错误时也会自动给出红色的高亮提示，如图\ref{fig:intellijideapluginxmltips}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideapluginxmltips.png}
+	\caption{Intellij Idea Mybatis插件提示}
+	\label{fig:intellijideapluginxmltips}
+\end{figure}
 
 
 
@@ -4234,7 +4253,7 @@ tightvncserver
 vncserver :2 -geometry 800x600 -depth 24
 \end{lstlisting}
 
-在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+在Ubuntu下远程配置如图\ref{fig:raspberryremtoeconfig}所示：
 
 \begin{figure}[htbp]
 	\centering
@@ -4242,6 +4261,8 @@ vncserver :2 -geometry 800x600 -depth 24
 	\caption{Ubuntu远程连接配置}
 	\label{fig:raspberryremtoeconfig}
 \end{figure}
+
+在使用Remmina Remote Desktop Client连接时，VNC Server的端口可能是5901。
 
 \subsection{Ubuntu远程Ubuntu}
 
@@ -4956,6 +4977,8 @@ upstream backend{
 
 \begin{lstlisting}[language=bash]
 ./nginx -c /opt/app/local/tengine/conf/nginx.conf
+# 启动Nginx(正式环境)
+/home/app/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
 
 也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
