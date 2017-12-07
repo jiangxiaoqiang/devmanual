@@ -4599,8 +4599,16 @@ you-get <url>
 you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society
 \end{lstlisting}
 
+有时在听虾米音乐时，需要下载某些歌曲，可以直接抓取Media地址下载在线试听版本的歌曲，如图\ref{fig:scratchxiamidownloadurl}所示。
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{scratchxiamidownloadurl.png}
+	\caption{获取试听下载地址}
+	\label{fig:scratchxiamidownloadurl}
+\end{figure}
 
+将地址粘贴到浏览器下载即可，遗憾的不是高品质音乐，而且文件名也全是数字，需要手动修改。
 
 
 \subsection{transmission}
@@ -5632,6 +5640,10 @@ console.table(data);
 	\label{fig:googlechromeconsoletable}
 \end{figure}
 
+\paragraph{截屏(Screenshot)}
+
+有的时候需要截取一个下拉网页，但是需要向下滑动才能够截取全部，新版的Google Chrome中可以使用Ctrl + Shift + P(Program)打开程序运行窗口，输入Capture，选择Capture full size screenshot即可。
+
 
 \subsection{Source Map}
 
@@ -5685,6 +5697,20 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 
 \subsection{Sources}
+
+\paragraph{Call Stack}
+
+在Google Chrome中查看函数的调用堆栈，如图\ref{fig:checkjavascriptcallstack}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{checkjavascriptcallstack.png}
+	\caption{Google Chrome查看Javascript调用堆栈}
+	\label{fig:checkjavascriptcallstack}
+\end{figure}
+
+Javascript是单线程，从图中看出，只有一个main线程。
+
 
 \paragraph{面板中查看变量}
 
