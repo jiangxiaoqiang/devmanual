@@ -4580,7 +4580,18 @@ you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-fre
 \end{lstlisting}
 
 
+\subsection{aria2c}
 
+aria2\footnote{https://aria2.github.io/} is a utility for downloading files. The supported protocols are HTTP(S), FTP, SFTP, BitTorrent, and Metalink. aria2 can download a file from multiple sources/protocols and tries to utilize your maximum download bandwidth. 下载aria2配置文件:
+
+\begin{lstlisting}[language=Bash]
+mkdir -p /etc/aria2
+cd /etc/aria2
+wget https://github.com/bostoneboy/raspberry_pi_stuff/raw/master/aria2/aria2.conf
+wget https://github.com/bostoneboy/raspberry_pi_stuff/raw/master/aria2/save-session.list
+\end{lstlisting}
+
+下载aria2的service启动脚本及加入开机自启动项
 
 
 \subsection{transmission}
