@@ -5007,6 +5007,22 @@ upstream backend{
 反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
 反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险
 
+\subsectionP{超时转发}
+
+当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
+
+\begin{lstlisting}
+server {
+    location / {
+        proxy_pass http://backends;
+        proxy_next_upstream error timeout http_404;
+    }
+}
+\end{lstlisting}
+
+proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个参数代表如果超时，则尝试其他节点。
+
+
 \subsection{常见问题}
 
 \paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
