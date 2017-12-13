@@ -926,6 +926,17 @@ values.replace(/[ ]/g, '').split(/\n+/);
 垂直换行符 (vertical tab character)
 换页符 (form feed character)。 /g是全局(Global)匹配。
 
+\paragraph{匹配不包含特定字符串}
+
+在Google Chrome中有定时请求，但是在开发过程中在Network面板中不需要查看到定时请求的项，在filter中可以采用如下的正则表达式：
+
+
+\begin{lstlisting}[language=Javascript]
+/^((?!unfeedback).)*$/
+\end{lstlisting}
+
+这样就不会看到定时请求的XHR来扰乱视线了。
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -3315,7 +3326,16 @@ which scala
 #列出指定文件的信息
 ls -lh authorized_keys
 #只显示当前文件夹下的目录
+#方法1
 ls -al | grep "^d"
+#方法2
+ls -d */
+#列出文件，按文件大小排序
+ls -alhS
+#递归列出子目录
+ls -R
+#调整ls别名
+alias='ls -lh --color=always'
 \end{lstlisting}
 
 
@@ -3390,7 +3410,7 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 
 \paragraph{sed(Stream Editor)}
 
-sed全名叫stream editor，流编辑器，用程序的方式来编辑文本，相当的hacker啊。sed基本上就是玩正则模式匹配，所以，玩sed的人，正则表达式一般都比较强。過濾某一個時間段的日志：
+sed全名叫stream editor，流编辑器，用程序的方式来编辑文本。過濾某一個時間段的日志：
 
 \begin{lstlisting}[language=Bash]
 sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> filter.log
@@ -3484,7 +3504,7 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\caption{Linux profile配置文件}
 	\label{table:linuxconfigfile}
 	\begin{center}
-	\begin{tabular}{cp{8cm}c}
+	\begin{tabular}{cp{10cm}c}
 		\hline
 		\multirow{1}{*}{序号}
 		& \multicolumn{1}{c}{名称}  \\
@@ -3503,15 +3523,21 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\end{center}
 \end{table}
 
-有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
+有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以在.bashrc(rc:Run Commands)脚本中做如下设置：
 
 \begin{lstlisting}[language=Bash]
 # 忽略[连续]重复命令
+# ignoredups 只能剔除连续的重复条目
+# 要清除整个命令历史中的重复条目
+# 可以将HISTCONTROL设置成erasedups
 HISTCONTROL=ignoredups
 # 清除重复命令
 # HISTCONTROL=erasedups
 # 忽略特定命令
-HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*"
+# 有时在历史中希望记住不常用的命令
+# 常用的命令可以直接记住
+# 不需要存放在history中
+HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:exit:history*"
 # 命令历史文件大小10M
 HISTFILESIZE=1000000000
 # 保存历史命令条数10W
@@ -3557,7 +3583,7 @@ uname －a
 \end{lstlisting}
 
 
-\section{常用设置}
+\section{常用设置(Settings)}
 
 \subsection{XFCE桌面}
 
@@ -4624,7 +4650,11 @@ sudo wget https://github.com/bostoneboy/raspberry_pi_stuff/raw/master/aria2/save
 下载aria2的service启动脚本及加入开机自启动项。启动aria2c服务端：
 
 \begin{lstlisting}[language=Bash]
+# 启动服务端
+/usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
 sudo aria2c --enable-rpc --rpc-listen-all=true --rpc-allow-origin-all -c -D
+# 启动http
+python -m SimpleHTTPServer 9999
 \end{lstlisting}
 
 rpc server模式，它启动之后什么都不干，然后等着从rpc接口添加任务，下载完也不退出，而是一直等待。用命令方式导致配置不方便修改保存，-D导致无法看到出错信息。推荐启动方式是使用配置文件\$HOME/.aria2/aria2.conf 。使用aria2c --conf-path=<PATH>启动，注意<PATH>填完整路径。
@@ -5609,6 +5639,8 @@ git config --system http.sslverify false
 	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
 	\hline
 	Ctrl+Shift+P (Windows/Linux)  & 打开所有窗口 \\
+	\hline
+	Ctrl+ [ / Ctrl + ]  & 左右切换DevTool面板 \\
 	\hline
 \end{tabular}
 
