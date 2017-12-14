@@ -937,6 +937,15 @@ values.replace(/[ ]/g, '').split(/\n+/);
 
 这样就不会看到定时请求的XHR来扰乱视线了。
 
+\subsection{Crontab}
+
+Cron is driven by a crontab (cron table) file, a configuration file that specifies shell commands to run periodically on a given schedule. 
+
+\begin{lstlisting}[language=Bash]
+# 每晚9：30执行
+30 21 * * * *
+\end{lstlisting}
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -4615,6 +4624,18 @@ SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过�
 	\label{fig:copytabledata}
 \end{figure}
 
+\subsection{JD-GUI}
+
+The “Java Decompiler project” aims to develop tools in order to decompile and analyze Java 5 “byte code” and the later versions.在使用多Module构建的项目中，jar包是以lib的形式存在的，所以需要直接通过查看lib来查看源码，如图\ref{fig:jdguichecksourcecode}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{jdguichecksourcecode.png}
+	\caption{JD-GUI查看jar包源码}
+	\label{fig:jdguichecksourcecode}
+\end{figure}
+
+
 
 \subsection{You-Get}
 
@@ -5037,7 +5058,7 @@ upstream backend{
 反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
 反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险
 
-\subsectionP{超时转发}
+\subsection{超时转发}
 
 当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
 
