@@ -687,16 +687,6 @@ public class DataSourceConfig {
 
 在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
-\subsection{Spring Boot开发者工具}
-
-spring-boot-devtools为应用提供一些开发时特性，包括默认值设置，自动重启，livereload等。在build.gradle文件里添加开发工具配置：
-
-\begin{lstlisting}[language=Bash]
-compile "org.springframework.boot:spring-boot-devtools"
-\end{lstlisting}
-
-在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
-
 \subsection{immutable}
 
 多线程共享变量的情况下，为了保证数据一致性，往往需要对这些变量的访问进行加锁。而锁本身又会带来一些问题和开销。Immutable Object模式使得我们可以在不使用锁的情况下，既保证共享变量访问的线程安全，又能避免引入锁可能带来的问题和开销。多线程环境中，一个对象常常会被多个线程共享。这种情况下，如果存在多个线程并发地修改该对象的状态或者一个线程读取该对象的状态而另外一个线程试图修改该对象的状态，我们不得不做一些同步访问控制以保证数据一致性。而这些同步访问控制，如显式锁和CAS操作，会带来额外的开销和问题，如上下文切换、等待时间和ABA问题等。Immutable Object模式的意图是通过使用对外可见的状态不可变的对象（即Immutable Object），使得被共享对象“天生”具有线程安全性，而无需额外的同步访问控制。从而既保证了数据一致性，又避免了同步访问控制所产生的额外开销和问题，也简化了编程。
@@ -710,17 +700,6 @@ compile "org.springframework.boot:spring-boot-devtools"
 
 
 \subsection{集合操作(Collection Operate)}
-
-Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
-
-\begin{lstlisting}[language=Java]
-request.getParamList().stream()
-		.filter(StringUtils::isNotEmpty)
-		.distinct()
-		.forEach(param -> {
-		
-		});
-\end{lstlisting}
 
 获取Json单个值：
 
@@ -752,23 +731,12 @@ Arrays.fill(integers,1);
 // Cannot modify returned list
 List<Integer> list21 =  Arrays.asList(integers); 
 // good
-	List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
 //Java 8
 List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
 \end{lstlisting}
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
-
-\paragraph{获取数据}
-
-获取Lis对象对象的某一个字段：
-
-\begin{lstlisting}[language=Java]
-List<String> redblackLogKeys = redBlackLogs.stream()
-	.map(redBalckLog -> redBalckLog.getResponseKey())
-	.collect(Collectors.toList());
-\end{lstlisting}
-
 
 \paragraph{List}
 
@@ -831,10 +799,6 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 如下代码片段查找第一个符合条件的元素：
 
 \begin{lstlisting}[language=Java]
-Optional<FeedbackRecord> filterFeedbackRecord = entry.getValue()
-	.stream()
-	.filter(feedbackRecord -> "0".equals(feedbackRecord.getIsFeedback()))
-	.findFirst();
 //更加直接的方式判断是否有符合条件的元素
 boolean isChild = users.stream().anyMatch(t->t.age<18);
 \end{lstlisting}
@@ -1018,15 +982,6 @@ String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8")
 \end{lstlisting}
 
 \paragraph{POST请求}
-
-发送POST请求时，客户端统一使用Json发送，服务端通过定义实体来获取。
-
-\begin{lstlisting}[language=Java]
-@PostMapping("create")
-@ApiOperation(value = "创建文章", notes = "创建文章")
-public ApiResult createArticle(@RequestBody Article article) {
-}
-\end{lstlisting}
 
 使用curl模拟POST请求:
 
@@ -1312,17 +1267,6 @@ x-ms-version:2017-04-17
 \end{lstlisting}
 
 这种方式被Microsoft使用\footnote{\url{https://docs.microsoft.com/en-us/rest/api/storageservices/Versioning-for-the-Azure-Storage-Services?redirectedfrom=MSDN}}。
-
-\subsection{接口缓存(Interface Cache)}
-
-由于每次接口请求都需要调用认证信息，认证数据一旦生成，变动较少，所以将接口认证数据缓存。
-
-\begin{lstlisting}
-@Cacheable(value = "appAccount", key = "#id")
-public Optional<AppAccount> findAppAccountById(String id){
-	return Optional.ofNullable(appAccountMapper.findOne(id));
-}
-\end{lstlisting}
 
 \section{数据库操作(Database Operate)}
 
@@ -3319,6 +3263,25 @@ bash -x ./auth.sh
 
 命令行前面的+号表示嵌套。
 
+\subsection{快捷键(Shortcut)}
+
+Ubuntu常用快捷键：
+
+\begin{table}
+	\caption{Ubuntu快捷键}
+	\label{table:terminalshortcut}
+	\begin{center}
+		\begin{tabular}{cp{12cm}c}
+			\hline
+			\multirow{1}{*}{快捷键}
+			& \multicolumn{1}{c}{说明}  \\
+			\hline			
+			Alt + F7 & Alt+F7会激活移动窗口功能，用方向键（上，下，左，右）就可以移到窗口 \\						
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
 \subsection{命令(Command)}
 
 which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
@@ -3417,7 +3380,39 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 	\label{fig:grepfilterreturnvalue}
 \end{figure}
 
-这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
+这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。常用grep命令：
+
+\begin{lstlisting}[language=Bash]
+# 搜索/etc/目录下所有包含stretch字符串的文件
+grep -s stretch /etc/*
+# /etc/及其子目录中搜索包含stretch字符串的文件
+grep -R stretch /etc/*
+\end{lstlisting}
+
+所有包含字符串 stretch 的文件。也就是说包含 stretches ， stretched 等内容的行也会被显示。 使用 grep 的 -w 选项会只显示包含特定单词的行：
+
+\begin{lstlisting}[language=Bash]
+grep -Rw stretch /etc/*
+# 归地搜索 etc 目录中包含 stretch 的文件并只输出文件名
+grep -Rl stretch /etc/*
+\end{lstlisting}
+
+grep 的 -i 选项，grep 命令还会列出所有包含 Stretch ， STRETCH ， StReTcH 等内容的文件，也就是说进行的是大小写不敏感的搜索：
+
+\begin{lstlisting}[language=Bash]
+grep -Ril stretch /etc/*
+\end{lstlisting}
+
+grep 命令也可以只在指定文件中进行搜索。比如，我们可以只在配置文件（扩展名为.conf）中搜索指定的文本/字符串。 下面这个例子就会在 /etc 目录中搜索带字符串 bash 且所有扩展名为 .conf 的文件
+
+\begin{lstlisting}[language=Bash]
+grep -Ril bash /etc/*.conf
+# 使用 --exclude 来排除特定的文件
+grep -Ril --exclude=\*.conf bash /etc/*
+#grep 也能在搜索时排除指定目录。 使用 --exclude-dir 选项就行。
+grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
+\end{lstlisting}
+
 
 \paragraph{sed(Stream Editor)}
 
@@ -5783,7 +5778,26 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \subsection{Performance}
 
+在Google Chrome 57版本中将Timeline调整为Performance。HTML文件是蓝色。脚本是黄色。样式是紫色。媒体文件是绿色。其它资源是灰色。查看脚本运行时间如图\ref{fig:componentwillmountcheck}所示。
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{componentwillmountcheck.png}
+	\caption{Google Chrome查看耗时}
+	\label{fig:componentwillmountcheck}
+\end{figure}
+
+在Frames列，如果你发现了一个红色的长条，那么就说明这些帧存在严重问题，有可能导致非常差的用户体验。一般来说，绿色的长条越高，说明FPS越高，用户体验越好。在CPU图表中的各种颜色与Summary面板里的颜色是相互对应的，Summary面板就在Performance面板的下方。CPU图表中的各种颜色代表着在这个时间段内，CPU在各种处理上所花费的时间。如果你看到了某个处理占用了大量的时间，那么这可能就是一个可以找到性能瓶颈的线索。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.3]{chromeperformancegraph.png}
+	\caption{Google Chrome Performance查看FPS、CPU、NET}
+	\label{fig:chromeperformancegraph}
+\end{figure}
+
+
+展开Main图表，Devtools展示了主线程运行状况。X轴代表着时间。每个长条代表着一个event。长条越长就代表这个event花费的时间越长。Y轴代表了调用栈（call stack）。在栈里，上面的event调用了下面的event。
 
 \subsection{Sources}
 
@@ -6451,6 +6465,8 @@ from v$dm_ini
 where para_name like '%ORDER%'
 
 select * from v$sessions where state='ACTIVE';
+# 添加唯一约束
+alter table "USER_XYCQ_SYSTEM"."TD_S_ORG" add constraint TD_S_ORG_ORG_ID_UNIQUE unique(org_id);
 \end{lstlisting}
 
 删除数据库ID重复的记录，只保留其中一条记录：
