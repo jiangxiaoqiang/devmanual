@@ -1,7 +1,5 @@
 \documentclass[12pt]{book}
 
-
-
 \usepackage{xeCJK}
 \usepackage{listings}
 \usepackage{multirow}
@@ -12,7 +10,7 @@
 \usepackage{graphicx} % Required for including pictures
 \graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
 \usepackage{lipsum} % Inserts dummy text
-
+\usepackage[ddmmyyyy]{datetime}
 
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage[english]{babel} % English language/hyphenation
@@ -563,11 +561,11 @@ addtohook={%
 
 \noindent \textsc{Edited by Xiaoqiang Jiang}\\ % Publisher
 
-\noindent \textsc{\url{http://jiangxiaoqiang.com/}}\\ % URL
+\noindent \textsc{\url{http://jiangxiaoqiang.github.com/}}\\ % URL
 
-\noindent All Rights Unreserved.\\ % License information
+\noindent All Rights Reserved.\\ % License information
 
-\noindent \textit{Version 20170320, \today} % Printing/edition date
+\noindent \textit{Version \currenttime, \today} % Printing/edition date
 
 
 %----------------------------------------------------------------------------------------
@@ -689,42 +687,19 @@ public class DataSourceConfig {
 
 在Intellij Idea中，如果要把配置文件加入classpath，可以将配置文件标记为资源文件。
 
-\subsection{Spring Boot开发者工具}
+\subsection{immutable}
 
-spring-boot-devtools为应用提供一些开发时特性，包括默认值设置，自动重启，livereload等。在build.gradle文件里添加开发工具配置：
+多线程共享变量的情况下，为了保证数据一致性，往往需要对这些变量的访问进行加锁。而锁本身又会带来一些问题和开销。Immutable Object模式使得我们可以在不使用锁的情况下，既保证共享变量访问的线程安全，又能避免引入锁可能带来的问题和开销。多线程环境中，一个对象常常会被多个线程共享。这种情况下，如果存在多个线程并发地修改该对象的状态或者一个线程读取该对象的状态而另外一个线程试图修改该对象的状态，我们不得不做一些同步访问控制以保证数据一致性。而这些同步访问控制，如显式锁和CAS操作，会带来额外的开销和问题，如上下文切换、等待时间和ABA问题等。Immutable Object模式的意图是通过使用对外可见的状态不可变的对象（即Immutable Object），使得被共享对象“天生”具有线程安全性，而无需额外的同步访问控制。从而既保证了数据一致性，又避免了同步访问控制所产生的额外开销和问题，也简化了编程。
+可以遵照以下几点来编写一个不可变类:
+1. 类应该定义成final，避免被继承。将类声明为final (强不可变类)，或者将所有类方法加上final(弱不可变类)。或者使用静态工厂并声明构造器为private。
+2. 声明属性为 private 和 final 。
+3. 不要提供任何可以修改对象状态的方法：不仅仅是set方法，还有任何其它可以改变状态的方法。
+4. 如果类有任何可变对象属性，那么当它们在类和类的调用者间传递的时候必须被保护性拷贝。如果某一个类成员不是原始变量(primitive)或者不可变类，必须通过在成员初始化(in)或者get方法(out)时通过深度clone方法，来确保类的不可变。	
 
-\begin{lstlisting}[language=Bash]
-compile "org.springframework.boot:spring-boot-devtools"
-\end{lstlisting}
+不可变对象有几个优点：线程安全、易于理解、比可变对象有更高的安全性。
 
-在激活了开发者工具后，Classpath里对文件做任何修改都会触发应用程序重启。为了让重启速度够快，不会修改的类（比如第三方JAR文件里的类）都加载到了基础类加载器里，而应用程序的代码则会加载到一个单独的重启类加载器里。检测到变更时，只有重启类加载器重启。在Intellij Idea中，需要在设置中配置Compiler，勾选上build project automatically选项。在Mac中，按下 command + alt + shift + / 出现的界面中，选择Registry。找到 “compiler.automake.allow.when.app.running” 这个选项，并且勾选。遗憾的是在自己的Mac中，Intellij Idea按照如上配置后还是不能正常自动Reload，不过当在点击了Reload Changed Classes之后，Spring Boot会自动重启，可以配置Reload Changed Classes的快捷键来实现。
 
 \subsection{集合操作(Collection Operate)}
-
-Java 8的stream可以像操作数据库那样操作内存，代码简洁清晰易懂，缺点是性能比传统处理方式较低。List移除空元素，移除重复元素：
-
-\begin{lstlisting}[language=Java]
-request.getParamList().stream()
-		.filter(StringUtils::isNotEmpty)
-		.distinct()
-		.forEach(param -> {
-			if (param.length() == 18 && CommonUtil.isLetterOrNumber(param)) {
-			
-			});
-\end{lstlisting}
-
-对象做非空判断：
-
-\begin{lstlisting}[language=Java]
-f (!"".equals(name)) {
-	//将""写在前头
-	//不管name是否为null，都不会出错
-}
-
-if (StringUtils.isNotBlank((String) pageable.getParams().get("qymc"))) {
-	//用String强制转换也不会报空指针异常
-} 
-\end{lstlisting}
 
 获取Json单个值：
 
@@ -749,26 +724,19 @@ peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List�
 
 \begin{lstlisting}[language=Java]
 Integer[] integers = new Integer[] {1,2,3,4,5};
+/*
+	可以采用此方法填充数组，初始化数组
+*/
+Arrays.fill(integers,1);
 // Cannot modify returned list
 List<Integer> list21 =  Arrays.asList(integers); 
 // good
-	List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
+List<Integer> list22 = new ArrayList<>(Arrays.asList(integers)); 
 //Java 8
 List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList()); 
 \end{lstlisting}
 
 采用Arrays.asList转时，返回的List不能修改，因为asList()返回的列表是由原始数组支持的固定大小的列表。这种情况下，如果添加或删除列表中的元素，程序会抛出异常UnsupportedOperationException。
-
-\paragraph{获取数据}
-
-获取Lis对象对象的某一个字段：
-
-\begin{lstlisting}[language=Java]
-List<String> redblackLogKeys = redBlackLogs.stream()
-	.map(redBalckLog -> redBalckLog.getResponseKey())
-	.collect(Collectors.toList());
-\end{lstlisting}
-
 
 \paragraph{List}
 
@@ -831,10 +799,6 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 如下代码片段查找第一个符合条件的元素：
 
 \begin{lstlisting}[language=Java]
-Optional<FeedbackRecord> filterFeedbackRecord = entry.getValue()
-	.stream()
-	.filter(feedbackRecord -> "0".equals(feedbackRecord.getIsFeedback()))
-	.findFirst();
 //更加直接的方式判断是否有符合条件的元素
 boolean isChild = users.stream().anyMatch(t->t.age<18);
 \end{lstlisting}
@@ -862,6 +826,29 @@ for (int i = 0; i < 10000; i++) {
 
 运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
 
+\paragraph{Object转为Map}
+
+有时需要将Object实体转换为Map的方式：
+
+\begin{lstlisting}[language=Java]
+public static Map<?, ?> objectToMap(Object obj) {
+	if (obj == null)
+		return null;
+	return new org.apache.commons.beanutils.BeanMap(obj);
+}
+
+//调用
+Map<String, Object> stringObjectMap = (Map<String, Object>) objectToMap(documentList.get(i));
+\end{lstlisting}
+
+需要引用BeanUtils包，Gradle引用如下：
+
+\begin{lstlisting}[language=Java]
+compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+\end{lstlisting}
+
+BeanUtils主要提供了对于JavaBean进行各种操作。
+
 \subsection{正则表达式(Regular Expression)}
 
 匹配电话号码的正则表达式：
@@ -870,7 +857,60 @@ for (int i = 0; i < 10000; i++) {
 "^1(3[4-9]|4[7]|5[0-27-9]|7[08]|8[2-478])\\d{8}$"
 \end{lstlisting}
 
-[]匹配模式能够匹配方括号内任意字符，[08]可匹配0或者8。以上匹配电话号码的正则表达式会随着时间过期，比如某些号码段新开放时，相应的正则表达式会过期，比如以上正则表达式就无法匹配17623083674这个电话号码。
+[]匹配模式能够匹配方括号内任意字符，[08]可匹配0或者8。以上匹配电话号码的正则表达式会随着时间过期，比如某些号码段新开放时，相应的正则表达式会过期，比如以上正则表达式就无法匹配17623083674这个电话号码。Javascript根据空格和换行做分割：
+
+\begin{lstlisting}[language=Javascript]
+let paramList = value.split(/\n+|\s+/);
+\end{lstlisting}
+
+\textbackslash{}n表示匹配一个换行符。+字符表示匹配前面的子表达式一次或多次。要匹配 + 字符，请使用 \textbackslash{}+。替换空格：
+
+\begin{lstlisting}[language=Javascript]
+/*
+ 其实不能替换空格
+ \s匹配任何不可见字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]
+ \f:form feed character
+ \n:new line character
+ \r:carriage return character
+ \t:tab character
+ \v:vertical tab character
+ \S匹配任何可见字符。等价于[^ \f\n\r\t\v]
+*/
+values.replace(/\s/g, '').split(/\n+/);
+// 方式三
+values.replace(/[ ]/g, '').split(/\n+/);
+\end{lstlisting}
+
+\textbackslash{}s元字符用于查找空白字符。
+空白字符可以是：
+空格符 (space character)
+制表符 (tab character)
+回车符 (carriage return character)
+换行符 (new line character)
+垂直换行符 (vertical tab character)
+换页符 (form feed character)。 /g是全局(Global)匹配。
+
+\paragraph{匹配不包含特定字符串}
+
+在Google Chrome中有定时请求，但是在开发过程中在Network面板中不需要查看到定时请求的项，在filter中可以采用如下的正则表达式：
+
+
+\begin{lstlisting}[language=Javascript]
+/^((?!unfeedback).)*$/
+\end{lstlisting}
+
+这样就不会看到定时请求的XHR来扰乱视线了。
+
+\subsection{Crontab}
+
+Cron is driven by a crontab (cron table) file, a configuration file that specifies shell commands to run periodically on a given schedule. 
+
+\begin{lstlisting}[language=Bash]
+# 每晚9：30执行
+30 21 * * * *
+# 每5秒执行一次
+0/5 * * * * ?
+\end{lstlisting}
 
 \subsection{Code Snippets}
 
@@ -917,20 +957,9 @@ String.ValueOf()的坑:
 \begin{lstlisting}[language=Java]
 //如果article.getCategory()为空返回null字符串
 String categoryId = String.valueOf(article.getCategory());
-//养成字符串写前面比较的习惯
-//避免空指针异常
-if ("null".equals(categoryId)) {
-	throw new HlValidateException(400001, "传入参数异常，栏目ID不能为空");
-}
 \end{lstlisting}
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
-
-\subsection{jps}
-
-jps(Java Virtual Machine Process Status Tool)是JDK 1.5提供的一个显示当前所有java进程pid的命令。jdk中的jps命令可以显示当前运行的java进程以及相关参数，它的实现机制如下：
-
-java程序在启动以后，会在java.io.tmpdir指定的目录下，就是临时文件夹里，生成一个类似于hsperfdata\_User的文件夹，这个文件夹里（在Linux中为/tmp/hsperfdata\_\{userName\}/），有几个文件，名字就是java进程的pid，因此列出当前运行的java进程，只是把这个目录里的文件名列一下而已。 至于系统的参数什么，就可以解析这几个文件获得。hsperfdata的含义就是HotSpot Performance Data。
 
 \section{接口(Application Interface)}
 
@@ -954,16 +983,7 @@ String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8")
 
 \paragraph{POST请求}
 
-发送POST请求时，客户端统一使用Json发送，服务端通过定义实体来获取。
-
-\begin{lstlisting}[language=Java]
-@PostMapping("create")
-@ApiOperation(value = "创建文章", notes = "创建文章")
-public ApiResult createArticle(@RequestBody Article article) {
-}
-\end{lstlisting}
-
-@RequestBody需要把所有请求参数作为json解析，因此，不能包含key=value这样的写法在请求url中，所有的请求参数都是一个Json。使用curl模拟POST请求:
+使用curl模拟POST请求:
 
 \begin{lstlisting}[language=Bash]
 curl -X POST -H "APPID:hlb1451j6d136334gh2" \
@@ -1022,7 +1042,7 @@ return corporationMapperFacade.map(corporation, XydmResponse.class);
 }
 \end{lstlisting}
 
-\subsection{接口认证(Authorization)}
+\subsection{接口认证(Interface Authorization)}
 \label{sec:authorization}
 
 目前接口认证采用根据TIMESTAMP、ECHOSTR、APPKEY、APPID生成的Token，将之
@@ -1057,7 +1077,7 @@ readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 # TODO:根据不同的随机串排序，生成不同Toekn
 #
 
-readonly APP_ID="hlb1451j6d136334gh2"
+readonly APP_ID="hlb145"
 readonly APP_KEY="test"
 
 ECHOSTR=`head -n 1 /dev/urandom|sed 's/[^a-z0-9]//g'|md5sum|awk '{print $1}'`
@@ -1069,7 +1089,8 @@ CURRENT_TIME=`date '+%Y-%m-%d %H:%M:%S'`
 # 时间戳(timestamp)、AppKey、随机字符串(echostr)
 # \$1接收来自命令行传入的参数
 # 第二个参数用\$2接收，以此类推
-# \$@表示所有的参数，相当于Java中main函数中定义的参数数组
+# \$@表示所有的参数
+# 相当于Java中main函数中定义的参数数组
 #
 SORTED_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${ECHOSTR}|tr '_' '\t'|sort|tr -d '\011'`
 TOKEN=`echo -n ${APP_ID}${APP_KEY}${CURRENT_TIME}${CONST_STR}|md5sum|awk '{print $1}'`
@@ -1077,7 +1098,10 @@ SEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}${APP_ID}${APP_KEY}${CONST_STR}|shasum -a
 
 # 请求服务端
 COMMAND=`curl -H "APPID:$APP_ID" -H "TIMESTAMP:$CURRENT_TIME" -H "ECHOSTR:$CONST_STR" -H "TOKEN:$SEQUENCE_TOKEN" \
-http://localhost:28080/api/blacklist/page?xdr= | jq '.'`
+http://10.10.1.11:80/api/xysj/orgportal `
+
+# 输出结果
+echo ${COMMAND}|jq '.'
 \end{lstlisting}
 
 将APPID、APPKEY、时间戳，随机字符串采用SHA1加密后，生成Token发送给服务端，服务端再按照同样的步骤产生Token，两个Token进行比对，这里的关键是APPKEY只有服务端和客户端知道，其他非法用户不知道APPKEY，无法伪造Token。echo加上-n(newline)参数表示不换行输出。Linux中的随机数可以从两个特殊的文件中产生，一个是/dev/urandom.另外一个是/dev/random。他们产生随机数的原理是利用当前系统的熵池来计算出一定数量的随机比特，然后将这些比特作为字节流返回。熵池就是当前系统的环境噪音，熵指的是一个系统的混乱程度，系统噪音可以通过很多参数来评估，如内存的使用，文件的使用量，不同类型的进程数量等等。如果当前环境噪音变化的不是很剧烈或者当前环境噪音很小，比如刚开机的时候，而当前需要大量的随机比特，这时产生的随机数的随机效果就不是很好了。这就是为什么会有/dev/urandom和/dev/random这两种不同的文件，后者在不能产生新的随机数时会阻塞程序，而前者不会（ublock），当然产生的随机数效果就不太好了，这对加密解密这样的应用来说就不是一种很好的选择。/dev/random会阻塞当前的程序，直到根据熵池产生新的随机字节之后才返回，所以使用/dev/random比使用/dev/urandom产生大量随机数的速度要慢。
@@ -1244,17 +1268,6 @@ x-ms-version:2017-04-17
 
 这种方式被Microsoft使用\footnote{\url{https://docs.microsoft.com/en-us/rest/api/storageservices/Versioning-for-the-Azure-Storage-Services?redirectedfrom=MSDN}}。
 
-\subsection{接口缓存(Interface Cache)}
-
-由于每次接口请求都需要调用认证信息，认证数据一旦生成，变动较少，所以将接口认证数据缓存。
-
-\begin{lstlisting}
-@Cacheable(value = "appAccount", key = "#id")
-public Optional<AppAccount> findAppAccountById(String id){
-	return Optional.ofNullable(appAccountMapper.findOne(id));
-}
-\end{lstlisting}
-
 \section{数据库操作(Database Operate)}
 
 \subsection{Could not get JDBC connection}
@@ -1414,6 +1427,14 @@ spring.datasource.hikari.type=com.zaxxer.hikari.HikariDataSource
 spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
 \end{lstlisting}
 
+在某些安全定义较为严格的网络，如果数据库连接经过一定时间无通信，会自动断开连接。可以设置HikariCP：
+
+\begin{lstlisting}
+hikariConfig.setConnectionTestQuery("SELECT 1");
+\end{lstlisting}
+        
+This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。
+
 
 \paragraph{DataSource跟DriverManager区别及联系}
 
@@ -1423,7 +1444,7 @@ In basic terms, a data source is a facility for storing data. It can be as sophi
 Using a DataSource object is the preferred alternative to using the DriverManager for establishing a connection to a data source. They are similar to the extent that the DriverManager class and DataSource interface both have methods for creating a connection, methods for getting and setting a timeout limit for making a connection, and methods for getting and setting a stream for logging.
 
 两者不同点：
-1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a JavaTM Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
+1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a Java Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
 
 2.The second major advantage is that the DataSource facility allows developers to implement a DataSourceclass to take advantage of features like connection pooling and distributed transactions.
 
@@ -1602,6 +1623,16 @@ User user = (User) session.getAttribute("LOCAL_CLINET_USER");
 
 \paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
 
+java.lang.NoClassDefFoundError,这个报错是因为Java虚拟机在编译时能找到合适的类，而在运行时不能找到合适的类导致的错误.可以查看目标目录，是否有编译成功的example.class文件存在。在Intellij Idea中查看文件夹是module-name/build文件夹，如图\ref{fig:buildclassoutpath}所示，可以将其删除，删除之后即可触发重新编译类。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{buildclassoutpath.png}
+	\caption{构建.class文件输出目录}
+	\label{fig:buildclassoutpath}
+\end{figure}
+
+
 Tomcat 的内部日志使用 JULI 组件，这是一个 Apache Commons 日志的重命名的打包分支，默认被硬编码，使用 java.util.logging 架构。这能保证 Tomcat 内部日志与 Web 应用的日志保持独立，即使 Web 应用使用的是 Apache Commons Logging。在Gradle构建脚本中添加如下配置即可：
 
 \begin{lstlisting}[language=Bash]
@@ -1769,6 +1800,31 @@ private JdbcTemplate jdbcTemplate1;
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
 动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
 
+\paragraph{Spring Boot AOP多数据源(未成功)}
+
+动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。AbstractRoutingDataSource获取数据源之前会先调用determineCurrentLookupKey方法查找当前的lookupKey，这个lookupKey就是数据源标识。因此通过重写这个查找数据源标识的方法就可以让spring切换到指定的数据源了。
+
+\begin{itemize}
+	\item {xml<aop>拦截到数据源名称}
+	\item {执行切面DataSourceAspect中的before方法，将数据源名称放入 DynamicDataSourceHolder中}
+	\item {Spring JDBC调用determineCurrentLookupKey()方法<DynamicDataSource中重写AbstractRoutingDataSource类中的方法> ，从DynamicDataSourceHolder取出当前的数据库名称，并返回}	
+	\item {AbstractRoutingDataSource类中determineTargetDataSource()方法调用determineCurrentLookupKey()匹配到指定的数据库，并建立链接，即为切换到相应的数据库；}
+	\item {在指定的数据库中执行相应的sql}
+\end{itemize}
+
+AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的不同请求去转换不同的数据源。若service没有启动事务机制，则执行的顺序为：切面——>determineCurrentLookupKey——>Dao方法。数据源真正切换的关键是AbstractRoutingDataSource的determineCurrentLookupKey()被调用，此方法是在open connection时触发。
+
+\subsection{不同配置文件}
+
+使用不同源配置文件的方式需要多个datasource、多个SqlSessionFactory、多个config文件。连接不同数据库的Mapper文件存放在不同的文件夹下，如何确定配置使用的不同数据源？可以直接查看Mapper的sqlSession配置，如图\ref{fig:seemapperdatasource}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{seemapperdatasource.png}
+	\caption{查看Mapper使用的Datasource}
+	\label{fig:seemapperdatasource}
+\end{figure}
+
 
 
 \subsection{多参数传递(Multi-Parameter)}
@@ -1853,6 +1909,7 @@ Request processing failed; nested exception is org.apache.ibatis.binding.Binding
 	\label{fig:mapperreourcestructure}
 \end{figure}
 
+在配置多数据源时，除了要检查包名是否对应，还要检查不同数据源不要使用同一个包路径。
 
 \paragraph{Parameter 'keys' not found. Available parameters are [list]}
 
@@ -3017,29 +3074,31 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
-
-\paragraph{优化代理(Optimizate Proxy)}
-
-项目的一个特点是，有两个彼此独立的网络，网络之间互相切换非常麻烦，所以在调试部署程序时，使用了代理机器。由于代理机器不是服务器7*24小时运行，所以有可能某一个代理机器处于Shutdown状态，此时部署时在脚本中探测每个代理机器是否Up，从而Pick相应活动的代理机。可以保证只要启动任意一个代理机，即可调试部署程序，后面发现暂时没有写脚本的必要，所以未实现。
+start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。
 
 \paragraph{终端快捷键(Terminal Shortcut)}
 
-Shell终端中常用的快捷键如下：
+Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
-\begin{tabular}{cp{12cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{说明}  \\
-	\hline			
-	Alt + F & 向前移动一个单词 \\
-	Alt + B & 向后移动一个单词 \\
-	Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
-	Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
-	Ctrl + K & 从光标当前位置向后删除所有字符\\
-	Ctrl + U & 从光标当前位置向前删除所有字符\\
-	\hline
-\end{tabular}
+\begin{table}
+	\caption{终端快捷键}
+	\label{table:terminalshortcut}
+	\begin{center}
+	\begin{tabular}{cp{12cm}c}
+		\hline
+		\multirow{1}{*}{快捷键}
+		& \multicolumn{1}{c}{说明}  \\
+		\hline			
+		Alt + F & 向前移动一个单词 \\
+		Alt + B & 向后移动一个单词 \\
+		Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
+		Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
+		Ctrl + K & 从光标当前位置向后删除所有字符\\
+		Ctrl + U & 从光标当前位置向前删除所有字符\\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{table}
 
 \paragraph{source}
 
@@ -3204,6 +3263,25 @@ bash -x ./auth.sh
 
 命令行前面的+号表示嵌套。
 
+\subsection{快捷键(Shortcut)}
+
+Ubuntu常用快捷键：
+
+\begin{table}
+	\caption{Ubuntu快捷键}
+	\label{table:terminalshortcut}
+	\begin{center}
+		\begin{tabular}{cp{12cm}c}
+			\hline
+			\multirow{1}{*}{快捷键}
+			& \multicolumn{1}{c}{说明}  \\
+			\hline			
+			Alt + F7 & Alt+F7会激活移动窗口功能，用方向键（上，下，左，右）就可以移到窗口 \\						
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
 \subsection{命令(Command)}
 
 which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
@@ -3222,7 +3300,16 @@ which scala
 #列出指定文件的信息
 ls -lh authorized_keys
 #只显示当前文件夹下的目录
+#方法1
 ls -al | grep "^d"
+#方法2
+ls -d */
+#列出文件，按文件大小排序
+ls -alhS
+#递归列出子目录
+ls -R
+#调整ls别名
+alias='ls -lh --color=always'
 \end{lstlisting}
 
 
@@ -3242,7 +3329,18 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 find / -name "*工作*"
 \end{lstlisting}
 
-\paragraph{kill}
+\paragraph{sudo}
+
+sudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy. 
+
+\begin{lstlisting}[language=Bash]
+sudo -i
+sudo -u dolphin -i
+在vi/vim编辑器中,编辑文件后保存时没有修改的权限时可用
+:w !sudo tee %
+\end{lstlisting}
+
+使用上述命令，可以切换到root状态下
 
 \paragraph{tar}
 
@@ -3282,11 +3380,43 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 	\label{fig:grepfilterreturnvalue}
 \end{figure}
 
-这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。
+这样就可以轻松的看出来某个关键字段的返回结果，不需要再一个个比对。常用grep命令：
+
+\begin{lstlisting}[language=Bash]
+# 搜索/etc/目录下所有包含stretch字符串的文件
+grep -s stretch /etc/*
+# /etc/及其子目录中搜索包含stretch字符串的文件
+grep -R stretch /etc/*
+\end{lstlisting}
+
+所有包含字符串 stretch 的文件。也就是说包含 stretches ， stretched 等内容的行也会被显示。 使用 grep 的 -w 选项会只显示包含特定单词的行：
+
+\begin{lstlisting}[language=Bash]
+grep -Rw stretch /etc/*
+# 归地搜索 etc 目录中包含 stretch 的文件并只输出文件名
+grep -Rl stretch /etc/*
+\end{lstlisting}
+
+grep 的 -i 选项，grep 命令还会列出所有包含 Stretch ， STRETCH ， StReTcH 等内容的文件，也就是说进行的是大小写不敏感的搜索：
+
+\begin{lstlisting}[language=Bash]
+grep -Ril stretch /etc/*
+\end{lstlisting}
+
+grep 命令也可以只在指定文件中进行搜索。比如，我们可以只在配置文件（扩展名为.conf）中搜索指定的文本/字符串。 下面这个例子就会在 /etc 目录中搜索带字符串 bash 且所有扩展名为 .conf 的文件
+
+\begin{lstlisting}[language=Bash]
+grep -Ril bash /etc/*.conf
+# 使用 --exclude 来排除特定的文件
+grep -Ril --exclude=\*.conf bash /etc/*
+#grep 也能在搜索时排除指定目录。 使用 --exclude-dir 选项就行。
+grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
+\end{lstlisting}
+
 
 \paragraph{sed(Stream Editor)}
 
-sed全名叫stream editor，流编辑器，用程序的方式来编辑文本，相当的hacker啊。sed基本上就是玩正则模式匹配，所以，玩sed的人，正则表达式一般都比较强。過濾某一個時間段的日志：
+sed全名叫stream editor，流编辑器，用程序的方式来编辑文本。過濾某一個時間段的日志：
 
 \begin{lstlisting}[language=Bash]
 sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> filter.log
@@ -3324,6 +3454,44 @@ tracert 10.55.10.9
 	\label{fig:wiresharkcaptureping}
 \end{figure}
 
+\paragraph{df(disk free)}
+
+df命令用于显示磁盘分区上的可使用的磁盘空间.
+
+
+\begin{lstlisting}[language=Bash]
+df -kh
+\end{lstlisting}
+
+-k或--kilobytes：指定区块大小为1024字节；可以用此命令查看U盘的路径.也可以使用命令mount：通过查看/etc/mtab（文章最后会对/etc/mtab有个解释）文件显示当前系统已挂载的所有设备.
+
+
+\subsection{tmux}
+
+tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
+
+\begin{tabular}{|c|p{8cm}|c|}
+	\hline
+	\multirow{1}{*}{键}
+	& \multicolumn{1}{c|}{作用}  \\			
+	\cline{1-2}
+	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+	\hline
+	C-b ? & 显示快捷键帮助\\
+	\hline
+\end{tabular}
+
+使用终端,当然需要漂亮的字体.TeX Gyre Cursor可以作为终端的字体.The TeX Gyre Cursor family of monospaced serif fonts is based on the URW Nimbus Mono L family . and are available in PostScript, TeX and OpenType formats. 效果如图\ref{fig:fonttexgyrecursor}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{fonttexgyrecursor.png}
+	\caption{终端使用Tex Gyre Cursor字体}
+	\label{fig:fonttexgyrecursor}
+\end{figure}
+
+也可以使用TlwgMono Oblique和FreeMono字体.
+
 \subsection{环境变量(Environment Variable)}
 
 Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
@@ -3342,7 +3510,7 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\caption{Linux profile配置文件}
 	\label{table:linuxconfigfile}
 	\begin{center}
-	\begin{tabular}{cp{8cm}c}
+	\begin{tabular}{cp{10cm}c}
 		\hline
 		\multirow{1}{*}{序号}
 		& \multicolumn{1}{c}{名称}  \\
@@ -3361,15 +3529,21 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\end{center}
 \end{table}
 
-有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以做如下设置：
+有时在Bash记录历史命令时，需要忽略掉重复的命令等。可以在.bashrc(rc:Run Commands)脚本中做如下设置：
 
 \begin{lstlisting}[language=Bash]
 # 忽略[连续]重复命令
+# ignoredups 只能剔除连续的重复条目
+# 要清除整个命令历史中的重复条目
+# 可以将HISTCONTROL设置成erasedups
 HISTCONTROL=ignoredups
 # 清除重复命令
 # HISTCONTROL=erasedups
 # 忽略特定命令
-HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*"
+# 有时在历史中希望记住不常用的命令
+# 常用的命令可以直接记住
+# 不需要存放在history中
+HISTIGNORE="[   ]*:ls:ll:cd:vi:pwd:exit:history*"
 # 命令历史文件大小10M
 HISTFILESIZE=1000000000
 # 保存历史命令条数10W
@@ -3414,7 +3588,8 @@ screen -r 12865
 uname －a 
 \end{lstlisting}
 
-\section{常用设置}
+
+\section{常用设置(Settings)}
 
 \subsection{XFCE桌面}
 
@@ -3553,6 +3728,25 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
+\subsection{无法查看Scala变量}
+
+在Intellij Idea调试Scala时，无法查看Scala的Vector等变量，提示Unable to evaluate the expression java.lang.UnsupportedOperationException。解决方案是，重新安装Intellij Idea:
+
+\begin{lstlisting}[language=Bash]
+#找到Idea的安装目录
+sudo find / -name "idea.sh"
+\end{lstlisting}
+
+找到安装目录后直接删除目录即可。重装后调试即可看到相应的变量，如图\ref{fig:probescalavariable}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{probescalavariable.png}
+	\caption{调试查看Scala变量}
+	\label{fig:probescalavariable}
+\end{figure}
+
+
 \subsection{常见设置}
 
 有时在Intellij Idea编译时找不到类，输出CLASSPATH时，发现并没有相应的Gradle库的路径在CLASSPATH中，一般使用Gradle编译时，CLASSPATH都会默认包含有.gradle路径，如：/home/hldev/.gradle/caches/modules-2/files-2.1。如果没有包含引用Library路径，可以在Project Structure->Project Settings->Libraries。
@@ -3564,24 +3758,51 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 	\label{fig:intellijideaaddlibraries}
 \end{figure}
 
+有时在使用列编辑SQL语句时，会自动换行，而且会自动添加一些符号，导致编辑出来的SQL语句语法错误，在Settings->Editor->Code Style下的Default Options下调整最大列文字数量即可。
+
+\subsection{Plugin}
+
+\paragraph{Free Mybatis Plugin}
+
+可以快速的从Mapper.java中的方法定位到Mapper.xml对应的方法，另外在字段写错误时也会自动给出红色的高亮提示，如图\ref{fig:intellijideapluginxmltips}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideapluginxmltips.png}
+	\caption{Intellij Idea Mybatis插件提示}
+	\label{fig:intellijideapluginxmltips}
+\end{figure}
+
 
 
 \subsection{Tips}
 
 
-\begin{tabular}{cp{6cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{作用}  \\
-	\hline			
-	Ctrl + Left/Right & 到行首/尾 \\
-	Command + Shift + A(Mac) & Find Action \\
-	Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
-	Home/End(Ubuntu) & 光标移动到行首或者行尾\\
-	Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
-	Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
-	\hline
-\end{tabular}
+Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
+
+\begin{table}
+	\begin{center}
+		\caption{Intellj Idea快捷键}
+		\bigskip
+		\label{table:intellijideashortkeys}
+		\begin{tabular}{cp{6cm}c}
+			\hline
+			\multirow{1}{*}{快捷键}
+			& \multicolumn{1}{c}{作用}  \\
+			\hline			
+			Ctrl + Left/Right & 到行首/尾 \\
+			Command + Shift + A(Mac) & Find Action \\
+			Ctrl + Left/Right(Ubuntu) & 左移/右移一个单词\\
+			Home/End(Ubuntu) & 光标移动到行首或者行尾\\
+			Shift + Ctrl + Alt + J & Select all occurrence，选中当前单词所有出现的地方\\
+			Alt + J & Next Occurence，上下左右搜寻，选择离当前光标最近的下一个出现的地方，按下Shift就是反向选择\\	
+			F2/Shift + F2 & 定位到下一个或者上一个错误 \\
+			Ctrl + [ /Ctrl + ] & 定位到代码块的开始、结束 \\
+			Alt + Left / Alt + Right & 回到之前的文件\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
 
 \paragraph{Class JavaLaunchHelper is implemented}
@@ -3598,7 +3819,15 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{列编辑模式}
 
-最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。
+最近要做一些数据抓取转换的工作，需要编辑一些SQL脚本，突然发现可以根据SQL的注释，通过列编辑模式轻轻松松生成SQL的Insert语句。在Mac下，按住Command + Shift + Alt组合键之后，再用鼠标选择相应的区域即可。在列编辑的过程中，需要好好利用Command + Left到行首，Command + Right到行尾的功能，有时候单个字符移动光标之后，也许不是想要的光标位置，此时可以整个单词的移动，利用Alt + Left和Alt + Right快捷键。在使用列编辑模式编辑SQL的时候，如果列自动对应上了，会出现灰色的列名，这个小细节也非常有用，在调整SQL语句的时候，如图\ref{fig:intellijideasqltips}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{intellijideasqltips.png}
+	\caption{Intellij Idea SQL编辑时列匹配成功提示}
+	\label{fig:intellijideasqltips}
+\end{figure}
+
 
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
@@ -3613,7 +3842,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致氛围3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -3684,6 +3913,28 @@ dependencies {
 
 dir表示文件所在目录，include表示包含哪些文件。
 
+\subsection{Gradle Properties支持}
+
+Gradle支持三种Properties, 这三种Properties的作用域和初始化阶段都不一样:
+
+\textbf{System Properties：}
+可通过gradle.properties文件，环境变量或命令行-D参数设置，可在setting.gradle或build.gradle中动态修改，在setting.gradle中的修改对buildscript block可见；所有工程可见，不建议在build.gradle中修改。多子工程项目中，子工程的gradle.properties会被忽略掉，只有root工程的gradle.properties有效。
+
+\textbf{Project Properties：}可通过gradle.properties文件，环境变量或命令行-P参数设置，优先级是:
+可在build.gradle中动态修改，但引用不存在的project properties会立即抛错，
+动态修改过的project properties在buildscript block中不可见。
+
+\textbf{Project ext properties：}可在项目的build.gradle中声明和使用，本工程和子工程可见，不能在setting.gradle中访问，如果有多处设置，加载次序如下（注意：gradle 2.0是这样的, 1.10~1.12有bug）, 后面的覆盖前面的设置。
+
+\begin{itemize}
+	\item {from gradle.properties located in project build dir.}
+	\item {from gradle.properties located in gradle user home.}
+	\item {from system properties, e.g. when -Dsome.property is used in the command line.}
+	\item {setting.gradle}
+	\item {build.gradle}
+\end{itemize}
+
+
 \subsection{执行流程}
 
 There is a one-to-one relationship between a Project and a "build.gradle" file. During build initialisation, Gradle assembles a Project object for each project which is to participate in the build, as follows:
@@ -3737,11 +3988,11 @@ ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew copyTask -x test
 ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND} copyTask -x test
 \end{lstlisting}
 
-p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图\ref{fig:copyTasks}所示。
+p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图所示。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{copyTasks}
+	\includegraphics[scale=0.7]{copytasks.png}
 	\caption{Gradle查看Tasks}
 	\label{fig:copyTasks}
 \end{figure}
@@ -3829,6 +4080,17 @@ task copyTask(type: Copy) {
 	from 'build/libs/credit-system-web-boot-' + version + '.jar'
 	into 'build/libs/api'
 	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
+}
+
+/**
+* 复制一份接口的部署包
+* 接口与平台单独部署，避免互相影响
+* 指定路径
+*/
+task copyTask(type: Copy) {
+	from "$projectDir/build/libs/credit-system-web-boot-${version}.jar"
+	into "$projectDir/build/libs/api"
+	rename "credit-system-web-boot-${version}.jar","credit-system-web-api-${version}.jar"
 }
 \end{lstlisting}
 
@@ -4035,7 +4297,7 @@ tightvncserver
 vncserver :2 -geometry 800x600 -depth 24
 \end{lstlisting}
 
-在Ubuntu下远程配置如图\label{raspberryremtoeconfig}所示：
+在Ubuntu下远程配置如图\ref{fig:raspberryremtoeconfig}所示：
 
 \begin{figure}[htbp]
 	\centering
@@ -4043,6 +4305,8 @@ vncserver :2 -geometry 800x600 -depth 24
 	\caption{Ubuntu远程连接配置}
 	\label{fig:raspberryremtoeconfig}
 \end{figure}
+
+在使用Remmina Remote Desktop Client连接时，VNC Server的端口可能是5901。
 
 \subsection{Ubuntu远程Ubuntu}
 
@@ -4250,20 +4514,8 @@ wget -c https://nmap.org/dist/nmap-7.31.dmg
 \end{lstlisting}
 
 
-\section{tmux}
 
-tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
-\begin{tabular}{|c|p{8cm}|c|}
-	\hline
-	\multirow{1}{*}{键}
-	& \multicolumn{1}{c|}{作用}  \\			
-	\cline{1-2}
-	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
-	\hline
-	C-b ? & 显示快捷键帮助\\
-	\hline
-\end{tabular}
 
 
 \chapter{Raspberry Pi}
@@ -4301,7 +4553,7 @@ sudo wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant.conf  -i wlan0
 
 \begin{lstlisting}[language=Bash]
 ＃ 安装tightvncserver
-sudo apt-get install tightvncserver　－ｙ
+sudo apt-get install tightvncserver -y
 ＃ 设置密码
 vncpasswd
 \end{lstlisting}
@@ -4314,10 +4566,73 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \chapter{Widgets}
 
+\section{Vim Editor}
+
+复制全部：
+
+全部删除：按esc后，然后dG
+全部复制：按esc后，然后ggyG
+全选高亮显示：按esc后，然后ggvG或者ggVG 
+
 \section{Little Tool}
 
 \subsection{科学上网}
 
+\subsection{SQuirreL SQL Client}
+
+目前常见的数据库有几十种，每一种又有自己连接客户端，平时工作中会经常接触不同类型的数据库，一个通用的数据库客户端非常有必要。SQuirreL SQL Client\footnote{http://www.squirrelsql.org/}优点是开源、跨平台、支持不同的数据库，关系型和非关系型。只需要使用一个工具即可操作多种数据库。可以在Session->Session Properties->SQL中设置编辑器的字体(默认字体比较小)，还可以设置将每张表包含的数据总量显示出来(Show SQL Results Metadata)，如图\ref{fig:showtableresultcount}所示。在使用数据库的过程中，还有一个比较不方便的地方就是一段时间后，数据库会断开连接，也许是安全防火墙设置的缘故。可以设置定期执行一个SQL，防止连接断开，this tab allows you to configure an SQL statement to execute periodically in the background. This can help keep the session connection alive for firewalls that terminate connections due to inactivity。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{showtableresultcount.png}
+	\caption{SQurreL SQL Client显示表总数}
+	\label{fig:showtableresultcount}
+\end{figure}
+
+如果需要在对象树上搜索对象，则可以使用类似SQL通配符的方式，如图\ref{fig:searchobject}所示。匹配的对象会高亮显示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{searchobject.png}
+	\caption{SQurreL SQL Client搜索对象}
+	\label{fig:searchobject}
+\end{figure}
+
+
+
+
+\paragraph{Code Completion}
+
+SQuirreL SQL Client有代码自动完成插件codecompletion，输入SQL的过程中按下快捷键Ctrl + Space即可。但是Ctrl + Space快捷键有可能被输入法占用了，此时修改输入法的快捷键。在路径Text Entry->Input Method Configuration->Global Config的热键(Hotkey)设置中修改。在Session Properties中可以设置显示代码自动提示时显示列的类型，最终的效果如图\ref{fig:codeautocompletion}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{codeautocompletion.png}
+	\caption{代码自动完成}
+	\label{fig:codeautocompletion}
+\end{figure}
+
+\paragraph{DBCopy}
+
+可以在同一个数据库或不同数据库中，直接迁移一个或多个数据表！如此，我们就可以省去了不同方言的建表语句，以及数据导出成txt，再导入到另外数据库的繁琐操作。直接右键表，复制表，粘贴表即可，如图\ref{fig:copytabledata}所示。当数据量比较大时，拷贝速度还是比较慢的。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{copytabledata.png}
+	\caption{复制表数据示例}
+	\label{fig:copytabledata}
+\end{figure}
+
+\subsection{JD-GUI}
+
+The “Java Decompiler project” aims to develop tools in order to decompile and analyze Java 5 “byte code” and the later versions.在使用多Module构建的项目中，jar包是以lib的形式存在的，所以需要直接通过查看lib来查看源码，如图\ref{fig:jdguichecksourcecode}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{jdguichecksourcecode.png}
+	\caption{JD-GUI查看jar包源码}
+	\label{fig:jdguichecksourcecode}
+\end{figure}
 
 
 \subsection{You-Get}
@@ -4329,9 +4644,39 @@ you-get <url>
 you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society
 \end{lstlisting}
 
+有时在听虾米音乐时，需要下载某些歌曲，可以直接抓取Media地址下载在线试听版本的歌曲，如图\ref{fig:scratchxiamidownloadurl}所示。
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{scratchxiamidownloadurl.png}
+	\caption{获取试听下载地址}
+	\label{fig:scratchxiamidownloadurl}
+\end{figure}
 
+将地址粘贴到浏览器下载即可，遗憾的不是高品质音乐，而且文件名也全是数字，需要手动修改。
 
+\subsection{aria2c}
+
+aria2\footnote{https://aria2.github.io/} is a utility for downloading files. The supported protocols are HTTP(S), FTP, SFTP, BitTorrent, and Metalink. aria2 can download a file from multiple sources/protocols and tries to utilize your maximum download bandwidth. 下载aria2配置文件:
+
+\begin{lstlisting}[language=Bash]
+sudo mkdir -p /etc/aria2
+cd /etc/aria2
+sudo wget https://github.com/bostoneboy/raspberry_pi_stuff/raw/master/aria2/aria2.conf
+sudo wget https://github.com/bostoneboy/raspberry_pi_stuff/raw/master/aria2/save-session.list
+\end{lstlisting}
+
+下载aria2的service启动脚本及加入开机自启动项。启动aria2c服务端：
+
+\begin{lstlisting}[language=Bash]
+# 启动服务端
+/usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
+sudo aria2c --enable-rpc --rpc-listen-all=true --rpc-allow-origin-all -c -D
+# 启动http
+python -m SimpleHTTPServer 9999
+\end{lstlisting}
+
+rpc server模式，它启动之后什么都不干，然后等着从rpc接口添加任务，下载完也不退出，而是一直等待。用命令方式导致配置不方便修改保存，-D导致无法看到出错信息。推荐启动方式是使用配置文件\$HOME/.aria2/aria2.conf 。使用aria2c --conf-path=<PATH>启动，注意<PATH>填完整路径。
 
 \subsection{transmission}
 
@@ -4431,6 +4776,20 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 	\caption{Zeal文档搜索示例}
 	\label{fig:zealsearch}
 \end{figure}
+
+\subsection{Thunderbird邮件客户端}
+
+Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerprisemailbox}所示。途中配置采用了POP协议，但是有时候需要客户端中的操作要反映到服务端，比如在客户端删除了邮件，服务端也需要删除，这样就不用重复操作了。可以将收件协议配置为IMAP。IMAP全称是Internet Mail Access Protocol，即交互式邮件存取协议，它是跟POP3类似邮件访问标准协议之一。不同的是，开启了IMAP后，您在电子邮件客户端收取的邮件仍然保留在服务器上，同时在客户端上的操作都会反馈到服务器上，如：删除邮件，标记已读等，服务器上的邮件也会做相应的动作。所以无论从浏览器登录邮箱或者客户端软件登录邮箱，看到的邮件以及状态都是一致的。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{tencententerprisemailbox.png}
+	\caption{Thunderbird配置企业邮箱}
+	\label{fig:tencententerprisemailbox}
+\end{figure}
+
+
+
 
 \subsection{jq}
 
@@ -4682,6 +5041,37 @@ http {
 }
 \end{lstlisting}
 
+\subsection{Load Balance}
+
+nginx 的负载均衡配置:
+
+\begin{lstlisting}[language=bash]
+upstream backend{
+    server 10.10.1.12:28080;
+    server 10.10.1.13:28080 backup;
+}
+\end{lstlisting}
+
+而反向代理实际意义就是把请求转发, 使用的时候用 proxy\_pass 实现.
+反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
+反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险
+
+\subsection{超时转发}
+
+当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
+
+\begin{lstlisting}
+server {
+    location / {
+        proxy_pass http://backends;
+        proxy_next_upstream error timeout http_404;
+    }
+}
+\end{lstlisting}
+
+proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个参数代表如果超时，则尝试其他节点。
+
+
 \subsection{常见问题}
 
 \paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
@@ -4690,11 +5080,15 @@ http {
 
 \begin{lstlisting}[language=bash]
 ./nginx -c /opt/app/local/tengine/conf/nginx.conf
+# 启动Nginx(正式环境)
+/home/app/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
 
 也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
 
 \begin{lstlisting}[language=bash]
+#重新加载配置(测试环境)
+/opt/app/local/tengine/sbin/nginx -s reload -p /opt/app/local/tengine
 /opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
 /opt/home/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
@@ -4702,7 +5096,7 @@ http {
 其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
 
 \begin{lstlisting}[language=bash]
-#重新加载配置
+#重新加载配置(正式环境Nginx Reload)
 /home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
@@ -4756,6 +5150,10 @@ yum provides */libssl.so.1.0.0
 在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
 
 \url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
+
+\paragraph{nginx: [emerg] unknown directive "upstram"}
+
+粘贴复制时有特殊字符。
 
 \section{Ansible}
 
@@ -5015,6 +5413,8 @@ echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 
 \section{Graphviz}
 
+Graphviz （英文：Graph Visualization Software的缩写）是一个由AT\&T实验室启动的开源工具包，用于绘制DOT语言脚本描述的图形。它也提供了供其它软件使用的库。Graphviz是一个自由软件，其授权为Eclipse Public License。
+
 \subsection{编译}
 
 一个简单的图形示例：
@@ -5030,13 +5430,37 @@ digraph G {
 }
 \end{lstlisting}
 
+编译图形：
+
 \begin{lstlisting}[language=Bash]
 dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 \end{lstlisting}
 
 \subsection{subgraph}
 
+子图的名称必须以cluster开头，否则graphviz无法识别。
 
+\begin{lstlisting}
+digraph G {
+	node [peripheries=2 style=filled color="#eecc80"];
+	//edge [color="sienna" fontcolor="green"];
+	//node [shape="record"];
+	edge [style="dashed"];
+	
+	
+	""[shape="none",image="chrome-512.png",color=""];
+	
+	"" -> "关键字";
+	"关键字" -> "查询视图";
+	
+	subgraph cluster1{
+		label = "展示层";
+		fillcolor = darkslategray;
+		"平台用户" -> "浏览器";
+	}
+
+}
+\end{lstlisting}
 
 \section{MyBatis Generator}
 
@@ -5047,7 +5471,7 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 
 \section{基础}
 
-\subsection{配置}
+\subsection{常用Git命令}
 
 常用语句。
 
@@ -5062,6 +5486,10 @@ git remote rm company-
 git remote set-url origin http://gitlab.hualongdata.com/internal/work-record.git
 #列出git配置
 git config --list
+#查看远程(remote)分支
+git branch -r
+# 比较2个分支文件的差异
+git diff v1.3_xiaoqiang v1_xiaoqiang filename.java
 \end{lstlisting}
 
 克隆指定的分支：
@@ -5147,6 +5575,25 @@ git log --follow application-jjxxzx-test.properties
 git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 \end{lstlisting}
 
+\subsection{log}
+
+git log有两个用法：一是自定义提交的输出格式，二是过滤输出哪些提交。
+
+\begin{lstlisting}[language=Bash]
+[alias]
+	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+	lg = !"git lg1"
+\end{lstlisting}
+
+
+按提交信息来过滤提交，你可以使用 --grep 标记。它和上面的 --author 标记差不多，只不过它搜索的是提交信息而不是作者。比如说，你的团队规范要求在提交信息中包括相关的issue编号，你可以用下面这个命令来显示这个 issue 相关的所有提交：
+
+\begin{lstlisting}[language=Bash]
+git log --grep="JRA-224:"
+\end{lstlisting}
+
+
 \subsection{merge}
 
 配置Meld为默认合并工具：
@@ -5155,15 +5602,44 @@ git show e78c8f6561060799a3db1aeab3cd00b8d30b9820
 git config --global merge.tool meld
 \end{lstlisting}
 
-\subsection{合并指定分支}
+\paragraph{合并指定分支}
 
 项目开发有v1分支和v1.3分支，v1分支是旧版系统的分支，针对旧版系统的某些改造特性想在新版中集成，而其他的内容和问题修复不一定会集成到新版系统中。此时为了避免重复修改，可以使用git的cherry pick将指定的commit合并到新版分支中。使用如下命令：
 
 \begin{lstlisting}[language=Bash]
 git cherry-pick <commit id>
+#合并指定分支到当前分支
+git merge --no-ff v1_xiaoqiang
 \end{lstlisting}
 
+\paragraph{和并指定文件}
 
+在开发过程中，有一个旧的分支v1\_xiaoqiang和一个新的分支，在新旧分支同步开发的过程中，旧分支添加了一些特性，需要和并指定特性到分支上。也就是需要将旧分支的某些修改和并到新的分支，可以直接使用merge命令，但是所有的内容都会和并到新分支，也可以使用git diff命令对比两个分支。
+
+\begin{lstlisting}[language=Bash]
+git diff branch1 branch2
+\end{lstlisting}
+
+但是采用git diff命令比较头疼的是完全是文本行，不是非常直观，可以直接使用merge工具meld来和并：
+
+\begin{lstlisting}[language=Bash]
+git difftool -t meld -y v1.3_xiaoqiang v1_xiaoqiang
+\end{lstlisting}
+
+使用Meld工具对比效果如下图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{gitdiffusingmeldtool.png}
+	\caption{Git使用Meld工具对比和并不同分支文件}
+	\label{fig:gitdiffusingmeldtool}
+\end{figure}
+
+图中左侧表示v1.3\_xiaoqiang分支的文件，右侧表示v1\_xiaoqiang分支的文件。如果不想和并文件，直接关闭Meld窗体即可，如果需要和并，点击对应的箭头。
+
+\subsection{Git Hook}
+
+项目的v1分支可以合并到v1.3分支，而v1.3分支不能够合并到v1分支。为了保护有时分支失误合并，采用钩子的方式来解决，每次推送的时候验证：
 
 \subsection{常见问题}
 
@@ -5198,6 +5674,8 @@ git config --system http.sslverify false
 	Ctrl+Shift+I (Windows/Linux)  & 打开DevTools Network面板，I是Inspect的缩写 \\
 	\hline
 	Ctrl+Shift+P (Windows/Linux)  & 打开所有窗口 \\
+	\hline
+	Ctrl+ [ / Ctrl + ]  & 左右切换DevTool面板 \\
 	\hline
 \end{tabular}
 
@@ -5246,6 +5724,10 @@ console.table(data);
 	\caption{Google Chrome查看对象数组}
 	\label{fig:googlechromeconsoletable}
 \end{figure}
+
+\paragraph{截屏(Screenshot)}
+
+有的时候需要截取一个下拉网页，但是需要向下滑动才能够截取全部，新版的Google Chrome中可以使用Ctrl + Shift + P(Program)打开程序运行窗口，输入Capture，选择Capture full size screenshot即可。
 
 
 \subsection{Source Map}
@@ -5297,9 +5779,42 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \subsection{Performance}
 
+在Google Chrome 57版本中将Timeline调整为Performance。HTML文件是蓝色。脚本是黄色。样式是紫色。媒体文件是绿色。其它资源是灰色。查看脚本运行时间如图\ref{fig:componentwillmountcheck}所示。
 
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{componentwillmountcheck.png}
+	\caption{Google Chrome查看耗时}
+	\label{fig:componentwillmountcheck}
+\end{figure}
+
+在Frames列，如果你发现了一个红色的长条，那么就说明这些帧存在严重问题，有可能导致非常差的用户体验。一般来说，绿色的长条越高，说明FPS越高，用户体验越好。在CPU图表中的各种颜色与Summary面板里的颜色是相互对应的，Summary面板就在Performance面板的下方。CPU图表中的各种颜色代表着在这个时间段内，CPU在各种处理上所花费的时间。如果你看到了某个处理占用了大量的时间，那么这可能就是一个可以找到性能瓶颈的线索。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.3]{chromeperformancegraph.png}
+	\caption{Google Chrome Performance查看FPS、CPU、NET}
+	\label{fig:chromeperformancegraph}
+\end{figure}
+
+
+展开Main图表，Devtools展示了主线程运行状况。X轴代表着时间。每个长条代表着一个event。长条越长就代表这个event花费的时间越长。Y轴代表了调用栈（call stack）。在栈里，上面的event调用了下面的event。
 
 \subsection{Sources}
+
+\paragraph{Call Stack}
+
+在Google Chrome中查看函数的调用堆栈，如图\ref{fig:checkjavascriptcallstack}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{checkjavascriptcallstack.png}
+	\caption{Google Chrome查看Javascript调用堆栈}
+	\label{fig:checkjavascriptcallstack}
+\end{figure}
+
+Javascript是单线程，从图中看出，只有一个main线程。
+
 
 \paragraph{面板中查看变量}
 
@@ -5858,9 +6373,11 @@ select *
 from "CTISYS"."SYSCONTEXTINDEXES";
 \end{lstlisting}
 
-新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。
+新建索引时，选择独立的索引存储空间，最好是索引存储与数据存储独立，便于管理。每个用户建立一个数据表空间，一个索引表空间。采用函数的列应该保存在索引中。添加上(a,b,c)的组合索引相当于添加了，超过3个列的联合索引不合适，否则虽然减少了回表动作，但索引块过多，查询时就要遍历更多的索引块了，建索引动作应谨慎，因为建索引的过程会产生锁，不是行级锁，而是锁住整个表，任何该表的DML操作都将被阻止，在生产环境中的繁忙时段建索引是一件非常危险的事情。在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
 
-在达梦客户端中，按下Ctrl + Alt + L会出来所有快捷键的面板，不得不说这个设计还是非常贴心的，开始真的不敢相信自己的眼睛，反复确认了真的不是Intellij Idea调出的面板，是达梦调出来的，非常不错的设计。注意平台是Ubuntu 16.04 LTS。
+\begin{lstlisting}[language=SQL]
+create index "TS_C500035_JBXX_DJXX_GTJBXX_ID" on "USER_XYCQ_ZS"."TS_C500035_JBXX_DJXX_GTJBXX"("ID") storage(initial 1,next 1,minextents 1);
+\end{lstlisting}
 
 \subsection{函数}
 
@@ -5949,19 +6466,22 @@ from v$dm_ini
 where para_name like '%ORDER%'
 
 select * from v$sessions where state='ACTIVE';
+# 添加唯一约束
+alter table "USER_XYCQ_SYSTEM"."TD_S_ORG" add constraint TD_S_ORG_ORG_ID_UNIQUE unique(org_id);
 \end{lstlisting}
 
 删除数据库ID重复的记录，只保留其中一条记录：
 
 \begin{lstlisting}[language=SQL]
-delete from dolphin where rowid not in(select max(rowid) from dolphin group by id) 
+delete from dolphin where rowid not in
+(
+	select max(rowid) 
+	from dolphin 
+	group by id
+) 
 \end{lstlisting}
 
 拼接列：
-
-
-
-
 
 
 \section{通用知识}
