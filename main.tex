@@ -4834,7 +4834,7 @@ XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开�
 
 \subsection{Nginx获取真实IP}
 
-做异地登陆的判断，或者统计ip访问次数等，通常情况下我们使用request.getRemoteAddr()就可以获取到客户端ip，但是当我们使用了nginx作为反向代理后，使用request.getRemoteAddr()获取到的就一直是nginx服务器的ip的地址。Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
 
 \begin{lstlisting}[language=bash]
 nginx -V
@@ -4915,7 +4915,8 @@ with nginx by using --with-openssl=<path> option.
 #指令是告诉nginx，10.10.1.11是我们的反向代服务器
 #不是真实的用户IP
 set_real_ip_from 10.10.1.11;
-#告诉nginx真正的用户IP是存在X-Forwarded-For请求头中
+#告诉nginx真正的用户IP是存在
+#X-Forwarded-For请求头中
 real_ip_header X-Real-IP;
 \end{lstlisting}
 
@@ -4923,9 +4924,9 @@ real_ip_header X-Real-IP;
 
 \begin{lstlisting}[language=bash]
 location /inapi {
-proxy_pass http://localhost:28080;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_redirect off;
+	proxy_pass http://localhost:28080;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_redirect off;
 }
 \end{lstlisting}
 
@@ -4940,11 +4941,11 @@ proxy_redirect off;
 
 此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
 
-\subsection{Nginx并发}
+\subsection{Nginx并发(Nginx Concurrent)}
 
 如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
 
-cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，nginx可以通过HttpLimitReqModul和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，Nginx可以通过HttpLimitReqModule和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
 
 HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
 
@@ -4987,7 +4988,7 @@ server.max-http-header-size=1024
 
 奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
 
-\subsection{开启gzip压缩}
+\subsection{开启Gzip压缩}
 
 Nginx开启Gzip压缩配置如下：
 
@@ -5043,7 +5044,7 @@ http {
 
 \subsection{Load Balance}
 
-nginx 的负载均衡配置:
+Nginx 的负载均衡配置:
 
 \begin{lstlisting}[language=bash]
 upstream backend{
@@ -5058,7 +5059,7 @@ upstream backend{
 
 \subsection{超时转发}
 
-当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
+当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，Nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
 
 \begin{lstlisting}
 server {
@@ -5148,12 +5149,6 @@ yum provides */libssl.so.1.0.0
 \end{lstlisting}
 
 在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
-
-\url{http://rpmfind.net/linux/rpm2html/search.php?query=openssl&submit=Search+...&system=CentOS&arch=}
-
-\paragraph{nginx: [emerg] unknown directive "upstram"}
-
-粘贴复制时有特殊字符。
 
 \section{Ansible}
 
@@ -5310,7 +5305,6 @@ sudo ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
 \end{lstlisting}
 
-\paragraph{远程转发Remote Forward}
 
 \subsection{ssh查看日志}
 
@@ -5320,7 +5314,13 @@ ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
 SysLogFacility LOCAL7
 \end{lstlisting}
 
-Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志进行分类，并由专门的工作负责记录相对应的信息，分类有：auth(授权)，authpriv，cron(定时任务)，daemon(守护进程)，kern(内核),lpr,mail(邮件相关),mark,news,security(安全),syslog,user,uucp,local0,local7。多线程，多协议（udp/tcp/ssl/tls/relp）；mysql,pgsql,oracle等多种关系数据中，强大的过滤器，可实现过滤系统信息中的任意部分。自定义输出格式。适用于企业级别日志记录需求。ssh配置文件配置后，在/etc/rsyslog.conf文件中作如下配置：
+Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志进行分类，并由专门的工作负责记录相对应的信息，分类有：
+
+\begin{quote}
+auth(授权)，authpriv，cron(定时任务)，daemon(守护进程)，kern(内核),lpr,mail(邮件相关),mark,news,security(安全),syslog,user,uucp,local0,local7。	
+\end{quote}
+
+多线程，多协议（udp/tcp/ssl/tls/relp）；mysql,pgsql,oracle等多种关系数据中，强大的过滤器，可实现过滤系统信息中的任意部分。自定义输出格式。适用于企业级别日志记录需求。ssh配置文件配置后，在/etc/rsyslog.conf文件中作如下配置：
 
 \begin{lstlisting}[language=Bash]
 LOCAL7.*	/var/log/sshd.log
@@ -5332,7 +5332,7 @@ LOCAL7.*	/var/log/sshd.log
 
 \subsection{VisualVM远程监控}
 
-jstatd是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器的JDK根目录(如：/opt/app/local/jdk1.8.0\_111)上建立一个指定安全策略的文件jstatd.all.policy，文件内容如下：
+jstatd(Java Statistics Monitoring Daemon)是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器的JDK根目录(如：/opt/app/local/jdk1.8.0\_111)上建立一个指定安全策略的文件jstatd.all.policy，文件内容如下：
 
 \begin{lstlisting}[language=Bash]
 grant codebase "file:${java.home}/../lib/tools.jar" {  
