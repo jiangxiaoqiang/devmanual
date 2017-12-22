@@ -1736,13 +1736,14 @@ jmap -dump:format=b,file=heap.bin <pid>
 \begin{lstlisting}[language=Bash]
 # 发生OOM时生成dump文件
 # 标准参数（-）
-# 所有的JVM实现都必须实现这些参数的功能，而且向后兼容；
+# 标准参数是所有的JVM实现都必须实现这些参数的功能
+# 而且向后兼容
 # 非标准参数（-X）
 # 默认jvm实现这些参数的功能
-# 但是并不保证所有jvm实现都满足，且不保证向后兼容；
+# 但是并不保证所有jvm实现都满足，且不保证向后兼容
 # 非Stable参数（-XX）
 # 此类参数各个jvm实现会有所不同，将来可能会随时取消
-# 需要慎重使用；
+# 需要慎重使用
 -XX:+HeapDumpOnOutOfMemoryError
 # dump文件存放路径
 -XX:HeapDumpPath=/home/app
