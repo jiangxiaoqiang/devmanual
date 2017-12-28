@@ -5207,7 +5207,7 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 \subsection{免密登陆}
 
-免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
+SSH服务如果在公网上，非常容易受到攻击，特别是弱口令扫描，字典扫描。保护服务器免受攻击，可以使用SSH密钥，禁用口令认证，如果不能做到这一点，务必使用强壮的密码。还可以设置登陆IP白名单。更改服务器ssh端口(基本上没有效果，调整了之后可以使用nmap轻松扫描到)。使用snort、ossec等开源的入侵检测设备保护服务器。免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
