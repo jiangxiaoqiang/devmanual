@@ -2606,7 +2606,7 @@ const uniqOrgList = lodashUniqBy(orgList, 'dfName');
 return lodashChunk(dfbmList, 10).map((dfbms, rowNo) => {
 		const items = this.renderItems(groups, dfbms);
 		return (
-		});
+});
 \end{lstlisting}
 
 \paragraph{排序}
@@ -3026,6 +3026,9 @@ set -u
 # 当任何一行命令执行失败时，自动退出脚本
 set -e
 
+# 在运行结果之前，先输出执行的那一行命令
+set -x
+
 # send=`date '+%Y-%m-%d %H:%M:%S'`
 CURRENT\_TIME=`date '+%Y%m%d%H%M%S'`
 
@@ -3075,7 +3078,7 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。
+set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{终端快捷键(Terminal Shortcut)}
 
@@ -3329,6 +3332,13 @@ size默认单位是b，而它代表的是512字节，所以2表示1K，1M则是2
 \begin{lstlisting}[language=Bash]
 find / -name "*工作*"
 \end{lstlisting}
+
+忽略某个文件夹：
+
+\begin{lstlisting}[language=Bash]
+sudo find ~ \( -path "/home/hldev/hldata/credit-system-document" -o -path "/home/hldev/hldata/credit-system-document" \) -prune -o -type f -name "*概要设计*"  -print
+\end{lstlisting}
+
 
 \paragraph{sudo}
 
@@ -6118,6 +6128,7 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 \end{lstlisting}
 
 达梦数据库中，在写全文索引查询时，全文索引的条件需要放到前面，这样才能够利用到索引。
+
 
 \section{Redis}
 
