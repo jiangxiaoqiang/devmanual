@@ -4769,6 +4769,20 @@ curl -w "@curl-format.txt" -s -H "APPID:" \
 http://localhost:28080/api/xysj/search?qymc=长安福特
 \end{lstlisting}
 
+有时Json文本太长，可以直接将Json保存到文件中，curl直接从文件中读取Json，将之放入消息体中：
+
+\begin{lstlisting}[language=Bash]
+curl -X PUT -H "Content-Type: application/json;charset=UTF-8" 
+-H "APPID:"  
+-H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02"  
+-H "ECHOSTR:sdsaasf" 
+-H "TOKEN:31c94bbf40b70bc5575e0e68f1c18f145b8bd50d"  
+-H "Accept: application/json, text/plain" 
+http://localhost:28080/api/redBlack/page/feedBack/commitFeedback 
+--data-binary @example.json | jq '.'
+\end{lstlisting}
+
+
 
 
 \subsection{iostat}
@@ -4825,6 +4839,13 @@ echo '{"foo": 42, "bar": "less interesting data"}' | jq '.bar'
 
 \begin{lstlisting}[language=Bash]
 curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR:" -H "TOKEN:" http://10.10.1.12:28080/api/xzxk?xdr= | jq '.data.totalElements'
+\end{lstlisting}
+
+有的时候Json太长了，如果复制到终端中可能会占满整个屏幕。可以将json保存成文件，jq从文件中读取：
+
+\begin{lstlisting}[language=Bash]
+# 从文件中读取Json格式化
+cat example.json | jq '.'
 \end{lstlisting}
 
 \section{Nginx}
@@ -5686,7 +5707,7 @@ git ls-files |grep AccessLogMapper.java
 git add -f cc-data/src/main/java/creditsystem/data/mapper/log/AccessLogMapper.java
 \end{lstlisting}
 
-
+解决问题将log目录重命名成了syslog。
 
 
 \chapter{Google Chrome}
