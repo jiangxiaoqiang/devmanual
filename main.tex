@@ -5486,6 +5486,8 @@ digraph G {
 
 \section{基础}
 
+英文版维基百科git条目中，找到了如下段落，原来git是个单词，不是编造出来的，它的含义是“烂人”。Linus总是将他的项目用他自己来命名，而他自认为是个自负的混蛋，所以选了烂人这个词。Torvalds seemed aware that his decision to drop BitKeeper would also be controversial. When asked why he called the new software, "git", British slang meaning "a rotten person", he said. "I'm an egotistical bastard, so I name all my projects after myself. First Linux, now git"。
+
 \subsection{常用Git命令}
 
 常用语句。
@@ -5672,6 +5674,18 @@ env GIT_SSL_NO_VERIFY=true git clone https://<host_name/git/project.git
 \begin{lstlisting}[language=Bash]
 git config --system http.sslverify false
 \end{lstlisting}
+
+\paragraph{git忽略的文件}
+
+一次在一个分支上修改的文件，但是在另一个分支上竟然出现了。原来新建的文件是在log目录下，而log目录是配置为ignore的，在添加文件时，默认没有加入到git的源码管理中，所以在一个分支的修改会出现在另一个分支。使用如下命令查看一个文件是不是在git的版本管理中：
+
+\begin{lstlisting}[language=Bash]
+# 查看AccessLogMapper.java是不是在版本控制下
+git ls-files |grep AccessLogMapper.java
+# 将AccessLogMapper.java添加进版本控制
+git add -f cc-data/src/main/java/creditsystem/data/mapper/log/AccessLogMapper.java
+\end{lstlisting}
+
 
 
 
