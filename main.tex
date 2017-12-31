@@ -61,7 +61,7 @@
 %Figure显示为中文的“图”
 \renewcommand\figurename{图}
 
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{2}
 
 %Set Code Format%
 \lstloadlanguages{C, csh, make,python,Java,JavaScript}
@@ -691,10 +691,13 @@ public class DataSourceConfig {
 
 多线程共享变量的情况下，为了保证数据一致性，往往需要对这些变量的访问进行加锁。而锁本身又会带来一些问题和开销。Immutable Object模式使得我们可以在不使用锁的情况下，既保证共享变量访问的线程安全，又能避免引入锁可能带来的问题和开销。多线程环境中，一个对象常常会被多个线程共享。这种情况下，如果存在多个线程并发地修改该对象的状态或者一个线程读取该对象的状态而另外一个线程试图修改该对象的状态，我们不得不做一些同步访问控制以保证数据一致性。而这些同步访问控制，如显式锁和CAS操作，会带来额外的开销和问题，如上下文切换、等待时间和ABA问题等。Immutable Object模式的意图是通过使用对外可见的状态不可变的对象（即Immutable Object），使得被共享对象“天生”具有线程安全性，而无需额外的同步访问控制。从而既保证了数据一致性，又避免了同步访问控制所产生的额外开销和问题，也简化了编程。
 可以遵照以下几点来编写一个不可变类:
-1. 类应该定义成final，避免被继承。将类声明为final (强不可变类)，或者将所有类方法加上final(弱不可变类)。或者使用静态工厂并声明构造器为private。
-2. 声明属性为 private 和 final 。
-3. 不要提供任何可以修改对象状态的方法：不仅仅是set方法，还有任何其它可以改变状态的方法。
-4. 如果类有任何可变对象属性，那么当它们在类和类的调用者间传递的时候必须被保护性拷贝。如果某一个类成员不是原始变量(primitive)或者不可变类，必须通过在成员初始化(in)或者get方法(out)时通过深度clone方法，来确保类的不可变。	
+
+\begin{enumerate}
+	\item{类应该定义成final，避免被继承。将类声明为final (强不可变类)，或者将所有类方法加上final(弱不可变类)。或者使用静态工厂并声明构造器为private。}
+	\item{声明属性为 private 和 final。}
+	\item {不要提供任何可以修改对象状态的方法：不仅仅是set方法，还有任何其它可以改变状态的方法。}
+	\item {如果类有任何可变对象属性，那么当它们在类和类的调用者间传递的时候必须被保护性拷贝。如果某一个类成员不是原始变量(primitive)或者不可变类，必须通过在成员初始化(in)或者get方法(out)时通过深度clone方法，来确保类的不可变。}
+\end{enumerate}
 
 不可变对象有几个优点：线程安全、易于理解、比可变对象有更高的安全性。
 
@@ -800,7 +803,8 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 
 \begin{lstlisting}[language=Java]
 //更加直接的方式判断是否有符合条件的元素
-boolean isChild = users.stream().anyMatch(t->t.age<18);
+boolean isChild = users.stream()
+						.anyMatch(t->t.age<18);
 \end{lstlisting}
 
 \paragraph{parallelStream}
