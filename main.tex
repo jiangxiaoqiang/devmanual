@@ -1435,13 +1435,13 @@ spring.datasource.hikari.type=com.zaxxer.hikari.HikariDataSource
 spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
 \end{lstlisting}
 
-在某些安全定义较为严格的网络，如果数据库连接经过一定时间无通信，会自动断开连接。可以设置HikariCP：
+在某些安全定义较为严格的网络，如果数据库连接经过一定时间无通信，会自动断开连接。对于在代码中拿到的Connection，可能会遇到网络抖动，数据库服务异常等等情况。可以设置HikariCP：
 
 \begin{lstlisting}
 hikariConfig.setConnectionTestQuery("SELECT 1");
 \end{lstlisting}
         
-This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。
+This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。它会先检测连接是否可用。
 
 
 \paragraph{DataSource跟DriverManager区别及联系}
@@ -3010,6 +3010,27 @@ sudo apt-get -f install
 \end{lstlisting}
 
 f(fix)参数表示尝试修正系统依赖损坏处。
+
+
+\begin{table}
+	\caption{Linux重要文件}
+	\label{table:linuxconfigfile}
+	\begin{center}
+		\begin{tabular}{cp{10cm}c}
+			\hline
+			\multirow{1}{*}{序号}
+			& \multicolumn{1}{c}{名称}  \\
+			\hline			
+			/etc/sysctl.conf  & 内核配置文件，配置 Linux 内核参数修改后不用重启动更新: /sbin/sysctl -p \\
+			/etc/issue  & 系统版本信息，对于生成环境的服务器来说，留着是个安全隐患，建议清空，清空文件命令 >/etc/issue或者 cat /dev/null /etc/issue \\
+			/etc/motd & 登陆后的提示信息\\
+			/etc/profile.d/ & 开机登录后运行的程序\\
+			/etc/redhat-release & 查看版本文件\\
+		\end{tabular}	
+	\end{center}
+\end{table}
+
+配置文件存放的目录，本意为“etcetera”(附加物)的意思。
 
 \section{Shell}
 
