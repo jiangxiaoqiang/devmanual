@@ -1462,47 +1462,7 @@ Using a DataSource object is the preferred alternative to using the DriverManage
 
 数据库连接池是运行在后台的而且应用程序的编码没有任何的影响。此中状况存在的前提是应用程序必须通过DataSource对象（一个实现javax.sql.DataSource接口的实例）的方式代替原有通过DriverManager类来获得数据库连接的方式。一个实现javax.sql.DataSource接口的类可以支持也可以不支持数据库连接池，但是两者获得数据库连接的代码基本是相同的。
 
-\subsection{Spring Boot缓存}
 
-SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架,需要在XML中配置。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
-
-@Cacheable : Spring在每次执行前都会检查Cache中是否存在相同key的缓存元素，如果存在就不再执行该方法，而是直接从缓存中获取结果进行返回，否则才会执行并将返回结果存入指定的缓存中。 
-
-@CacheEvict : 清除缓存。 
-
-@CachePut : @CachePut也可以声明一个方法支持缓存功能。使用@CachePut标注的方法在执行前不会去检查缓存中是否存在之前执行过的结果，而是每次都会执行该方法，并将执行结果以键值对的形式存入指定的缓存中。 
-
-这三个方法中都有两个主要的属性：value 指的是 ehcache.xml 中的缓存策略空间；key 指的是缓存的标识，同时可以用 \# 来引用参数。
-在ehcache.xml中配置缓存策略空间：
-
-\begin{lstlisting}[language=XML]
-<ehcache>
-	<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
-</ehcache>
-\end{lstlisting}
-
-在方法上指定缓存，语法采用SpEL(Spring Express Language)，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
-SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
-
-\begin{lstlisting}[language=Java]
-@Cacheable(value = "summaryXzxk",
-key = "'findPage'+#pageable.page+#pageable.params.get('xdr')",
-condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
-)
-\end{lstlisting}
-
-@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。缓存的Key,当我们没有指定该属性时，Spring将使用默认策略生成key(表示使用方法的参数类型及参数值作为key),key属性是用来指定Spring缓存方法的返回结果时对应的key的。该属性支持SpringEL表达式。我们还可以自定义策略：自定义策略是指我们可以通过Spring的EL表达式来指定我们的key。这里的EL表达式可以使用方法参数及它们对应的属性。使用方法参数时我们可以直接使用“\#参数名”或者“\#p参数index”。key的生成策略有两种：一种是默认策略，一种是自定义策略。默认的key生成策略是通过KeyGenerator生成的，其默认策略如下：1.如果方法没有参数，则使用0作为key。2.如果只有一个参数的话则使用该参数作为key。3.如果参数多余一个的话则使用所有参数的hashCode作为key满足一定条件才缓存，写法如下：
-
-\begin{lstlisting}[language=Java]
-condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
-\end{lstlisting}
-
-如上条件，取出xdr为空的数据进行缓存。如下情形缓存将会不起作用：
-
-\begin{itemize}
-	\item{同一个bean内部方法调用，这个问题遇到过，也是查了一些时间才发现}
-	\item{子类调用父类中有缓存注解的方法}
-\end{itemize}
 
 
 
@@ -1992,6 +1952,24 @@ processResult = errorCode.get.split(',')
 \end{lstlisting}
 
 mkString把集合元素转化为字符串，可以添加分隔符，前缀，后缀。
+
+\section{sbt(Scala Build Tool)}
+
+\subsection{Error during sbt execution: No Scala version specified or detected}
+
+在执行sbt命令时出现如下提示：
+
+\begin{lstlisting}
+Error during sbt execution: No Scala version specified or detected
+\end{lstlisting}
+
+Its the repository cache thats causing the issue. There are possibilities where you have broken / no ivys (when only the jar is downloaded through maven repo) for the sbt jars in your cache.移除~/.sbt/boot目录。再次执行sbt命令即可，但是需要注意的是jcenter和maven-central下载包都会非常慢，将repositories路径配置为阿里云路径，可大大提高下载速度：
+
+\begin{lstlisting}
+[repositories]  
+	local  
+	nexus-aliyun:http://maven.aliyun.com/nexus/content/groups/public 
+\end{lstlisting}
 
 \chapter{Python}
 
@@ -5103,9 +5081,9 @@ http {
 }
 \end{lstlisting}
 
-\subsection{Load Balance}
+\subsection{负载均衡(Load Balance)}
 
-Nginx 的负载均衡配置:
+Nginx的负载均衡配置，在主机(10.10.1.12)出现问题时，Nginx会自动切换到备机(10.10.1.13)，当主机恢复服务后，Nginx会自动切换回主机:
 
 \begin{lstlisting}[language=bash]
 upstream backend{
@@ -5116,7 +5094,7 @@ upstream backend{
 
 而反向代理实际意义就是把请求转发, 使用的时候用 proxy\_pass 实现.
 反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
-反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险
+反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险。
 
 \subsection{超时转发}
 
@@ -6039,6 +6017,65 @@ sudo apt-get install texlive-full -y
 % 设置缺省中文字体
 \setCJKmainfont{WenQuanYi Micro Hei} 
 \end{lstlisting}
+
+\part{Cache}
+
+\chapter{嵌入式(Embedded)}
+
+\section{Ehcache}
+
+\subsection{Spring Boot Ehcache缓存}
+
+SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。出现At least one cache should be provided per cache operation错误时，表示没有指定Cache缓存框架,需要在XML中配置。EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点，是Hibernate中默认的CacheProvider。ehcache提供了多种缓存策略，主要分为内存和磁盘两级，所以无需担心容量问题。
+
+@Cacheable : Spring在每次执行前都会检查Cache中是否存在相同key的缓存元素，如果存在就不再执行该方法，而是直接从缓存中获取结果进行返回，否则才会执行并将返回结果存入指定的缓存中。 
+
+@CacheEvict : 清除缓存。 
+
+@CachePut : @CachePut也可以声明一个方法支持缓存功能。使用@CachePut标注的方法在执行前不会去检查缓存中是否存在之前执行过的结果，而是每次都会执行该方法，并将执行结果以键值对的形式存入指定的缓存中。 
+
+这三个方法中都有两个主要的属性：value 指的是 ehcache.xml 中的缓存策略空间；key 指的是缓存的标识，同时可以用 \# 来引用参数。
+在ehcache.xml中配置缓存策略空间：
+
+\begin{lstlisting}[language=XML]
+<ehcache>
+<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
+</ehcache>
+\end{lstlisting}
+
+在方法上指定缓存，语法采用SpEL(Spring Express Language)，Spring表达式语言全称为Spring Expression Language(缩写为SpEL)，能在运行时构建复杂表达式、存取对象图属性、对象方法调用等等，并且能与Spring功能完美整合，如能用来配置Bean定义。 表达式语言给静态Java语言增加了动态功能。
+SpEL是单独模块，只依赖于core模块，不依赖于其他模块，可以单独使用。：
+
+\begin{lstlisting}[language=Java]
+@Cacheable(value = "summaryXzxk",
+key = "'findPage'+#pageable.page+#pageable.params.get('xdr')",
+condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+)
+\end{lstlisting}
+
+@Cacheable注解有三个参数，value是必须的，还有key和condition。第一个参数，也就是value指明了缓存将被存到什么地方。其中summaryXzxk为定义在配置文件中的缓存器名称。缓存的Key,当我们没有指定该属性时，Spring将使用默认策略生成key(表示使用方法的参数类型及参数值作为key),key属性是用来指定Spring缓存方法的返回结果时对应的key的。该属性支持SpringEL表达式。我们还可以自定义策略：自定义策略是指我们可以通过Spring的EL表达式来指定我们的key。这里的EL表达式可以使用方法参数及它们对应的属性。使用方法参数时我们可以直接使用“\#参数名”或者“\#p参数index”。key的生成策略有两种：一种是默认策略，一种是自定义策略。默认的key生成策略是通过KeyGenerator生成的，其默认策略如下：1.如果方法没有参数，则使用0作为key。2.如果只有一个参数的话则使用该参数作为key。3.如果参数多余一个的话则使用所有参数的hashCode作为key满足一定条件才缓存，写法如下：
+
+\begin{lstlisting}[language=Java]
+condition = "#pageable.params.get('xdr') eq null or #pageable.params.get('xdr') eq ''"
+\end{lstlisting}
+
+如上条件，取出xdr为空的数据进行缓存。如下情形缓存将会不起作用：
+
+\begin{itemize}
+	\item{同一个bean内部方法调用，这个问题遇到过，也是查了一些时间才发现}
+	\item{子类调用父类中有缓存注解的方法}
+\end{itemize}
+
+有的时候，Ehcache缓存了空的数据，导致一旦缓存空数据页面总是显示空，所以，可以设置如果返回数据为空。就不缓存\footnote{\url{https://stackoverflow.com/questions/12113725/how-do-i-tell-spring-cache-not-to-cache-null-value-in-cacheable-annotation}}：
+
+
+\begin{lstlisting}[language=Java]
+@Cacheable(value="defaultCache", key="#pk", unless="#result == null")
+public Person findPerson(int pk) {
+	return getSession.getPerson(pk);
+}
+\end{lstlisting}
+
 
 \part{DB}
 
