@@ -3334,7 +3334,13 @@ alias='ls -lh --color=always'
 
 \paragraph{top}
 
-top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_(software)}}。平时在使用top的过程中，比较头疼的是top是以KB为单位显示的，比如我的机器是32GB的内存，显示的是KiB Mem : 32842520 total, 11788120 free,  8146760 used, 12907640 buff/cache，脑子里完全没有概念，32842520KB是多大？如果显示总内存32GB，11GB空闲，就更容易理解了。此时可以使用Shift + E，可以将内存单位从KB切换到MB，GB，TP，PB。同样按下E键，可以将列表的内存单位作相应的不同粒度的切换\footnote{\url{https://unix.stackexchange.com/questions/105908/how-to-display-meminfo-in-megabytes-in-top}}。E表示的涵义：Extend-Memory-Scale in Summary Area With this command you can cycle through the available summary area memory scaling which ranges from KiB (kibibytes or 1,024 bytes) through EiB (exbibytes or 1,152,921,504,606,846,976 bytes)。
+top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_(software)}}。平时在使用top的过程中，比较头疼的是top是以KB为单位显示的，比如我的机器是32GB的内存，显示的是KiB Mem : 32842520 total, 11788120 free,  8146760 used, 12907640 buff/cache，脑子里完全没有概念，32842520KB是多大？如果显示总内存32GB，11GB空闲，就更容易理解了。此时可以使用Shift + E，可以将内存单位从KB切换到MB，GB，TP，PB。同样按下E键，可以将列表的内存单位作相应的不同粒度的切换\footnote{\url{https://unix.stackexchange.com/questions/105908/how-to-display-meminfo-in-megabytes-in-top}}。E表示的涵义：Extend-Memory-Scale in Summary Area With this command you can cycle through the available summary area memory scaling which ranges from KiB (kibibytes or 1,024 bytes) through EiB (exbibytes or 1,152,921,504,606,846,976 bytes)。输入大写P，则结果按CPU占用降序排序。输入大写M，结果按内存占用降序排序。
+
+步骤1 执行top命令，然后在数据画面中按“k”键。
+步骤2 画面中会出现“PID to kill：”信息，接着输入该进程的PID。
+步骤3 输入PID后按键，会出现“Kill PID xxxxx with signal [15]：”提示信息（此处的xxxxx是指PID编号），此时需输入signal号码，如果直接按键，则以默认的15进行处理。
+步骤4 如果无法顺利删除，则输入9来强制删除该进程。
+
 
 \paragraph{find}
 
