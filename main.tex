@@ -1971,6 +1971,15 @@ Its the repository cache thats causing the issue. There are possibilities where 
 	nexus-aliyun:http://maven.aliyun.com/nexus/content/groups/public 
 \end{lstlisting}
 
+\subsection{系统操作}
+
+系统操作：
+
+\begin{lstlisting}
+nohup ./bin/ig-file &
+\end{lstlisting}
+
+
 \chapter{Python}
 
 Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
@@ -3323,6 +3332,9 @@ ls -R
 alias='ls -lh --color=always'
 \end{lstlisting}
 
+\paragraph{top}
+
+top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_(software)}}。平时在使用top的过程中，比较头疼的是top是以KB为单位显示的，比如我的机器是32GB的内存，显示的是KiB Mem : 32842520 total, 11788120 free,  8146760 used, 12907640 buff/cache，脑子里完全没有概念，32842520KB是多大？如果显示总内存32GB，11GB空闲，就更容易理解了。此时可以使用Shift + E，可以将内存单位从KB切换到MB，GB，TP，PB。同样按下E键，可以将列表的内存单位作相应的不同粒度的切换\footnote{\url{https://unix.stackexchange.com/questions/105908/how-to-display-meminfo-in-megabytes-in-top}}。E表示的涵义：Extend-Memory-Scale in Summary Area With this command you can cycle through the available summary area memory scaling which ranges from KiB (kibibytes or 1,024 bytes) through EiB (exbibytes or 1,152,921,504,606,846,976 bytes)。
 
 \paragraph{find}
 
@@ -5898,6 +5910,17 @@ Javascript是单线程，从图中看出，只有一个main线程。
 
 \subsection{Google Chrome SSH}
 
+\chapter{ElasticSearch}
+
+\section{基础操作}
+
+ElasticSearch基础操作：
+
+\begin{lstlisting}[language=Bash]
+#启动ElasticSearch
+./elasticsearch
+\end{lstlisting}
+
 \chapter{LaTex}
 
 \section{安装}
@@ -6244,6 +6267,7 @@ wget -c http://download.redis.io/releases/redis-3.2.9.tar.gz
 make
 make test
 \end{lstlisting}
+
 
 \chapter{PostgreSQL}
 
