@@ -3021,6 +3021,16 @@ f(fix)参数表示尝试修正系统依赖损坏处。
 
 \section{Shell}
 
+\subsection{Shell四种模式}
+
+interactive login shell：这种模式下，shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
+
+\begin{itemize}
+	\item {~/.bash\_profile}
+	\item{~/.bash\_login}
+	\item{~/.profile}
+\end{itemize}
+
 \subsection{自动部署(Auto Deploy)}
 
 最初使用Shell脚本是将之用于自动化部署应用程序。一般部署程序步骤皆是重复的，编译、构建、打包、拷贝、备份网站、停止旧版网站启动新版Beta网站，Beta网站出现问题时，Rollback到Stable版本，可以使用Shell脚本将重复的操作自动化。将项目在本地打包，打包文件拷贝到目标服务器(一台或多台)上，自动启动应用程序。
@@ -3370,6 +3380,8 @@ sudo find ~ \( -path "/home/hldev/hldata/credit-system-document" -o -path "/home
 sudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy. 
 
 \begin{lstlisting}[language=Bash]
+#切换到PostgreSQL用户
+sudo - postgresql
 sudo -i
 sudo -u dolphin -i
 在vi/vim编辑器中,编辑文件后保存时没有修改的权限时可用
@@ -6280,6 +6292,18 @@ make test
 PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统），在灵活的BSD-风格许可证下发行。它在其他开放源代码数据库系统（比如MySQL和Firebird），和专有系统比如Oracle、Sybase、IBM的DB2和Microsoft SQL Server之外，为用户又提供了一种选择。
 
 \section{基础操作}
+
+PostgreSQL的基础操作：
+
+\begin{lstlisting}[language=Bash]
+initdb --encoding=UTF-8 --no-locale -D /var/lib/pgsql/data/
+pg_ctl -D /var/lib/pgsql/data -l logfile start
+#列出Database
+pgsql -l
+\end{lstlisting}
+
+
+
 
 \subsection{安装(Install)}
 
