@@ -5245,9 +5245,17 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 
 \section{ssh(Secure Shell)}
 
-\subsection{免密登陆}
+\subsection{免密登陆(Login Without Password)}
 
-SSH服务如果在公网上，非常容易受到攻击，特别是弱口令扫描，字典扫描。保护服务器免受攻击，可以使用SSH密钥，禁用口令认证，如果不能做到这一点，务必使用强壮的密码。还可以设置登陆IP白名单。更改服务器ssh端口(基本上没有效果，调整了之后可以使用nmap轻松扫描到)。使用snort、ossec等开源的入侵检测设备保护服务器。免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。
+SSH服务如果在公网上，非常容易受到攻击，特别是弱口令扫描，字典扫描。保护服务器免受攻击，可以使用SSH密钥，禁用口令认证，如果不能做到这一点，务必使用强壮的密码。还可以设置登陆IP白名单。更改服务器ssh端口(基本上没有效果，调整了之后可以使用nmap轻松扫描到)。使用snort、ossec等开源的入侵检测设备保护服务器。免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。而.ssh文件夹的权限需要是700。调整/etc/ssh/sshd\_config配置文件:
+
+\begin{lstlisting}[language=Bash]
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile      .ssh/authorized_keys
+\end{lstlisting}
+
+拷贝公钥到服务器：
 
 \begin{lstlisting}[language=Bash]
 ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
@@ -5256,13 +5264,20 @@ ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.s
 ssh-keygen -t rsa -C "a@gmail.com"
 \end{lstlisting}
 
+调整文件夹权限：
+
+\begin{lstlisting}[language=Bash]
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys 
+\end{lstlisting}
+
 在Mac OS X中，有时自动登陆需要反复输入密码，解决问题的方法是可以配置Serria记住密码：
 
 \begin{lstlisting}[language=Bash]
 usekeychain yes
 \end{lstlisting}
 
-\subsection{ssh连接慢}
+\subsection{ssh连接慢(Connect Slow)}
 
 在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
 
@@ -5272,7 +5287,11 @@ GSSAPIAuthentication　no
 sudo service sshd restart
 \end{lstlisting}
 
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭。
+
+\begin{lstlisting}[language=Bash]
+UseDNS=no
+\end{lstlisting}
 
 \subsection{Permission denied (publickey)}
 
@@ -5665,7 +5684,7 @@ git cherry-pick <commit id>
 git merge --no-ff v1_xiaoqiang
 \end{lstlisting}
 
-\paragraph{和并指定文件}
+\paragraph{合并指定文件}
 
 在开发过程中，有一个旧的分支v1\_xiaoqiang和一个新的分支，在新旧分支同步开发的过程中，旧分支添加了一些特性，需要和并指定特性到分支上。也就是需要将旧分支的某些修改和并到新的分支，可以直接使用merge命令，但是所有的内容都会和并到新分支，也可以使用git diff命令对比两个分支。
 
@@ -5694,7 +5713,9 @@ git difftool -t meld -y v1.3_xiaoqiang v1_xiaoqiang
 
 项目的v1分支可以合并到v1.3分支，而v1.3分支不能够合并到v1分支。为了保护有时分支失误合并，采用钩子的方式来解决，每次推送的时候验证：
 
-\subsection{常见问题}
+\subsection{Git使用常见问题}
+
+在使用不同分支部署时，由于Git默认忽略了build和out文件夹，所以build和out文件夹可能会有其他分支编译的文件，当在打包发布时，可能会由于打包进其他分支的文件或者目录导致部署时启动失败，所以部署时不同分支的文件最好单独存放在不同的文件夹中。
 
 
 \paragraph{error setting certificate verify location}
@@ -6313,6 +6334,7 @@ sudo yum install --downloadonly --downloaddir=/tmp <package-name>
 
 \begin{lstlisting}[language=Bash]
 sudo -u postgres psql
+/opt/haishu/local/pgsql/10.1/bin/psql -h localhost -U haishu -d ig_file_xycq
 \end{lstlisting}
 
 这里是以超级用户的身份登录，否则在修改密码时会提示：must be superuser to alter superusers。修改密码：
@@ -6328,6 +6350,8 @@ compile "org.postgresql:postgresql:42.1.1"
 \end{lstlisting}
 
 PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，select里大小写都可以查询，如果列名为大写，查询语句中列名需要添加双引号才能查询。
+
+
 
 \chapter{MySQL}
 
@@ -7025,7 +7049,7 @@ telnet因为采用明文传送报文，安全性不好，很多Linux服务器都
 
 \paragraph{Windows代理设置}
 
-Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用putty工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
+Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用Putty工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么Putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
 
 \begin{figure}[htbp]
 	\centering
@@ -7034,13 +7058,35 @@ Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下
 	\label{fig:puttyportforwarding}
 \end{figure}
 
-当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在putty的Connection选项里，选择每隔一定事件发送空的数据包来保持连接(Sending of null packets to keep session alive)。使用如下命令查看Windows端口是状态：
+当访问A机器的2222端口时，流量会自动转发到B机器的22222端口。在设置后，一段时间后会提示network error software caused connection abort。在Putty的Connection选项里，选择每隔一定事件发送空的数据包来保持连接(Sending of null packets to keep session alive)。使用如下命令查看Windows端口是状态是否是处于监听状态：
 
 \begin{lstlisting}[language=Bash]
 netstat -ano|findstr "3800"
 \end{lstlisting}
 
-设置好后，始终需要在前端运行一个界面。不是非常方便，所以可以让putty运行在后台。
+在SSH连接时，可以打开Debug，可以看到更加详细的连接信息。
+
+\begin{lstlisting}[language=Bash]
+ssh -p 222 root@10.55.10.112 -v
+\end{lstlisting}
+
+设置好后，始终需要在前端运行一个界面。不是非常方便，所以可以让Putty运行在后台(Windows下还没有找到方案)。
+
+\begin{lstlisting}[language=Bash]
+#59测试环境网站
+3801:59.214.215.6:3801
+#59测试环境网站
+3800:59.214.215.6:3800
+#59测试环境代理
+222:59.214.215.6:22
+#11前端正式环境代理
+223:10.10.1.11:22
+#12后端正式环境代理
+224:10.10.1.12:22
+#13后端正式环境代理
+225:10.10.1.13:22
+\end{lstlisting}
+
 
 
 \paragraph{SSH反向代理(Reverse Proxy)}
