@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -6736,9 +6736,20 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \section{URL}
 
-\subsection{编码(Encode)}
+\subsection{URL编码解码(Encode Decode)}
 
-不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。
+不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。服务端设置默认解码方式:
+
+\begin{lstlisting}[language=Bash]
+# Character encoding to use to decode the URI.
+server.tomcat.uri-encoding=UTF-8
+# Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
+spring.http.encoding.charset=UTF-8 
+# Enable http encoding support.
+spring.http.encoding.enabled=true 
+spring.http.encoding.force=true
+\end{lstlisting}
+
 
 \section{性能分析(Performance Analysis)}
 
