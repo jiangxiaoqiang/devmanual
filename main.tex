@@ -989,6 +989,8 @@ String qymc = request.getParameter("qymc");
 String decodedQueryString=new String(queryString.getBytes("ISO-8859-1"),"UTF-8");
 \end{lstlisting}
 
+此种方式在环境发生改变时，还是会出现中文乱码，比如请求的服务器替换成了Windows。
+
 \paragraph{POST请求}
 
 使用curl模拟POST请求:
@@ -6318,12 +6320,27 @@ PostgreSQL的基础操作：
 
 \begin{lstlisting}[language=Bash]
 initdb --encoding=UTF-8 --no-locale -D /var/lib/pgsql/data/
-pg_ctl -D /var/lib/pgsql/data -l logfile start
+#启动PostgreSQL
+/opt/haishu/local/pgsql/10.1/bin/pg_ctl -D /opt/haishu/var/pgsql/10.1 -l logfile start
 #列出Database
 pgsql -l
+#登录pg
+/opt/haishu/local/pgsql/10.1/bin/psql -h localhost -U haishu -d auth_xycq
+#在本地可以访问
+#远程机器无法访问，绑定的端口是0.0.0.0
+#CentOS 7关闭防火墙
+systemctl stop firewalld.service
+#禁止firewall开机启动
+systemctl disable firewalld.service
+#查看默认防火墙状态（关闭后显示notrunning，开启后显示running）
+firewall-cmd --state
+#添加20201端口到public域
+firewall-cmd --zone=public --add-port=20201/tcp --permanent
+#防火墙生效
+firewall-cmd --reload
 \end{lstlisting}
 
-
+initdb 的时候会指定一个 PGDATA 目录，这就是 PostgresQL 存储数据的地方。典型的位置是在 /var/lib/postgres/data 或 /home/postgres/data。base 目录是最重要的一个目录，放的是每一个 database 的数据。base 目录里的每一个数字目录对于一个 database 的 oid， 可以通过 查看 pg\_database 这张表查看每一个 数据库的 oid 。
 
 
 \subsection{安装(Install)}
@@ -7079,7 +7096,7 @@ telnet因为采用明文传送报文，安全性不好，很多Linux服务器都
 
 \paragraph{Windows代理设置}
 
-Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用Putty工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么Putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
+Windows下还没有尝试直接通过ssh命令来设置代理转发，Windows下的代理需要使用Putty\footnote{\url{https://chaifeng.com/blog/2007/06/putty\_200611.html\#h.3a97476d4d20}}工具。假如在A机器代理，其他机器访问A机器的2222端口流量转发到B机器(103.12.30.11)的22222端口，那么Putty可以作如图\ref{fig:puttyportforwarding}所示的设置。
 
 \begin{figure}[htbp]
 	\centering
