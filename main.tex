@@ -6734,9 +6734,15 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \chapter{HTTP}
 
-\subsection{性能分析}
+\section{URL}
 
-\paragraph{慢的SQL查询}
+\subsection{编码(Encode)}
+
+不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。
+
+\section{性能分析(Performance Analysis)}
+
+\subsection{慢的SQL查询}
 
 在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。在SQL中添加相应的索引可以解决。
 
