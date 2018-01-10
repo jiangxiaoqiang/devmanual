@@ -3353,6 +3353,30 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 步骤3 输入PID后按键，会出现“Kill PID xxxxx with signal [15]：”提示信息（此处的xxxxx是指PID编号），此时需输入signal号码，如果直接按键，则以默认的15进行处理。
 步骤4 如果无法顺利删除，则输入9来强制删除该进程。
 
+\begin{table}
+	\caption{Top列含义}
+	\label{table:topcolumns}
+	\begin{center}
+	\begin{tabular}{cp{10cm}c}
+		\hline
+		\multirow{1}{*}{序号}
+		& \multicolumn{1}{c}{名称}  \\
+		\hline			
+		NI & nice值。负值表示高优先级，正值表示低优先级 \\
+		\hline	
+		VIRT & 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES \\
+		\hline
+		RES & 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA \\
+		\hline
+		TIME+ & 进程使用的CPU时间总计，单位1/100秒 \\
+		\hline
+		S & 进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程 \\
+		\hline		
+	\end{tabular}	
+	\end{center}
+\end{table}
+
+
 
 \paragraph{find}
 
