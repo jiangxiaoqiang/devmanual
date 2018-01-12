@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -3023,6 +3023,8 @@ f(fix)参数表示尝试修正系统依赖损坏处。
 
 \section{Shell}
 
+Linux中, 命令主要包含4种: 可执行程序(executable program),shell的内置命令(builtin), shell函数(function), alias命令(别名).一般情况下，type命令被用于判断另外一个命令是否是内置命令，内建命令和外部命令的区别在于前者不需要使用子进程来执行。它们已经和shell编译成了一体，作为shell工具的组成部分存在。不需要借助外部程序文件来运行。外部命令，是存在于bash shell之外的程序，不是shell程序的一部分。通常位于/bin, /usr/bin, /sbin, /usr/sbin中。
+
 \subsection{Shell四种模式}
 
 interactive login shell：这种模式下，shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
@@ -3568,7 +3570,8 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \subsection{环境变量(Environment Variable)}
 
-Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
+用户在命令行输入命令后，一般情况下Shell会fork并exec该命令，但是Shell的内建命令例外，执行内建命令相当于调用Shell进程中的一个函数，并不创建新的进程.
+比如:cd、alias、umask、exit等命令即是内建命令，凡是用which命令查不到程序文件所在位置的命令都是内建命令，内建命令没有单独的man手册，要在man手册中查看内建命令，应该man bash-builtins，内建命令虽然不创建新的进程，但也会有Exit Status，通常也用0表示成功非零表示失败，虽然内建命令不创建新的进程，但执行结束后也会有一个状态码，也可以用特殊变量\$?读出全局环境变量对于shell会话和所有生成子shell都是可见的。局部变量则只对创建它们的shell可见。Linux系统在你开始bash会话时就设置了一些全局环境变量。系统环境变量基本上都是使用全大写字母，以区别于普通用户的环境变量。bash shell用一种叫做环境变量的特性来存储有关shell会话和工作环境的信息。这项特性允许你在内存中存储数据，以便程序或shell中运行的脚本能够轻松访问到它们。Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
 
 \begin{lstlisting}[language=Bash]
 # 查看环境变量
