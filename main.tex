@@ -39,7 +39,7 @@
 
 %When compile under liunx% 
 
-\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
+%\setCJKmainfont{WenQuanYi Micro Hei} % 设置缺省中文字体
 
 \contentsmargin{0cm} % Removes the default margin
 
@@ -6183,9 +6183,9 @@ h=\log_{(m+1)} N
 
 当b+树的数据项是复合的数据结构，比如(name,age,sex)的时候，b+数是按照从左到右的顺序来建立搜索树的，比如当(张三,20,F)这样的数据来检索的时候，b+树会优先比较name来确定下一步的所搜方向，如果name相同再依次比较age和sex，最后得到检索的数据；但当(20,F)这样的没有name的数据来的时候，b+树就不知道下一步该查哪个节点，因为建立搜索树的时候name就是第一个比较因子，必须要先根据name来搜索才能知道下一步去哪里查询。比如当(张三,F)这样的数据来检索时，b+树可以用name来指定搜索方向，但下一个字段age的缺失，所以只能把名字等于张三的数据都找到，然后再匹配性别是F的数据了， 这个是非常重要的性质，即索引的最左匹配特性\footnote{\url{参考链接:http://tech.meituan.com/mysql-index.html}}。
 
-\paragraph{索引原则(Index Principle)}
+\subsubsection{索引匹配原则(Index Match Principle)}
 
-\subparagraph{最左前缀匹配原则}
+\paragraph{最左前缀匹配原则}
 
 最左前缀匹配原则，非常重要的原则，mysql会一直向右匹配直到遇到范围查询(>、<、between、like)就停止匹配，比如a = 1 and b = 2 and c > 3 and d = 4 如果建立(a,b,c,d)顺序的索引，d是用不到索引的，如果建立(a,b,d,c)的索引则都可以用到，a,b,d的顺序可以任意调整。组合索引的第一个字段必须出现在查询组句中，这个索引才会被用到。举个例子：
 
@@ -6199,13 +6199,23 @@ limit 0, 10
 
 在建立索引时，DFBM列一定要排在前面，建立(DFBM,JDRQ)这样的索引DB才会利用索引。如果顺序不对(JDRQ,DFBM)，那么DB将不会采用索引。在mysql中执行查询时，只能使用一个索引，如果我们在lname,fname,age上分别建索引,执行查询时，只能使用一个索引，mysql会选择一个最严格(获得结果集记录数最少)的索引。
 
-\subparagraph{=和in可以乱序}=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式
+\paragraph{=和in可以乱序}=和in可以乱序，比如a = 1 and b = 2 and c = 3 建立(a,b,c)索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式。
 
-\subparagraph{尽量选择区分度高的列作为索引}尽量选择区分度高的列作为索引,区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录
+\paragraph{尽量选择区分度高的列作为索引}尽量选择区分度高的列作为索引,区分度的公式是count(distinct col)/count(*)，表示字段不重复的比例，比例越大我们扫描的记录数越少，唯一键的区分度是1，而一些状态、性别字段可能在大数据面前区分度就是0，那可能有人会问，这个比例有什么经验值吗？使用场景不同，这个值也很难确定，一般需要join的字段我们都要求是0.1以上，即平均1条扫描10条记录。有的时候索引选择器会根据where子句和order by子句来计算索引的消耗，有可能不会走最佳索引，例如：
 
-\subparagraph{索引列不能参与计算}索引列不能参与计算，保持列“干净”，比如from\_unixtime(create\_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create\_time = unix\_timestamp(’2014-05-29’);
+\begin{lstlisting}[language=SQL]
+select * 
+from DOLPHIN  
+where DFBM = '500101'  
+order by ROWID DESC 
+limit 0, 10
+\end{lstlisting}
 
-\subparagraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
+此时根据ROWID发现走聚集索引代价低，所以DFBM索引会失效。
+
+\paragraph{索引列不能参与计算}索引列不能参与计算，保持列“干净”，比如from\_unixtime(create\_time) = ’2014-05-29’就不能使用到索引，原因很简单，b+树中存的都是数据表中的字段值，但进行检索时，需要把所有元素都应用函数才能比较，显然成本太大。所以语句应该写成create\_time = unix\_timestamp(’2014-05-29’);
+
+\paragraph{尽量的扩展索引}尽量的扩展索引，不要新建索引。比如表中已经有a的索引，现在要加(a,b)的索引，那么只需要修改原来的索引即可
 
 \subsection{索引类型}
 
@@ -6332,7 +6342,8 @@ pgsql -l
 systemctl stop firewalld.service
 #禁止firewall开机启动
 systemctl disable firewalld.service
-#查看默认防火墙状态（关闭后显示notrunning，开启后显示running）
+#查看默认防火墙状态
+#关闭后显示notrunning，开启后显示running
 firewall-cmd --state
 #添加20201端口到public域
 firewall-cmd --zone=public --add-port=20201/tcp --permanent
@@ -6565,6 +6576,8 @@ character-set-server=utf8
 
 \begin{lstlisting}[language=Bash]
 /home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
+#重启达梦
+/etc/init.d/DmServiceDMSERVER restart
 \end{lstlisting}
 
 
@@ -6645,6 +6658,41 @@ group by org_id
 
 \subsection{常用SQL记录}
 
+查看当前活跃的Session：
+
+\begin{lstlisting}[language=SQL]
+--查看活动的Sesion
+select * from v$sessions where state='ACTIVE';
+\end{lstlisting}
+
+查看SQL执行历史：
+
+\begin{lstlisting}[language=SQL]
+--查看SQL执行历史
+select * from v$sql_history;
+\end{lstlisting}
+
+开启数据库日志，排查问题需要：
+
+\begin{lstlisting}[language=SQL]
+--开启日志
+sp_set_para_value(1,'SVR_LOG',1);
+--关闭日志
+sp_set_para_value(1,'SVR_LOG',0);
+--关闭批量参数优化
+--使用参数查询时不走索引问题解决(可能是Bug)
+--在客户端执行快(没有查询参数，走索引)
+--程序执行慢，未走索引(动态参数)
+sp_set_para_value(2,'BATCH_PARAM_OPT',1);
+\end{lstlisting}
+
+在日志(/opt/dmdbms/log/log\_commit\_01.log)中，可以看到DB执行的SQL以及绑定的参数，参数类型(与是否利用索引有关)。查看达梦版本：
+
+\begin{lstlisting}[language=SQL]
+--开启日志
+select * from v$version;
+\end{lstlisting}
+
 嵌套查询：
 
 \begin{lstlisting}[language=SQL]
@@ -6673,7 +6721,6 @@ select *
 from v$dm_ini
 where para_name like '%ORDER%'
 
-select * from v$sessions where state='ACTIVE';
 # 添加唯一约束
 alter table "USER_XYCQ_SYSTEM"."TD_S_ORG" add constraint TD_S_ORG_ORG_ID_UNIQUE unique(org_id);
 \end{lstlisting}
