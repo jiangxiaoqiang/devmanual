@@ -6171,13 +6171,14 @@ public Person findPerson(int pk) {
 
 \section{索引(Index)}
 
-\subsection{索引常识}
+\subsection{索引常识(Commonsense of Index)}
 
 绝大多数情况下，数据库只使用一个索引。在开发中遇到有时根据时间查询很快：
 
 \begin{lstlisting}[language=SQL]
 --在列org\_id和jdrq上都建立了索引
 --同样都查询语句，不同都org\_id值会有不同都查询性能
+--优化会先计算查询开销
 --当org\_id结果集很少当时候，数据库会使用org\_id索引
 --在使用了org\_id索引后，不会使用jdrq索引
 --同理，当org\_id结果集更大，根据jdrq索引效率更高时
