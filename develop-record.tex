@@ -3300,7 +3300,27 @@ sh -x ./auth.sh
 sh -n ./auth.sh
 \end{lstlisting}
 
-命令行前面的+号表示嵌套。
+命令行前面的+号表示嵌套。还有一个专门调试Shell的工具bashdb\footnote{\url{http://bashdb.sourceforge.net/}}，类似于GDB的调试工具，可以完成对Shell脚本的断点设置，单步执行，变量观察等。调试Shell脚本的语句如下：
+
+\begin{lstlisting}[language=Bash]
+#安装bashdb
+sudo dnf install bashdb -y
+bashdb --debug auth.sh
+\end{lstlisting}
+
+输入命令后即可启动调试，输入命令n执行下一步，查看变量命令：
+
+\begin{lstlisting}[language=Bash]
+print $CURRENT_DATE
+\end{lstlisting}
+
+注意需要命令执行过当前语句时，才能使用print命令查看变量。打印文件Shell脚本内容信息：
+
+\begin{lstlisting}[language=Bash]
+#打印Shell脚本内容
+#从第3行开始打印，打印10行信息
+l 3 10 
+\end{lstlisting}
 
 \subsection{快捷键(Shortcut)}
 
