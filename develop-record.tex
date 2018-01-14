@@ -5646,7 +5646,7 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 
 \subsection{subgraph}
 
-子图的名称必须以cluster开头，否则graphviz无法识别。
+子图的名称必须以cluster开头，否则Graphviz无法识别。
 
 \begin{lstlisting}
 digraph G {
@@ -5672,6 +5672,13 @@ digraph G {
 
 \section{MyBatis Generator}
 
+MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个Mybatis代码自动生成库。MyBatis Generator (MBG) is a code generator for MyBatis MyBatis and iBATIS. It will generate code for all versions of MyBatis, and versions of iBATIS after version 2.2.0. It will introspect a database table (or many tables) and will generate artifacts that can be used to access the table(s). 项目中使用达梦数据库，动态生成文件的过程中提示找不到驱动类，在MBG配置中将达梦驱动添加到ClassPath中：
+
+\begin{lstlisting}[language=XML]
+<generatorConfiguration>
+	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
+</generatorConfiguration>
+\end{lstlisting}
 
 
 
@@ -6132,7 +6139,7 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
-\subsection{文献引用}
+\subsection{文献引用(Bibliography Reference)}
 
 BibTex是一种方式，它本身不需要加载任何的包(package)，但编译的时候需使用bibtex.exe。由于它不太灵活，又出现了新的方式—biblatex方式。biblatex包是一个更加灵活的文献处理方式，它不仅支持更多的entry type，而且支持多次加入bib文件，支持多种不同的bib内容书写格式，也支持从远程加入bib文件，支持在文档的任何位置显示参考文献的内容。比如，你可以在论文的每一章后面添加参考文献的显示。从发展的眼光来看，biblatex是一个比bibtex更加先进的技术，在未来的某个阶段肯定会取代bibtex。biblatex需与biber命令配合使用。首先在该文件的导言区加上下面指令：
 
@@ -6149,7 +6156,13 @@ sorting=none表示按照参考文献在论文中出现的先后顺序排序。�
 \printbibliography
 \end{lstlisting}
 
-\subsection{支持语言}
+管理文献引用可以使用JabRef\footnote{\url{http://www.jabref.org/}}工具，JabRef(Java Bibliography Reference) is an open source bibliography reference manager. The native file format used by JabRef is BibTeX, the standard LaTeX bibliography format。引用文献在正文中输入如下命令即可：
+
+\begin{lstlisting}[language=Tex]
+\cite{reference key}
+\end{lstlisting}
+
+\subsection{支持语言(Support Program Language)}
 
 Latex原生不支持JavaScript语言，添加如下定义：
 
