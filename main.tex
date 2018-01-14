@@ -4040,9 +4040,19 @@ Finally, evaluate each Project by executing its "build.gradle" file, if present,
 
 在Intellij Idea中首次导入Gradle项目时，可能提示未设置Gradle JVM，此时在项目初始选择页面选择Configure > Project Defaults > Project Structure，在项目Structure中设置JVM即可。
 
-\subsection{repositories}
+\subsection{Repositories}
 
-Gradle默认每次编译都会resolve dependencies，每次都会去进行网络请求。如果访问JCenter很慢，光是这个步骤说不定就要十几分钟。解决方法是在Project Preferences的Gradle那里启用Offline work。注意这样之后当你添加了新的dependencies，它是不会去自动下载的，也就是说报错。你需要进入项目目录运行gradlew手动同步，或是临时在Preferences那里禁用Offline work。也可以设置国内的源，在\~/.gradle/中新建init.gradle，并输入如下内容：
+Gradle默认每次编译或者刷新(Refresh)都会Resolve Dependencies，每次都会去进行网络请求。可以通过Wireshark抓包来验证是否有网络请求以及请求的具体地址，从图中可以看出Gradle Resolve时的请求地址，如果没有调整请求地址，Gradle会使用默认的Maven仓库的地址或JCenter地址，众所周知，国访问Maven仓库非常慢，导致Gralde一直卡在Resolve Dependencies阶段，具体如图\ref{fig:wiresharkcapturegradlerequest}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{wiresharkcapturegradlerequest.jpg}
+	\caption{Wireshark查看Gradle Resolve请求}
+	\label{fig:wiresharkcapturegradlerequest}
+\end{figure}
+
+
+如果访问JCenter很慢，光是这个步骤说不定就要十几分钟。解决方法是在Project Preferences的Gradle那里启用Offline work。注意这样之后当你添加了新的dependencies，它是不会去自动下载的，也就是说报错。需要进入项目目录运行gradlew手动同步，或是临时在Preferences那里禁用Offline work。也可以设置国内的源，在\~/.gradle/中新建init.gradle，并输入如下内容，指定默认的国内源的地址，加速依赖包下载速度：
 
 \begin{lstlisting}
 allprojects{
