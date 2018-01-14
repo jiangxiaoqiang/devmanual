@@ -11,7 +11,6 @@
 \graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
 \usepackage{lipsum} % Inserts dummy text
 \usepackage[ddmmyyyy]{datetime}
-
 \usepackage{tikz} % Required for drawing custom shapes
 \usepackage[english]{babel} % English language/hyphenation
 \usepackage{enumitem} % Customize lists
@@ -2998,7 +2997,7 @@ state[0] = bookReducer;
 sudo apt-get -f install 
 \end{lstlisting}
 
-f(fix)参数表示尝试修正系统依赖损坏处。
+f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。
 
 
 \begin{table}
@@ -3007,25 +3006,29 @@ f(fix)参数表示尝试修正系统依赖损坏处。
 	\begin{center}
 		\begin{tabular}{cp{10cm}c}
 			\hline
-			\multirow{1}{*}{序号}
-			& \multicolumn{1}{c}{名称}  \\
+			\multirow{1}{*}{文件路径}
+			& \multicolumn{1}{c}{描述}  \\
 			\hline			
 			/etc/sysctl.conf  & 内核配置文件，配置 Linux 内核参数修改后不用重启动更新: /sbin/sysctl -p \\
 			/etc/issue  & 系统版本信息，对于生成环境的服务器来说，留着是个安全隐患，建议清空，清空文件命令 >/etc/issue或者 cat /dev/null /etc/issue \\
 			/etc/motd & 登陆后的提示信息\\
-			/etc/profile.d/ & 开机登录后运行的程序\\
+			/etc/profile.d/ & 开机登录后运行的程序，在/etc/profile中会循环执行，运行此目录中的脚本\\
 			/etc/redhat-release & 查看版本文件\\
+			\hline
 		\end{tabular}	
 	\end{center}
 \end{table}
 
-配置文件存放的目录，本意为“etcetera”(附加物)的意思。
+配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。
 
 \section{Shell}
 
+Linux中, 命令主要包含4种: 可执行程序(executable program),Shell的内置命令(built-in), shell函数(function), alias命令(别名).一般情况下，type命令被用于判断另外一个命令是否是内置命令，内建命令和外部命令的区别在于前者不需要使用子进程来执行。它们已经和Shell编译成了一体，作为Shell工具的组成部分存在。不需要借助外部程序文件来运行。外部命令，是存在于Bash Shell之外的程序，不是Shell程序的一部分。通常位于/bin, /usr/bin, /sbin, /usr/sbin中。
+
 \subsection{Shell四种模式}
 
-interactive login shell：这种模式下，shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
+interactive login shell\footnote{ssh(Secure Shell)连接远程主机执行脚本的环境变量问题
+	:\url{http://feihu.me/blog/2014/env-problem-when-ssh-executing-command-on-remote/}}：这种模式下，Shell首先加载/etc/profile，然后再尝试依次去加载下列三个配置文件之一，一旦找到其中一个便不再接着寻找：
 
 \begin{itemize}
 	\item {~/.bash\_profile}
@@ -3134,7 +3137,7 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
 \paragraph{source}
 
-在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的shell，如果需要全局生效，还是需要重新登陆当前用户。
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
 
 \paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在当前用户的.bashrc中添加如下设置：
 
@@ -3152,7 +3155,7 @@ export EDITOR=vim
 
 在vim中，编辑好了命令之后，直接按下ZZ命令，即可退出vim，shell即会执行编辑完成后的命令。
 
-\paragraph{创建路径}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
+\paragraph{创建路径(Create Directory)}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
 
 \begin{lstlisting}[language=Bash]
 #新建后端开发目录
@@ -3568,7 +3571,8 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \subsection{环境变量(Environment Variable)}
 
-Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
+用户在命令行输入命令后，一般情况下Shell会fork并exec该命令，但是Shell的内建命令例外，执行内建命令相当于调用Shell进程中的一个函数，并不创建新的进程.
+比如:cd、alias、umask、exit等命令即是内建命令，凡是用which命令查不到程序文件所在位置的命令都是内建命令，内建命令没有单独的man手册，要在man手册中查看内建命令，应该man bash-builtins，内建命令虽然不创建新的进程，但也会有Exit Status，通常也用0表示成功非零表示失败，虽然内建命令不创建新的进程，但执行结束后也会有一个状态码，也可以用特殊变量\$?读出全局环境变量对于shell会话和所有生成子shell都是可见的。局部变量则只对创建它们的shell可见。Linux系统在你开始bash会话时就设置了一些全局环境变量。系统环境变量基本上都是使用全大写字母，以区别于普通用户的环境变量。bash shell用一种叫做环境变量的特性来存储有关shell会话和工作环境的信息。这项特性允许你在内存中存储数据，以便程序或shell中运行的脚本能够轻松访问到它们。Linux 分 shell变量(set)，用户变量(env)， shell变量包含用户变量，export是一种命令工具，是显示那些通过export命令把shell变量中包含的用户变量导入给用户变量的那些变量.删除Linux环境变量：
 
 \begin{lstlisting}[language=Bash]
 # 查看环境变量
@@ -3632,6 +3636,20 @@ shopt -s histappend
 
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
+\begin{table}
+	\caption{Linux环境变量}
+	\label{table:linuxenvironmentvariable}
+	\begin{center}
+	\begin{tabular}{cp{10cm}c}
+		\hline
+		\multirow{1}{*}{序号}
+		& \multicolumn{1}{c}{名称}  \\
+		\hline			
+		PS1  & PS1 stands for "Prompt String One" or "Prompt Statement One", the first prompt string (that you see at a command line) \\
+		\hline
+	\end{tabular}	
+	\end{center}
+\end{table}
 
 \subsubsection{screen}
 
@@ -6201,13 +6219,14 @@ public Person findPerson(int pk) {
 
 \section{索引(Index)}
 
-\subsection{索引常识}
+\subsection{索引常识(Commonsense of Index)}
 
 绝大多数情况下，数据库只使用一个索引。在开发中遇到有时根据时间查询很快：
 
 \begin{lstlisting}[language=SQL]
 --在列org\_id和jdrq上都建立了索引
 --同样都查询语句，不同都org\_id值会有不同都查询性能
+--优化会先计算查询开销
 --当org\_id结果集很少当时候，数据库会使用org\_id索引
 --在使用了org\_id索引后，不会使用jdrq索引
 --同理，当org\_id结果集更大，根据jdrq索引效率更高时
