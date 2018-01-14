@@ -5780,7 +5780,7 @@ git log --grep="JRA-224:"
 \end{lstlisting}
 
 
-\subsection{merge}
+\subsection{Merge}
 
 配置Meld为默认合并工具：
 
@@ -5822,6 +5822,15 @@ git difftool -t meld -y v1.3_xiaoqiang v1_xiaoqiang
 \end{figure}
 
 图中左侧表示v1.3\_xiaoqiang分支的文件，右侧表示v1\_xiaoqiang分支的文件。如果不想和并文件，直接关闭Meld窗体即可，如果需要和并，点击对应的箭头。
+
+有的时候我们需要防止覆盖远程分支，比如不能将v1分支推送到v1.3分支。也不能将远程的v1.3分支合并到本地的v1分支。可以做如下设置：
+
+\begin{lstlisting}[language=Bash]
+git config --global push.default simple
+\end{lstlisting}
+
+当 push.default 的值设置成 ‘matching’ ，git 将会推送所有本地已存在的同名分支到远程仓库。
+从 Git 2.0 开始，git 采用更加保守的值'simple'，只会推送当前分支到相应的远程仓库，'git pull' 也将值更新当前分支。
 
 \subsection{Git Hook}
 
