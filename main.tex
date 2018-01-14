@@ -3981,7 +3981,7 @@ def f = $/美刀反斜杠形式
 
 建议使用'和"这两种形式。单引号''中的内容严格对应Java中的String，不对\$符号进行转义。双引号""的内容则和脚本语言的处理有点像，如果字符中有\$号的话，则它会\$表达式先求值。三个引号'''xxx'''中的字符串支持随意换行。
 
-\subsection{初始化项目}
+\subsection{初始化项目(Init Project)}
 
 输入如下命令来初始化一个项目：
 
@@ -4042,6 +4042,34 @@ Finally, evaluate each Project by executing its "build.gradle" file, if present,
 
 \subsection{repositories}
 
+Gradle默认每次编译都会resolve dependencies，每次都会去进行网络请求。如果访问JCenter很慢，光是这个步骤说不定就要十几分钟。解决方法是在Project Preferences的Gradle那里启用Offline work。注意这样之后当你添加了新的dependencies，它是不会去自动下载的，也就是说报错。你需要进入项目目录运行gradlew手动同步，或是临时在Preferences那里禁用Offline work。也可以设置国内的源，在\~/.gradle/中新建init.gradle，并输入如下内容：
+
+\begin{lstlisting}
+allprojects{
+	repositories {
+		def ALIYUN_REPOSITORY_URL = 'http://maven.aliyun.com/nexus/content/groups/public'
+		def ALIYUN_JCENTER_URL = 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+		all { ArtifactRepository repo ->
+			if(repo instanceof MavenArtifactRepository){
+				def url = repo.url.toString()
+				if (url.startsWith('https://repo1.maven.org/maven2')) {
+					project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_REPOSITORY_URL."
+					remove repo
+				}
+				if (url.startsWith('https://jcenter.bintray.com/')) {
+					project.logger.lifecycle "Repository ${repo.url} replaced by $ALIYUN_JCENTER_URL."
+					remove repo
+				}
+			}
+		}
+		maven {
+			url ALIYUN_REPOSITORY_URL
+			url ALIYUN_JCENTER_URL
+		}
+	}
+}
+\end{lstlisting}
+
 在Gradle构建标本build.gradle里，经常会看到如下脚本：
 
 \begin{lstlisting}[language=Java]
@@ -4054,11 +4082,13 @@ repositories {
 	}
 	mavenCentral()
 	jcenter()
-	maven { url 'http://repo.spring.io/plugins-release' }
+	maven { 
+		url 'http://repo.spring.io/plugins-release' 
+	}
 }
 \end{lstlisting}
 
-总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。jcenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。JCenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{常见问题}
 
