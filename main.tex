@@ -4052,7 +4052,7 @@ Gradle默认每次编译或者刷新(Refresh)都会Resolve Dependencies，每次
 \end{figure}
 
 
-如果访问JCenter很慢，光是这个步骤说不定就要十几分钟。解决方法是在Project Preferences的Gradle那里启用Offline work。注意这样之后当你添加了新的dependencies，它是不会去自动下载的，也就是说报错。需要进入项目目录运行gradlew手动同步，或是临时在Preferences那里禁用Offline work。也可以设置国内的源，在\~/.gradle/中新建init.gradle，并输入如下内容，指定默认的国内源的地址，加速依赖包下载速度：
+如果访问JCenter很慢，光是这个步骤说不定就要十几分钟。解决方法是在Project Preferences的Gradle那里启用Offline work。注意这样之后当你添加了新的dependencies，它是不会去自动下载的，也就是说报错。需要进入项目目录运行gradlew手动同步，或是临时在Preferences那里禁用Offline work。也可以设置国内的源，在home目录.gradle文件夹中新建init.gradle文件，并在文件中输入如下内容，指定默认的国内源的地址，加速依赖包下载速度：
 
 \begin{lstlisting}
 allprojects{
