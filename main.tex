@@ -4658,6 +4658,18 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \chapter{Widgets}
 
+\section{Wireshark}
+
+\subsection{常见问题}
+
+Couldn't run /usr/sbin/dumpcap in child process: Permission denied
+Are you memeber of 'wireshark' group? Try running 'usermod -a -G wireshark <username>' as root.添加执行权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod +x /usr/sbin/dumpcap
+\end{lstlisting}
+
+
 \section{Vim Editor}
 
 复制全部：
