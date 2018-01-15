@@ -796,7 +796,7 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 \end{lstlisting}
 
 
-\paragraph{查找}
+\paragraph{查找(Search)}
 
 如下代码片段查找第一个符合条件的元素：
 
@@ -828,6 +828,11 @@ for (int i = 0; i < 10000; i++) {
 \end{lstlisting}
 
 运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
+
+\paragraph{Peek}
+
+Peek属于中间操作(intermediate operation)，Stream中使用Peek始终不运行，非常纳闷，原来是Stream中间操作需要执行结果才会真的运行，需要流水线上触发一个终端操作(terminal operation)，否则中间操作不会执行任何处理\cite{java8inaction}。Peek操作类似于forEach操作，该方法可用于调试。Java 8流中所有的操作都是蓄而不发的，只有执行foreach，collect等终结操作时，流的操作才会执行。
+
 
 \paragraph{Object转为Map}
 
@@ -954,6 +959,19 @@ public void setName(String name) throws IllegalArgumentException{
 }
 \end{lstlisting}
 
+Optional返回默认值，避免空指针：
+
+\begin{lstlisting}[language=Java]
+String provinceOrgName = allOrgs.stream()
+	.filter(orgItem -> orgItem.getOrgId().equals(subDeptOrgId))
+	.findFirst()
+	.orElseGet(() -> {
+		Org defaultOrg = new Org();
+		defaultOrg.setOrgName("未知部门");
+		return defaultOrg;
+	})
+	.getOrgName();
+\end{lstlisting}
 
 String.ValueOf()的坑:
 
@@ -964,7 +982,7 @@ String categoryId = String.valueOf(article.getCategory());
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
 
-\section{接口(Application Interface)}
+\section{应用接口(Application Interface)}
 
 \subsection{接口文档(Interface Document)}
 
@@ -1925,7 +1943,7 @@ case class User(
 }  
 \end{lstlisting}
 
-\subsection{排序}
+\subsection{排序(Sort)}
 
 对Vector中的元素做倒序排序。
 
@@ -1939,7 +1957,7 @@ case class User(
 val params = pageable.getParams.asScala.toVector.reverse  
 \end{lstlisting}
 
-\subsection{集合操作}
+\subsection{集合操作(Collection Operation)}
 
 Scala集合操作如下：
 
@@ -4970,7 +4988,9 @@ Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerpri
 	\label{fig:tencententerprisemailbox}
 \end{figure}
 
+\subsection{Visual Studio Code}
 
+打开快捷键面板：Ctrl + K,S。
 
 
 \subsection{jq}
