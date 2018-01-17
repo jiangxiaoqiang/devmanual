@@ -611,6 +611,21 @@ addtohook={%
 
 Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.
 
+\subsection{Spring事务(Spring Transaction)}
+
+默认情况下，如果在事务中抛出了未检查异常（继承自 RuntimeException 的异常）或者 Error，则 Spring 将回滚事务；除此之外，Spring 不会回滚事务。rollbackFor是一组异常类的实例，遇到时必须进行回滚。
+
+\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
+/**
+* 对所有异常事务都进行回滚操作
+**/
+@Transactional(rollbackFor = {Exception.class})
+/**
+* 对所有异常事务都不进行回滚操作
+**/
+@Transactional(noRollbackFor=Exception.class)
+\end{lstlisting}
+
 \subsection{classpath}\index{classpath}
 
 理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
@@ -795,6 +810,17 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 });
 \end{lstlisting}
 
+判断集合是否为空：
+
+\begin{lstlisting}[language=Java]
+if(CollectionUtils.isEmpty(corpLists)){
+	/**
+	* 需要引用commons-collections包
+	* compile("commons-collection: commons-collections: 3.5")
+	* 实际是list == null || list.isEmpty()的简单封装
+	*/
+}
+\end{lstlisting}
 
 \paragraph{查找(Search)}
 
@@ -1836,7 +1862,7 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 </update>
 \end{lstlisting}
 
-\subsection{批量写入}
+\subsection{批量写入(Batch Insert)}
 
 在导入Excel的过程中，可以利用批量写入功能。可以使写入速度得到质的提高。批量写入在MyBatis中作如下配置：
 
@@ -1858,6 +1884,30 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 \end{lstlisting}
 
 参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数有限制，也就是同时一批写入的数据量不能太大。
+
+\subsection{MyBatis Generator}
+
+MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis代码自动生成库。MyBatis Generator (MBG) is a code generator for MyBatis MyBatis and iBATIS. It will generate code for all versions of MyBatis, and versions of iBATIS after version 2.2.0. It will introspect a database table (or many tables) and will generate artifacts that can be used to access the table(s). 项目中使用达梦数据库，动态生成文件的过程中提示找不到驱动类，在MBG配置中将达梦驱动添加到ClassPath中：
+
+\begin{lstlisting}[language=XML]
+<generatorConfiguration>
+	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
+</generatorConfiguration>
+\end{lstlisting}
+
+在数据库中有几百张表，有一个共同的特点是都是以TS开头的，在配置中就不用指定每个表的名称，可以使用通配符：
+
+\begin{lstlisting}[language=XML]
+<!--使用%通配符-->
+<table tableName="TS_%" enableCountByExample="false"
+	enableDeleteByExample="false"
+	enableSelectByExample="false"
+	enableUpdateByExample="false">
+	<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+</table>
+\end{lstlisting}
+
+要使用MBG生成selectByPrimaryKey、updateByPrimaryKey、deleteByPrimaryKey方法，需要先在数据库里设置主键。
 
 \subsection{resultMap和resultType区别}
 
@@ -5690,17 +5740,6 @@ digraph G {
 }
 \end{lstlisting}
 
-\section{MyBatis Generator}
-
-MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个Mybatis代码自动生成库。MyBatis Generator (MBG) is a code generator for MyBatis MyBatis and iBATIS. It will generate code for all versions of MyBatis, and versions of iBATIS after version 2.2.0. It will introspect a database table (or many tables) and will generate artifacts that can be used to access the table(s). 项目中使用达梦数据库，动态生成文件的过程中提示找不到驱动类，在MBG配置中将达梦驱动添加到ClassPath中：
-
-\begin{lstlisting}[language=XML]
-<generatorConfiguration>
-	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
-</generatorConfiguration>
-\end{lstlisting}
-
-
 
 \chapter{Git}
 
@@ -6449,6 +6488,8 @@ limit 0,10;
 create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
 create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
 alter context index xzcffulltextindex on TS_B_XZCF rebuild;
+#创建全文索引，自动填充更新索引
+CREATE CONTEXT INDEX "INDEX0001" ON "SYSDBA"."STUDENT"(name) TABLESPACE "MAIN" LEXER CHINESE_LEXER  SYNC TRANSACTION;
 \end{lstlisting}
 
 填充索引：
