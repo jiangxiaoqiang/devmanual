@@ -3390,6 +3390,26 @@ print $CURRENT_DATE
 l 3 10 
 \end{lstlisting}
 
+调试Bash脚本也可以用Visual Studio Code工具,安装VS Code Bash Debug插件.按住Ctrl + P快捷键,输入launch.json关键字打开此文件.Bash调试信息配置如下:
+
+\begin{lstlisting}
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name":"Bash Debug(Dolphin Config)",
+			"type":"bashdb",
+			"request":"launch",
+			"scriptPath":"${command:SelectScriptName}",
+			"commandLineArguments":"",
+			"linux":{
+				"bashPath":"bash"
+			}
+		}
+	]
+}
+\end{lstlisting}
+
 \subsection{快捷键(Shortcut)}
 
 Ubuntu常用快捷键：
@@ -3408,6 +3428,14 @@ Ubuntu常用快捷键：
 		\end{tabular}
 	\end{center}
 \end{table}
+
+有时需要执行自定义脚本,每次切换目录都非常麻烦,可以将命令设置别名,直接运行命令即可:
+
+\begin{lstlisting}[language=Bash]
+alias pubtest='bash /home/hldev/hldata/backend/credit-system-v1.3/script/deploy/onekey-deploy.sh'
+\end{lstlisting}
+
+设置完成后直接执行pubtest命令即可.
 
 \subsection{命令(Command)}
 
@@ -3593,6 +3621,38 @@ sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> f
 
 -n∶取消默认的输出,使用安静(silent)模式。在一般sed的用法中，所有来自 STDIN的资料一般都会被列出到屏幕上。但如果加上 -n 参数后，则只有经过sed特殊处理的那一行(或者动作)才会被列出来。\^{}匹配一行的开始。-n选项和p命令一起使用表示只打印那些发生替换的行。
 
+
+\paragraph{split}
+
+项目中生成了100多W的测试数据,导出sql来大概有1.6GB左右,即使压缩了也有300多MB,网速很慢无法一次传输,可以通过split命令来实现文件分割，指定按行数分割和按大小分割两种模式。
+
+\begin{lstlisting}[language=Bash]
+#切割大文件,根据行分割
+#每个文件10W行
+split -l 100000 企业示例数据.sql enterprise_
+\end{lstlisting}
+
+通过split命令生成12个文件,每个文件100MB,还是比较大,使用如下脚本批量压缩后每个文件在30MB左右.
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+for VAR in /home/hldev/Downloads/bigfile/*
+do
+	if test -f $VAR
+	then
+		echo "压缩文件${VAR}..."
+		#echo $(basename $VAR .sh)
+		#压缩为tar.gz文件
+		#tar czfP $VAR.tar.gz $VAR
+		#压缩为zip(方便在Windows下解压)
+		#用7zip压缩还有一个好处是可以看到进度
+		7za a ${VAR}.zip ${VAR}
+	fi    
+done
+\end{lstlisting}
+
+
 \paragraph{ag}
 
 ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜索文件内容，输入如下命令安装：
@@ -3729,7 +3789,7 @@ shopt -s histappend
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
 \begin{table}
-	\caption{Linux环境变量}
+	\caption{Linux变量}
 	\label{table:linuxenvironmentvariable}
 	\begin{center}
 	\begin{tabular}{cp{10cm}c}
@@ -3738,6 +3798,9 @@ shopt -s histappend
 		& \multicolumn{1}{c}{名称}  \\
 		\hline			
 		PS1  & PS1 stands for "Prompt String One" or "Prompt Statement One", the first prompt string (that you see at a command line) \\
+		\$\# & 传递给脚本或函数的参数个数 \\
+		\$0 & 当前脚本的文件名 \\
+		\$EUID & UID一般表示进程的创建者（属于哪个用户创建），而EUID表示进程对于文件和资源的访问权限（具备等同于哪个用户的权限） \\
 		\hline
 	\end{tabular}	
 	\end{center}
@@ -4082,6 +4145,11 @@ gradle init
 \end{lstlisting}
 
 运行命令后，会在项目中新建gradlew/gradlew.bat/settings.gradle/build.gradle文件。
+
+\subsection{Gradle Wrapper}
+
+每一个Wrapper都会绑定到一个特定版本的Gradle，当用户第一次执行上面的命令时，Wrapper会自动地下载并安装对应版本的Gradle。这就带来两个好处：
+用户不必自己下载、安装、配置Gradle,用户进行项目构建时能够确保使用正确的Gradle版本.
 
 \subsection{引用本地文件}
 
@@ -4914,6 +4982,17 @@ python -m SimpleHTTPServer 9999
 
 rpc server模式，它启动之后什么都不干，然后等着从rpc接口添加任务，下载完也不退出，而是一直等待。用命令方式导致配置不方便修改保存，-D导致无法看到出错信息。推荐启动方式是使用配置文件\$HOME/.aria2/aria2.conf 。使用aria2c --conf-path=<PATH>启动，注意<PATH>填完整路径。
 
+\subsection{7zip}
+
+7-zip以高压缩率著称，并且是一款免费开源的压缩软件。
+
+\begin{lstlisting}[language=Bash]
+压缩a.txt和b.txt到c.7z:
+7za  a c.7z a.txt b.txt
+\end{lstlisting}
+
+7-Zip is open source software. Most of the source code is under the GNU LGPL license. 
+
 \subsection{transmission}
 
 在使用磁力链接下载元素据时，如果下载时间太长，一般是网络的问题，电信的网络普遍优于长城等。
@@ -5743,11 +5822,11 @@ digraph G {
 
 \chapter{Git}
 
-\section{基础}
+\section{基础(Fundation)}
 
 英文版维基百科git条目中，找到了如下段落，原来git是个单词，不是编造出来的，它的含义是“烂人”。Linus总是将他的项目用他自己来命名，而他自认为是个自负的混蛋，所以选了烂人这个词。Torvalds seemed aware that his decision to drop BitKeeper would also be controversial. When asked why he called the new software, "git", British slang meaning "a rotten person", he said. "I'm an egotistical bastard, so I name all my projects after myself. First Linux, now git"。
 
-\subsection{常用Git命令}
+\subsection{常用Git命令(Frequent Git Command)}
 
 常用语句。
 
@@ -6984,6 +7063,11 @@ select * from douban_book_id where isscapy = 0 limit 1
 \chapter{HTTP}
 
 \section{URL}
+
+\subsection{form-data、x-www-form-urlencoded、raw、binary的区别}
+
+http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。既可以上传键值对，也可以上传文件。当上传的字段是文件时，会有Content-Type来说明文件类型；content-disposition，用来说明字段的一些信息；由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，比如,name=java\&age = 23.raw可以上传任意格式的文本，可以上传text、json、xml、html等.binary相当于Content-Type:application/octet-stream,从字面意思得知，只可以上传二进制数据，通常用来上传文件，由于没有键值，所以，一次只能上传一个文件。
+
 
 \subsection{URL编码解码(Encode Decode)}
 
