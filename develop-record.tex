@@ -3059,7 +3059,25 @@ state[0] = bookReducer;
 
 \chapter{Linux}\index{Linux}
 
-在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
+在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装修复此问题.
+
+\begin{lstlisting}[language=Bash]
+#列出已经安装软件
+sudo apt list --installed|grep texstudio
+#移除已经安装的软件
+#删除已安装包（不保留配置文件)
+sudo apt purge texstudio
+#安装TexStudio
+sudo apt install texstudio -y 
+\end{lstlisting}
+
+在安装TexStudio的过程中,出现了dpkg损坏的情况:usr/bin/dpkg returned an code.删除/var/lib/dpkg/info目录下的所有文件即可修复问题:
+
+\begin{lstlisting}[language=Bash]
+sudo rm -rf /var/lib/dpkg/info/*
+\end{lstlisting}
+
+在/etc/apt/目录下source.list.save文件是source.list文件的备份(the sources.list.save file is a backup of the sources).list file. The /etc/apt/sources.list.d directory provides a way to add sources.list entries in separate files. The format is the same as for the regular sources.list file. File names need to end with .list and may only contain letters (a-z and A-Z), digits (0-9), underscore (\_), hyphen (-) and period (.) characters. Otherwise APT will print a notice that it has ignored a file, unless that file matches a pattern in the Dir::Ignore-Files-Silently configuration list - in which case it will be silently ignored.在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
 \begin{lstlisting}[language=Bash]
 sudo apt-get -f install 
