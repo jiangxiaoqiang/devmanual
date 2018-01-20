@@ -3055,7 +3055,7 @@ state[0] = bookReducer;
 
 \clearpage
 
-\part{OS}
+\part{Operation System}
 
 \chapter{Linux}\index{Linux}
 
@@ -3447,13 +3447,13 @@ Ubuntu常用快捷键：
 	\end{center}
 \end{table}
 
-有时需要执行自定义脚本,每次切换目录都非常麻烦,可以将命令设置别名,直接运行命令即可:
+有时需要执行自定义脚本,比如发布项目时需要执行发布脚本,每次切换目录都非常麻烦,可以将脚本命令设置别名,直接可以在任意目录下通过运行命令的方式即可执行发布项目的脚本,在bashrc文件中添加如下别名定义:
 
 \begin{lstlisting}[language=Bash]
 alias pubtest='bash /home/hldev/hldata/backend/credit-system-v1.3/script/deploy/onekey-deploy.sh'
 \end{lstlisting}
 
-设置完成后直接执行pubtest命令即可.
+设置完成后在任意路径下直接执行pubtest命令即可发布项目.
 
 \subsection{命令(Command)}
 
@@ -6263,7 +6263,7 @@ ElasticSearch基础操作：
 sudo apt-get install texlive -y
 \end{lstlisting}
 
-\subsection{字体}
+\subsection{字体(Font)}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
@@ -6437,7 +6437,7 @@ public Person findPerson(int pk) {
 \end{lstlisting}
 
 
-\part{DB}
+\part{Database}
 
 \chapter{性能(Performance)}
 
@@ -6603,6 +6603,9 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 
 达梦数据库中，在写全文索引查询时，全文索引的条件需要放到前面，这样才能够利用到索引。
 
+\subsection{大量日志分析(Log Analysis)}
+
+传统的主从表做联合查询、分组和排序存在以下缺点：查询性能非常的低，即使是使用分区存储效果也不好。并且随着日志数量的增 多，性能下降的非常明显。当到达一定数量时，界面几乎无响应。查询到之后，必须等排序完成后才能返回结果。日志流水表上不适合建立索引,目前建立了非聚集索引\footnote{聚簇索引的顺序就是数据的物理存储顺序，而对非聚簇索引的索引顺序与数据物理排列顺序无关。举例来说，你翻到新华字典的汉字“爬”那一页就是P开头的部分，这就是物理存储顺序（聚簇索引）；而不用你到目录，找到汉字“爬”所在的页码，然后根据页码找到这个字（非聚簇索引）。}(Non-Clustered Index)后,经常产生死锁,导致写入日志彻底阻塞.insert语句执行时，优先申请插入记录所在的行(或页、表)的X锁（排他锁），记录插入完成后，申请非聚集索引的X锁，完成索引的更新，全部完成后，释放持有的X锁.考虑流水表作为中间表,不建立索引,建立一张日志的分析表,在分析表上建立索引,在流水表上建立标记,定时从流水表中更新数据到分析表(数据写入分析表之前可暂时禁用索引,再增量更新索引),同时更新流水表的标记.定时从分析表中生成统计信息放入统计表中,统计表中历史数据不删除,数据可以作为生成折线图的基础数据,例如统计访问量随时间的变化.APP直接读取统计表的数据作为页面展示,而不是根据流水表的数据来生成统计信息.
 
 \section{Redis}
 
@@ -7519,9 +7522,9 @@ ssh -NfR 1234:localhost:2223 user1@123.123.123.123 -p2221
 
 \part{Engneering}
 
-\section{通用规范}
+\section{通用规范(Specification)}
 
-\subsection{版本管理}
+\subsection{版本管理(Version Control)}
 
 在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -7591,9 +7594,6 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 \paragraph{发布后确认}
 
 验证发布功能是否生效。在没有接口版本管理的情况下，告知调用接口方。
-
-\cite{radioactivedecay2}
-\cite{DLS1} 
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
