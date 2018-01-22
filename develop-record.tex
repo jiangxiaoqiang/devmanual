@@ -611,6 +611,21 @@ addtohook={%
 
 Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.
 
+\subsection{Spring事务(Spring Transaction)}
+
+默认情况下，如果在事务中抛出了未检查异常（继承自 RuntimeException 的异常）或者 Error，则 Spring 将回滚事务；除此之外，Spring 不会回滚事务。rollbackFor是一组异常类的实例，遇到时必须进行回滚。
+
+\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
+/**
+* 对所有异常事务都进行回滚操作
+**/
+@Transactional(rollbackFor = {Exception.class})
+/**
+* 对所有异常事务都不进行回滚操作
+**/
+@Transactional(noRollbackFor=Exception.class)
+\end{lstlisting}
+
 \subsection{classpath}\index{classpath}
 
 理解classpath花了不短的时间，classpath到底是哪个目录？配置文件中指定的classpath程序到底在哪里找的？都困扰着我。其实有很好的方法来深深的理解classpath，如下代码片段打印出来当前项目的classpath以及包含的文件。
@@ -795,8 +810,19 @@ unitedAPMapper.pageUnitedAPList(paramsMap)
 });
 \end{lstlisting}
 
+判断集合是否为空：
 
-\paragraph{查找}
+\begin{lstlisting}[language=Java]
+if(CollectionUtils.isEmpty(corpLists)){
+	/**
+	* 需要引用commons-collections包
+	* compile("commons-collection: commons-collections: 3.5")
+	* 实际是list == null || list.isEmpty()的简单封装
+	*/
+}
+\end{lstlisting}
+
+\paragraph{查找(Search)}
 
 如下代码片段查找第一个符合条件的元素：
 
@@ -828,6 +854,11 @@ for (int i = 0; i < 10000; i++) {
 \end{lstlisting}
 
 运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
+
+\paragraph{Peek}
+
+Peek属于中间操作(intermediate operation)，Stream中使用Peek始终不运行，非常纳闷，原来是Stream中间操作需要执行结果才会真的运行，需要流水线上触发一个终端操作(terminal operation)，否则中间操作不会执行任何处理\cite{java8inaction}。Peek操作类似于forEach操作，该方法可用于调试。Java 8流中所有的操作都是蓄而不发的，只有执行foreach，collect等终结操作时，流的操作才会执行。
+
 
 \paragraph{Object转为Map}
 
@@ -954,6 +985,19 @@ public void setName(String name) throws IllegalArgumentException{
 }
 \end{lstlisting}
 
+Optional返回默认值，避免空指针：
+
+\begin{lstlisting}[language=Java]
+String provinceOrgName = allOrgs.stream()
+	.filter(orgItem -> orgItem.getOrgId().equals(subDeptOrgId))
+	.findFirst()
+	.orElseGet(() -> {
+		Org defaultOrg = new Org();
+		defaultOrg.setOrgName("未知部门");
+		return defaultOrg;
+	})
+	.getOrgName();
+\end{lstlisting}
 
 String.ValueOf()的坑:
 
@@ -964,7 +1008,7 @@ String categoryId = String.valueOf(article.getCategory());
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
 
-\section{接口(Application Interface)}
+\section{应用接口(Application Interface)}
 
 \subsection{接口文档(Interface Document)}
 
@@ -1818,7 +1862,7 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 </update>
 \end{lstlisting}
 
-\subsection{批量写入}
+\subsection{批量写入(Batch Insert)}
 
 在导入Excel的过程中，可以利用批量写入功能。可以使写入速度得到质的提高。批量写入在MyBatis中作如下配置：
 
@@ -1840,6 +1884,30 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 \end{lstlisting}
 
 参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数有限制，也就是同时一批写入的数据量不能太大。
+
+\subsection{MyBatis Generator}
+
+MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis代码自动生成库。MyBatis Generator (MBG) is a code generator for MyBatis MyBatis and iBATIS. It will generate code for all versions of MyBatis, and versions of iBATIS after version 2.2.0. It will introspect a database table (or many tables) and will generate artifacts that can be used to access the table(s). 项目中使用达梦数据库，动态生成文件的过程中提示找不到驱动类，在MBG配置中将达梦驱动添加到ClassPath中：
+
+\begin{lstlisting}[language=XML]
+<generatorConfiguration>
+	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
+</generatorConfiguration>
+\end{lstlisting}
+
+在数据库中有几百张表，有一个共同的特点是都是以TS开头的，在配置中就不用指定每个表的名称，可以使用通配符：
+
+\begin{lstlisting}[language=XML]
+<!--使用%通配符-->
+<table tableName="TS_%" enableCountByExample="false"
+	enableDeleteByExample="false"
+	enableSelectByExample="false"
+	enableUpdateByExample="false">
+	<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+</table>
+\end{lstlisting}
+
+要使用MBG生成selectByPrimaryKey、updateByPrimaryKey、deleteByPrimaryKey方法，需要先在数据库里设置主键。
 
 \subsection{resultMap和resultType区别}
 
@@ -1925,7 +1993,7 @@ case class User(
 }  
 \end{lstlisting}
 
-\subsection{排序}
+\subsection{排序(Sort)}
 
 对Vector中的元素做倒序排序。
 
@@ -1939,7 +2007,7 @@ case class User(
 val params = pageable.getParams.asScala.toVector.reverse  
 \end{lstlisting}
 
-\subsection{集合操作}
+\subsection{集合操作(Collection Operation)}
 
 Scala集合操作如下：
 
@@ -2987,11 +3055,29 @@ state[0] = bookReducer;
 
 \clearpage
 
-\part{OS}
+\part{Operation System}
 
 \chapter{Linux}\index{Linux}
 
-在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
+在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装修复此问题.
+
+\begin{lstlisting}[language=Bash]
+#列出已经安装软件
+sudo apt list --installed|grep texstudio
+#移除已经安装的软件
+#删除已安装包（不保留配置文件)
+sudo apt purge texstudio
+#安装TexStudio
+sudo apt install texstudio -y 
+\end{lstlisting}
+
+在安装TexStudio的过程中,出现了dpkg损坏的情况:usr/bin/dpkg returned an code.删除/var/lib/dpkg/info目录下的所有文件即可修复问题:
+
+\begin{lstlisting}[language=Bash]
+sudo rm -rf /var/lib/dpkg/info/*
+\end{lstlisting}
+
+在/etc/apt/目录下source.list.save文件是source.list文件的备份(the sources.list.save file is a backup of the sources).list file. The /etc/apt/sources.list.d directory provides a way to add sources.list entries in separate files. The format is the same as for the regular sources.list file. File names need to end with .list and may only contain letters (a-z and A-Z), digits (0-9), underscore (\_), hyphen (-) and period (.) characters. Otherwise APT will print a notice that it has ignored a file, unless that file matches a pattern in the Dir::Ignore-Files-Silently configuration list - in which case it will be silently ignored.在使用apt-get时，有时可能会遇到依赖损坏的情况，那么可以执行如下命令，尝试修复依赖：
 
 \begin{lstlisting}[language=Bash]
 sudo apt-get -f install 
@@ -3321,6 +3407,26 @@ print $CURRENT_DATE
 l 3 10 
 \end{lstlisting}
 
+调试Bash脚本也可以用Visual Studio Code工具,安装VS Code Bash Debug插件.按住Ctrl + P快捷键,输入launch.json关键字打开此文件.Bash调试信息配置如下:
+
+\begin{lstlisting}
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name":"Bash Debug(Dolphin Config)",
+			"type":"bashdb",
+			"request":"launch",
+			"scriptPath":"${command:SelectScriptName}",
+			"commandLineArguments":"",
+			"linux":{
+				"bashPath":"bash"
+			}
+		}
+	]
+}
+\end{lstlisting}
+
 \subsection{快捷键(Shortcut)}
 
 Ubuntu常用快捷键：
@@ -3339,6 +3445,14 @@ Ubuntu常用快捷键：
 		\end{tabular}
 	\end{center}
 \end{table}
+
+有时需要执行自定义脚本,比如发布项目时需要执行发布脚本,每次切换目录都非常麻烦,可以将脚本命令设置别名,直接可以在任意目录下通过运行命令的方式即可执行发布项目的脚本,在bashrc文件中添加如下别名定义:
+
+\begin{lstlisting}[language=Bash]
+alias pubtest='bash /home/hldev/hldata/backend/credit-system-v1.3/script/deploy/onekey-deploy.sh'
+\end{lstlisting}
+
+设置完成后在任意路径下直接执行pubtest命令即可发布项目.
 
 \subsection{命令(Command)}
 
@@ -3524,6 +3638,38 @@ sed -n '/^2017-08-22 18:50/','/^2017-08-22 18:59/p' cc-web.2017-08-22.0.log >> f
 
 -n∶取消默认的输出,使用安静(silent)模式。在一般sed的用法中，所有来自 STDIN的资料一般都会被列出到屏幕上。但如果加上 -n 参数后，则只有经过sed特殊处理的那一行(或者动作)才会被列出来。\^{}匹配一行的开始。-n选项和p命令一起使用表示只打印那些发生替换的行。
 
+
+\paragraph{split}
+
+项目中生成了100多W的测试数据,导出sql来大概有1.6GB左右,即使压缩了也有300多MB,网速很慢无法一次传输,可以通过split命令来实现文件分割，指定按行数分割和按大小分割两种模式。
+
+\begin{lstlisting}[language=Bash]
+#切割大文件,根据行分割
+#每个文件10W行
+split -l 100000 企业示例数据.sql enterprise_
+\end{lstlisting}
+
+通过split命令生成12个文件,每个文件100MB,还是比较大,使用如下脚本批量压缩后每个文件在30MB左右.
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+for VAR in /home/hldev/Downloads/bigfile/*
+do
+	if test -f $VAR
+	then
+		echo "压缩文件${VAR}..."
+		#echo $(basename $VAR .sh)
+		#压缩为tar.gz文件
+		#tar czfP $VAR.tar.gz $VAR
+		#压缩为zip(方便在Windows下解压)
+		#用7zip压缩还有一个好处是可以看到进度
+		7za a ${VAR}.zip ${VAR}
+	fi    
+done
+\end{lstlisting}
+
+
 \paragraph{ag}
 
 ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜索文件内容，输入如下命令安装：
@@ -3660,7 +3806,7 @@ shopt -s histappend
 更多 shopt 可选项可以通过 echo \$SHELLOPTS 命令查看。
 
 \begin{table}
-	\caption{Linux环境变量}
+	\caption{Linux变量}
 	\label{table:linuxenvironmentvariable}
 	\begin{center}
 	\begin{tabular}{cp{10cm}c}
@@ -3669,6 +3815,9 @@ shopt -s histappend
 		& \multicolumn{1}{c}{名称}  \\
 		\hline			
 		PS1  & PS1 stands for "Prompt String One" or "Prompt Statement One", the first prompt string (that you see at a command line) \\
+		\$\# & 传递给脚本或函数的参数个数 \\
+		\$0 & 当前脚本的文件名 \\
+		\$EUID & UID一般表示进程的创建者（属于哪个用户创建），而EUID表示进程对于文件和资源的访问权限（具备等同于哪个用户的权限） \\
 		\hline
 	\end{tabular}	
 	\end{center}
@@ -3705,6 +3854,8 @@ uname －a
 
 
 \section{常用设置(Settings)}
+
+在Ubuntu 16.04中使用Google Chrome时,浏览器经常闪动,出现异常图形,关闭Google Chrome硬件加速(硬件加速是指在计算机中通过把计算量非常大的工作分配给专门的硬件来处理以减轻中央处理器的工作量之技术。尤其是在图像处理中这个技术经常被使用。雷神之锤3是第一个必须要求硬件加速的3D游戏。Google Chrome浏览器也设置了“硬件加速”选项，用户可根据需求开启或关闭此功能)即可.在设置->系统中关闭硬件加速\footnote{\url{https://en.wikipedia.org/wiki/Hardware_acceleration}}(Hardware Acceleration).
 
 \subsection{XFCE桌面}
 
@@ -4013,6 +4164,11 @@ gradle init
 \end{lstlisting}
 
 运行命令后，会在项目中新建gradlew/gradlew.bat/settings.gradle/build.gradle文件。
+
+\subsection{Gradle Wrapper}
+
+每一个Wrapper都会绑定到一个特定版本的Gradle，当用户第一次执行上面的命令时，Wrapper会自动地下载并安装对应版本的Gradle。这就带来两个好处：
+用户不必自己下载、安装、配置Gradle,用户进行项目构建时能够确保使用正确的Gradle版本.
 
 \subsection{引用本地文件}
 
@@ -4845,6 +5001,17 @@ python -m SimpleHTTPServer 9999
 
 rpc server模式，它启动之后什么都不干，然后等着从rpc接口添加任务，下载完也不退出，而是一直等待。用命令方式导致配置不方便修改保存，-D导致无法看到出错信息。推荐启动方式是使用配置文件\$HOME/.aria2/aria2.conf 。使用aria2c --conf-path=<PATH>启动，注意<PATH>填完整路径。
 
+\subsection{7zip}
+
+7-zip以高压缩率著称，并且是一款免费开源的压缩软件。
+
+\begin{lstlisting}[language=Bash]
+压缩a.txt和b.txt到c.7z:
+7za  a c.7z a.txt b.txt
+\end{lstlisting}
+
+7-Zip is open source software. Most of the source code is under the GNU LGPL license. 
+
 \subsection{transmission}
 
 在使用磁力链接下载元素据时，如果下载时间太长，一般是网络的问题，电信的网络普遍优于长城等。
@@ -4969,7 +5136,9 @@ Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerpri
 	\label{fig:tencententerprisemailbox}
 \end{figure}
 
+\subsection{Visual Studio Code}
 
+打开快捷键面板：Ctrl + K,S。
 
 
 \subsection{jq}
@@ -5645,7 +5814,7 @@ dot -Tjpg -Gdpi=1024 maven-lifecycle.dot -o maven-lifecycle.jpg
 
 \subsection{subgraph}
 
-子图的名称必须以cluster开头，否则graphviz无法识别。
+子图的名称必须以cluster开头，否则Graphviz无法识别。
 
 \begin{lstlisting}
 digraph G {
@@ -5669,18 +5838,14 @@ digraph G {
 }
 \end{lstlisting}
 
-\section{MyBatis Generator}
-
-
-
 
 \chapter{Git}
 
-\section{基础}
+\section{基础(Fundation)}
 
 英文版维基百科git条目中，找到了如下段落，原来git是个单词，不是编造出来的，它的含义是“烂人”。Linus总是将他的项目用他自己来命名，而他自认为是个自负的混蛋，所以选了烂人这个词。Torvalds seemed aware that his decision to drop BitKeeper would also be controversial. When asked why he called the new software, "git", British slang meaning "a rotten person", he said. "I'm an egotistical bastard, so I name all my projects after myself. First Linux, now git"。
 
-\subsection{常用Git命令}
+\subsection{常用Git命令(Frequent Git Command)}
 
 常用语句。
 
@@ -6099,7 +6264,7 @@ ElasticSearch基础操作：
 sudo apt-get install texlive -y
 \end{lstlisting}
 
-\subsection{字体}
+\subsection{字体(Font)}
 
 Computer Modern是自由软件TeX的默认字体，为美国计算机科学家高德纳（Donald Knuth）使用METAFONT软件创造。但是此字体不是很漂亮，所以考虑换一个字体 。
 
@@ -6131,7 +6296,7 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
 
-\subsection{文献引用}
+\subsection{文献引用(Bibliography Reference)}
 
 BibTex是一种方式，它本身不需要加载任何的包(package)，但编译的时候需使用bibtex.exe。由于它不太灵活，又出现了新的方式—biblatex方式。biblatex包是一个更加灵活的文献处理方式，它不仅支持更多的entry type，而且支持多次加入bib文件，支持多种不同的bib内容书写格式，也支持从远程加入bib文件，支持在文档的任何位置显示参考文献的内容。比如，你可以在论文的每一章后面添加参考文献的显示。从发展的眼光来看，biblatex是一个比bibtex更加先进的技术，在未来的某个阶段肯定会取代bibtex。biblatex需与biber命令配合使用。首先在该文件的导言区加上下面指令：
 
@@ -6148,7 +6313,13 @@ sorting=none表示按照参考文献在论文中出现的先后顺序排序。�
 \printbibliography
 \end{lstlisting}
 
-\subsection{支持语言}
+管理文献引用可以使用JabRef\footnote{\url{http://www.jabref.org/}}工具，JabRef(Java Bibliography Reference) is an open source bibliography reference manager. The native file format used by JabRef is BibTeX, the standard LaTeX bibliography format。引用文献在正文中输入如下命令即可：
+
+\begin{lstlisting}[language=Tex]
+\cite{reference key}
+\end{lstlisting}
+
+\subsection{支持语言(Support Program Language)}
 
 Latex原生不支持JavaScript语言，添加如下定义：
 
@@ -6267,7 +6438,7 @@ public Person findPerson(int pk) {
 \end{lstlisting}
 
 
-\part{DB}
+\part{Database}
 
 \chapter{性能(Performance)}
 
@@ -6415,6 +6586,8 @@ limit 0,10;
 create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
 create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
 alter context index xzcffulltextindex on TS_B_XZCF rebuild;
+#创建全文索引，自动填充更新索引
+CREATE CONTEXT INDEX "INDEX0001" ON "SYSDBA"."STUDENT"(name) TABLESPACE "MAIN" LEXER CHINESE_LEXER  SYNC TRANSACTION;
 \end{lstlisting}
 
 填充索引：
@@ -6431,6 +6604,9 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 
 达梦数据库中，在写全文索引查询时，全文索引的条件需要放到前面，这样才能够利用到索引。
 
+\subsection{大量日志分析(Log Analysis)}
+
+传统的主从表做联合查询、分组和排序存在以下缺点：查询性能非常的低，即使是使用分区存储效果也不好。并且随着日志数量的增 多，性能下降的非常明显。当到达一定数量时，界面几乎无响应。查询到之后，必须等排序完成后才能返回结果。日志流水表上不适合建立索引,目前建立了非聚集索引\footnote{聚簇索引的顺序就是数据的物理存储顺序，而对非聚簇索引的索引顺序与数据物理排列顺序无关。举例来说，你翻到新华字典的汉字“爬”那一页就是P开头的部分，这就是物理存储顺序（聚簇索引）；而不用你到目录，找到汉字“爬”所在的页码，然后根据页码找到这个字（非聚簇索引）。}(Non-Clustered Index)后,经常产生死锁,导致写入日志彻底阻塞.insert语句执行时，优先申请插入记录所在的行(或页、表)的X锁（排他锁），记录插入完成后，申请非聚集索引的X锁，完成索引的更新，全部完成后，释放持有的X锁.考虑流水表作为中间表,不建立索引,建立一张日志的分析表,在分析表上建立索引,在流水表上建立标记,定时从流水表中更新数据到分析表(数据写入分析表之前可暂时禁用索引,再增量更新索引),同时更新流水表的标记.定时从分析表中生成统计信息放入统计表中,统计表中历史数据不删除,数据可以作为生成折线图的基础数据,例如统计访问量随时间的变化.APP直接读取统计表的数据作为页面展示,而不是根据流水表的数据来生成统计信息.
 
 \section{Redis}
 
@@ -6910,6 +7086,11 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \section{URL}
 
+\subsection{form-data、x-www-form-urlencoded、raw、binary的区别}
+
+http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。既可以上传键值对，也可以上传文件。当上传的字段是文件时，会有Content-Type来说明文件类型；content-disposition，用来说明字段的一些信息；由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，比如,name=java\&age = 23.raw可以上传任意格式的文本，可以上传text、json、xml、html等.binary相当于Content-Type:application/octet-stream,从字面意思得知，只可以上传二进制数据，通常用来上传文件，由于没有键值，所以，一次只能上传一个文件。
+
+
 \subsection{URL编码解码(Encode Decode)}
 
 不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。服务端设置默认解码方式:
@@ -7342,9 +7523,9 @@ ssh -NfR 1234:localhost:2223 user1@123.123.123.123 -p2221
 
 \part{Engneering}
 
-\section{通用规范}
+\section{通用规范(Specification)}
 
-\subsection{版本管理}
+\subsection{版本管理(Version Control)}
 
 在项目的开发过程中，要求有明确的版本号，以前只是在正式发布版本的时候才会生成带版本号的文件，目前测试需要每次发布版本修改时定义版本号。以前直接使用脚本生成的带有年月日的版本标志，但是还是需要进一步规范化。由于发布采用的自动化脚本，在启动程序时需要指定明确的文件名称，文件名称与版本号有关联，所以考虑将版本号保存到一个文件里面，使用Gradle构建程序和发布程序时都读取此文件中的版本号。Given a version number MAJOR.MINOR.PATCH, increment the:
 
@@ -7414,9 +7595,6 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 \paragraph{发布后确认}
 
 验证发布功能是否生效。在没有接口版本管理的情况下，告知调用接口方。
-
-\cite{radioactivedecay2}
-\cite{DLS1} 
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
