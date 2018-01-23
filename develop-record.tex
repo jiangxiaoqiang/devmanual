@@ -6879,8 +6879,11 @@ character-set-server=utf8
 启动达梦：
 
 \begin{lstlisting}[language=Bash]
+#直接启动达梦
 /home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
-#重启达梦
+#通过默认开机启动脚本重启达梦
+/etc/init.d/DmServiceDMSERVER restart
+#通过默认开机启动脚本启动达梦
 /etc/init.d/DmServiceDMSERVER restart
 \end{lstlisting}
 
