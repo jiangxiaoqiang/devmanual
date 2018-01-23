@@ -3390,7 +3390,6 @@ sh -n ./auth.sh
 
 \begin{lstlisting}[language=Bash]
 #安装bashdb
-sudo dnf install bashdb -y
 bashdb --debug auth.sh
 \end{lstlisting}
 
@@ -5594,7 +5593,7 @@ GSSAPIAuthentication　no
 sudo service sshd restart
 \end{lstlisting}
 
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭。
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
 
 \begin{lstlisting}[language=Bash]
 UseDNS=no
