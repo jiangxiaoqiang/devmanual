@@ -3225,7 +3225,9 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
 在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
 
-\paragraph{修改登录路径}每次登录后都要切换到项目路径，直接登录时切换到项目路径，在当前用户的.bashrc中添加如下设置：
+\paragraph{修改登录路径}
+
+每次登录主机后都要切换到项目的路径,比较麻烦，可以配置登录后直接切换到项目路径，在当前用户的.bashrc中添加如下设置：
 
 \begin{lstlisting}[language=Bash]
 if [ -d /home/app/ ];then
@@ -5459,6 +5461,8 @@ proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个�
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
 
+
+
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
 
 找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
@@ -6607,6 +6611,8 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 \subsection{大量日志分析(Log Analysis)}
 
 传统的主从表做联合查询、分组和排序存在以下缺点：查询性能非常的低，即使是使用分区存储效果也不好。并且随着日志数量的增 多，性能下降的非常明显。当到达一定数量时，界面几乎无响应。查询到之后，必须等排序完成后才能返回结果。日志流水表上不适合建立索引,目前建立了非聚集索引\footnote{聚簇索引的顺序就是数据的物理存储顺序，而对非聚簇索引的索引顺序与数据物理排列顺序无关。举例来说，你翻到新华字典的汉字“爬”那一页就是P开头的部分，这就是物理存储顺序（聚簇索引）；而不用你到目录，找到汉字“爬”所在的页码，然后根据页码找到这个字（非聚簇索引）。}(Non-Clustered Index)后,经常产生死锁,导致写入日志彻底阻塞.insert语句执行时，优先申请插入记录所在的行(或页、表)的X锁（排他锁），记录插入完成后，申请非聚集索引的X锁，完成索引的更新，全部完成后，释放持有的X锁.考虑流水表作为中间表,不建立索引,建立一张日志的分析表,在分析表上建立索引,在流水表上建立标记,定时从流水表中更新数据到分析表(数据写入分析表之前可暂时禁用索引,再增量更新索引),同时更新流水表的标记.定时从分析表中生成统计信息放入统计表中,统计表中历史数据不删除,数据可以作为生成折线图的基础数据,例如统计访问量随时间的变化.APP直接读取统计表的数据作为页面展示,而不是根据流水表的数据来生成统计信息.
+
+如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作.
 
 \section{Redis}
 
