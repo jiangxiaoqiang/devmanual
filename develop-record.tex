@@ -1071,7 +1071,13 @@ public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
 }
 \end{lstlisting}
 
-RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。
+RestApiResponse为统一定义的返回实体，所有的接口都会返回标准的RestApiResponse对象，对象通过泛型定义了不同的返回内容。在客户端调用接口解析出来中文乱码,接口返回是UTF-8编码,解析时要显示指定编码.
+
+\begin{lstlisting}[language=Java]
+InputStreamReader isr = new InputStreamReader(new FileInputStream(file), "UTF-8");
+BufferedReader read = new BufferedReader(isr);
+\end{lstlisting}
+
 
 \paragraph{接口返回(Interface Response)}
 
@@ -1091,7 +1097,7 @@ RestApiResponse为统一定义的返回实体，所有的接口都会返回标�
 private MapperFacade corporationMapperFacade;
 
 public XydmResponse mapToCorporationResponse(Corporation corporation) {
-return corporationMapperFacade.map(corporation, XydmResponse.class);
+	return corporationMapperFacade.map(corporation, XydmResponse.class);
 }
 \end{lstlisting}
 
@@ -6612,7 +6618,9 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 
 传统的主从表做联合查询、分组和排序存在以下缺点：查询性能非常的低，即使是使用分区存储效果也不好。并且随着日志数量的增 多，性能下降的非常明显。当到达一定数量时，界面几乎无响应。查询到之后，必须等排序完成后才能返回结果。日志流水表上不适合建立索引,目前建立了非聚集索引\footnote{聚簇索引的顺序就是数据的物理存储顺序，而对非聚簇索引的索引顺序与数据物理排列顺序无关。举例来说，你翻到新华字典的汉字“爬”那一页就是P开头的部分，这就是物理存储顺序（聚簇索引）；而不用你到目录，找到汉字“爬”所在的页码，然后根据页码找到这个字（非聚簇索引）。}(Non-Clustered Index)后,经常产生死锁,导致写入日志彻底阻塞.insert语句执行时，优先申请插入记录所在的行(或页、表)的X锁（排他锁），记录插入完成后，申请非聚集索引的X锁，完成索引的更新，全部完成后，释放持有的X锁.考虑流水表作为中间表,不建立索引,建立一张日志的分析表,在分析表上建立索引,在流水表上建立标记,定时从流水表中更新数据到分析表(数据写入分析表之前可暂时禁用索引,再增量更新索引),同时更新流水表的标记.定时从分析表中生成统计信息放入统计表中,统计表中历史数据不删除,数据可以作为生成折线图的基础数据,例如统计访问量随时间的变化.APP直接读取统计表的数据作为页面展示,而不是根据流水表的数据来生成统计信息.
 
-如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作.
+如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作\cite{highperformancesql}.
+
+
 
 \section{Redis}
 
