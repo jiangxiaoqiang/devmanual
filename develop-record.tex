@@ -1116,7 +1116,7 @@ echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 \end{lstlisting}
 
-脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。使用如下脚本生成随机token：
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。一次性密码本是一种几乎不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
 
 \begin{lstlisting}[language=Bash]
 #!/bin/bash
