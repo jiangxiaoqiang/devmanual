@@ -1116,7 +1116,7 @@ echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 \end{lstlisting}
 
-脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。一次性密码本是一种几乎不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。一次性密码本是一种理论上不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
 
 \begin{lstlisting}[language=Bash]
 #!/bin/bash
@@ -4889,13 +4889,17 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 
 \subsection{常见问题}
 
-Couldn't run /usr/sbin/dumpcap in child process: Permission denied
-Are you memeber of 'wireshark' group? Try running 'usermod -a -G wireshark <username>' as root.添加执行权限：
+Couldn't run /usr/sbin/dumpcap in child process: Permission denied`.添加对dumpcap(Dump Capture)文件的的执行权限：
 
 \begin{lstlisting}[language=Bash]
 sudo chmod +x /usr/sbin/dumpcap
 \end{lstlisting}
 
+常用过滤语句:
+
+\begin{lstlisting}[language=Bash]
+http and ip.addr == 192.168.1.106 and tcp.port == 8080
+\end{lstlisting}
 
 \section{Vim Editor}
 
@@ -5032,7 +5036,9 @@ rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多�
 rsync -avz pi@10.42.0.22:app-soft .
 \end{lstlisting}
 
+\subsection{sftp}
 
+SFTP ，即SSH 文件传输协议（ SSH File Transfer Protocol ），或者说是安全文件传输协议（ Secure File Transfer Protocol ）。 SFTP 是一个独立的SSH 封装协议包，通过安全连接以相似的方式工作。
 
 \subsection{ag}
 
@@ -7099,9 +7105,9 @@ select * from douban_book_id where isscapy = 0 limit 1
 
 \part{Network}
 
-\chapter{HTTP}
+\chapter{HTTP(HyperText Transfer Protocol)}
 
-\section{URL}
+\section{URL(Uniform Resource Locator)}
 
 \subsection{form-data、x-www-form-urlencoded、raw、binary的区别}
 
@@ -7110,7 +7116,7 @@ http请求中的multipart/form-data,它会将表单的数据处理为一条消�
 
 \subsection{URL编码解码(Encode Decode)}
 
-不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。服务端设置默认解码方式:
+不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。服务端设置默认解码方式为UTF-8:
 
 \begin{lstlisting}[language=Bash]
 # Character encoding to use to decode the URI.
@@ -7122,6 +7128,18 @@ spring.http.encoding.enabled=true
 spring.http.encoding.force=true
 \end{lstlisting}
 
+同样请求时URL也必须转为UTF-8编码,否则服务端无法解析:
+
+\begin{lstlisting}[language=Bash]
+/**
+* 请求参数统一采用UTF-8编码
+* 避免乱码
+* 此处对参数值做转码操作
+*/
+sbu.append(entry.getKey() + "=" + URLEncoder.encode((String) entry.getValue(), "UTF-8"));
+\end{lstlisting}
+
+当然也可以编码整个URL.
 
 \section{性能分析(Performance Analysis)}
 
