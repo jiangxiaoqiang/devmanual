@@ -3435,6 +3435,28 @@ l 3 10
 }
 \end{lstlisting}
 
+\subsection{常用Bash脚本(Bash Snippnet)}
+
+\paragraph{结束指定进程}
+
+结束指定名称的进程,在系统部署前,需要结束当前运行的进程:
+
+\begin{lstlisting}[language=Bash]
+#!/bin/sh
+
+readonly PROCESS_NAME="credit-system-web-api"
+count=`ps -ef | grep ${PROCESS_NAME} | grep -v "grep" | wc -l`
+# 进程是否存在
+if [ $count -eq 1 ]; then
+	#根据进程名称找到进程ID
+	PROCESS_ID=$(ps x | grep ${PROCESS_NAME} | grep -v grep | awk '{print $1}')
+	if [ ${PROCESS_ID} -gt 100 ]; then
+		kill ${PROCESS_ID}
+	fi
+fi
+\end{lstlisting}
+
+
 \subsection{快捷键(Shortcut)}
 
 Ubuntu常用快捷键：
@@ -3472,7 +3494,7 @@ which scala
 \end{lstlisting}
 
 
-\paragraph{ls}
+\paragraph{ls(list)}
 
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
 
@@ -3492,14 +3514,9 @@ ls -R
 alias='ls -lh --color=always'
 \end{lstlisting}
 
-\paragraph{top}
+\paragraph{top(table of process)}
 
 top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_(software)}}。平时在使用top的过程中，比较头疼的是top是以KB为单位显示的，比如我的机器是32GB的内存，显示的是KiB Mem : 32842520 total, 11788120 free,  8146760 used, 12907640 buff/cache，脑子里完全没有概念，32842520KB是多大？如果显示总内存32GB，11GB空闲，就更容易理解了。此时可以使用Shift + E，可以将内存单位从KB切换到MB，GB，TP，PB。同样按下E键，可以将列表的内存单位作相应的不同粒度的切换\footnote{\url{https://unix.stackexchange.com/questions/105908/how-to-display-meminfo-in-megabytes-in-top}}。E表示的涵义：Extend-Memory-Scale in Summary Area With this command you can cycle through the available summary area memory scaling which ranges from KiB (kibibytes or 1,024 bytes) through EiB (exbibytes or 1,152,921,504,606,846,976 bytes)。输入大写P，则结果按CPU占用降序排序。输入大写M，结果按内存占用降序排序。
-
-步骤1 执行top命令，然后在数据画面中按“k”键。
-步骤2 画面中会出现“PID to kill：”信息，接着输入该进程的PID。
-步骤3 输入PID后按键，会出现“Kill PID xxxxx with signal [15]：”提示信息（此处的xxxxx是指PID编号），此时需输入signal号码，如果直接按键，则以默认的15进行处理。
-步骤4 如果无法顺利删除，则输入9来强制删除该进程。
 
 \begin{table}
 	\caption{Top列含义}
@@ -3524,7 +3541,17 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 	\end{center}
 \end{table}
 
+在top中结束进程步骤如下:
 
+\begin{itemize}
+	\item{步骤1 执行top命令，然后在数据画面中按“k”键。}
+	\item{步骤2 画面中会出现“PID to kill：”信息，接着输入该进程的PID。}
+	\item{步骤3 输入PID后按键，会出现“Kill PID xxxxx with signal [15]：”提示信息（此处的xxxxx是指PID编号），此时需输入signal号码，如果直接按键，则以默认的15进行处理。}
+	\item{步骤4 如果无法顺利删除，则输入9来强制删除该进程。}
+\end{itemize}
+
+
+如果希望以指定列排序(比如希望以进程号排序),在top界面中按下大写的F,选择指定列,按Esc退出后,按下R按键来排序(Using F you'd get you to the menu of fields. Using s would set what field would do the sorting. Press ESC to escape from the menu then to change Ascending/Descending mode, use R.).
 
 \paragraph{find}
 
@@ -3564,9 +3591,9 @@ sudo -u dolphin -i
 
 使用上述命令，可以切换到root状态下
 
-\paragraph{tar}
+\paragraph{tar(tape archive)}
 
-创建压缩文档：
+Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一个文件，打包后的文件名亦为“tar”。目前，tar文件格式已经成为POSIX标准，最初是POSIX.1-1988，目前是POSIX.1-2001。本程序最初的设计目的是将文件备份到磁带上（tape archive），因而得名tar\footnote{\url{https://zh.wikipedia.org/wiki/Tar}}。创建压缩文档：
 
 \begin{lstlisting}[language=Bash]
 #打包
@@ -4882,6 +4909,12 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 \begin{lstlisting}[language=Bash]
 /etc/init.d/networking restart
 \end{lstlisting}
+
+\subsection{挂机下载}
+
+\subsection{搭建家庭多媒体中心}
+
+OpenELEC 是一个基于 Linux 的 开源 多媒体播放系统。同类的系统还有 OSMC，OSMC 的系统安装和使用方式和 OpenELEC 差别不大。目前 OpenELEC 支持 Raspberry Pi1、Pi2、Pi3 以及 Zero。大家可以很轻松的通过 OpenELEC 来搭建家庭的多媒体中心。
 
 \chapter{Widgets}
 
@@ -6732,7 +6765,19 @@ compile "org.postgresql:postgresql:42.1.1"
 
 PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，select里大小写都可以查询，如果列名为大写，查询语句中列名需要添加双引号才能查询。
 
+\subsection{安装pgAdmin 4}
 
+下载安装包后,运行命令:
+
+\begin{lstlisting}[language=Bash]
+#安装pg
+sudo pip2 install pgadmin4-2.1-py2.py3-none-any.whl
+#切换到安装目录5a5c7c70290000e927486750
+cd /usr/local/lib/python2.7/dist-packages/pgadmin4
+#启动pgAdmin4
+#初次启动需要设置用户名密码
+sudo python pgAdmin4.py
+\end{lstlisting}
 
 \chapter{MySQL}
 
@@ -7114,7 +7159,7 @@ select * from douban_book_id where isscapy = 0 limit 1
 http请求中的multipart/form-data,它会将表单的数据处理为一条消息，以标签为单元，用分隔符分开。既可以上传键值对，也可以上传文件。当上传的字段是文件时，会有Content-Type来说明文件类型；content-disposition，用来说明字段的一些信息；由于有boundary隔离，所以multipart/form-data既可以上传文件，也可以上传键值对，它采用了键值对的方式，所以可以上传多个文件。就是application/x-www-from-urlencoded,会将表单内的数据转换为键值对，比如,name=java\&age = 23.raw可以上传任意格式的文本，可以上传text、json、xml、html等.binary相当于Content-Type:application/octet-stream,从字面意思得知，只可以上传二进制数据，通常用来上传文件，由于没有键值，所以，一次只能上传一个文件。
 
 
-\subsection{URL编码解码(Encode Decode)}
+\subsection{URL编码解码(URL Encode\&Decode)}
 
 不同的操作系统、不同的浏览器、不同的网页字符集，将导致完全不同的编码结果\footnote{\url{http://www.ruanyifeng.com/blog/2010/02/url_encoding.html}}。服务端设置默认解码方式为UTF-8:
 
@@ -7139,7 +7184,34 @@ spring.http.encoding.force=true
 sbu.append(entry.getKey() + "=" + URLEncoder.encode((String) entry.getValue(), "UTF-8"));
 \end{lstlisting}
 
-当然也可以编码整个URL.
+当然也可以编码整个URL.\textbf{在终端中使用cUrl命令发送请求时,会自动将URL中汉字参数转换为UTF-8编码,只会转换URL中参数值}.可以通过Wireshark抓包来验证猜想,在Wireshark(版本2.2.6)中选择Loopback网卡,抓取本机包如图\ref{fig:wiresharkcapturecurlrequest}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{wiresharkcapturecurlrequest.png}
+	\caption{Wireshark捕捉cUrl终端请求}
+	\label{fig:wiresharkcapturecurlrequest}
+\end{figure}
+
+从图中看出,终端中使用cUrl请求时,系统将"玖龙纸业"四个汉字转换成了如下的编码:
+
+\begin{lstlisting}
+\347\216\226\351\276\231\347\272\270\344\270\232
+\end{lstlisting}
+
+以上是将"玖龙纸业"四个汉字的UTF-8编码以8进制的方式表示.每个汉字用3个字节表示,347|216|226表示汉字"玖",后面的表示方式以此类推.采用URLEncode编码方式获得的是16进制的显示方式:
+
+\begin{lstlisting}[language=Java]
+String url = "玖龙纸业";
+/**
+*URLEncoder输出的结果(16进制):
+*%E7%8E%96%E9%BE%99%E7%BA%B8%E4%B8%9A
+*将%替换为\,16进制的E7转换为8进制即为\347
+*即上面的表示方式
+*/
+String encodedURL = URLEncoder.encode(url, "UTF-8");
+\end{lstlisting}
+
 
 \section{性能分析(Performance Analysis)}
 
