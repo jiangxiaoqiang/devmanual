@@ -560,7 +560,7 @@ addtohook={%
 
 \noindent \textsc{Edited by Xiaoqiang Jiang}\\ % Publisher
 
-\noindent \textsc{\url{http://jiangxiaoqiang.github.com/}}\\ % URL
+\noindent \textsc{\url{http://jiangxiaoqiang.github.com/}}\\
 
 \noindent All Rights Reserved.\\ % License information
 
@@ -594,7 +594,7 @@ addtohook={%
 \mainmatter
 
 %----------------------------------------------------------------------------------------
-%	PART
+% PART
 %----------------------------------------------------------------------------------------
 
 \part{Framework}
@@ -1007,6 +1007,10 @@ String categoryId = String.valueOf(article.getCategory());
 \end{lstlisting}
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
+
+\subsection{安全(Security)}
+
+CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算，然后再进行加密.
 
 \section{应用接口(Application Interface)}
 
@@ -4942,6 +4946,29 @@ http and ip.addr == 192.168.1.106 and tcp.port == 8080
 全部复制：按esc后，然后ggyG
 全选高亮显示：按esc后，然后ggvG或者ggVG 
 
+\paragraph{替换}
+
+:s（substitute）命令用来查找和替换字符串。语法如下：
+
+\begin{lstlisting}[language=Bash]
+:{作用范围}s/{目标}/{替换}/{替换标志}
+\end{lstlisting}
+
+例如:
+
+\begin{lstlisting}[language=Bash]
+#在全局范围(\%)查找foo并替换为bar
+#所有出现都会被替换（g）
+:%s/foo/bar/g
+:s/str1/str2/ 替换当前行第一个 str1 为 str2 
+:s/str1/str2/g 替换当前行中所有 str1 为 str2 
+:m,ns/str1/str2/ 替换第 n 行开始到最后一行中每一行的第一个 str1 为 str2 
+:m,ns/str1/str2/g 替换第 n 行开始到最后一行中所有的 str1 为 str2 
+
+\end{lstlisting}
+
+(注：m和n 为数字，若m为 .，表示为当前行开始；若n为\$，则表示到最后一行结束) u
+
 \section{Little Tool}
 
 \subsection{科学上网}
@@ -5564,12 +5591,21 @@ Ansible在Mac下的安装路径/usr/local/Cellar/ansible/2.3.1.0。在Mac下没�
 
 \paragraph{Ansible配置}
 
-Ansible主机配置：
+Ansible主机配置,在配置文件/etc/ansible/hosts中：
 
 \begin{lstlisting}[language=bash]
 [pi]
 192.168.31.25 ansible_ssh_port=22 ansible_ssh_user=pi
 \end{lstlisting}
+
+Ansible主机简单分组配置示例如图所示:
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{ansiblehostconfigexample.png}
+	\caption{Ansible主机配置实例}
+	\label{fig:ansiblehostconfigexample}
+\end{figure}
 
 
 \paragraph{shell模块}使用shell模块，在远程命令通过/bin/sh来执行；所以，我们在终端输入的各种命令方式，都可以使用； 但是我们自己定义在.bashrc/.bash\_profile中的环境变量shell模块由于没有加载，所以无法识别；如果需要使用自定义的环境变量，就需要在最开始，执行加载自定义脚本的语句；对shell模块的使用可以分成两块：如果待执行的语句少，可以直接写在一句话中：
