@@ -6668,14 +6668,14 @@ limit 0,10;
 当使用like进行模糊搜索时，如果是中间匹配，那么无法使用索引，需要全表扫描(Full Table Scan)。优化？没有办法优化，所以不要花费时间在通过优化SQL语句来提升like中间匹配的查询效率。此时需要使用全文索引，一种方案是使用全文索引查询出结果后，再使用like进行匹配，在达梦数据库中创建全文索引：
 
 \begin{lstlisting}[language=SQL]
-create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER;
+create context index qymcindex on user.TS_F_CORPORATION_TEST(qymc) lexer CHINESE_VGRAM_LEXER SYNC TRANSACTION;
 create context index xzcffulltextindex on TS_B_XZCF(xdr) lexer CHINESE_VGRAM_LEXER;
 alter context index xzcffulltextindex on TS_B_XZCF rebuild;
 #创建全文索引，自动填充更新索引
 CREATE CONTEXT INDEX "INDEX0001" ON "SYSDBA"."STUDENT"(name) TABLESPACE "MAIN" LEXER CHINESE_LEXER  SYNC TRANSACTION;
 \end{lstlisting}
 
-填充索引：
+sync子句指定全文索引的同步类型,sync transaction系统在每次事物提交后,增量填充索引,不需要手工填充索引\footnote{<<DM7\_SQL>>第3.9.1章节},手工填充填充索引语句如下：
 
 \begin{lstlisting}[language=SQL]
 alter context index qymcindex1 on user_xycq.TS_F_CORPORATION rebuild;
