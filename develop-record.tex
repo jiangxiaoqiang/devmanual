@@ -4946,7 +4946,17 @@ http and ip.addr == 192.168.1.106 and tcp.port == 8080
 全部复制：按esc后，然后ggyG
 全选高亮显示：按esc后，然后ggvG或者ggVG 
 
-\paragraph{替换}
+\subsection{搜索(Search)}
+
+从文件的结尾开始搜索:
+
+\begin{lstlisting}[language=Bash]
+:1?feedback
+\end{lstlisting}
+
+1的含义是文件的第一行,?的含义是反向查找,feedback的含义是要查找的关键字.
+
+\paragraph{替换(Replace)}
 
 :s（substitute）命令用来查找和替换字符串。语法如下：
 
@@ -4972,6 +4982,25 @@ http and ip.addr == 192.168.1.106 and tcp.port == 8080
 \section{Little Tool}
 
 \subsection{科学上网}
+
+Shadowsocks客户端操作:
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get install python-pip
+sudo apt-get install python-setuptools m2crypto
+#安装Shadowsocks
+pip install shadowsocks
+#前台启动
+#可以看到实时的日志输出
+#关闭终端后代理断开
+sslocal -c /etc/shadowsocks/shadowsocks.json
+#后台启动
+sslocal -c /etc/shadowsocks/shadowsocks.json -d start
+\end{lstlisting}
+
+
+
+
 
 \subsection{SQuirreL SQL Client}
 
