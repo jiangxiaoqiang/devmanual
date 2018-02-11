@@ -3557,6 +3557,15 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 
 如果希望以指定列排序(比如希望以进程号排序),在top界面中按下大写的F,选择指定列,按Esc退出后,按下R按键来排序(Using F you'd get you to the menu of fields. Using s would set what field would do the sorting. Press ESC to escape from the menu then to change Ascending/Descending mode, use R.).
 
+\paragraph{scp}
+
+在Windows上使用Putty提供的scp命令:
+
+\begin{lstlisting}[language=Bash]
+# 将本地的Windows文件夹拷贝到远程Linux服务器上
+pscp.exe -r E:\jiangxiaoqiang\deployment\webservice root@10.10.1.32:/home
+\end{lstlisting}
+
 \paragraph{find}
 
 在当前目录下查找大文件：
@@ -3721,7 +3730,7 @@ dnf install the_silver_searcher
 
 \paragraph{traceroute}
 
-如果目标系统在 3 秒的超时间隔内没有响应，所有的查询都会发生超时，结果会采用星号（*）显示，由此可以断定是目标系统的问题。
+如果目标系统在3秒的超时间隔内没有响应，所有的查询都会发生超时，结果会采用星号（*）显示，由此可以断定是目标系统的问题。
 
 \begin{lstlisting}[language=Bash]
 # Linux
@@ -3749,6 +3758,17 @@ df -kh
 \end{lstlisting}
 
 -k或--kilobytes：指定区块大小为1024字节；可以用此命令查看U盘的路径.也可以使用命令mount：通过查看/etc/mtab（文章最后会对/etc/mtab有个解释）文件显示当前系统已挂载的所有设备.
+
+\paragraph{mount}
+
+挂载磁盘命令如下:
+
+\begin{lstlisting}[language=Bash]
+# 挂载U盘到系统
+sudo mount -t vfat /dev/sdb1 /media/hldev/udisk/
+# 卸载U盘
+sudo umount /media/hldev/KINGSTON
+\end{lstlisting}
 
 
 \subsection{tmux}
@@ -3890,6 +3910,29 @@ screen -r 12865
 # Linux查看版本当前操作系统内核信息
 uname －a 
 \end{lstlisting}
+
+\subsection{修改Mac地址}
+
+在某些网络环境中,会通过限制Mac地址与IP绑定来保障只允许指定的机器连接.此时修改Mac地址可以暂时绕过限制,Ubuntu下临时修改Mac地址,可以编辑/etc/network/interfaces文件,也可以使用如下的命令临时修改Mac地址:
+
+\begin{lstlisting}[language=Bash]
+# 关闭网卡
+sudo /sbin/ifconfig enx000ec6c8c163 down
+# 修改地址
+sudo /sbin/ifconfig enx000ec6c8c163 hw ether 4C:CC:6A:7C:C3:CF
+# 启动网卡
+sudo /sbin/ifconfig enx000ec6c8c163 up
+# 重启网络
+sudo service network-manager restart
+\end{lstlisting}
+
+有时候调整网络后,有线网络连接会出现一个"device not managed"的提示,此时需要修改/etc/NetworkManager/NetworkManager.conf文件.永久修改Mac地址:
+
+\begin{lstlisting}[language=Bash]
+# 重启rc.local
+sudo /etc/init.d/rc.local restart
+\end{lstlisting}
+
 
 
 \section{常用设置(Settings)}
@@ -6637,7 +6680,7 @@ limit 0, 10
 
 \subparagraph{散列索引Or哈希索引(Hash Index)}
 
-散列索引是根据HASH算法来构建的索引，所以检索速度很快，但不能范围查询。散列索引的特点，只适合等值查询（包括= <> 和in），不适合模糊或范围查询
+散列索引是根据Hash算法来构建的索引，所以检索速度很快，但不能范围查询。散列索引的特点，只适合等值查询（包括= <> 和in），不适合模糊或范围查询
 
 \subparagraph{聚集索引(Cluster Index)}
 
@@ -6704,7 +6747,7 @@ alter context index xzcffulltextindex on TS_B_XZCF rebuild;
 CREATE CONTEXT INDEX "INDEX0001" ON "SYSDBA"."STUDENT"(name) TABLESPACE "MAIN" LEXER CHINESE_LEXER  SYNC TRANSACTION;
 \end{lstlisting}
 
-sync子句指定全文索引的同步类型,sync transaction系统在每次事物提交后,增量填充索引,不需要手工填充索引\footnote{<<DM7\_SQL>>第3.9.1章节},手工填充填充索引语句如下：
+sync子句指定全文索引的同步类型,sync transaction系统在每次事物提交后,增量填充索引,不需要手工填充索引\footnote{DM7\_SQL手册第3.9.1章节},手工填充填充索引语句如下：
 
 \begin{lstlisting}[language=SQL]
 alter context index qymcindex1 on user_xycq.TS_F_CORPORATION rebuild;
@@ -6722,7 +6765,7 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 
 传统的主从表做联合查询、分组和排序存在以下缺点：查询性能非常的低，即使是使用分区存储效果也不好。并且随着日志数量的增 多，性能下降的非常明显。当到达一定数量时，界面几乎无响应。查询到之后，必须等排序完成后才能返回结果。日志流水表上不适合建立索引,目前建立了非聚集索引\footnote{聚簇索引的顺序就是数据的物理存储顺序，而对非聚簇索引的索引顺序与数据物理排列顺序无关。举例来说，你翻到新华字典的汉字“爬”那一页就是P开头的部分，这就是物理存储顺序（聚簇索引）；而不用你到目录，找到汉字“爬”所在的页码，然后根据页码找到这个字（非聚簇索引）。}(Non-Clustered Index)后,经常产生死锁,导致写入日志彻底阻塞.insert语句执行时，优先申请插入记录所在的行(或页、表)的X锁（排他锁），记录插入完成后，申请非聚集索引的X锁，完成索引的更新，全部完成后，释放持有的X锁.考虑流水表作为中间表,不建立索引,建立一张日志的分析表,在分析表上建立索引,在流水表上建立标记,定时从流水表中更新数据到分析表(数据写入分析表之前可暂时禁用索引,再增量更新索引),同时更新流水表的标记.定时从分析表中生成统计信息放入统计表中,统计表中历史数据不删除,数据可以作为生成折线图的基础数据,例如统计访问量随时间的变化.APP直接读取统计表的数据作为页面展示,而不是根据流水表的数据来生成统计信息.
 
-如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作\cite{highperformancesql}.
+如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作\cite{highperformancesql}.也可以不建立索引,直接定时执行日志统计语句,但是会牺牲日志统计的实时性.针对日志逐步增长的问题,也可以建立一张日志统计汇总表,定时统计指定时间范围的日志记录.比如增量统计过去一小时的日志到汇总表.实时日志单独记录到流水表中.
 
 
 
@@ -6853,8 +6896,10 @@ sudo python pgAdmin4.py
 本来以为安装完毕MySQL就可以自动进行远程连接，结果竟然花了半天时间才搞定。安装完毕后MySQL默认是不能远程连接的，由于在其他主机上用nmap无法扫描到端口3306，开始还以为是防火墙的缘故，在错误的道路上研究了许久，最后竟然在本机也无法扫描到端口。才明白MySQL是与localhost绑定而不是与IP绑定。在目录/etc/mysql/目录中修改配置文件my.cnf：
 
 \begin{lstlisting}[language=Bash]
-# Instead of skip-networking the default is now to listen only on
-# localhost which is more compatible and is not less secure.
+# Instead of skip-networking the default 
+# is now to listen only on
+# localhost which is more compatible 
+# and is not less secure.
 bind-address            = 192.168.31.25
 \end{lstlisting}
 
@@ -6986,7 +7031,7 @@ mycli -h 10.0.0.14 -u root -p dolphin
 
 \paragraph{ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/tmp/mysql.sock'}
 
-mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即unixsocket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
+mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h选项时使用的就是localhost即Unix Socket，此时会通过/tmp/mysql.sock来通讯，但是在配置文件中默认生成的socket文件是在/var/lib/mysql/mysql.sock(不同安装可能不同，建议查看/etc/my.cnf确认),所以要想mysql使用这个文件通讯，最简单的方法就是建立软链接，一劳永逸，此为方法一
 
 方法二就是强制mysql使用tcp通讯，因为127.0.0.1对于mysql来说走的是tcp协议而非unixsocket，这种方法的弊端就是每次都要指明本地地址127.0.0.1
 
@@ -7208,14 +7253,17 @@ Hbase读的性能比较强，官方定义为适合PB级数据的秒级查询，�
 \paragraph{不要ORDER BY RAND()}MySQL会不得 不去执行RAND()函数（很耗CPU时间），而且这是为了每一行记录去记行，然后再对其排序。就算是你用了Limit 1也无济于事。自己在做爬虫时，写过这样的语句：
 
 \begin{lstlisting}[language=SQL]
-select * from douban_book_id where isscapy = 0 limit 1
+select * 
+from douban_book_id 
+where isscapy = 0 
+limit 1
 \end{lstlisting}
 
 难怪后来变的很慢，把中间停顿的sleep函数去掉之后还是很慢，开始还一位是sleep函数暂停的问题。
 
 \part{Network}
 
-\chapter{HTTP(HyperText Transfer Protocol)}
+\chapter{HTTP}
 
 \section{URL(Uniform Resource Locator)}
 
