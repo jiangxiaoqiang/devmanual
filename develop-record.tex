@@ -1333,6 +1333,11 @@ x-ms-version:2017-04-17
 
 \section{数据库操作(Database Operate)}
 
+\subsection{Thread starvation or clock leap detected}
+
+程序运行过程中HikariCP出现警告:Thread starvation or clock leap detected,并停止响应和接收请求.HikariCP有一个线程会去回收空闲的连接,出现此警告表示已经长时间未运行此线程,使用sar命令查看系统历史负载,在出现警告的时间段里面,内存使用情况稳定,但是CPU使用率在此时间段内急剧飙升.推测有可能是此时间段内CPU使用率过高导致此问题.there was actually a 2+ minute starvation event. In which case, you need to monitor the CPU and figure out what is creating the load\footnote{\url{https://github.com/brettwooldridge/HikariCP/issues/679}},输出此条错误信息在源码的HikariPool类中.
+
+
 \subsection{Could not get JDBC connection}
 
 接口有时会查询不出数据，总是报超时错误。查看程序日志，提示Could not get JDBC Connection。查看了数据库的Session数量(40)远远未到达最大限制数量(500)。
@@ -3717,6 +3722,19 @@ do
 done
 \end{lstlisting}
 
+\paragraph{sar}
+
+sar是System Activity Reporter（系统活动情况报告）的缩写。sar工具将对系统当前的状态进行取样，然后通过计算数据和比例来表达系统的当前运行状态。它的特点是可以连续对系统取样，获得大量的取样数据；取样数据和分析的结果都可以存入文件，所需的负载很小。sar是目前Linux上最为全面的系统性能分析工具之一.查看系统指定时间段内的内存使用情况:
+
+\begin{lstlisting}[language=Bash]
+sar -r -s 13:00:00 -e 16:00:00 -f /var/log/sa/sa12
+\end{lstlisting}
+
+查看指定时间段内CPU的负载情况:
+
+\begin{lstlisting}[language=Bash]
+sar -s 13:00:00 -e 16:00:00 -f /var/log/sa/sa12
+\end{lstlisting}
 
 \paragraph{ag}
 
@@ -3775,16 +3793,23 @@ sudo umount /media/hldev/KINGSTON
 
 tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBSD，采用BSD授权。使用tmux的好处之一就是可以保存会话，避免网络不稳定带来的影响。
 
-\begin{tabular}{|c|p{8cm}|c|}
-	\hline
-	\multirow{1}{*}{键}
-	& \multicolumn{1}{c|}{作用}  \\			
-	\cline{1-2}
-	Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
-	\hline
-	C-b ? & 显示快捷键帮助\\
-	\hline
-\end{tabular}
+
+\begin{table}
+	\caption{tmux快捷键}
+	\label{table:tmuxshortcut}
+	\begin{center}
+	\begin{tabular}{|c|p{8cm}|c|}
+		\hline
+		\multirow{1}{*}{键}
+		& \multicolumn{1}{c|}{作用}  \\			
+		\cline{1-2}
+		Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+		\hline
+		C-b ? & 显示快捷键帮助\\
+		\hline
+	\end{tabular}
+	\end{center}
+\end{table}
 
 使用终端,当然需要漂亮的字体.TeX Gyre Cursor可以作为终端的字体.The TeX Gyre Cursor family of monospaced serif fonts is based on the URW Nimbus Mono L family . and are available in PostScript, TeX and OpenType formats. 效果如图\ref{fig:fonttexgyrecursor}所示.
 
@@ -3917,16 +3942,23 @@ uname －a
 
 \begin{lstlisting}[language=Bash]
 # 关闭网卡
-sudo /sbin/ifconfig enx000ec6c8c163 down
+sudo /sbin/ifconfig enx000ec6c8c162 down
 # 修改地址
-sudo /sbin/ifconfig enx000ec6c8c163 hw ether 4C:CC:6A:7C:C3:CF
+sudo /sbin/ifconfig enx000ec6c8c162 hw ether 4C:CC:6A:7C:C3:CF
 # 启动网卡
-sudo /sbin/ifconfig enx000ec6c8c163 up
+sudo /sbin/ifconfig enx000ec6c8c162 up
 # 重启网络
 sudo service network-manager restart
 \end{lstlisting}
 
-有时候调整网络后,有线网络连接会出现一个"device not managed"的提示,此时需要修改/etc/NetworkManager/NetworkManager.conf文件.永久修改Mac地址:
+有时候调整网络后,有线网络连接会出现一个"device not managed"的提示,此时需要修改/etc/NetworkManager/NetworkManager.conf文件,将文件中的managed由false调整为true,并重启网络设备.enx000ec6c8c162是网卡名称,命名遵循一致网络设备命名\footnote{\url{https://fedoraproject.org/wiki/Features/ConsistentNetworkDeviceNaming}}规范.en是Ethernet的缩写,x表示设备位置,后跟的数字enx000ec6c8c162是网卡设备Mac地址.enp0s31f6网卡名称,p表示PCI网卡,0表示bus,s表示slot,后面的数字表示槽位,f表示function,遵守设备类型+设备位置+数字的模式.
+
+\begin{lstlisting}[language=Bash]
+[ifupdown]
+managed=true
+\end{lstlisting}
+
+永久修改Mac地址:
 
 \begin{lstlisting}[language=Bash]
 # 重启rc.local
