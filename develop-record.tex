@@ -3724,7 +3724,7 @@ done
 
 \paragraph{sar}
 
-sar是System Activity Reporter（系统活动情况报告）的缩写。sar工具将对系统当前的状态进行取样，然后通过计算数据和比例来表达系统的当前运行状态。它的特点是可以连续对系统取样，获得大量的取样数据；取样数据和分析的结果都可以存入文件，所需的负载很小。sar是目前Linux上最为全面的系统性能分析工具之一.查看系统指定时间段内的内存使用情况:
+sar是System Activity Reporter（系统活动情况报告）的缩写,属于sysstat工具包。sar工具将对系统当前的状态进行取样，然后通过计算数据和比例来表达系统的当前运行状态。它的特点是可以连续对系统取样，获得大量的取样数据；取样数据和分析的结果都可以存入文件，所需的负载很小。sar是目前Linux上最为全面的系统性能分析工具之一.查看系统指定时间段内的内存使用情况:
 
 \begin{lstlisting}[language=Bash]
 sar -r -s 13:00:00 -e 16:00:00 -f /var/log/sa/sa12
@@ -3735,6 +3735,31 @@ sar -r -s 13:00:00 -e 16:00:00 -f /var/log/sa/sa12
 \begin{lstlisting}[language=Bash]
 sar -s 13:00:00 -e 16:00:00 -f /var/log/sa/sa12
 \end{lstlisting}
+
+在用如上命令查看之前,需要定时搜集系统数据,在Ubuntu下默认是关闭的,需要先打开,调整配置文件/etc/default/sysstat:
+
+\begin{lstlisting}[language=Bash]
+# 配置中启用数据搜集
+ENABLED="true"
+# 重启sysstat
+sudo service sysstat restart
+\end{lstlisting}
+	
+在文件/etc/cron.d/sysstat中定义数据搜集的频率:
+
+\begin{lstlisting}[language=Bash]
+# Activity reports every 5 minutes everyday
+*/5 * * * * root command -v debian-sa1 > /dev/null && debian-sa1 1 1
+\end{lstlisting}
+
+
+设置采集数据保留的时长在Ubuntu下是/etc/sysstat/sysstat文件:
+
+\begin{lstlisting}[language=Bash]
+# 历史数据保留7天
+HISTORY=7
+\end{lstlisting}
+
 
 \paragraph{ag}
 
