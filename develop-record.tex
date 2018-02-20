@@ -3074,16 +3074,19 @@ state[0] = bookReducer;
 
 \chapter{Linux}\index{Linux}
 
-在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装修复此问题.
+在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装TexStudio修复此问题.
 
 \begin{lstlisting}[language=Bash]
 #列出已经安装软件
 sudo apt list --installed|grep texstudio
 #移除已经安装的软件
+sudo apt --purge -y remove qemu-system-common 
 #删除已安装包（不保留配置文件)
 sudo apt purge texstudio
 #安装TexStudio
-sudo apt install texstudio -y 
+sudo apt install texstudio -y
+#通过dpkg安装TexStudio
+sudo dpkg -i texstudio-qt4_2.12.6-2_amd64.deb 
 \end{lstlisting}
 
 在安装TexStudio的过程中,出现了dpkg损坏的情况:usr/bin/dpkg returned an code.删除/var/lib/dpkg/info目录下的所有文件即可修复问题:
@@ -3745,7 +3748,7 @@ ENABLED="true"
 sudo service sysstat restart
 \end{lstlisting}
 	
-在文件/etc/cron.d/sysstat中定义数据搜集的频率:
+在定时任务配置文件/etc/cron.d/sysstat中定义数据搜集的频率:
 
 \begin{lstlisting}[language=Bash]
 # Activity reports every 5 minutes everyday
@@ -3753,7 +3756,7 @@ sudo service sysstat restart
 \end{lstlisting}
 
 
-设置采集数据保留的时长在Ubuntu下是/etc/sysstat/sysstat文件:
+设置采集数据保留的时长在Ubuntu下是/etc/sysstat/sysstat文件,在CentOS下是/etc/sysconfig/sysstat文件:
 
 \begin{lstlisting}[language=Bash]
 # 历史数据保留7天
@@ -3770,6 +3773,19 @@ ag\footnote{\url{https://github.com/ggreer/the_silver_searcher}}可以递归搜�
 apt-get install silversearcher-ag
 dnf install the_silver_searcher
 \end{lstlisting}
+
+\paragraph{pstree}
+
+pstree命令以树状图显示进程间的关系（display a tree of processes）。查看当前系统总的线程信息:
+
+\begin{lstlisting}[language=Bash]
+# 树形结构显示系统当前线程信息
+ps -p
+# 当前系统总的线程数
+ps -p | wc -l
+\end{lstlisting}
+
+
 
 \paragraph{traceroute}
 
@@ -4210,6 +4226,16 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 \end{table}
 
 
+遇到错误提示:Could not autowire. No beans of 'xxxx' type found,如下图所示,但是实际的代码没有问题,运行也是OK的.调整错误检测级别,在Settings->Editor->Inspecgtions->Spring->Spring Core->Code中的Autowiring for Bean Class,将Serverity的级别调整为警告即可.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{autowiredcheckerror.png}
+	\caption{Intellij Idea注入检查错误}
+	\label{fig:autowiredcheckerror}
+\end{figure}
+
+
 \paragraph{Class JavaLaunchHelper is implemented}
 
 
@@ -4264,16 +4290,19 @@ public class ${NAME} {
 }
 \end{lstlisting}
 
-
-
 \chapter{Gradle}
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
 
+\begin{lstlisting}
+${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND}/cc-web-boot -x test build --info
+\end{lstlisting}
+
+info参数会输出详细的log信息,便于问题定位.
+
 \section{基础}
 
 Gradle使用的Groovy语言，Groovy语言字符串的表示形式很多，有一些细微的区别：
-
 
 \begin{lstlisting}
 def a = '单引号形式'
@@ -5764,6 +5793,8 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 其中10.55.10.77是配置的代理机器，代理机器通过ssh端口转发(SSH Port Forwarding)来实现代理，2222为代理机器的监听端口。ssh代理转发将代理机器2222端口的流量转发到目标机器的ssh端口上。
 
 \section{ssh(Secure Shell)}
+
+关闭不活动的ssh会话,使用w命令来识别出不活动或者是空闲的ssh会话，使用pstree命令来获取空闲会话的PID，就是使用 kill 命令来关闭会话了。
 
 \subsection{免密登陆(Login Without Password)}
 
