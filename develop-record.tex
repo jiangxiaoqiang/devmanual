@@ -4107,6 +4107,33 @@ sudo apt install fcitx-googlepinyin
 
 安装好后需要重新登入系统，添加输入法配置时才可以选择Google输入法。
 
+\subsection{Ubuntu无法上网}
+
+通过ping IP地址可以ping通外网,但是直接ping域名无法ping通,提示Unkown host www.baidu.com,证明网络没有问题,DNS解析有问题:
+
+\begin{lstlisting}[language=Bash]
+ping 119.75.217.109
+\end{lstlisting}
+
+调整DNS,在Ubuntu 16.04 LTS下,新建文件/run/resolvconf/resolv.conf(因为etc目录下的resolv.conf文件是链接到此文件的),在文件中添加dns配置:
+
+\begin{lstlisting}[language=Bash]
+# dns配置,多个配置写多行
+nameserver 114.114.114.114
+\end{lstlisting}
+
+添加配置后,dns解析就生效了,直接ping域名也可以.配置网络常用命令:
+
+\begin{lstlisting}[language=Bash]
+# 查看外网设备
+nmcli dev show
+# 重启网络
+sudo systemctl restart NetworkManager.service
+# 重启网络,使修改生效
+sudo /etc/init.d/networking restart
+\end{lstlisting}
+
+
 \newpage
 ~\vfil 
 
