@@ -3129,6 +3129,16 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 
 Linux中, 命令主要包含4种: 可执行程序(executable program),Shell的内置命令(built-in), shell函数(function), alias命令(别名).一般情况下，type命令被用于判断另外一个命令是否是内置命令，内建命令和外部命令的区别在于前者不需要使用子进程来执行。它们已经和Shell编译成了一体，作为Shell工具的组成部分存在。不需要借助外部程序文件来运行。外部命令，是存在于Bash Shell之外的程序，不是Shell程序的一部分。通常位于/bin, /usr/bin, /sbin, /usr/sbin中。
 
+\begin{lstlisting}[language=Bash]
+#启动terminal-emulator
+x-terminal-emulator
+#启动GNOME终端
+gnome-terminal
+#启动Xfce终端
+xfce4-terminal
+\end{lstlisting}
+
+
 \subsection{Shell四种模式}
 
 interactive login shell\footnote{ssh(Secure Shell)连接远程主机执行脚本的环境变量问题
@@ -3621,7 +3631,7 @@ Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一
 tar -czvf mybatisDemo.tar.gz mybatisDemo
 \end{lstlisting}
 
-解压tar.xz压缩文件，先 xz -d xxx.tar.xz 将 xxx.tar.xz解压成 xxx.tar 然后，再用 tar xvf xxx.tar来解包。
+解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。
 
 
 \begin{lstlisting}[language=Bash]
@@ -3948,6 +3958,21 @@ shopt -s histappend
 	\end{center}
 \end{table}
 
+\subsubsection{设置环境变量}
+
+设置Node的环境变量,在etc目录下的profile文件中:
+
+\begin{lstlisting}[language=Bash]
+export NODE_HOME=/opt/node-v8.9.4-linux-x64
+export PATH=$PATH:$NODE_HOME/bin
+export NODE_PATH=$NODE_HOME/lib/node_modules
+#使环境变量设置生效
+source /etc/profile
+#验证profile的node设置生效
+node -v
+\end{lstlisting}
+
+
 \subsubsection{screen}
 
 GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
@@ -4012,9 +4037,33 @@ sudo /etc/init.d/rc.local restart
 
 在Ubuntu 16.04中使用Google Chrome时,浏览器经常闪动,出现异常图形,关闭Google Chrome硬件加速(硬件加速是指在计算机中通过把计算量非常大的工作分配给专门的硬件来处理以减轻中央处理器的工作量之技术。尤其是在图像处理中这个技术经常被使用。雷神之锤3是第一个必须要求硬件加速的3D游戏。Google Chrome浏览器也设置了“硬件加速”选项，用户可根据需求开启或关闭此功能)即可.在设置->系统中关闭硬件加速\footnote{\url{https://en.wikipedia.org/wiki/Hardware_acceleration}}(Hardware Acceleration).
 
-\subsection{XFCE桌面}
+\subsection{Xfce桌面}
 
-占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。
+占用资源较GNOME ，KDE较少。适合老机器，轻量级桌面。与windows界面环境类似。许多不习惯GNOME 3 ，Unity新桌面的同学，很多选择了XFCE 4.8，包括Linus大神同学。安装Xfce后,需要使用startx启动进入Xfce,执行startx时,实际运行指令:
+
+\begin{lstlisting}[language=Bash]
+xinit /etc/X11/xinit/xinitrc -- /etc/X11/xinit/xserverrc 
+\end{lstlisting}
+
+在Home目录下的用户配置文件.Xsession中定义使用的WM(Windows Manager)，它的优先级高于全局配置文件.显示当前系统安装的窗口管理器:
+
+\begin{lstlisting}[language=Bash]
+update-alternatives --display x-window-manager
+\end{lstlisting}
+
+用以下命令设置默认WM(Windows Manager):
+
+\begin{lstlisting}[language=Bash]
+update-alternatives --config x-window-manager
+\end{lstlisting}
+
+定义默认启动图形界面:
+
+\begin{lstlisting}[language=Bash]
+sudo vi /etc/X11/default-display-manager
+\end{lstlisting}
+
+
 
 \subsection{Fedora访问Windows共享文件夹}
 
@@ -4122,7 +4171,7 @@ ping 119.75.217.109
 nameserver 114.114.114.114
 \end{lstlisting}
 
-添加配置后,dns解析就生效了,直接ping域名也可以.配置网络常用命令:
+添加配置(不需要重启网络)后,dns解析就生效了,直接ping域名也可以.配置网络常用命令:
 
 \begin{lstlisting}[language=Bash]
 # 查看外网设备
@@ -5854,6 +5903,18 @@ chmod 600 ~/.ssh/authorized_keys
 \begin{lstlisting}[language=Bash]
 usekeychain yes
 \end{lstlisting}
+
+有时在Ubuntu下使用ssh也需要输入密码(Enter passphrase for key id\_rsa),此时也可以使用keychain:
+
+\begin{lstlisting}[language=Bash]
+#安装keychain
+sudo apt install keychain
+/usr/bin/keychain ~/.ssh/id_rsa
+\end{lstlisting}
+
+keychain会起一个ssh-agent，后来登录的人通过设置环境变量使用同一个ssh-agent.添加的只是在当前shell下生效,如果需要每次都生效.
+
+
 
 \subsection{ssh连接慢(Connect Slow)}
 
