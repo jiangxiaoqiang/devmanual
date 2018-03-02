@@ -4158,7 +4158,7 @@ sudo apt install fcitx-googlepinyin
 
 \subsection{Ubuntu无法上网}
 
-通过ping IP地址可以ping通外网,但是直接ping域名无法ping通,提示Unkown host www.baidu.com,证明网络没有问题,DNS解析有问题:
+通过ping IP地址可以ping通外网,但是直接ping域名无法ping通,提示Unkown host www.baidu.com,证明网络没有问题,DNS解析有问题.Ubuntu中的DNS解析是通过Dnsmasq服务进行.Dnsmasq 是一个开源的项目，可以在thekelleys上找到最新版本和源码，它能提供DNS 、DHCP、TFTP、PXE 等功能。Dnsmasq 的 DNS 服务工作原理是，当接收到一个 DNS 请求是，Dnsmasq 首先会查找/etc/hosts文件，如果没有查找到，会查询本地 DNS 缓存记录，如果还是未找到对应的记录，则会将请求装发到 /etc/resolv.conf 文件中定义的上游 DNS 服务器中，从而实现对域名的解析。
 
 \begin{lstlisting}[language=Bash]
 ping 119.75.217.109
@@ -7508,7 +7508,9 @@ String encodedURL = URLEncoder.encode(url, "UTF-8");
 
 在项目中报表打印页面非常慢，需要10几秒才能出结果。打开Network，找到所有请求按照时间排列发现耗时最多的一个请求，针对此请求进行优化。在SQL中添加相应的索引可以解决。
 
-\paragraph{大的Javascript脚本}在项目中，发现有的JavaScript脚本特别大，有6MB+之巨，明显是造成性能瓶颈的原因之一，如图\ref{fig:largejavasript}所示。
+\subsection{大的Javascript脚本}
+
+在项目中，发现有的JavaScript脚本特别大，有6MB+之巨，明显是造成性能瓶颈的原因之一，如图\ref{fig:largejavasript}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -7618,11 +7620,11 @@ gzip_disable "MSIE [1-6]\.";
 
 图中，globalInfo请求，压缩之前返回的Json有1.4MB大小，压缩之后只有179KB，压缩之前传输时间在1.5s左右，压缩之后传输时间缩短了三分之二。另外比较大的6MB的Javascript脚本也变成了1.2MB大小。
 
-\paragraph{字体文件加载}
+\subsection{字体文件加载}
 
 發現一個字體文件(fontawesome-webfont.woff2)在Linux下的Chrone中是從磁盤中加載(from disk cache)的，花費了220ms左右。在Windows平臺下的360浏览器中是從内存中加載(from cache)的。diskCache顾名思义，就是将资源缓存到磁盘中，等待下次访问时不需要重新下载资源，而直接从磁盘中获取，它的直接操作对象为CurlCacheManager。它与memoryCache最大的区别在于，当退出进程时，内存中的数据会被清空，而磁盘的数据不会，所以，当下次再进入该进程时，该进程仍可以从diskCache中获得数据，而memoryCache则不行。diskCache与memoryCache相似之处就是也只能存储一些派生类资源文件。它的存储形式为一个index.dat文件，记录存储数据的url，然后再分别存储该url的response信息和content内容。Response信息最大作用就是用于判断服务器上该url的content内容是否被修改。
 
-\paragraph{耗时长的请求}
+\subsection{耗时长的请求}
 
 查看首页中一个耗时最长的请求，一般情况下耗时都稳定在1s左右。如图\ref{fig:longtimerequest}所示。可以看出挂起(stalled)304ms，等待服务端响应581ms，此两项的时间是最长的。Stalled从HTTP连接建立到请求能够被发出送出去(真正传输数据)之间的时间花费。包含用于处理代理的时间，如果有已经建立好的连接，这个时间还包括等待已建立连接被复用的时间。挂起时间长是由于浏览器对同一个主机域名的并发连接数有限制，因此如果当前的连接数已经超过上限，那么其余请求就会被阻塞，等待新的可用连接；此外脚本也会阻塞其他组件的下载。另外在不同的平台上挂起时间时长也不一定，在Windows平台的360浏览器上挂起时长(stalled)仅仅为0.458ms。
 
@@ -7634,6 +7636,11 @@ gzip_disable "MSIE [1-6]\.";
 \end{figure}
 
 针对服务器端耗时长的请求，使用VisualVM查看服务端调用的耗时最长的方法。VisualVM 是一款免费的性能分析工具。它通过 jvmstat、JMX、SA（Serviceability Agent）以及 Attach API 等多种方式从程序运行时获得实时数据，从而进行动态的性能分析。同时，它能自动选择更快更轻量级的技术尽量减少性能分析对应用程序造成的影响，提高性能分析的精度。
+
+\subsection{Stalled时间很长}
+
+页面发送的TCP请求较多,发现后发送的TCP请求Stalled的时间很长.发生Stalled的情况大致如下,一是有高优先级的请求,二是一个源下已经有6个TCP连接,那么后面的必须等待前面的请求完毕后,才能发送,这段时间就是Stalled时间,第三种情况是浏览器在分配空间\footnote{\url{https://developers.google.com/web/tools/chrome-devtools/network-performance/reference\#timing-explanation}}.
+
 
 \subsection{Session}
 
