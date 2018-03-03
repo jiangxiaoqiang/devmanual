@@ -4126,7 +4126,7 @@ madison是一个apt-cache子命令。
 sudo apt-get install cups-pdf -y --fix-missing
 \end{lstlisting}
 
-cups-pdf是Ubuntu下的PDF虚拟打印机。第二步安装ghostscript将生成的ps文件转换为pdf：
+cups-pdf是Ubuntu下的PDF虚拟打印机。第二步安装GhostScript将生成的ps文件转换为pdf：
 
 \begin{lstlisting}[language=Bash]
 # 安装ghostscript包
@@ -4221,7 +4221,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 这样就不会阻断其他用户的正常请求了。
 
-\subsection{Intellij Idea调试慢}
+\subsection{Intellij Idea启动慢}
 
 在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
 
@@ -4234,7 +4234,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 sudo find / -name "idea.sh"
 \end{lstlisting}
 
-找到安装目录后直接删除目录即可。重装后调试即可看到相应的变量，如图\ref{fig:probescalavariable}所示。
+在Linux下卸载Intellij Idea找到安装目录后直接删除目录即可。重装Intellij Idea后调试时进入断点即可看到相应的变量，如图\ref{fig:probescalavariable}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -4282,7 +4282,7 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 		\caption{Intellj Idea快捷键}
 		\bigskip
 		\label{table:intellijideashortkeys}
-		\begin{tabular}{cp{6cm}c}
+		\begin{tabular}{cp{8cm}c}
 			\hline
 			\multirow{1}{*}{快捷键}
 			& \multicolumn{1}{c}{作用}  \\
@@ -4349,7 +4349,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \paragraph{智能提示}
 
-在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启intellij idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己的是属于勾选了省电模式。
+在使用Intellij Idea的过程中，有时总是不出现智能提示，不出现智能提示大致分为3种情况。其一是勾选了省电模式，在省电模式下没有智能提示。第二是缓存问题，解决办法删除缓存 file -> invalidate caches，根据提示重启Intellij Idea。 情况三 配色问题。解决方法是，切换到其他配色，比如内置配色darchla。自己遇到的情况是属于勾选了省电模式。
 
 \paragraph{Template}
 
@@ -4398,21 +4398,6 @@ def f = $/美刀反斜杠形式
 \end{lstlisting}
 
 建议使用'和"这两种形式。单引号''中的内容严格对应Java中的String，不对\$符号进行转义。双引号""的内容则和脚本语言的处理有点像，如果字符中有\$号的话，则它会\$表达式先求值。三个引号'''xxx'''中的字符串支持随意换行。
-
-\subsection{初始化项目(Init Project)}
-
-输入如下命令来初始化一个项目：
-
-\begin{lstlisting}[language=Java]
-gradle init
-\end{lstlisting}
-
-运行命令后，会在项目中新建gradlew/gradlew.bat/settings.gradle/build.gradle文件。
-
-\subsection{Gradle Wrapper}
-
-每一个Wrapper都会绑定到一个特定版本的Gradle，当用户第一次执行上面的命令时，Wrapper会自动地下载并安装对应版本的Gradle。这就带来两个好处：
-用户不必自己下载、安装、配置Gradle,用户进行项目构建时能够确保使用正确的Gradle版本.
 
 \subsection{引用本地文件}
 
@@ -4521,7 +4506,7 @@ repositories {
 }
 \end{lstlisting}
 
-总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。JCenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，bintray是一家提供全球企业软件开发包托管的商业公司。
+总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。JCenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，Bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{常见问题}
 
@@ -4543,7 +4528,7 @@ ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew copyTask -x test
 ${PROGRAM_DEVELOP_PATH_BACKEND}/gradlew -p ${PROGRAM_DEVELOP_PATH_BACKEND} copyTask -x test
 \end{lstlisting}
 
-p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图所示。
+p参数指定项目的路径。在不同目录下面执行gradle tasks命令，可以看到不同的任务，当在/project/script/deploy目录下执行gradle tasks命令时，是看不到copyTask命令的，但是在项目的根目录下执行是可以看到copyTasks任务，如图\ref{fig:copyTasks}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -4586,9 +4571,7 @@ if (isSnapshot) {
 
 \begin{lstlisting}[language=Java]
 project(":web"){
-
 	description = "web"
-	
 	jar{
 		baseName = "dolphin-web"
 	}
