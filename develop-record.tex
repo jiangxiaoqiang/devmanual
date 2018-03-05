@@ -1976,6 +1976,21 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 
 \newpage
 
+\section{FreeMaker模板引擎}
+
+FreeMarker 是一个模板引擎，一个基于模板生成文本输出的通用工具，使用纯Java编写。FreeMarker被设计用来生成HTML Web页面，特别是基于MVC模式的应用程序。虽然FreeMarker具有一些编程的能力，但通常由Java程序准备要显示的数据，由FreeMarker生成页面，通过模板显示准备的数据 。
+
+\subsection{常用写法}
+
+获取List的索引:
+
+\begin{lstlisting}[language=HTML]
+<#list toplist as toplists>
+	${toplists_index}
+</#list>
+\end{lstlisting}
+
+
 \chapter{Scala}
 
 截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。
@@ -3629,6 +3644,8 @@ Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一
 \begin{lstlisting}[language=Bash]
 #打包
 tar -czvf mybatisDemo.tar.gz mybatisDemo
+# dist.tar.gz打包的目标文件,dist为要打包的目录
+tar zcf dist.tar.gz dist
 \end{lstlisting}
 
 解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。
@@ -7395,7 +7412,23 @@ delete from dolphin where rowid not in
 ) 
 \end{lstlisting}
 
-拼接列：
+查看被锁对象:
+
+\begin{lstlisting}[language=SQL]
+--查看被锁表
+select c.sess_id,a.trx_id,b.name
+from v$lock a,sysobjects b,v$sessions c
+where a.table_id=b.id
+and a.trx_id=c.trx_id
+and b.name!='SYSOBJECTS'
+\end{lstlisting}
+
+结束死锁:
+
+\begin{lstlisting}[language=SQL]
+--结束死锁
+sp_close_session(140326983703408)
+\end{lstlisting}
 
 
 \section{通用知识}
