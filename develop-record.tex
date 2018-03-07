@@ -2078,6 +2078,16 @@ Its the repository cache thats causing the issue. There are possibilities where 
 nohup ./bin/ig-file &
 \end{lstlisting}
 
+\subsection{Scala反编译(Scala Decompile)}
+
+项目中某一个特性出现错误,请求服务端时提示404错误,推测可能是请求的Url对应的类没有编译到目标部署文件中.由于项目是用基于JVM规范的Scala编写的(可以较容易的逆向),使用JD-GUI工具反编译出来的效果不是很理想.采用手动解压对应的jar包,找到对应的目标class文件,使用scalap命令来反编译对应的class文件.
+
+\begin{lstlisting}[language=Bash]
+#注意class文件参数不要带class后缀
+scalap BackupRouteFunc
+scalap BackupRouteFunc >> BackupRouteFunc.scala
+\end{lstlisting}
+
 
 \chapter{Python}
 
@@ -7062,6 +7072,7 @@ sudo pip2 install pgadmin4-2.1-py2.py3-none-any.whl
 cd /usr/local/lib/python2.7/dist-packages/pgadmin4
 #启动pgAdmin4
 #初次启动需要设置用户名密码
+#暂时设置用户名为jiangtingqiang@gmail.com
 sudo python pgAdmin4.py
 \end{lstlisting}
 
