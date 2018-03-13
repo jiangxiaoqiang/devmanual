@@ -1993,7 +1993,32 @@ FreeMarker 是一个模板引擎，一个基于模板生成文本输出的通用
 
 \chapter{Scala}
 
-截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。
+截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。启动脚本:
+
+
+\begin{lstlisting}[language=Bash]
+/opt/haishu/local/java/bin/java -Dconfig.file=/opt/haishu/app/ig-file-1.0.0/bin/../conf/application.conf -Dpidfile.path=/opt/haishu/app/ig-file-1.0.0/bin/../run/ig-file.pid -Dlogback.configurationFile=/opt/haishu/app/ig-file-1.0.0/bin/../conf/logback.xml -cp /opt/haishu/app/ig-file-1.0.0/lib/* intelligence.fileserver.boot.FileBoot -Xms2G -Xmx4G
+\end{lstlisting}
+
+cp是classpath的缩写,指定classpath的路径,后面接上启动类的全路径intelligence.fileserver.boot.FileBoot,启动脚本包含远程调试:
+
+\begin{lstlisting}[language=Bash]
+/opt/haishu/local/java/bin/java -Dconfig.file=/opt/haishu/app/ig-file-1.0.0/bin/../conf/application.conf -Dpidfile.path=/opt/haishu/app/ig-file-1.0.0/bin/../run/ig-file.pid -Dlogback.configurationFile=/opt/haishu/app/ig-file-1.0.0/bin/../conf/logback.xml -cp /opt/haishu/app/ig-file-1.0.0/lib/* intelligence.fileserver.boot.FileBoot -Xms2G -Xmx4G -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5006
+
+/opt/haishu/local/java/bin/java -cp * intelligence.fileserver.boot.FileBoot
+\end{lstlisting}
+
+
+常见cp方式启动命令:
+
+\begin{lstlisting}[language=Bash]
+#注意cp后的命令要加双引号
+/opt/haishu/local/java/bin/java -Dconfig.file=/opt/haishu/app/ig-file-1.0.0/bin/../conf/application.conf -Dpidfile.path=/opt/haishu/app/ig-file-1.0.0/bin/../run/ig-file.pid -Dlogback.configurationFile=/opt/haishu/app/ig-file-1.0.0/bin/../conf/logback.xml -cp "/opt/haishu/app/ig-file-1.0.0/lib/*" intelligence.fileserver.boot.FileBoot -Xms2G -Xmx4G -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5006
+
+/opt/haishu/local/java/bin/java -cp * intelligence.fileserver.boot.FileBoot
+\end{lstlisting}
+
+
 
 \section{函数(Function)}
 
@@ -4035,11 +4060,11 @@ uname －a
 
 \begin{lstlisting}[language=Bash]
 # 关闭网卡
-sudo /sbin/ifconfig enx000ec6c8c162 down
+sudo /sbin/ifconfig enx000ec6c8c163 down
 # 修改地址
-sudo /sbin/ifconfig enx000ec6c8c162 hw ether 4C:CC:6A:7C:C3:CF
+sudo /sbin/ifconfig enx000ec6c8c163 hw ether 4C:CC:6A:7C:C3:CF
 # 启动网卡
-sudo /sbin/ifconfig enx000ec6c8c162 up
+sudo /sbin/ifconfig enx000ec6c8c163 up
 # 重启网络
 sudo service network-manager restart
 \end{lstlisting}
@@ -5419,7 +5444,18 @@ http://localhost:28080/api/redBlack/page/feedBack/commitFeedback
 --data-binary @example.json | jq '.'
 \end{lstlisting}
 
+网站数据发布:
 
+\begin{lstlisting}[language=Bash]
+curl -X POST -H "Content-Type: application/json;charset=UTF-8" \
+-H "appid:xycq2017" \
+-H "TIMESTAMP:2018-53-11 03:03:48" \
+-H "ECHOSTR:abcde" \
+-H "TOKEN:db73e5164cde829aae38eff85823678d92f6e1ba" \
+-H "Accept: application/json, text/plain" \
+http://59.214.215.6:8081/html/plat/info/save_for_push.html \
+--data-binary @article.json | jq '.'
+\end{lstlisting}
 
 
 \subsection{iostat}
@@ -6745,7 +6781,7 @@ SpringBoot支持很多种缓存方式：redis、guava、ehcahe、jcache等等。
 
 \begin{lstlisting}[language=XML]
 <ehcache>
-<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
+	<cache name="summaryXzxk" maxBytesLocalHeap="1m" timeToLiveSeconds="200"/>
 </ehcache>
 \end{lstlisting}
 
@@ -7066,7 +7102,7 @@ PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，sele
 下载安装包后,运行命令:
 
 \begin{lstlisting}[language=Bash]
-#安装pg
+#安装PostgreSQL
 sudo pip2 install pgadmin4-2.1-py2.py3-none-any.whl
 #切换到安装目录5a5c7c70290000e927486750
 cd /usr/local/lib/python2.7/dist-packages/pgadmin4
