@@ -3741,10 +3741,12 @@ grep 命令也可以只在指定文件中进行搜索。比如，我们可以只
 grep -Ril bash /etc/*.conf
 # 使用 --exclude 来排除特定的文件
 grep -Ril --exclude=\*.conf bash /etc/*
-#grep 也能在搜索时排除指定目录。 使用 --exclude-dir 选项就行。
+#grep 也能在搜索时排除指定目录
+#使用 --exclude-dir 选项就行。
 grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
 \end{lstlisting}
 
+如果需要同时排除多个文件夹，命令后跟多个--exclude-dir命令即可。
 
 \paragraph{sed(Stream Editor)}
 
@@ -4085,9 +4087,17 @@ sudo /etc/init.d/rc.local restart
 
 
 
-\section{常用设置(Settings)}
+\section{常见操作}
 
 在Ubuntu 16.04中使用Google Chrome时,浏览器经常闪动,出现异常图形,关闭Google Chrome硬件加速(硬件加速是指在计算机中通过把计算量非常大的工作分配给专门的硬件来处理以减轻中央处理器的工作量之技术。尤其是在图像处理中这个技术经常被使用。雷神之锤3是第一个必须要求硬件加速的3D游戏。Google Chrome浏览器也设置了“硬件加速”选项，用户可根据需求开启或关闭此功能)即可.在设置->系统中关闭硬件加速\footnote{\url{https://en.wikipedia.org/wiki/Hardware_acceleration}}(Hardware Acceleration).
+
+\subsection{Linux进程}
+
+查看程序的目录，需要找到进程的PID,进入到PID对应的目录，使用ll命令,exe文件对应的链接即为包含了正在进程中运行的程序链接。
+
+
+
+
 
 \subsection{Xfce桌面}
 
