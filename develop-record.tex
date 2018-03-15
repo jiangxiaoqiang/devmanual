@@ -3358,12 +3358,12 @@ cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 
 \paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
-\paragraph{读取配置文件}
+\paragraph{读取配置文件(Read Config File)}
 
 在编写自动化部署脚本时，需要通过shell脚本读取配置文件version.properties中的版本号，直接使用source命令即可：
 
 \begin{lstlisting}[language=Bash]
-# version.properties文件中直接写VERSION\_CODE=1.0.2即可
+# properties文件中直接写VERSION\_CODE=1.0.2即可
 source /Users/dolphin/source/credit-system/gradle/version.properties
 # 输出1.0.2
 echo $VERSION_CODE
