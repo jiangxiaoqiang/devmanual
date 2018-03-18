@@ -2279,6 +2279,20 @@ sudo pip install mysql-python
 
 \chapter{前端(Front End)}
 
+
+查看yarn使用的源:
+
+
+\begin{lstlisting}[language=Bash]
+//查看下载源
+yarn config get registry
+//更换为淘宝源
+yarn config set registry https://registry.npm.taobao.org
+\end{lstlisting}
+
+
+
+
 \section{React}
 
 只有动画或视频达到60fps，人眼才不会感觉卡顿。
@@ -4070,9 +4084,19 @@ screen -r 12865
 
 \subsubsection{查看Linux信息}
 
+uname命令用于打印当前系统相关信息（内核版本号、硬件架构、主机名称和操作系统类型等）。
+
 \begin{lstlisting}[language=Bash]
 # Linux查看版本当前操作系统内核信息
 uname －a 
+\end{lstlisting}
+
+Linux里的lsb\_release命令用来查看当前系统的发行版信 息（prints certain LSB (Linux Standard Base) and Distribution information）。有了这个命令就可以清楚的知道到底是RedHat的、还是别的发行版，还有具体的版本号.
+
+\begin{lstlisting}[language=Bash]
+# Linux查看版本当前操作系统内核信息
+lsb_release -a
+cat /etc/centos-release
 \end{lstlisting}
 
 \subsection{修改Mac地址}
@@ -4728,144 +4752,7 @@ OWASP消息体太长默认无法显示，可在Option/Display下调整消息体�
 
 
 
-\chapter{OpenVPN}
 
-OpenVPN从2001年开始开发，使用的是C语言。此处使用的OpenVPN版本是2.4.1。如果使用Mac下的brew工具安装，则OpenVPN目录在：/usr/local/Cellar/openvpn/2.4.1，OpenVPN的配置文件在：/usr/local/etc/openvpn。目前OpenVPN能在Solaris、Linux、OpenBSD、FreeBSD、NetBSD、Mac OS X与Microsoft Windows以及Android和iOS上运行，并包含了许多安全性的功能。此处的服务器使用的是CentOS 7.3，客户端包含Fedora 24、Ubuntu 14.04、Ubuntu 16.04、Window 7、Windows 10。在OpenVPN网络中查看存活的主机：
-
-\begin{lstlisting}[language=bash]
-nmap -A -T4 10.0.0.*
-\end{lstlisting}
-
-\subsection{安装}
-
-安装基础包：
-
-\begin{lstlisting}[language=bash]
-sudo yum -y install openssl openssl-devel lzo openvpn easy-rsa --allowerasing
-#手动安装
-wget -c https://swupdate.openvpn.org/community/releases/openvpn-2.4.1.tar.gz
-tar -zxvf openvpn-2.4.1.tar.gz
-./configure
-make && make install
-\end{lstlisting}
-
-LZO 是致力于解压速度的一种数据压缩算法，LZO 是 Lempel-Ziv-Oberhumer 的缩写。这个算法是无损算法，参考实现程序是线程安全的。 实现它的一个自由软件工具是lzop。最初的库是用 ANSI C 编写、并且遵从 GNU通用公共许可证发布的。现在 LZO 有用于 Perl、Python 以及 Java 的各种版本。代码版权的所有者是 Markus F. X. J. Oberhumer。
-
-\subsection{生成客户端证书}
-
-生成客户端证书端步骤如下：
-
-\begin{lstlisting}[language=Bash]
-#建立一个空的pki结构，生成一系列的文件和目录
-./easyrsa init-pki
-\end{lstlisting}
-
-PKI：Public Key Infrastructure公钥基础设施。生成请求：
-
-\begin{lstlisting}[language=Bash]
-./easyrsa gen-req dolphinfedora
-\end{lstlisting}
-
-输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码。
-Apache和*NIX服务器偏向于使用这种编码格式.签约：
-
-\begin{lstlisting}[language=Bash]
-#切换到服务端生成rsa的目录
-#导入req
-./easyrsa import-req ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/reqs/dolphinfedora.req dolphinfedora
-#用户签约，根据提示输入服务端的ca密码
-./easyrsa sign client dolphinfedora
-\end{lstlisting}
-
-PKI：Public Key Infrastructure公钥基础设施。输入PEM验证码。PEM - Privacy Enhanced Mail,打开看文本格式,以"-----BEGIN..."开头, "-----END..."结尾,内容是BASE64编码.查看PEM格式证书的信息:openssl x509 -in certificate.pem -text -noout。Apache和*NIX服务器偏向于使用这种编码格式.服务端生成的文件有：
-
-\begin{tabular}{|c|p{5cm}|c|}
-	\hline
-	\multirow{1}{*}{文件名称}
-	& \multicolumn{1}{c|}{说明(Purpose)} 
-	& \multicolumn{1}{c|}{位置} \\			
-	\cline{1-3}
-	ca.crt  & 根证书(Root CA certificate)件 & Server+All Clients	\\
-	\hline
-	reqs/server.req  & &\\
-	\hline
-	reqs/dolphin.req  & &\\
-	\hline
-	private/ca.key & 根证书私钥(Root CA key) & key signing machine only\\
-	\hline
-	private/server.key && \\
-	\hline
-	issued/server.crt & 服务器证书Server Certificate & server only\\
-	\hline
-	issued/dolphin.crt && \\
-	\hline
-	dh.pem & Diffie Hellman parameters & server only \\
-	\hline
-\end{tabular}
-
-客户端生成的文件有：
-
-\begin{tabular}{|c|p{8cm}|c|}
-	\hline
-	\multirow{1}{*}{序号}
-	& \multicolumn{1}{c|}{名称}  \\			
-	\cline{1-2}
-	private/dolphinclient.key  & \\
-	\hline
-	reqs/sdolphinclient.req & \\
-	\hline
-\end{tabular}
-
-拷贝出客户端证书文件：
-
-\begin{lstlisting}[language=Bash]
-cp easyrsa/easy-rsa-master/easyrsa3/pki/ca.crt ~/dolphinfedora/
-cp easyrsa/easy-rsa-master/easyrsa3/pki/issued/dolphinfedora.crt ~/dolphinfedora/
-cp ~/client/easyrsa/easy-rsa-master/easyrsa3/pki/private/dolphinfedora.key ~/dolphinfedora/
-\end{lstlisting}
-
-
-启动OpenVPN：
-
-\begin{lstlisting}[language=Bash]
-sudo openvpn server.conf
-# Mac下启动OpenVPN
-sudo /usr/local/Cellar/openvpn/2.4.1/sbin/openvpn /usr/local/etc/openvpn/client.conf
-# 需要以后台交互方式启动时
-screen sudo openvpn client.conf
-\end{lstlisting}
-
-客户端端配置如下：
-
-\begin{lstlisting}[language=Bash]
-client         #指定当前VPN是客户端
-dev tun        #必须与服务器端的保持一致
-proto udp      #必须与服务器端的保持一致
-#指定连接的远程服务器的实际IP地址和端口号
-remote 192.168.1.106 1194      
-#断线自动重新连接
-#在网络不稳定的情况下(例如：笔记本电脑无线网络)非常有用
-resolv-retry infinite
-nobind         #不绑定特定的本地端口号
-persist-key
-persist-tun
-ca ca.crt      #指定CA证书的文件路径
-cert client1.crt       #指定当前客户端的证书文件路径
-key client1.key    #指定当前客户端的私钥文件路径
-ns-cert-type server      #指定采用服务器校验方式
-#如果服务器设置了防御DoS等攻击的ta.key
-#则必须每个客户端开启；如果未设置，则注释掉这一行；
-tls-auth ta.key 1     
-comp-lzo              #与服务器保持一致
-#指定日志文件的记录详细级别，可选0-9，等级越高日志内容越详细
-verb 3                
-\end{lstlisting}
-
-配置ns-cert-type(Netscape Cert Type)指定为server主要是防止中间人攻击(Man-in-the-Middle Attack)。在服务端做如下配置：
-
-\begin{lstlisting}[language=Bash]
-nsCertType server
-\end{lstlisting}
 
 \subsection{Mac Book客户端配置}
 
@@ -5249,27 +5136,6 @@ http and ip.addr == 192.168.1.106 and tcp.port == 8080
 (注：m和n 为数字，若m为 .，表示为当前行开始；若n为\$，则表示到最后一行结束) u
 
 \section{Little Tool}
-
-\subsection{科学上网}
-
-Shadowsocks客户端操作:
-
-\begin{lstlisting}[language=Bash]
-sudo apt-get install python-pip
-sudo apt-get install python-setuptools m2crypto
-#安装Shadowsocks(Ubuntu/Fedora)
-pip install shadowsocks
-#前台启动
-#可以看到实时的日志输出
-#关闭终端后代理断开
-sslocal -c /etc/shadowsocks/shadowsocks.json
-#后台启动
-sslocal -c /etc/shadowsocks/shadowsocks.json -d start
-\end{lstlisting}
-
-
-
-
 
 \subsection{SQuirreL SQL Client}
 
