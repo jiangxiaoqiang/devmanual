@@ -1012,6 +1012,18 @@ String.valueOf中如果对象为空，就返回字符串的"null"，注意不是
 
 CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算，然后再进行加密.
 
+
+\subsection{Java版本}
+
+项目部署的时候，发现部署一个文件后与之相关的模块都无法访问了，只添加了方法。由于是接受接手项目，推测是Java版本的问题。将服务端的class文件拷贝到本地，用命令查看编译的Java版本：
+
+\begin{lstlisting}[language=Bash]
+javap -verbose NoticeController.class
+\end{lstlisting}
+
+显示版本号为51，说明是JDK1.7，而本地的是52，是JDK1.8。
+
+
 \section{应用接口(Application Interface)}
 
 \subsection{接口文档(Interface Document)}
