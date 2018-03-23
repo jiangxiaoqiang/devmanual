@@ -4301,6 +4301,16 @@ sudo /etc/init.d/networking restart
 
 \newpage
 
+\chapter{Eclipse}
+
+\section{配置(Configuration)}
+
+\subsection{eclipse.ini}
+
+eclipse.ini是一个文本文件，其内容相当于在Eclipse运行时添加到 Eclipse.exe之后的命令行参数。所有在-vmargs之后的参数将会被传输给JVM，所有如果所有对Eclipse 设置的参数必须写在-vmargs之前.-vm选项的格式有严格的要求：1：-vm选项和它的值（路径）必须在单独的一行.2：其值必须严格地指向Java可执行文件，而不仅仅只是Java home目录。
+3：-vm选项必须在-vmargs选项之前，之前已经说过，所有在-vmargs之后的选项将会直接被传递给JVM.eclipse -clean，有时插件显示不出来是因为Eclipse将插件进行了缓存以加速启动过程，若指定此参数则会清空缓存，从头加载.
+
+
 \chapter{Intellij Idea}
 
 第一次配置JDK在Configure->Project Defaults->Project Structure设置里。Mac OS X的路径一般如下：
