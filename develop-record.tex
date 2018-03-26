@@ -1648,6 +1648,15 @@ public class BookControllerTest {
 
 \section{常见问题(Frequently Encounted Question)}
 
+\paragraph{Unable to set localhost. This prevents creation of a GUID}
+
+项目启动时报错,Unable to set localhost. This prevents creation of a GUID. Cause was: cldap: cldap: Temporary failure in name resolution java.net.UnknownHostException: cldap: cldap: Temporary failure in name resolution.是由于服务器修改了主机名称的缘故,在hosts文件中添加新主机名即可:
+
+\begin{lstlisting}[language=Bash]
+127.0.0.1 cldap localhost
+\end{lstlisting}
+
+
 \paragraph{getAttribute: Session already invalidated}
 
 当用户多次登录后，由于服务端缓存了所有的Session，在取出Session进行对比的时候，会出现此错误，此错误指示从Session中获取属性值的时候，Session已经无效。有两种可能导致Session无效：session timeout或者程序中调用了session.invalidate()方法。检查代码发现，在移除Session时的确使用了：
@@ -3175,7 +3184,7 @@ state[0] = bookReducer;
 
 \chapter{Linux}\index{Linux}
 
-在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装TexStudio修复此问题.
+127.0.0.1表示ipv4的本地地址,而::1表示的时ipv6的本地地址，也就是0000:0000:0000:0000:0000:0000:0000:0001.在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装TexStudio修复此问题.
 
 \begin{lstlisting}[language=Bash]
 #列出已经安装软件
@@ -3616,6 +3625,26 @@ which命令用于查找并显示给定命令的绝对路径，环境变量PATH�
 which scala
 \end{lstlisting}
 
+\paragraph{dd}
+
+dd命令可用于刻录系统盘,找到待刻录盘的盘符:
+
+\begin{lstlisting}[language=Bash]
+df -h
+\end{lstlisting}
+
+卸载盘:
+
+\begin{lstlisting}[language=Bash]
+umount /dev/sdb4
+\end{lstlisting}
+
+刻录:
+
+\begin{lstlisting}[language=Bash]
+sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
+\end{lstlisting}
+
 
 \paragraph{ls(list)}
 
@@ -3957,8 +3986,8 @@ date
 date 032611582018.46
 #同步到硬件
 #Set the Hardware Clock to the current System Time
-# System time sync to hardware
 hwclock -w
+# System time sync to hardware
 hwclock --systohc
 \end{lstlisting}
 
