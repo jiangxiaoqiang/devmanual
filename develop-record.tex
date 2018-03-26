@@ -3947,6 +3947,24 @@ sudo mount -t vfat /dev/sdb1 /media/hldev/udisk/
 sudo umount /media/hldev/KINGSTON
 \end{lstlisting}
 
+\paragraph{时间(Time)}
+
+有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是linux系统Kernel时间。手动设置时间命令如下:
+
+\begin{lstlisting}[language=Bash]
+#查看系统当前时间
+date
+#设置软件时间
+#设置软件时间为2018年3月26日11点58分46秒
+#月 日 时 分 年. 秒
+date 032611582018.46
+#同步到硬件
+#Set the Hardware Clock to the current System Time
+# System time sync to hardware
+hwclock -w
+hwclock --systohc
+\end{lstlisting}
+
 
 \subsection{tmux}
 
@@ -5451,8 +5469,9 @@ proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个�
 以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
 
 \begin{lstlisting}[language=bash]
-./nginx -c /opt/app/local/tengine/conf/nginx.conf
-# 启动Nginx(正式环境)
+#启动Nginx(测试环境)
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+#启动Nginx(正式环境)
 /home/app/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
 \end{lstlisting}
 
