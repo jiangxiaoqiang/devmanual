@@ -3653,6 +3653,10 @@ umount /dev/sdb4
 sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
 \end{lstlisting}
 
+\paragraph{nohup(No hang up)}
+
+在 Unix 的早期版本中，每个终端都会通过 modem 和系统通讯。当用户 logout 时，modem 就会挂断（hang up）电话。 同理，当 modem 断开连接时，就会给终端发送 hangup 信号来通知其关闭所有子进程。
+
 
 \paragraph{ls(list)}
 
@@ -3994,8 +3998,8 @@ date
 date 032611582018.46
 #同步到硬件
 #Set the Hardware Clock to the current System Time
-hwclock -w
 # System time sync to hardware
+hwclock -w
 hwclock --systohc
 \end{lstlisting}
 
