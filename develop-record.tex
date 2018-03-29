@@ -3625,6 +3625,14 @@ which命令用于查找并显示给定命令的绝对路径，环境变量PATH�
 which scala
 \end{lstlisting}
 
+根据名称结束进程:
+
+\begin{lstlisting}[language=Bash]
+ps -ef|grep -w 'dolphin-web'|grep -v grep|cut -c 9-15|xargs kill 9
+\end{lstlisting}
+
+
+
 \paragraph{dd}
 
 dd命令可用于刻录系统盘,找到待刻录盘的盘符:
