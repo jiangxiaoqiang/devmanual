@@ -7216,7 +7216,16 @@ sp_set_para_value(1,'SVR_LOG',0);
 sp_set_para_value(2,'BATCH_PARAM_OPT',1);
 \end{lstlisting}
 
-在日志(/opt/dmdbms/log/log\_commit\_01.log)中，可以看到DB执行的SQL以及绑定的参数，参数类型(与是否利用索引有关)。查看达梦版本：
+在日志(/opt/dmdbms/log/log\_commit\_01.log)中，可以看到DB执行的SQL以及绑定的参数，参数类型(与是否利用索引有关)。有时需要查看数据库的参数,可以查看达梦的参数表:
+
+\begin{lstlisting}[language=SQL]
+--关闭批量参数优化
+select *
+from v$parameter;
+\end{lstlisting}
+
+
+查看达梦版本：
 
 \begin{lstlisting}[language=SQL]
 --开启日志
