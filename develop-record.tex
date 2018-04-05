@@ -26,14 +26,26 @@
 \usepackage[utf8]{inputenc}
 {\renewcommand{\bibname}{References}}
 \usepackage[backend=bibtex,style=numeric]{biblatex}
-
 \defbibheading{bibempty}{}
-
 \usepackage{calc} % 简单的计算功能
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
 \usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+
+\makeatletter
+\def\UrlAlphabet{%
+	\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+	\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+	\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+	\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+	\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+	\do\Y\do\Z}
+\def\UrlDigits{\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\0}
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\g@addto@macro{\UrlBreaks}{\UrlAlphabet}
+\g@addto@macro{\UrlBreaks}{\UrlDigits}
+\makeatother
 
 
 %When compile under liunx% 
@@ -4195,6 +4207,38 @@ lsb_release -a
 cat /etc/centos-release
 \end{lstlisting}
 
+\subsubsection{修复DNS需要手动指定问题}
+
+计算机无法自动解析DNS,每次开机都要手动设置DNS解析服务器:
+
+\begin{lstlisting}[language=Bash]
+#建立resolvconf文件夹
+sudo mkdir /run/resolvconf
+#建立resolv.conf文件
+sudo touch /run/resolvconf/resolv.conf
+\end{lstlisting}
+
+在resolv.conf中指定DNS解析服务器.修复此问题,可做如下操作\footnote{\url{https://askubuntu.com/questions/812714/run-resolvconf-resolv-conf-gets-erased-each-time-i-restart-and-i-cant-use-int}},首先重新安装resolvconf包:
+
+\begin{lstlisting}[language=Bash]
+sudo apt-get -o Dpkg::Options::="--force-confmiss" install --reinstall resolvconf
+\end{lstlisting}
+
+向/etc/resolvconf/resolv.conf.d/base文件中加入DNS域名解析服务器:
+
+\begin{lstlisting}[language=Bash]
+sudo bash -c 'echo "nameserver 8.8.8.8" >> /etc/resolvconf/resolv.conf.d/base'
+sudo bash -c 'echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base'
+\end{lstlisting}
+
+重新生成resolv.conf文件:
+
+\begin{lstlisting}[language=Bash]
+sudo resolvconf -u
+\end{lstlisting}
+
+重新启动网络,或者重启计算机DNS设置不会丢失,不需要手动指定DNS解析服务器.
+
 \subsection{修改Mac地址}
 
 在某些网络环境中,会通过限制Mac地址与IP绑定来保障只允许指定的机器连接.此时修改Mac地址可以暂时绕过限制,Ubuntu下临时修改Mac地址,可以编辑/etc/network/interfaces文件,也可以使用如下的命令临时修改Mac地址:
@@ -6169,7 +6213,23 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04LTS下无效。
 
-\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。
+\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。在Url无法正确换行时,hyperref宏包提供了两个宏，\textbackslash UrlBreaks 以及\textbackslash UrlBigBreaks，用于告知 TeX，用户允许在何处截断 URL 以便换行。添加如下代码,Url即可换行:
+
+\begin{lstlisting}[language=Tex]
+\makeatletter
+\def\UrlAlphabet{%
+\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j%
+\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t%
+\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D%
+\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N%
+\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X%
+\do\Y\do\Z}
+\def\UrlDigits{\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\0}
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\g@addto@macro{\UrlBreaks}{\UrlAlphabet}
+\g@addto@macro{\UrlBreaks}{\UrlDigits}
+\makeatother
+\end{lstlisting}
 
 \subsection{文献引用(Bibliography Reference)}
 
