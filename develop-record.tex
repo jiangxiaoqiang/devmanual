@@ -1976,6 +1976,34 @@ org.apache.ibatis.builder.IncompleteElementException: Could not find result map 
 
 出现这个错误的原因是在resultMap里面指定的是RedBalckLog(大写)，而Mapper中定义的是redBalckLog(小写)。这里resultMap指定的Bean需要和Mapper文件中定义的Bean的id一致。
 
+\subsection{MyBatis XML空判断}
+
+MyBatis的XML文件在写空判断时,需要注意一点细节:
+
+
+\begin{lstlisting}[language=XML]
+<select id="findList" parameterType="Pageable" resultMap="Corporation">
+	SELECT *
+	FROM CORPORATION
+	<trim prefix="WHERE" prefixOverrides="AND|OR">
+		<!--企业名称要做''判断,否则无法利用索引-->
+		<if test="params.qymc != null and params.qymc != ''">
+			AND QYMC like 
+		</if>
+	</trim>
+</select>
+\end{lstlisting}
+
+在空判断时,需要判断null和'',否则生成的SQL有可能导致数据查询变慢,如下SQL:
+
+\begin{lstlisting}[language=SQL]
+SELECT *
+FROM CORPORATION
+AND QYMC like CONCAT('%','','%')
+\end{lstlisting}
+
+
+
 \subsection{MyBaits常见问题}
 
 \paragraph{Invalid bound statement (not found)}
@@ -3797,7 +3825,6 @@ tar zcf dist.tar.gz dist
 
 解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。
 
-
 \begin{lstlisting}[language=Bash]
 xz -d xxx.tar.xz
 tar xvf xxx.tar
@@ -3806,6 +3833,14 @@ tar xvf xxx.tar
 # 可以使用相同的命令解压	
 tar -zxcf example.tgz
 \end{lstlisting}
+
+但是有时需要排除制定目录和指定类型的文件:
+
+\begin{lstlisting}[language=Bash]
+tar -zcvf tomcat.tar.gz --exclude=tomcat/logs --exclude=tomcat/libs tomcat
+tar -cvf test.tgz test/ --exclude *.jpg
+\end{lstlisting}
+
 
 \paragraph{zip}
 
@@ -6213,7 +6248,7 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04LTS下无效。
 
-\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。在Url无法正确换行时,hyperref宏包提供了两个宏，\textbackslash UrlBreaks 以及\textbackslash UrlBigBreaks，用于告知 TeX，用户允许在何处截断 URL 以便换行。添加如下代码,Url即可换行:
+\paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。在Url无法正确换行时,hyperref宏包提供了两个宏，\textbackslash UrlBreaks 以及\textbackslash UrlBigBreaks，用于告知 TeX，用户允许在何处截断 URL 以便换行。添加如下代码\footnote{\url{https://liam0205.me/2017/05/17/help-the-url-command-from-hyperref-to-break-at-line-wrapping-point/}},Url即可换行:
 
 \begin{lstlisting}[language=Tex]
 \makeatletter
