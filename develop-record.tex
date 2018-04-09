@@ -1999,7 +1999,7 @@ MyBatis的XML文件在写空判断时,需要注意一点细节:
 \begin{lstlisting}[language=SQL]
 SELECT *
 FROM CORPORATION
-AND QYMC like CONCAT('%','','%')
+WHERE QYMC like CONCAT('%','','%')
 \end{lstlisting}
 
 
@@ -2352,8 +2352,6 @@ yarn config set registry https://registry.npm.taobao.org
 \end{lstlisting}
 
 
-
-
 \section{React}
 
 只有动画或视频达到60fps，人眼才不会感觉卡顿。
@@ -2361,6 +2359,14 @@ yarn config set registry https://registry.npm.taobao.org
 \subsection{组件生命周期(Life Cycle)}
 
 页面的交互流程，页面加载或者用户操作界面，调用相关函数通过Ajax从服务端获取数据，触发dispatch，将action传递给reducer更改state(要赋给propss的值都存在state中)，然后再将state的新的值赋给props，重新渲染页面。connect中的函数当state改变时都会被执行，可以理解成subscribe函数或者监听函数。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.3]{reduxdataflow.png}
+	\caption{Redux数据流}
+	\label{fig:reduxdataflow}
+\end{figure}
+
 
 \subsection{第一个React}
 
@@ -6908,6 +6914,9 @@ SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
 ROUND(CONVERT(DOUBLE,SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END))/CONVERT(DOUBLE,COUNT(*)),3) AS RATIO
 FROM TD_M_APPACCESS_LOG
 GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
+
+select * 
+from v$sql_history;
 \end{lstlisting}
 
 如上语句统计接口的有效调用次数，返回数量(RETURN\_COUNT)大于0时，视为有效调用次数(VALID\_TIMES)。数量默认为整数，所以要得到小数的比率(RATIO)，就需要使用函数convert将数据转换为Double类型。
