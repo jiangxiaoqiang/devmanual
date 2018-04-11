@@ -2607,7 +2607,7 @@ const reducer = (state, action) => {
 };
 \end{lstlisting}
 
-Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。又是发现编译出来的文件里缺少某个Reducer,如图所示,但是代码又没有报错,可以考虑是否是引入Reducer文件错误(属于A的Reducer却引入的B).
+Redux有且只有一个State状态树，为了避免这个状态树变得越来越复杂，Redux通过Reducers来负责管理整个应用的State树，而Reducers可以被分成一个个Reducer。又是发现编译出来的文件里缺少某个Reducer,如图\ref{fig:distdirectoryreducer}所示,但是代码又没有报错,可以考虑combineReducers是否是引入Reducer文件错误(属于A的Reducer却引入的B).
 
 \begin{figure}[htbp]
 	\centering
