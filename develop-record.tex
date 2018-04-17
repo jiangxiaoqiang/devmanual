@@ -3859,7 +3859,39 @@ tar -cvf test.tgz test/ --exclude *.jpg
 zip -r ftl.zip ftl
 \end{lstlisting}
 
+由于zip格式中并没有指定编码格式，Windows下生成的zip文件中的编码是GBK/GB2312等，因此，导致这些zip文件在Linux下解压时出现乱码问题，因为Linux下的默认编码是UTF8。
 
+
+\begin{lstlisting}[language=Python]
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import zipfile
+
+print "Processing File " + sys.argv[1]
+
+file=zipfile.ZipFile(sys.argv[1],"r");
+for name in file.namelist():
+	utf8name=name.decode('gbk')
+	print "Extracting " + utf8name
+	pathname = os.path.dirname(utf8name)
+	if not os.path.exists(pathname) and pathname!= "":
+		os.makedirs(pathname)
+	data = file.read(name)
+	if not os.path.exists(utf8name):
+		fo = open(utf8name, "w")
+		fo.write(data)
+		fo.close
+file.close()
+\end{lstlisting}
+
+使用如下语句完成解压.
+
+\begin{lstlisting}[language=Bash]
+pythonunzip.py 邮件子系统UI-201804171045.zip
+\end{lstlisting}
 
 \paragraph{grep}
 
@@ -4471,6 +4503,18 @@ sudo systemctl restart NetworkManager.service
 sudo /etc/init.d/networking restart
 \end{lstlisting}
 
+\section{常见问题}
+
+\subsection{filesystem full}
+
+
+Linux使用vim编辑文件保存时报E514:write error (file system full).Just to share a magic command to know where all your disk space goes:
+
+\begin{lstlisting}[language=Bash]
+sudo du -hsx /* | sort -rh | head -n 40
+#查找大于800MB的文件,并由大到小排序
+sudo find . -type f -size +800M  -print0 | xargs -0 du -h | sort -nr
+\end{lstlisting}
 
 \newpage
 ~\vfil 
