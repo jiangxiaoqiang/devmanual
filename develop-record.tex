@@ -3318,7 +3318,20 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 	\end{center}
 \end{table}
 
-配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。
+配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。linux系统中所有进程所能开启的总的线程数：
+
+\begin{lstlisting}[language=Bash]
+#总线程数定义
+cat /proc/sys/kernel/threads-max
+\end{lstlisting}
+
+linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
+
+\begin{lstlisting}[language=Bash]
+/* The number of threads per process.  */
+\end{lstlisting}
+
+可以看出，posix标准中是64个线程.
 
 \section{Shell}
 
