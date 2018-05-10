@@ -1062,6 +1062,8 @@ pageableList.add(copyPageable);
 若变量为 String 字符串，则拷贝其地址引用。但是在修改时，它会从字符串池中重新生成一个新的字符串，原有紫都城对象保持不变。
 
 
+\subsection{HttpServletRequest}
+
 
 
 \section{应用接口(Application Interface)}
@@ -3676,10 +3678,10 @@ fi
 
 \subsection{快捷键(Shortcut)}
 
-Ubuntu常用快捷键：
+Linux下常用快捷键如下表所示：
 
 \begin{table}
-	\caption{Ubuntu快捷键}
+	\caption{Linux下快捷键}
 	\label{table:terminalshortcut}
 	\begin{center}
 		\begin{tabular}{cp{12cm}c}
@@ -3688,6 +3690,8 @@ Ubuntu常用快捷键：
 			& \multicolumn{1}{c}{说明}  \\
 			\hline			
 			Alt + F7 & Alt+F7会激活移动窗口功能，用方向键（上，下，左，右）就可以移到窗口 \\						
+			\hline
+			Alt + F10 & Alt+F10在Xface下会最大化当前窗口　\\						
 			\hline
 		\end{tabular}
 	\end{center}
@@ -4109,6 +4113,15 @@ df -kh
 
 -k或--kilobytes：指定区块大小为1024字节；可以用此命令查看U盘的路径.也可以使用命令mount：通过查看/etc/mtab（文章最后会对/etc/mtab有个解释）文件显示当前系统已挂载的所有设备.
 
+\paragraph{du(Disk Usage)}
+
+Linux du命令是对文件和目录磁盘使用的空间的查看.查看software文件夹的大小：
+
+\begin{lstlisting}[language=Bash]
+# 查看software文件夹大小
+du -sh software
+\end{lstlisting}
+
 \paragraph{mount}
 
 挂载磁盘命令如下:
@@ -4299,11 +4312,20 @@ screen -r 12865
 uname命令用于打印当前系统相关信息（内核版本号、硬件架构、主机名称和操作系统类型等）。
 
 \begin{lstlisting}[language=Bash]
-# Linux查看版本当前操作系统内核信息
+#Linux查看版本当前操作系统内核信息
+#unix name的意思
 uname －a 
+#LSB（Linux 标准库Linux Standard Base）
+#能够打印发行版的具体信息
+#包括发行版名称、版本号、代号等
+lsb_release -a
+#这个文件记录了Linux内核的版本
+#用于编译内核的 gcc 的版本
+#内核编译的时间，以及内核编译者的用户名
+cat /proc/version
 \end{lstlisting}
 
-Linux里的lsb\_release命令用来查看当前系统的发行版信 息（prints certain LSB (Linux Standard Base) and Distribution information）。有了这个命令就可以清楚的知道到底是RedHat的、还是别的发行版，还有具体的版本号.
+Linux里的lsb\_release命令用来查看当前系统的发行版信息（prints certain LSB (Linux Standard Base) and Distribution information）。有了这个命令就可以清楚的知道到底是RedHat的、还是别的发行版，还有具体的版本号.
 
 \begin{lstlisting}[language=Bash]
 # Linux查看版本当前操作系统内核信息
@@ -4737,6 +4759,17 @@ public class ${NAME} {
 }
 \end{lstlisting}
 
+\chapter{Maven}
+
+\section{Maven的聚合多模块）和Parent继承}
+
+继承是 Maven 中很强大的一种功能，继承可以使得子POM可以获得 parent 中的各项配置，可以对子pom进行统一的配置和依赖管理。父POM中的大多数元素都能被子POM继承.This feature is only for enhancing the development in a local checkout of that project. Set the value to an empty string in case you want to disable the feature and always resolve the parent POM from the repositories.
+Default value is: ../pom.xml.
+
+Eclipse路径：/home/hldev/eclipse/java-oxygen/eclipse．
+
+
+
 \chapter{Gradle}
 
 一般在Mac下Gradle的安装路径为：/usr/local/Cellar/gradle/3.2.1/libexec，在Mac的Intellij Idea指定Gradle路径时，即用此路径。
@@ -5004,7 +5037,6 @@ task copyTask(type: Copy) {
 \end{lstlisting}
 
 在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
-
 
 \chapter{OWASP ZAP}
 
@@ -5459,7 +5491,6 @@ The “Java Decompiler project” aims to develop tools in order to decompile an
 	\label{fig:jdguichecksourcecode}
 \end{figure}
 
-
 \subsection{You-Get}
 
 有时看点视频真闹心,广告多,时间长,还有各种限制,如果网速不是很快,不稳定的话,还非常卡,还有Linux下对Flash支持的也不是很好,还要安装Flash插件,非常麻烦,You-Get工具可以解决这个问题.使用You-Get下载的命令为:
@@ -5617,6 +5648,14 @@ curl -X POST -H "Content-Type: application/json;charset=UTF-8" \
 http://59.214.215.6:8081/html/plat/info/save_for_push.html \
 --data-binary @article.json | jq '.'
 \end{lstlisting}
+
+将Excel文件上传：
+
+\begin{lstlisting}[language=Bash]
+curl -F file=@"/home/hldev/hldata/credit-system-document/misc/双随机第一批清单-模板.xls" 
+http://localhost:28080/inapi/org/import
+\end{lstlisting}
+
 
 
 \subsection{iostat}
@@ -6687,9 +6726,18 @@ PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统
 PostgreSQL的基础操作：
 
 \begin{lstlisting}[language=Bash]
+#52pg　data路径:/opt/haishu/var/pgsql
 initdb --encoding=UTF-8 --no-locale -D /var/lib/pgsql/data/
+#初始化pg
+#指定数据存放路径/opt/app/local/pgsql/data/
+#pg版本9.5.12
+./initdb --encoding=UTF-8 --no-locale -D /opt/app/local/pgsql/data/
 #启动PostgreSQL
 /opt/haishu/local/pgsql/10.1/bin/pg_ctl -D /opt/haishu/var/pgsql/10.1 -l logfile start
+#启动PostgreSQL(测试环境)
+./pg_ctl -D /opt/haishu/var/pgsql/10.1 -l logfile start
+#停止PostgreSQL
+./pg_ctl -D /opt/app/local/pgsql/data stop
 #列出Database
 pgsql -l
 #登录pg
@@ -6782,7 +6830,22 @@ cd /usr/local/lib/python2.7/dist-packages/pgadmin4
 sudo python pgAdmin4.py
 \end{lstlisting}
 
+\subsection{登录}
+
+输入如下命令登录Postgres数据库：
+
+\begin{lstlisting}[language=Bash]
+./psql postgres -h 127.0.0.1 -d postgres
+\end{lstlisting}
+
+
+
+
+
+
+
 \chapter{MySQL}
+
 
 \subsection{查询}
 
@@ -7141,6 +7204,30 @@ and b.name!='SYSOBJECTS'
 --结束死锁
 sp_close_session(140326983703408)
 \end{lstlisting}
+
+
+
+
+
+\subsection{命令行操作}
+
+
+命令登录达梦：
+
+\begin{lstlisting}[language=Bash]
+./disql username/password@ip
+\end{lstlisting}
+
+
+查看表定义:
+
+\begin{lstlisting}[language=Bash]
+call sp_tabledef('USER_XYCQ','TD_M_CREDENTIAL');
+\end{lstlisting}
+
+
+
+
 
 
 \section{通用知识}
@@ -7614,7 +7701,7 @@ ssh -g -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:38
 telnet 10.77.10.55 2222
 \end{lstlisting}
 
-telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。以上配置在Fedora 24下工作良好。
+telnet是一个很传统的连线程式，它除了用來上BBS之外，也可以用來當做診斷各種伺服器与網路連线問題。telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。以上配置在Fedora 24下工作良好。
 
 \paragraph{Windows代理设置}
 
