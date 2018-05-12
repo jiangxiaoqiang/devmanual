@@ -5441,7 +5441,6 @@ http and ip.addr == 192.168.1.106 and tcp.port == 8080
 :s/str1/str2/g 替换当前行中所有 str1 为 str2 
 :m,ns/str1/str2/ 替换第 n 行开始到最后一行中每一行的第一个 str1 为 str2 
 :m,ns/str1/str2/g 替换第 n 行开始到最后一行中所有的 str1 为 str2 
-
 \end{lstlisting}
 
 (注：m和n 为数字，若m为 .，表示为当前行开始；若n为\$，则表示到最后一行结束) u
@@ -6843,6 +6842,49 @@ cd /usr/local/lib/python2.7/dist-packages/pgadmin4
 sudo python pgAdmin4.py
 \end{lstlisting}
 
+\subsection{备份}
+
+使用Postgre备份数据库，命令如下：
+
+\begin{lstlisting}[language=Bash]
+./pg_dump -h 59.214.215.6 -U haishu msgmanage > msgmanage.bak
+\end{lstlisting}
+
+Postgres数据还原命令如下：
+
+\begin{lstlisting}[language=Bash]
+./psql -h localhost -U haishu -d msgmanage < msgmanage.bak　
+\end{lstlisting}
+
+备份数据表：
+
+\begin{lstlisting}[language=SQL]
+create table new as select * from old;
+\end{lstlisting}
+
+此种备份方式会遗失表的约束等，推荐先采用创建表语句创建数据表，再使用insert语句将数据写入表中．
+
+
+\subsection{常用语句}
+
+数据写入SQL,将ig\_app\_user\_201805121436表中的数据写入ig\_app\_user：
+
+\begin{lstlisting}[language=SQL]
+insert into ig_app_user
+(
+	app_id,
+	passport_id,
+	user_id,
+	updated_at,
+	permissions,
+	status,
+	data
+)
+select * from ig_app_user_201805121436;
+\end{lstlisting}
+
+
+
 \subsection{登录}
 
 输入如下命令登录Postgres数据库：
@@ -7845,6 +7887,29 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 \paragraph{发布后确认}
 
 验证发布功能是否生效。在没有接口版本管理的情况下，告知调用接口方。
+
+
+\subsection{问题排查(4A登录)}
+
+系统登录的流程是，在登录主APP时会向统一向后端发送登录请求(auth/signon)，Nginx将请求转发给统一认证APP,APP将各个系统登录信息加密后设置在Cookie中，如图所示．
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{allsystemcookies.png}
+	\caption{各个系统的加密Cookie}
+	\label{fig:allsystemcookies}
+\end{figure}
+
+这样登录各个系统时，就能够根据每个系统的标识，获取到用户的授权信息，从而实现自动登录．当自动登录失败时，可以到各个子系统看打印日志，确定子系统从Cookie中获取到了对应的正确的用户信息，如图\ref{fig:traceloginusercookie}所示．
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{traceloginusercookie.png}
+	\caption{跟踪登录的用户Cookie信息}
+	\label{fig:traceloginusercookie}
+\end{figure}
+
+
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
