@@ -2765,6 +2765,22 @@ Immutable Data 就是一旦创建，就不能再被更改的数据。对 Immutab
 
 有的时候前端没必要等待后端接口写好，可以直接Mock接口的返回数据。这里使用json-server\footnote{\url{https://github.com/typicode/json-server}}来实现。
 
+\subsection{动态列匹配规则}
+
+如果字段有数字，直接转换为小写匹配，如果没有数字，将字段名字转换为骆驼命名去匹配：
+
+\begin{lstlisting}[language=Javascript]
+camelCase = (input) => {
+	if(/\d/.test(input)){
+		return input.toLowerCase()
+	}else {
+		return input.toLowerCase().replace(/_(.)/g, function (match, group1) {
+			return group1.toUpperCase();
+		});
+	}
+};
+\end{lstlisting}
+
 
 \subsection{yarn}
 
@@ -4794,16 +4810,6 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 public class ${NAME} {
 }
 \end{lstlisting}
-
-\chapter{Maven}
-
-\section{Maven的聚合多模块）和Parent继承}
-
-继承是 Maven 中很强大的一种功能，继承可以使得子POM可以获得 parent 中的各项配置，可以对子pom进行统一的配置和依赖管理。父POM中的大多数元素都能被子POM继承.This feature is only for enhancing the development in a local checkout of that project. Set the value to an empty string in case you want to disable the feature and always resolve the parent POM from the repositories.
-Default value is: ../pom.xml.
-
-Eclipse路径：/home/hldev/eclipse/java-oxygen/eclipse．
-
 
 
 \chapter{Gradle}
@@ -7948,6 +7954,19 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 \end{figure}
 
 在登录系统时，有的时候会提示跨域，要注意登录地址要通过本系统的Nginx转发，而不能直接请求4A的登录地址．
+
+\subsection{问题归集}
+
+配置需要注意的问题点，Ngnix后端转发解决跨域问题：
+
+\begin{lstlisting}[language=Bash]
+#测试环境系统的登录地址
+#配置时需要注意要用本域的后端Nginx做转发
+#不能直接配置登录地址
+#否则会存在跨域问题
+as.config.loginPage=http://ip:port/auth/signon
+\end{lstlisting}
+
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
