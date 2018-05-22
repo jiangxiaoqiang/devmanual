@@ -956,6 +956,8 @@ Cron is driven by a crontab (cron table) file, a configuration file that specifi
 30 21 * * * *
 # 每5秒执行一次
 0/5 * * * * ?
+#每周星期六的11:00执行
+0 23 * * 6
 \end{lstlisting}
 
 \subsection{Code Snippets}
@@ -2829,6 +2831,24 @@ clean任务执行完成了才会去运行其他的任务，在gulp.start()里的
 
 使用install --save时，将默认在package.json中添加小尖尖\^而不是小波浪\~作为依赖版本的前缀。
 
+\subsection{文件调试}
+
+有时在浏览器可能需要跟踪Javascript代码，在配置文件webpack.config.js中添加如下语句：
+
+\begin{lstlisting}[language=JavaScript]
+devtool: 'cheap-module-source-map',
+\end{lstlisting}
+
+可以在服务端看到文件的目录树结构，如图\ref{fig:serverfiletree}所示．
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{serverfiletree.png}
+	\caption{网站文件树}
+	\label{fig:serverfiletree}
+\end{figure}
+
+
 \section{Library}
 
 \subsection{lodash}
@@ -4649,6 +4669,9 @@ sudo find / -name "idea.sh"
 	\label{fig:probescalavariable}
 \end{figure}
 
+\subsection{图标释疑}
+
+Intellij　Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.com/help/idea/symbols.html}}查看，有时出现了橘黄色小图标，中间带一个J符号，选择项目启动类时也无法选择，因为图标含义表示此文件不是Source文件，自然无法选择．原因是由于项目未把该路径指定为源码路径。解决方法：在Project Structure中（快捷键Ctrl+Alt+Shift+S）选Modules将你带红圈的文件添加上，将你带红圈的文件夹设为Sources。一般是src文件夹，点Sources文件夹，然后点击OK。
 
 \subsection{常见设置}
 
@@ -4926,6 +4949,21 @@ repositories {
 总的来说，只有两个标准的Android library文件服务器：JCenter 和 Maven Central。起初，Android Studio 选择Maven Central作为默认仓库。如果你使用老版本的Android Studio创建一个新项目，mavenCentral()会自动的定义在build.gradle中。但是Maven Central的最大问题是对开发者不够友好。上传library异常困难。上传上去的开发者都是某种程度的极客。同时还因为诸如安全方面的其他原因，Android Studio团队决定把默认的仓库替换成JCenter。正如你看到的，一旦使用最新版本的Android Studio创建一个项目，JCenter()自动被定义，而不是mavenCentral()。mavenCentral()表示依赖是从Central Maven 2 仓库中获取的，库的地址是\url{https://repo1.maven.org/maven2}。JCenter表示依赖是从Bintary’s JCenter Maven 仓库中获取的，仓库的地址是\url{https://jcenter.bintray.com}，Bintray是一家提供全球企业软件开发包托管的商业公司。
 
 \subsection{常见问题}
+
+\paragraph{Could not find or load main class org.gradle.wrapper.GradleWrapperMain}
+
+在使用Gradle命令构建项目时，提示错误如下：Could not find or load main class GradleWrapperMain。
+
+\begin{lstlisting}[language=Bash]
+./gradlew -p credit-report-web-boot -x test build
+\end{lstlisting}
+
+The reason is there is no gradle/wrapper/gradle-wrapper.jar in repository. It should not be in .gitignore.将jar包拷贝到当前项目对应的目录下即可。
+
+\paragraph{temporary failure in name resolution}
+
+在使用Gradle下载文件时，提示temporary failure in name resolution。表示域名解析失败，编辑文件/etc/resolv.conf，添加Google域名解析地址。
+
 
 \paragraph{could not find method compile()}
 
@@ -7909,7 +7947,7 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 	\label{fig:traceloginusercookie}
 \end{figure}
 
-
+在登录系统时，有的时候会提示跨域，要注意登录地址要通过本系统的Nginx转发，而不能直接请求4A的登录地址．
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
