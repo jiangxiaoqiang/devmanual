@@ -1714,6 +1714,16 @@ User user = (User) session.getAttribute("LOCAL_CLINET_USER");
 
 当在无效的session中获取Attribute时，出现了上面的错误，解决办法就是不调用invalidate方法。
 
+\paragraph{Initialization of bean failed; nested exception is java.lang.NoClassDefFoundError}
+
+在网站启动时，提示如下错误：
+
+\begin{lstlisting}
+Initialization of bean failed; nested exception is java.lang.NoClassDefFoundError: com/cqliving/cloud/online/security/domain/SysUser
+\end{lstlisting}
+
+开始时怀疑JRebel导致此问题，在server中将JRebel关闭，此问题仍在，所以可以排除JRebel导致的此问题。NoClassDefFoundError一般情况下是运行时找不到类导致，由于SysUser这个类在另一个jar包中，怀疑是否由于此jar包未更新或者未成功将类SysUser编译进入jar包。下载了jd-gui工具来验证。当到Tomcat的lib目录下寻找此公共jar包时，发现目录下没有此jar包存在，此时问题明朗，是由于发布时未成功将此jar包发布到运行时目录(D:/apache-tomcat-8.0.9/wtpwebapps/cms)。导致运行时出现了NoClassDefFoundError错误，拷贝对应的jar包到lib(D:/apache-tomcat-8.0.9/wtpwebapps/cms/WEB-INF/lib)目录下，问题解决。此次导致此问题的原因是\textbf{缺少jar文件}，另外jar文件没有添加到classpath，或者jar的文件名发生变更都会导致java.lang.NoClassDefFoundError的错误。
+
 \paragraph{java.lang.NoClassDefFoundError: org/apache/juli/logging/LogFactory}
 
 java.lang.NoClassDefFoundError,这个报错是因为Java虚拟机在编译时能找到合适的类，而在运行时不能找到合适的类导致的错误.可以查看目标目录，是否有编译成功的example.class文件存在。在Intellij Idea中查看文件夹是module-name/build文件夹，如图\ref{fig:buildclassoutpath}所示，可以将其删除，删除之后即可触发重新编译类。
