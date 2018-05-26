@@ -3862,7 +3862,6 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 	\item{步骤4 如果无法顺利删除，则输入9来强制删除该进程。}
 \end{itemize}
 
-
 如果希望以指定列排序(比如希望以进程号排序),在top界面中按下大写的F,选择指定列,按Esc退出后,按下R按键来排序(Using F you'd get you to the menu of fields. Using s would set what field would do the sorting. Press ESC to escape from the menu then to change Ascending/Descending mode, use R.).
 
 \paragraph{scp}
@@ -4614,8 +4613,32 @@ sudo /etc/init.d/networking restart
 
 \section{常见问题}
 
-\subsection{filesystem full}
+\subsection{too many open files}
 
+出现这句提示的原因是程序打开的文件/socket连接数量超过系统设定值。查看每个用户最大允许打开文件数量:
+
+\begin{lstlisting}[language=Bash]
+ulimit -a
+\end{lstlisting}
+
+如图所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{toomayfiles.png}
+	\caption{查看每个用户允许打开的文件数量}
+	\label{fig:toomayfiles}
+\end{figure}
+
+其中 open files (-n) 1024 表示每个用户最大允许打开的文件数量是1024。查看当前系统打开的文件数量：
+
+\begin{lstlisting}[language=Bash]
+lsof | wc -l  
+#查看某一进程的打开文件数量
+lsof -p pid | wc -l 
+\end{lstlisting}
+
+\subsection{filesystem full}
 
 Linux使用vim编辑文件保存时报E514:write error (file system full).Just to share a magic command to know where all your disk space goes:
 
