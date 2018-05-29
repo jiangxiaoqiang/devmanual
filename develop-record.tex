@@ -4845,6 +4845,31 @@ public class ${NAME} {
 }
 \end{lstlisting}
 
+\chapter{Maven}
+
+\section{常见问题}
+
+\subsection{Cannot access http://download.java.net/maven/1/ with type}
+
+更新Maven更新的URL即可，在settings.xml文件中(.m2文件夹下)，配置如下地址：
+
+
+\begin{lstlisting}[language=XML]
+<settings xmlns="http://maven.apache.org/POM/4.0.0"    
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"> 
+	<mirrors>
+		<mirror>
+			<id>nexus-aliyun</id>
+			<mirrorOf>*</mirrorOf>
+			<name>Nexus aliyun</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+		</mirror>        
+	</mirrors>
+</settings>
+\end{lstlisting}
+
+
 
 \chapter{Gradle}
 
