@@ -4849,6 +4849,21 @@ public class ${NAME} {
 
 \section{常见问题}
 
+\subsection{拷贝jar包到lib目录}
+
+项目运行时，会将依赖的项目编译后的jar包拷贝到Tomcat对应项目的lib目录下，但是其中一个依赖项目的jar包(online)始终不自动拷贝，每次都需要手工拷贝。但是依赖的拷贝配置没有问题，如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{assemblydeployment.png}
+	\caption{Eclipse配置依赖拷贝}
+	\label{fig:assemblydeployment}
+\end{figure}
+
+打开依赖的不自动拷贝jar包项目的Properties -> Deployment Assembly时，提示错误：The currently displayed page contains invalid values。经排查是项目的project和setting配置文件不正确，Then in the filesystem delete .project .classpath and .settings/* Then in eclipse, same workspace, create new webproject with same name as the old one\footnote{\url{https://stackoverflow.com/questions/14270442/deployment-assembly-the-currently-displayed-page-contains-invalid-values}}.重新删除配置文件后，创建新的项目即可。请求网站时，提示The requested resource is not available。经检查时Tomcat配置的Server Path名称多了项目名称，去掉项目名称即可。
+
+
+
 \subsection{Cannot access http://download.java.net/maven/1/ with type}
 
 更新Maven更新的URL即可，在settings.xml文件中(.m2文件夹下)，配置如下地址：
