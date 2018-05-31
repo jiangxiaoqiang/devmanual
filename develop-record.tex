@@ -1026,6 +1026,9 @@ String.valueOf中如果对象为空，就返回字符串的"null"，注意不是
 
 CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算，然后再进行加密.
 
+\subsection{Java时间}
+
+Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为Sysytem.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11，变态吧！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
 
 \subsection{Java版本}
 
@@ -3800,6 +3803,16 @@ umount /dev/sdb4
 \begin{lstlisting}[language=Bash]
 sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
 \end{lstlisting}
+
+\paragraph{cp}
+
+有时使用cp命令时，强制覆盖：
+
+\begin{lstlisting}[language=Bash]
+#让管道自动输入一大堆得yes，就可以完成了强行复制
+yes | cp cp -fr src dest
+\end{lstlisting}
+
 
 \paragraph{nohup(No hang up)}
 
