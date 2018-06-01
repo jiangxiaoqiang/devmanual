@@ -3779,6 +3779,32 @@ which scala
 ps -ef|grep -w 'dolphin-web'|grep -v grep|cut -c 9-15|xargs kill 9
 \end{lstlisting}
 
+\paragraph{ps}
+
+查看进程的详细信息：
+
+\begin{lstlisting}[language=Bash]
+ps -u --pid {PID}
+\end{lstlisting}
+
+
+\paragraph{nslookup}
+
+nslookup命令用于查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。nslookup is a network administration command-line tool available for many computer operating systems for querying the Domain Name System (DNS) to obtain domain name or IP address mapping or for any other specific DNS record.
+
+\begin{lstlisting}[language=Bash]
+nslookup {domain}
+\end{lstlisting}
+
+查询结果如图\ref{fig:nslookup}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{nslookup.png}
+	\caption{nslookup查看域名解析情况}
+	\label{fig:nslookup}
+\end{figure}
+
 
 
 \paragraph{dd}
@@ -4178,6 +4204,8 @@ Linux du命令是对文件和目录磁盘使用的空间的查看.查看software
 \begin{lstlisting}[language=Bash]
 # 查看software文件夹大小
 du -sh software
+# 当前目录下文件按文件夹大小排序
+du -sh * | sort -nr
 \end{lstlisting}
 
 \paragraph{mount}
@@ -5645,6 +5673,9 @@ rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多�
 \begin{lstlisting}[language=Bash]
 rsync -avz pi@10.42.0.22:app-soft .
 \end{lstlisting}
+
+rsync在备份网站时也非常有帮助，通常网站下面会有许多log文件、图片等，一般都非常大,GB级别，但是一般情况下的备份不需要备份这些文件。
+
 
 \subsection{sftp}
 
