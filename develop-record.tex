@@ -1026,6 +1026,9 @@ String.valueOf中如果对象为空，就返回字符串的"null"，注意不是
 
 CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算，然后再进行加密.
 
+\subsection{Java时间}
+
+Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为Sysytem.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11，变态吧！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
 
 \subsection{Java版本}
 
@@ -3827,6 +3830,16 @@ umount /dev/sdb4
 sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
 \end{lstlisting}
 
+\paragraph{cp}
+
+有时使用cp命令时，强制覆盖：
+
+\begin{lstlisting}[language=Bash]
+#让管道自动输入一大堆得yes，就可以完成了强行复制
+yes | cp cp -fr src dest
+\end{lstlisting}
+
+
 \paragraph{nohup(No hang up)}
 
 在 Unix 的早期版本中，每个终端都会通过 modem 和系统通讯。当用户 logout 时，modem 就会挂断（hang up）电话。 同理，当 modem 断开连接时，就会给终端发送 hangup 信号来通知其关闭所有子进程。
@@ -4693,6 +4706,7 @@ eclipse.ini是一个文本文件，其内容相当于在Eclipse运行时添加�
 3：-vm选项必须在-vmargs选项之前，之前已经说过，所有在-vmargs之后的选项将会直接被传递给JVM.eclipse -clean，有时插件显示不出来是因为Eclipse将插件进行了缓存以加速启动过程，若指定此参数则会清空缓存，从头加载.
 
 
+
 \chapter{Intellij Idea}
 
 第一次配置JDK在Configure->Project Defaults->Project Structure设置里。Mac OS X的路径一般如下：
@@ -4871,6 +4885,46 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 public class ${NAME} {
 }
 \end{lstlisting}
+
+\chapter{Maven}
+
+\section{常见问题}
+
+\subsection{拷贝jar包到lib目录}
+
+项目运行时，会将依赖的项目编译后的jar包拷贝到Tomcat对应项目的lib目录下，但是其中一个依赖项目的jar包(online)始终不自动拷贝，每次都需要手工拷贝。但是依赖的拷贝配置没有问题，如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.45]{assemblydeployment.png}
+	\caption{Eclipse配置依赖拷贝}
+	\label{fig:assemblydeployment}
+\end{figure}
+
+打开依赖的不自动拷贝jar包项目的Properties -> Deployment Assembly时，提示错误：The currently displayed page contains invalid values。经排查是项目的project和setting配置文件不正确，Then in the filesystem delete .project .classpath and .settings/* Then in eclipse, same workspace, create new webproject with same name as the old one\footnote{\url{https://stackoverflow.com/questions/14270442/deployment-assembly-the-currently-displayed-page-contains-invalid-values}}.重新删除配置文件后，创建新的项目即可。请求网站时，提示The requested resource is not available。经检查时Tomcat配置的Server Path名称多了项目名称，去掉项目名称即可。
+
+
+
+\subsection{Cannot access http://download.java.net/maven/1/ with type}
+
+更新Maven更新的URL即可，在settings.xml文件中(.m2文件夹下)，配置如下地址：
+
+
+\begin{lstlisting}[language=XML]
+<settings xmlns="http://maven.apache.org/POM/4.0.0"    
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"> 
+	<mirrors>
+		<mirror>
+			<id>nexus-aliyun</id>
+			<mirrorOf>*</mirrorOf>
+			<name>Nexus aliyun</name>
+			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+		</mirror>        
+	</mirrors>
+</settings>
+\end{lstlisting}
+
 
 
 \chapter{Gradle}
@@ -6592,6 +6646,10 @@ sudo apt-get install texlive-full -y
 \part{Cache}
 
 \chapter{嵌入式(Embedded)}
+
+\section{Redis}
+
+
 
 \section{Ehcache}
 
