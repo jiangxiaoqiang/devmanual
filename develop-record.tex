@@ -3782,6 +3782,15 @@ which scala
 ps -ef|grep -w 'dolphin-web'|grep -v grep|cut -c 9-15|xargs kill 9
 \end{lstlisting}
 
+\paragraph{rm(remove)}
+
+saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/scripts}} 脚本可以帮助我们将文件移动到“垃圾箱”而不是永久删除它们。如果脚本检测到 GNOME 、KDE、Unity 或 LXDE 桌面环境（DE），则它将文件或文件夹安全地移动到默认垃圾箱\$HOME/.local/share/Trash/files，否则会在您的主目录中创建垃圾箱文件夹\$HOME/Trash。
+
+\begin{lstlisting}[language=Bash]
+alias rm='saferm.sh'
+\end{lstlisting}
+
+
 \paragraph{ps}
 
 查看进程的详细信息：
@@ -3957,6 +3966,8 @@ Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一
 \begin{lstlisting}[language=Bash]
 #打包
 tar -czvf mybatisDemo.tar.gz mybatisDemo
+#打包（多个目录）
+tar -czvf mybatisDemo.tar.gz mybatisDemo mybatisDemo1
 # dist.tar.gz打包的目标文件,dist为要打包的目录
 tar zcf dist.tar.gz dist
 \end{lstlisting}
@@ -5729,7 +5740,22 @@ rsync -avz pi@10.42.0.22:app-soft .
 \end{lstlisting}
 
 rsync在备份网站时也非常有帮助，通常网站下面会有许多log文件、图片等，一般都非常大,GB级别，但是一般情况下的备份不需要备份这些文件。
+在发布文件时，网速比较慢，发布文件上传需要较长时间，rsync工具很有用。启动守护进程：
 
+\begin{lstlisting}[language=Bash]
+# 如果没有/var/rsync文件夹
+# 手工创建
+/usr/local/bin/rsync --daemon start
+\end{lstlisting}
+
+使用如下命令将本地文件发布到服务器：
+
+\begin{lstlisting}[language=Bash]
+# 发布本地的WEB-INF文件夹到服务器
+rsync -avz WEB-INF root@192.168.1.11:/usr/local/daily-pub/diff-pub
+\end{lstlisting}
+
+第一次发布时，会全量拷贝文件，再次发布时，只拷贝变动过的文件，在网速较慢的环境中，此项特性可以节省大量时间。archive归档模式，a表示以递归方式传输文件，并保持所有文件属性。v表示verbose详细模式输出。z表示compress，对备份的文件在传输时进行压缩处理。
 
 \subsection{sftp}
 
