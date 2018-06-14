@@ -3913,6 +3913,9 @@ find / -name "*工作*"
 
 \begin{lstlisting}[language=Bash]
 sudo find ~ \( -path "/home/hldev/hldata/credit-system-document" -o -path "/home/hldev/hldata/credit-system-document" \) -prune -o -type f -name "*概要设计*"  -print
+#列出大于200MB的文件
+#排除home目录
+find / \( -path "/home" \) -prune -o -type f -size +200M -print
 \end{lstlisting}
 
 
@@ -4051,6 +4054,7 @@ grep 命令也可以只在指定文件中进行搜索。比如，我们可以只
 grep -Ril bash /etc/*.conf
 # 使用 --exclude 来排除特定的文件
 grep -Ril --exclude=\*.conf bash /etc/*
+grep -R 10.10.1.52 /opt --exclude=\*.log --exclude=\*.out
 #grep 也能在搜索时排除指定目录
 #使用 --exclude-dir 选项就行。
 grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
@@ -4364,7 +4368,6 @@ source /etc/profile
 node -v
 \end{lstlisting}
 
-
 \subsubsection{screen}
 
 GNU Screen是一款由GNU计划开发的用于命令行终端切换的自由软件。用户可以通过该软件同时连接多个本地或远程的命令行会话，并在其间自由切换。在使用nohup时，有一个缺点就是交互性很低，例如后台启动OpenVPN时，需要输入预先设置的认证密码。但是使用nohup命令启动时，无法显示密码输入入口。此时就需要使用screen命令了。输入如下的命令：
@@ -4443,7 +4446,7 @@ sudo bash -c 'echo "nameserver 8.8.4.4" >> /etc/resolvconf/resolv.conf.d/base'
 sudo resolvconf -u
 \end{lstlisting}
 
-重新启动网络,或者重启计算机DNS设置不会丢失,不需要手动指定DNS解析服务器.
+重新启动网络,或者重启计算机DNS设置不会丢失,不需要手动指定DNS解析服务器.也可以调整网卡DNS设置，在/etc/sysconfig/network-scripts/ifcfg-eth0文件中。
 
 \subsection{修改Mac地址}
 
@@ -5686,12 +5689,22 @@ python -m SimpleHTTPServer 9999
 
 rpc server模式，它启动之后什么都不干，然后等着从rpc接口添加任务，下载完也不退出，而是一直等待。用命令方式导致配置不方便修改保存，-D导致无法看到出错信息。推荐启动方式是使用配置文件\$HOME/.aria2/aria2.conf 。使用aria2c --conf-path=<PATH>启动，注意<PATH>填完整路径。
 
+\subsection{wget}
+
+再使用wget时，远程服务器上的tar.gz格式的文件下载后变成HTML格式，导致解压失败。使用curl命令下载即可：
+
+\begin{lstlisting}[language=Bash]
+# 使用Curl下载，避免wget下载改变文件类型
+curl -O http://192.168.0.14/assets/templatefile/haishu.tar.gz
+\end{lstlisting}
+
+
 \subsection{7zip}
 
 7-zip以高压缩率著称，并且是一款免费开源的压缩软件。
 
 \begin{lstlisting}[language=Bash]
-压缩a.txt和b.txt到c.7z:
+#压缩a.txt和b.txt到c.7z:
 7za  a c.7z a.txt b.txt
 \end{lstlisting}
 
@@ -5724,7 +5737,15 @@ rsync -avz pi@10.42.0.22:app-soft .
 rsync -avz WEB-INF root@192.168.1.11:/usr/local/daily-pub/diff-pub
 \end{lstlisting}
 
-第一次发布时，会全量拷贝文件，再次发布时，只拷贝变动过的文件，在网速较慢的环境中，此项特性可以节省大量时间。archive归档模式，a表示以递归方式传输文件，并保持所有文件属性。v表示verbose详细模式输出。z表示compress，对备份的文件在传输时进行压缩处理。
+第一次发布时，会全量拷贝文件，再次发布时，只拷贝变动过的文件，在网速较慢的环境中，此项特性可以节省大量时间。archive归档模式，a表示以递归方式传输文件，并保持所有文件属性。v表示verbose详细模式输出。z表示compress，对备份的文件在传输时进行压缩处理。如下命令可以查看文件拷贝的进度：
+
+\begin{lstlisting}[language=Bash]
+# 发布本地的WEB-INF文件夹到服务器
+# 显示拷贝进度
+rsync -avzPh WEB-INF root@192.168.1.11:/usr/local/xycq/daily-pub/diff-pub
+\end{lstlisting}
+
+P参数表示显示拷贝的进度。h参数会以友好的方式(Human Readable)显示已经拷贝文件总大小。在使用SFTP工具拷贝时，总是会因为文件太大，拷贝的时间过长而导致超时，使用rsync则不存在此问题。
 
 \subsection{sftp}
 
@@ -6027,6 +6048,145 @@ echo '. /usr/share/autojump/autojump.sh'>>~/.bashrc
 # 在Mac OS X下
 echo '. ~/.autojump/etc/profile.d/autojump.sh'>>~/.bashrc
 \end{lstlisting}
+
+
+\section{Jenkins}
+
+启动Jenkins提示Job for jenkins.service failed because the control process exited with error code. See "systemctl status jenkins.service" and "journalctl -xe" for details。多半是由于Java未安装或者安装后未指定Java路径。打开文件：
+
+\begin{lstlisting}[language=bash]
+#配置文件中指定Java路径
+vim /etc/rc.d/init.d/jenkins
+#启动Jenkins
+service jenkins start
+\end{lstlisting}
+
+配置文件中指定Java路径如图所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{specifyjavapath.jpg}
+	\caption{指定Jenkins的Java路径}
+	\label{fig:specifyjavapath}
+\end{figure}
+
+修改默认的端口号：
+
+\begin{lstlisting}[language=bash]
+vim /etc/sysconfig/jenkins
+service jenkins restart
+\end{lstlisting}
+
+默认密码路径：
+
+\begin{lstlisting}[language=bash]
+#密码默认路径
+vim /var/lib/jenkins/secrets/initialAdminPassword
+vim {$home}/.jenkins/secrets/initialAdminPassword
+\end{lstlisting}
+
+
+\subsection{忘记登录密码(Forget Login Password)}
+
+忘记Jenkins登录密码，可以先禁用登录认证，进入Jenkins修改密码后，使用新密码登录，打开配置文件：
+
+\begin{lstlisting}[language=bash]
+vim /var/lib/jenkins/jenkins.config
+\end{lstlisting}
+
+删除与登录认证相关的配置：
+
+\begin{lstlisting}[language=XML]
+<useSecurity>true</useSecurity>  
+<authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">  
+<denyAnonymousReadAccess>true</denyAnonymousReadAccess>  
+</authorizationStrategy>  
+<securityRealm class="hudson.security.HudsonPrivateSecurityRealm">  
+<disableSignup>true</disableSignup>  
+<enableCaptcha>false</enableCaptcha>  
+</securityRealm>
+\end{lstlisting}
+
+1.重启Jenkins服务；
+
+2.进入首页>“系统管理”>“Configure Global Security”；
+
+3.勾选“启用安全”；
+
+4.点选“Jenkins专有用户数据库”，并点击“保存”；
+
+5.重新点击首页>“系统管理”,发现此时出现“管理用户”；
+
+6.点击进入展示“用户列表”；
+
+7.点击右侧进入修改密码页面，修改后即可重新登录。
+
+\subsection{Jenkins中Gradle版本}
+
+Jenkins中使用gradlew时，Gradle版本始终是某一个，但是build.gradle中和Jenkins中指定的却是另一个版本。
+
+\begin{lstlisting}[language=bash]
+#查看gradlew版本
+./gradlew -v
+#更新版本
+gradle wrapper
+\end{lstlisting}
+
+\subsection{Jenkins中Gradle配置}
+
+Jenkins中Gradle需要添加全局变量GRADLE\_USER\_HOME,在Jenkins->系统管理->系统设置->全局属性中,添加全局变量GRADLE\_USER\_HOME的路径要保证Jenkins用户有写入的权限,如图\ref{fig:gradleuserhome}所示.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{gradleuserhome.png}
+	\caption{指定Jenkins的Gradle用户路径}
+	\label{fig:gradleuserhome}
+\end{figure}
+
+
+\subsection{Jenkins运行脚本}
+
+Jenkins后台运行脚本时,需要使用setsid和设置BUILD\_ID=dontKillMe\footnote{\url{https://wiki.jenkins.io/display/JENKINS/ProcessTreeKiller}}.如下命令所示:
+
+\begin{lstlisting}[language=bash]
+count=`ps -ef | grep dolphin-web-${VERSION} | grep -v "grep" | wc -l`
+if [ $count -lt 1 ]; then
+#使用setsid启动app
+#setsid在一个新的会话中运行命令
+#从而可以避开当前终端发出的HUP信号
+setsid ${JAVA_HOME}/bin/java -Xmx512M -Xms256M \
+-jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005	\
+${APP_PATH}/dolphin-web-${VERSION}.jar \
+--spring.config.location=${APP_PATH}/application.properties>/dev/null &
+else
+echo "process aready exists!"
+fi
+\end{lstlisting}
+
+也可以在Jenkins系统环境变量中设置BUILD\_ID变量，如图\ref{fig:jenkinsbuildidsetting}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{jenkinsbuildidsetting.jpg}
+	\caption{Jeknins全局变量}
+	\label{fig:jenkinsbuildidsetting}
+\end{figure}
+
+Jenkins系统中添加执行脚本的时候，有一些命令是需要sudo权限和来执行的，可以在root权限下添加一下Jenkins账号的权限。如下命令所示:
+
+\begin{lstlisting}[language=bash]
+#打开sudoers文件
+vim /etc/sudoers
+\end{lstlisting}
+
+在/etc/sudoers文件中添加如下内容:
+
+\begin{lstlisting}[language=bash]
+#可以不用输入密码
+#直接以超级管理员权限执行ps命令和kill命令
+jenkins ALL=NOPASSWD:/usr/bin/ps,/usr/bin/kill
+\end{lstlisting}
+
 
 \section{Graphviz}
 
@@ -7918,6 +8078,14 @@ telnet 10.77.10.55 2222
 \end{lstlisting}
 
 telnet是一个很传统的连线程式，它除了用來上BBS之外，也可以用來當做診斷各種伺服器与網路連线問題。telnet因为采用明文传送报文，安全性不好，很多Linux服务器都不开放telnet服务，而改用更安全的ssh方式。telnet命令用于确定远程服务的状态，这里是确定远程服务器的某个端口是否能访问。以上配置在Fedora 24下工作良好。
+
+在做端口转发时，遇到的一个问题就是ssh连接经常断开的问题。断开后，又需要重新启动代理，可以使用如下命令，只建立ssh隧道，并不使用到这个新建立的ssh连接，而且在实际使用中，我们往往会在建立隧道以后，退出当前的ssh会话，我们一旦退出对应的ssh会话，相应的ssh隧道也会消失，所以，我们还需要配合另外两个选项，"-N选项"与"-f选项"。
+
+\begin{lstlisting}[language=Bash]
+ssh -g -fN -L 5236:58.214.215.*:5236 -L 2222:58.214.215.*:22 -L 3800:58.214.215.*:3800 10.55.10.77
+\end{lstlisting}
+
+配合上述选项创建ssh隧道时，即使我们完全关闭了执行命令时的ssh会话，对应创建的隧道也可以完全正常运行。
 
 \paragraph{Windows代理设置}
 
