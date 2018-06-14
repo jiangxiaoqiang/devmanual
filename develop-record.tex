@@ -1028,7 +1028,7 @@ CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组
 
 \subsection{Java时间}
 
-Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为Sysytem.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
+Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为Sysytem.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11，变态吧！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
 
 \subsection{Java版本}
 
@@ -3791,6 +3791,34 @@ alias rm='saferm.sh'
 \end{lstlisting}
 
 
+\paragraph{ps}
+
+查看进程的详细信息：
+
+\begin{lstlisting}[language=Bash]
+ps -u --pid {PID}
+\end{lstlisting}
+
+
+\paragraph{nslookup}
+
+nslookup命令用于查询DNS的记录，查看域名解析是否正常，在网络故障的时候用来诊断网络问题。nslookup is a network administration command-line tool available for many computer operating systems for querying the Domain Name System (DNS) to obtain domain name or IP address mapping or for any other specific DNS record.
+
+\begin{lstlisting}[language=Bash]
+nslookup {domain}
+\end{lstlisting}
+
+查询结果如图\ref{fig:nslookup}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.4]{nslookup.png}
+	\caption{nslookup查看域名解析情况}
+	\label{fig:nslookup}
+\end{figure}
+
+
+
 \paragraph{dd}
 
 dd命令可用于刻录系统盘,找到待刻录盘的盘符:
@@ -4204,6 +4232,8 @@ Linux du命令是对文件和目录磁盘使用的空间的查看.查看software
 \begin{lstlisting}[language=Bash]
 # 查看software文件夹大小
 du -sh software
+# 当前目录下文件按文件夹大小排序
+du -sh * | sort -nr
 \end{lstlisting}
 
 \paragraph{mount}
@@ -5714,7 +5744,7 @@ curl -O http://192.168.0.14/assets/templatefile/haishu.tar.gz
 
 在使用磁力链接下载元素据时，如果下载时间太长，一般是网络的问题，电信的网络普遍优于长城等。
 
-\subsection{rsync(Remote Sync)}
+\subsection{rsync}
 
 rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多台主机间的文件。rsync使用所谓的“rsync算法”来使本地和远程两个主机之间的文件达到同步，这个算法只传送两个文件的不同部分，而不是每次都整份传送，因此速度相当快。使用一个远程shell程序(如rsh、ssh)来实现将本地机器的内容拷贝到远程机器。当DST路径地址包含单个冒号":"分隔符时启动该模式。
 
@@ -5722,6 +5752,7 @@ rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多�
 rsync -avz pi@10.42.0.22:app-soft .
 \end{lstlisting}
 
+rsync在备份网站时也非常有帮助，通常网站下面会有许多log文件、图片等，一般都非常大,GB级别，但是一般情况下的备份不需要备份这些文件。
 在发布文件时，网速比较慢，发布文件上传需要较长时间，rsync工具很有用。启动守护进程：
 
 \begin{lstlisting}[language=Bash]
