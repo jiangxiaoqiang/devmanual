@@ -4902,6 +4902,30 @@ public class ${NAME} {
 
 \chapter{Maven}
 
+\section{基础问题}
+
+\subsection{java.lang.NoSuchMethodError}
+
+在使用Maven install命令时，提示错误：
+
+\begin{lstlisting}
+Execution default-compile of goal org.apache.maven.plugins:maven-compiler-plugin:3.7.0:compile failed: An API incompatibility was encountered while executing org.apache.maven.plugins:maven-compiler-plugin:3.7.0:compile: java.lang.NoSuchMethodError: org.codehaus.plexus.compiler.CompilerError: method <init>(Ljava/lang/String;ZIIIILjava/lang/String;)V not found
+\end{lstlisting}
+
+在Apache Maven Compiler插件中，java compiler为默认编译器，plexus(Plexus Compiler is a Plexus component to use different compilers through a uniform API) java编译器的版本太低(1.8及以下)时，会出现此问题。
+
+\subsection{调整编译版本}
+
+maven3在编译的时候，默认使用的jdk1.5进行编译的。
+
+\section{Nexus}
+
+在Windows下启动Nexus：
+
+\begin{lstlisting}[language=Bash]
+nexus.exe /run
+\end{lstlisting}
+
 \section{常见问题}
 
 \subsection{拷贝jar包到lib目录}
