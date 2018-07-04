@@ -4688,6 +4688,23 @@ sudo /etc/init.d/networking restart
 
 \section{常见问题}
 
+\subsection{进程自动结束}
+
+Java进程运行一段时间后自动结束，也没有错误日志输出。也没有提示内存溢出什么的。查看Linux系统日志可以找到原因：
+
+\begin{lstlisting}[language=Bash]
+grep -R "Out of" /var/log
+\end{lstlisting}
+
+Linux内存不足时自动结束进程如图\ref{fig:linuxkillprocess}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.5]{linuxkillprocess.jpg}
+	\caption{内存不足时自动结束进程}
+	\label{fig:linuxkillprocess}
+\end{figure}
+
 \subsection{too many open files}
 
 出现这句提示的原因是程序打开的文件/socket连接数量超过系统设定值。查看每个用户最大允许打开文件数量:
