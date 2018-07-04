@@ -2080,6 +2080,26 @@ org.apache.ibatis.binding.BindingException: Parameter 'studentNameList' not foun
 
 \newpage
 
+\section{Hibernate}
+
+Hibernate是一种Java语言下的对象关系映射解决方案。它是使用GNU宽通用公共许可证发行的自由、开源的软件。它为面向对象的领域模型到传统的关系型数据库的映射，提供了一个使用方便的框架。
+
+\subsection{常用配置}
+
+需要打印格式化的SQL,再properties文件中添加如下配置:
+
+\begin{lstlisting}[language=HTML]
+hibernate.show_sql=true
+hibernate.use_sql_comments=true
+hibernate.format_sql=true
+\end{lstlisting}
+
+需要显示SQL绑定的参数，再log4j.properties中做如下配置：
+
+\begin{lstlisting}[language=HTML]
+log4j.logger.org.hibernate.type.descriptor.sql.BasicBinder=TRACE 
+\end{lstlisting}
+
 \section{FreeMaker模板引擎}
 
 FreeMarker 是一个模板引擎，一个基于模板生成文本输出的通用工具，使用纯Java编写。FreeMarker被设计用来生成HTML Web页面，特别是基于MVC模式的应用程序。虽然FreeMarker具有一些编程的能力，但通常由Java程序准备要显示的数据，由FreeMarker生成页面，通过模板显示准备的数据 。
@@ -3784,7 +3804,7 @@ ps -ef|grep -w 'dolphin-web'|grep -v grep|cut -c 9-15|xargs kill 9
 
 \paragraph{rm(remove)}
 
-saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/scripts}} 脚本可以帮助我们将文件移动到“垃圾箱”而不是永久删除它们。如果脚本检测到 GNOME 、KDE、Unity 或 LXDE 桌面环境（DE），则它将文件或文件夹安全地移动到默认垃圾箱\$HOME/.local/share/Trash/files，否则会在您的主目录中创建垃圾箱文件夹\$HOME/Trash。
+saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/scripts}} 脚本可以帮助我们将文件移动到“垃圾箱”而不是永久删除它们。如果脚本检测到 GNOME 、KDE、Unity 或 LXDE 桌面环境（DE），则它将文件或文件夹安全地移动到默认垃圾箱\$HOME/.local/share/Trash/files，否则会在您的主目录中创建垃圾箱文件夹\$HOME/Trash。使用如下命令将rm命令添加别名：
 
 \begin{lstlisting}[language=Bash]
 alias rm='saferm.sh'
@@ -4900,6 +4920,18 @@ public class ${NAME} {
 }
 \end{lstlisting}
 
+\chapter{Apache Tomcat}
+
+\section{基础问题}
+
+查看CATALINA\_HOME:
+
+\begin{lstlisting}[language=Bash]
+/path/to/tomcat/catalina.sh version
+\end{lstlisting}
+
+appBase:可以指定绝对目录,也可以指定相对于<CATALINA\_HOME>的相对目录.如果没有此项,默认为<CATALINA\_HOME>/webapps
+
 \chapter{Maven}
 
 \section{基础问题}
@@ -4923,11 +4955,22 @@ mvn dependency:copy-dependencies -DoutputDirectory=lib
 Execution default-compile of goal org.apache.maven.plugins:maven-compiler-plugin:3.7.0:compile failed: An API incompatibility was encountered while executing org.apache.maven.plugins:maven-compiler-plugin:3.7.0:compile: java.lang.NoSuchMethodError: org.codehaus.plexus.compiler.CompilerError: method <init>(Ljava/lang/String;ZIIIILjava/lang/String;)V not found
 \end{lstlisting}
 
-在Apache Maven Compiler插件中，java compiler为默认编译器，plexus(Plexus Compiler is a Plexus component to use different compilers through a uniform API) java编译器的版本太低(1.8及以下)时，会出现此问题。
+在Apache Maven Compiler插件中，javac compiler为默认编译器，plexus(Plexus Compiler is a Plexus component to use different compilers through a uniform API) java编译器的版本太低(1.8及以下)时，会出现此问题。解决此问题可以将默认的javac编译器替换为eclipse编译器，且plexus的版本调整为2.x版本。
 
 \subsection{调整编译版本}
 
 maven3在编译的时候，默认使用的jdk1.5进行编译的。
+
+
+\subsection{部署后去掉项目名}
+
+一般在使用Maven插件打包成war包部署到Tomcat后，访问路径需要带上项目名称，但是带上项目名称后部分静态资源无法成功加载，在Tomcat的conf文件夹下的server.xml文件的Host配置节中可以添加如下配置以去掉项目名称：
+
+\begin{lstlisting}[language=XML]
+<Context docBase="cqnews-cms" path="/" reloadable="true" source="org.eclipse.jst.j2ee.server:cqnews-cms"/>
+\end{lstlisting}
+
+添加配置后访问URL中就可以不带项目名称。
 
 \section{Nexus}
 
@@ -4935,14 +4978,11 @@ maven3在编译的时候，默认使用的jdk1.5进行编译的。
 
 \begin{lstlisting}[language=Bash]
 nexus.exe /run
-/usr/local/pulse/PulseClient.sh install_dependency_packages
-/usr/local/pulse/PulseClient.sh -h 114.114.114.114 -u example -Url https://114.114.114.114 -r realm
-/usr/local/pulse/PulseClient.sh -S
 \end{lstlisting}
 
 \subsection{离线安装Jar包}
 
-下载离线jar包地址\footnote{\url{http://search.maven.org}}，项目在使用Maven Compiler编译的时候，Plexus包的版本是1.8，1.8版本的和Maven3.x版本结合时存在兼容性问题。Maven库连接不上，使用命令
+下载离线jar包地址\footnote{\url{http://search.maven.org}}，项目在使用Maven Compiler编译的时候，Plexus包的版本是1.8，1.8版本的和Maven 3.x版本结合时存在兼容性问题。Maven库连接不上，使用命令
 
 \begin{lstlisting}[language=Bash]
 mvn install:install-file -Dfile=d:/scala-maven-plugin-3.2.2.jar -DgroupId=net.alchim31.maven -DartifactId=scala-maven-plugin -Dversion=3.2.2 -Dpackaging=jar
@@ -4998,7 +5038,7 @@ scope必须填写为system，而systemPath为引用jar包的绝对路径，注�
 
 \subsection{拷贝jar包到lib目录}
 
-项目运行时，会将依赖的项目编译后的jar包拷贝到Tomcat对应项目的lib目录下，但是其中一个依赖项目的jar包(online)始终不自动拷贝，每次都需要手工拷贝。但是依赖的拷贝配置没有问题，如图所示。
+项目运行时，会将依赖的项目编译后的jar包拷贝到Tomcat对应项目的lib目录下，但是其中一个依赖项目的jar包(online)始终不自动拷贝，每次都需要手工拷贝。但是依赖的拷贝配置没有问题，如图\ref{fig:assemblydeployment}所示。
 
 \begin{figure}[htbp]
 	\centering
@@ -5865,7 +5905,7 @@ rsync -avz WEB-INF root@192.168.1.11:/usr/local/daily-pub/diff-pub
 \begin{lstlisting}[language=Bash]
 # 发布本地的WEB-INF文件夹到服务器
 # 显示拷贝进度
-rsync -avzPh WEB-INF root@192.168.1.11:/usr/local/xycq/daily-pub/diff-pub
+rsync -avzPh WEB-INF resource root@192.168.1.11:/usr/local/xycq/daily-pub/diff-pub
 \end{lstlisting}
 
 P参数表示显示拷贝的进度。h参数会以友好的方式(Human Readable)显示已经拷贝文件总大小。在使用SFTP工具拷贝时，总是会因为文件太大，拷贝的时间过长而导致超时，使用rsync则不存在此问题。
@@ -6366,6 +6406,194 @@ digraph G {
 }
 \end{lstlisting}
 
+\section{ssh(Secure Shell)}
+
+关闭不活动的ssh会话,使用w命令来识别出不活动或者是空闲的ssh会话，使用pstree命令来获取空闲会话的PID，就是使用 kill 命令来关闭会话了。
+
+
+\subsection{安全}
+
+\paragraph{修改默认端口(Change Default Port)}
+
+修改默认端口无法阻止专业的攻击,因为修改ssh默认端口后,使用nmap工具一样可以识别出来OpenSSH服务.但是修改默认端口为随机端口后有一点好处就是可以避免被脚本自动扫描到来尝试登录(爆破).
+
+\paragraph{免密登陆(Login Without Password)}
+
+SSH服务如果在公网上，非常容易受到攻击，特别是弱口令扫描，字典扫描。保护服务器免受攻击，可以使用SSH密钥，禁用口令认证，如果不能做到这一点，务必使用强壮的密码。还可以设置登陆IP白名单。更改服务器ssh端口(基本上没有效果，调整了之后可以使用nmap轻松扫描到)。使用snort、ossec等开源的入侵检测设备保护服务器。免密登录需要注意的是，.ssh文件夹下的authorize\_key文件的权限需要是600。而.ssh文件夹的权限需要是700。调整/etc/ssh/sshd\_config配置文件:
+
+\begin{lstlisting}[language=Bash]
+RSAAuthentication yes
+PubkeyAuthentication yes
+AuthorizedKeysFile      .ssh/authorized_keys
+\end{lstlisting}
+
+拷贝公钥到服务器：
+
+\begin{lstlisting}[language=Bash]
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+# 如果本地没有生成过ssh key
+# 使用如下命令生成ssh key
+ssh-keygen -t rsa -C "a@gmail.com"
+\end{lstlisting}
+
+调整文件夹权限：
+
+\begin{lstlisting}[language=Bash]
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys 
+\end{lstlisting}
+
+在Mac OS X中，有时自动登陆需要反复输入密码，解决问题的方法是可以配置Serria记住密码：
+
+\begin{lstlisting}[language=Bash]
+usekeychain yes
+\end{lstlisting}
+
+有时在Ubuntu下使用ssh也需要输入密码(Enter passphrase for key id\_rsa),此时也可以使用keychain:
+
+\begin{lstlisting}[language=Bash]
+#安装keychain
+sudo apt install keychain
+/usr/bin/keychain ~/.ssh/id_rsa
+\end{lstlisting}
+
+keychain会起一个ssh-agent，后来登录的人通过设置环境变量使用同一个ssh-agent.登录Shell时启动keychain:
+
+\begin{lstlisting}[language=Bash]
+#启动keychain
+eval `keychain --eval id_rsa`
+\end{lstlisting}
+
+
+\subsection{ssh连接慢(Connect Slow)}
+
+在使用SSH时，每次连接建立都相当的慢啊，要20秒以上才能够登录上去，严重影响工作效率。在服务端的/etc/ssh/sshd\_config文件中，修改配置，将GSSAPIAuthentication默认设置为关闭即可，配置文件修改后需要重新启动sshd守护进程配置才能够生效：
+
+\begin{lstlisting}[language=Bash]
+GSSAPIAuthentication　no
+# 重启sshd守护进程
+sudo service sshd restart
+\end{lstlisting}
+
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
+
+\begin{lstlisting}[language=Bash]
+UseDNS=no
+\end{lstlisting}
+
+\subsection{timed out waiting for input: auto-logout}
+
+ssh登录一会儿后，自动断开，提示timed out waiting for input: auto-logout。此时需要设置TMOUT变量。在home目录下的文件.bash\_profile中，设置如下常量：
+
+\begin{lstlisting}[language=Bash]
+TMOUT=100
+\end{lstlisting}
+
+这会让用户在停止动作 100 秒后自动登出。If set to a value greater than zero, TMOUT\footnote{\url{http://man7.org/linux/man-pages/man1/bash.1.html}} is treated as the
+default timeout for the  read  builtin. 
+
+\subsection{Permission denied (publickey)}
+
+在ssh登陆机器时，提示Permission denied (publickey)。可以尝试的方法，在连接命令中加上-vvv参数，观察详细的调试输出:
+
+\begin{lstlisting}[language=Bash]
+ssh -p 2222 -vvv hldev@10.0.0.22
+\end{lstlisting}
+
+设置文件夹对应的权限：
+
+\begin{lstlisting}[language=Bash]
+sudo chmod 700 .ssh
+sudo chmod 600 .ssh/authorized_keys
+\end{lstlisting}
+
+登陆服务器观察相应的日志输出：
+
+\begin{lstlisting}[language=Bash]
+tail -f /var/log/auth.log
+\end{lstlisting}
+
+是不是服务器关闭了密码登陆？只能使用公钥认证登陆。后面检查确实如此，服务器端为了安全考虑，关闭了基于密码登录的方式，但是需要登录的主机并没有将自己的公钥拷贝到服务器上。所以服务器直接提示了Permission denied (publickey)，解决的办法就是在服务器端暂时开启密码登录，在/etc/ssh/sshd\_config中调整配置：
+
+\begin{lstlisting}[language=Bash]
+#允许使用基于密钥认证的方式登陆
+PubkeyAuthentication yes 
+\end{lstlisting}
+
+
+\subsection{Session时间}
+
+在使用ssh的过程中，经常会遇到一会儿没有操作就自动断开了，不是非常方便。
+
+\paragraph{ClientAliveInterval}
+
+修改/etc/ssh/sshd\_config配置文件 ClientAliveInterval 300（默认为0），参数的是意思是每5分钟，服务器向客户端发一个消息，用于保持连接，使用service sshd reload 让其修改后生效。如果发现还是有问题，可以试着把300设置小一点，例如60。
+
+\paragraph{ClientAliveCountMax}
+
+另外,至于ClientAliveCountMax, 使用默认值3即可.ClientAliveCountMax表示服务器发出请求后客户端没有响应的次数达到一定值, 就自动断开。
+
+\paragraph{ControlPersist 4h}
+
+在./ssh/config中添加一行：
+
+\begin{lstlisting}[language=Bash]
+ControlPersist 4h
+\end{lstlisting}
+
+When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no, then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the “ssh -O exit”). If set to a time in seconds, or a time in any of the formats documented in sshd\_config, then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time\footnote{\url{http://man.openbsd.org/ssh_config.5}}.现在你每次通过SSH与服务器建立连接之后，这条连接将被保持4个小时，即使在你退出服务器之后，这条连接依然可以重用，因此，在你下一次（4小时之内）登录服务器时，你会发现连接以闪电般的速度建立完成，这个选项对于通过scp拷贝多个文件提速尤其明显，因为你不在需要为每个文件做单独的认证了。
+
+\subsection{代理转发}
+
+\paragraph{本地转发Local Forward}
+
+将本地机(客户机)的某个端口转发到远端指定机器的指定端口. 工作原理是这样的, 本地机器上分配了一个 socket 侦听 port 端口, 一旦这个端口上有了连接, 该连接就经过安全通道转发出去, 同时远程主机和 host 的 hostport 端口建立连接. 可以在配置文件中指定端口的转发. 只有 root 才能转发特权端口。应用实例可以参看\ref{paragraph:sshproxy}。
+
+\begin{lstlisting}[language=Bash]
+# Mac OS X端口转发
+/usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
+# 接口服务器设置代理转发
+ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
+\end{lstlisting}
+
+有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
+
+\begin{lstlisting}[language=Bash]
+# Mac OS X启动sshd
+sudo /usr/bin/sshd
+# Ubuntu启动sshd
+sudo /etc/init.d/ssh
+\end{lstlisting}
+
+启动SSHD 的时候系统提示:Could not load host key: /etc/ssh/ssh\_ed25519\_key。新版的opensshd 中添加了Ed25519 做签名验证，而之前系统里没这个算法的证书，所以办法也很简单新生成下证书即可。
+
+\begin{lstlisting}[language=Bash]
+sudo ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+sudo ssh-keygen -t dsa -f /etc/ssh/ssh_host_dsa_key
+sudo ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
+ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ED25519_key
+\end{lstlisting}
+
+
+\subsection{ssh查看日志}
+
+如果需要查看ssh日志，可在/etc/ssh/sshd\_config配置日志输出：
+
+\begin{lstlisting}[language=Bash]
+SysLogFacility LOCAL7
+\end{lstlisting}
+
+Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志进行分类，并由专门的工作负责记录相对应的信息，分类有：
+
+\begin{quote}
+	auth(授权)，authpriv，cron(定时任务)，daemon(守护进程)，kern(内核),lpr,mail(邮件相关),mark,news,security(安全),syslog,user,uucp,local0,local7。	
+\end{quote}
+
+多线程，多协议（udp/tcp/ssl/tls/relp）；mysql,pgsql,oracle等多种关系数据中，强大的过滤器，可实现过滤系统信息中的任意部分。自定义输出格式。适用于企业级别日志记录需求。ssh配置文件配置后，在/etc/rsyslog.conf文件中作如下配置：
+
+\begin{lstlisting}[language=Bash]
+LOCAL7.*	/var/log/sshd.log
+\end{lstlisting}
 
 \chapter{Git}
 
@@ -6931,9 +7159,27 @@ sudo apt-get install texlive-full -y
 
 \section{Redis}
 
+\subsection{MISCONF Redis is configured to save RDB snapshots}
+
+启动Redis:
+
+\begin{lstlisting}[language=Bash]
+nohup /usr/local/bin/redis-server /etc/redis/redis.conf & 
+\end{lstlisting}
+
+运行一段时间之后报错：MISCONF Redis is configured to save RDB snapshots。导致此问题的原因是Redis在保存数据时出现错误，默认情况下为了安全，防止无法有效意识到错误，导致造成更大的问题，默认在持久化数据出现问题时，不再接受任何写操作。而本项目中Redis保存的数据重要性不高，所以关闭此特性即可。
+
+\begin{lstlisting}[language=Bash]
+# 写入错误时，继续运行
+stop-writes-on-bgsave-error no
+\end{lstlisting}
 
 
 \section{Ehcache}
+
+\subsection{缓存常驻内存}
+
+有时为了避免第一次请求慢的问题，希望缓存不经过HTTP请求也能够自动刷新，参考文章：https://zentao.hualongdata.com/zentao/bug-view-4418.html。
 
 \subsection{Spring Boot Ehcache缓存}
 
