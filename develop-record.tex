@@ -4088,7 +4088,15 @@ grep -R 10.10.1.52 /opt --exclude=\*.log --exclude=\*.out
 grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
 \end{lstlisting}
 
-如果需要同时排除多个文件夹，命令后跟多个--exclude-dir命令即可。
+如果需要同时排除多个文件夹，命令后跟多个--exclude-dir命令即可。打印匹配行的前后几行：
+
+\begin{lstlisting}[language=Bash]
+# 打印匹配行的前后5行
+tail -f cc-web.2018-07-05.0.log |grep -C 5 "ERROR"
+# 打印匹配行的后5行
+tail -f cc-web.2018-07-05.0.log |grep -A 5 "ERROR"
+\end{lstlisting}
+
 
 \paragraph{sed(Stream Editor)}
 
@@ -6090,7 +6098,6 @@ ansible shuitu-front-webservers -m copy -a "src=./dist.tar.gz dest=/root/app-sof
 其中10.55.10.77是配置的代理机器，代理机器通过ssh端口转发(SSH Port Forwarding)来实现代理，2222为代理机器的监听端口。ssh代理转发将代理机器2222端口的流量转发到目标机器的ssh端口上。
 
 
-
 \subsection{VisualVM远程监控}
 
 jstatd(Java Statistics Monitoring Daemon)是一个监控 JVM 从创建到销毁过程中资源占用情况并提供远程监控接口的 RMI （ Remote Method Invocation ，远程方法调用）服务器程序，它是一个 Daemon 程序，要保证远程监控软件连接到本地的话需要 jstatd 始终保持运行。jstatd运行需要通过 -J-Djava.security.policy=*** 指定安全策略，因此我们需要在服务器的JDK根目录(如：/opt/app/local/jdk1.8.0\_111)上建立一个指定安全策略的文件jstatd.all.policy，文件内容如下：
@@ -7603,11 +7610,22 @@ group by org_id
 
 \subsection{常用SQL记录}
 
+查看最大会话：
+
+\begin{lstlisting}[language=SQL]
+--查看DM会话配置
+SELECT *
+FROM V$DM_INI
+WHERE PARA_NAME = 'MAX_SESSIONS'
+\end{lstlisting}
+
 查看当前活跃的Session：
 
 \begin{lstlisting}[language=SQL]
 --查看活动的Sesion
-select * from v$sessions where state='ACTIVE';
+select * 
+from v$sessions 
+where state='ACTIVE';
 \end{lstlisting}
 
 查看SQL执行历史：
