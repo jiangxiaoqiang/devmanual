@@ -4541,6 +4541,20 @@ sudo /etc/init.d/rc.local restart
 
 在Ubuntu 16.04中使用Google Chrome时,浏览器经常闪动,出现异常图形,关闭Google Chrome硬件加速(硬件加速是指在计算机中通过把计算量非常大的工作分配给专门的硬件来处理以减轻中央处理器的工作量之技术。尤其是在图像处理中这个技术经常被使用。雷神之锤3是第一个必须要求硬件加速的3D游戏。Google Chrome浏览器也设置了“硬件加速”选项，用户可根据需求开启或关闭此功能)即可.在设置->系统中关闭硬件加速\footnote{\url{https://en.wikipedia.org/wiki/Hardware_acceleration}}(Hardware Acceleration).
 
+\subsection{挂载U盘}
+
+使用如下名录挂载U盘:
+
+\begin{lstlisting}[language=Bash]
+# 列出设备
+fdisk -l
+# 创建挂载点
+mkdir -p dolphin
+# 挂载U盘
+mount /dev/sdb1 dolphin
+\end{lstlisting}
+
+
 \subsection{Linux进程}
 
 查看程序的目录，需要找到进程的PID,进入到PID对应的目录，使用ll命令,exe文件对应的链接即为包含了正在进程中运行的程序链接。
@@ -7355,7 +7369,7 @@ limit 0, 10
 
 \subparagraph{全文索引(Full-text Search)}
 
-全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。，该对象中必须有一唯一并且非空的列。 
+全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。 
 
 \subparagraph{联合索引}
 
