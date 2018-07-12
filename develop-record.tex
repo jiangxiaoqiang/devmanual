@@ -6666,6 +6666,16 @@ git diff v1.3_xiaoqiang v1_xiaoqiang filename.java
 git clone -b v1.3 <url>
 \end{lstlisting}
 
+Git clone慢时，设置代理：
+
+\begin{lstlisting}[language=Bash]
+git config --global http.proxy 'socks5://127.0.0.1:1080' 
+git config --global http.proxy 'socks5://127.0.0.1:1080'
+\end{lstlisting}
+
+如果仓库太大，可以在git clone中加入参数--depth=1，只拉取最近的一个revision。
+
+
 \subsection{返回到指定版本}
 
 查看提交历史：
@@ -6872,6 +6882,23 @@ Chromium是一个由Google主导开发的网页浏览器，以BSD许可证等多
 	\hline
 \end{tabular}
 
+\subsection{安装插件}
+
+Google Chrome版本安装插件时，提示错误Apps, Extensions and scripts cannot be added from this website.为了推行谷歌的扩展商店的限制。使用如下命令启动即可顺利安装插件：
+
+\begin{lstlisting}[language=Bash]
+google-chrome --enable-easy-off-store-extension-install
+# 顺昌顺畅安装插件，需要加上enable-easy-off-store-extension-install参数
+chromium-browser --enable-easy-off-store-extension-install
+\end{lstlisting}
+
+chromium没有这样限制：
+
+\begin{lstlisting}[language=Bash]
+dnf install chromium
+\end{lstlisting}
+
+
 \subsection{Console}
 
 \paragraph{Log XMLHttpRequests}
@@ -7056,8 +7083,17 @@ ElasticSearch基础操作：
 输入如下命令安装TexLive:
 
 \begin{lstlisting}[language=Bash]
-# Ubuntu下安装Texlive
+# Ubuntu下安装TexLive
 sudo apt-get install texlive -y
+# Fedora下安装TexLive
+sudo dnf install texlive-scheme-full
+\end{lstlisting}
+
+输入如下命令安装TexStudio：
+
+\begin{lstlisting}[language=Bash]
+# Ubuntu下安装TexStudio
+sudo dnf install texstudio
 \end{lstlisting}
 
 \subsection{字体(Font)}
