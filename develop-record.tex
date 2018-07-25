@@ -31,7 +31,7 @@
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
-\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\usepackage[bookmarksopen,bookmarksdepth=4]{hyperref}
 
 \makeatletter
 \def\UrlAlphabet{%
@@ -7027,8 +7027,6 @@ server {
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
 
-4C:CC:6A:7C:C3:CF
-D8:CB:8A:8A:CD:15
 
 \paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
 
@@ -7404,10 +7402,6 @@ console.table(data);
 
 \subsection{Network}
 
-\paragraph{Replay XHR}
-
-有时在开发时，可以直接在Network中的网络请求列表中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提高不少效率。
-
 \paragraph{Disable cache}
 
 勾选上Disable cache后，浏览器不会利用本地的Javascript缓存，每次都会到服务器上重新取。
@@ -7568,10 +7562,10 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 \LaTeX{}生成的pdf导航默认深度是3，如果需要显示更深层次。那么可以使用hyperref包，如下代码片段。
 
 \begin{lstlisting}[language=Tex]
-\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\usepackage[bookmarksopen,bookmarksdepth=4]{hyperref}
 \end{lstlisting}
 
-奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04LTS下无效。
+奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04 LTS下无效。在Fedora 28下有效果。
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。在Url无法正确换行时,hyperref宏包提供了两个宏，\textbackslash UrlBreaks 以及\textbackslash UrlBigBreaks，用于告知 TeX，用户允许在何处截断 URL 以便换行。添加如下代码\footnote{\url{https://liam0205.me/2017/05/17/help-the-url-command-from-hyperref-to-break-at-line-wrapping-point/}},Url即可换行:
 
