@@ -6592,6 +6592,10 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 /usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
 # 接口服务器设置代理转发
 ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
+# 本地端口转发实例
+#在10.20.1.24上执行
+#访问本地10.20.1.24的8888端口就相当于访问远程10.20.1.11的8083端口
+ssh -g -L 8888:10.20.1.11:8083 10.20.1.24
 \end{lstlisting}
 
 有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
