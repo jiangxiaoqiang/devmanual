@@ -1067,10 +1067,6 @@ pageableList.add(copyPageable);
 若变量为 String 字符串，则拷贝其地址引用。但是在修改时，它会从字符串池中重新生成一个新的字符串，原有紫都城对象保持不变。
 
 
-\subsection{HttpServletRequest}
-
-
-
 \section{应用接口(Application Interface)}
 
 \subsection{接口文档(Interface Document)}
@@ -6868,8 +6864,25 @@ limit_req_zone $binary_remote_addr $uri zone=two:3m rate=1r/s;
 limit_req_zone $binary_remote_addr $request_uri zone=thre:3m rate=1r/s;      
 \end{lstlisting}
 
+可以根据客户端的 user-agents 首部字段来阻止指定的爬虫爬取我们的网站。使用如下命令查看最近访问IP，以访问频率倒序排列：
 
-可以根据客户端的 user-agents 首部字段来阻止指定的爬虫爬取我们的网站.
+\begin{lstlisting}[language=Bash]
+awk '{print $1}' /usr/local/nginx/logs/new.xycq.gov.cn.log |sort |uniq -c|sort -nr
+\end{lstlisting}
+
+对方使用的估计是阿里云的动态IP，太多了，限制IP段访问：
+
+\begin{lstlisting}[language=Bash]
+# 屏蔽整个39.106.173.* C段IP
+deny 39.106.173.0/24；
+# 屏蔽整个39.106.0.1到39.106.255.254  
+deny 39.106.173.0/24； 
+# 封整个段
+# 从118.255.255.1到118.255.255.254的命令
+deny 118.0.0.0/8   
+\end{lstlisting}
+
+
 
 \subsection{Nginx配置}
 
