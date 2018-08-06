@@ -1855,7 +1855,7 @@ jmap -dump:format=b,file=heap.bin <pid>
 
 \section{MyBatis}
 
-mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
+mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本,Sping、Mybati与Spring MyBatis具体的版本对应关系可以参考这里\footnote{\url{http://www.mybatis.org/spring/}}，MyBatis他与Spring Boot的对应关系暂时未找到。
 
 
 \subsection{打印SQL(Print SQL)}
@@ -1866,7 +1866,7 @@ mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
 mybatis.config-location=classpath:mybatis-config.xml
 \end{lstlisting}
 
-在Mybatis配置文件mybatis-config.xml中，做如下配置：
+在MyBatis配置文件mybatis-config.xml中，做如下配置：
 
 \begin{lstlisting}[language=XML]
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1932,7 +1932,7 @@ AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的�
 
 \subsection{多参数传递(Multi-Parameter)}
 
-在使用Mybatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
+在使用MyBatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
 
 \begin{lstlisting}[language=Java]
 int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
@@ -1972,7 +1972,7 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 </insert>
 \end{lstlisting}
 
-参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数有限制，也就是同时一批写入的数据量不能太大。
+参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数总个数有限制，也就是同时一批写入的数据量不能太大。
 
 \subsection{MyBatis Generator}
 
@@ -1980,7 +1980,7 @@ MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis�
 
 \begin{lstlisting}[language=XML]
 <generatorConfiguration>
-	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
+	<classPathEntry location="/home/hldev/software/genMyBatis/Dm7JdbcDriver17.jar"/>
 </generatorConfiguration>
 \end{lstlisting}
 
@@ -2236,7 +2236,7 @@ scalap BackupRouteFunc >> BackupRouteFunc.scala
 
 \chapter{Python}
 
-Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
+Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于Linux开发的Android平台！
 
 \subsection{基础}
 
@@ -2324,8 +2324,6 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
-\paragraph{海量数据}
-
 \subsection{读取Properties文件}
 
 在项目中持续集成的Python部署脚本中，需要读取Java的Properties文件，读取的方法如下：
@@ -2386,7 +2384,7 @@ def get(self, key, default_value=''):
 \begin{lstlisting}[language=Bash]
 # 安装python-devel
 sudo dnf install python-devel -y
-# 解决fatal error: Python.h: No such file or directory
+# Python.h: No such file or directory
 sudo dnf install python-devel --allowerasing
 PATH="$PATH":/usr/local/mysql/bin
 \end{lstlisting}
@@ -3385,14 +3383,14 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 	\end{center}
 \end{table}
 
-配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。linux系统中所有进程所能开启的总的线程数：
+配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。Linux系统中所有进程所能开启的总的线程数：
 
 \begin{lstlisting}[language=Bash]
 #总线程数定义
 cat /proc/sys/kernel/threads-max
 \end{lstlisting}
 
-linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
+Linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
 
 \begin{lstlisting}[language=Bash]
 /* The number of threads per process.  */
@@ -4007,6 +4005,9 @@ tar -zxcf example.tgz
 \begin{lstlisting}[language=Bash]
 tar -zcvf tomcat.tar.gz --exclude=tomcat/logs --exclude=tomcat/libs tomcat
 tar -cvf test.tgz test/ --exclude *.jpg
+# 压缩nginx文件夹到nginx.tar.gz
+# 排除日志文件
+tar -zxvf nginx.tar.gz --exclude=*.log nginx
 \end{lstlisting}
 
 
@@ -4260,6 +4261,14 @@ du -sh software
 du -sh * | sort -nr
 \end{lstlisting}
 
+有时需要排除某类文件，比如需要排除日志文件：
+
+\begin{lstlisting}[language=Bash]
+# 查看nginx文件夹大小
+# 排除日志文件
+du -sh --exclude="*.log" nginx
+\end{lstlisting}
+
 \paragraph{mount}
 
 挂载磁盘命令如下:
@@ -4273,7 +4282,7 @@ sudo umount /media/hldev/KINGSTON
 
 \paragraph{时间(Time)}
 
-有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是linux系统Kernel时间。手动设置时间命令如下:
+有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是Linux系统Kernel时间。手动设置时间命令如下:
 
 \begin{lstlisting}[language=Bash]
 #查看系统当前时间
@@ -4848,14 +4857,14 @@ Intellij　Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.co
 
 \subsection{Plugin}
 
-\paragraph{Free Mybatis Plugin}
+\paragraph{Free MyBatis Plugin}
 
 可以快速的从Mapper.java中的方法定位到Mapper.xml对应的方法，另外在字段写错误时也会自动给出红色的高亮提示，如图\ref{fig:intellijideapluginxmltips}所示。
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale=0.45]{intellijideapluginxmltips.png}
-	\caption{Intellij Idea Mybatis插件提示}
+	\caption{Intellij Idea MyBatis插件提示}
 	\label{fig:intellijideapluginxmltips}
 \end{figure}
 
@@ -6070,7 +6079,7 @@ iostat 2 -cdxk
 
 \subsection{sftp}
 
-vsftpd 是“very secure FTP damon”的缩写，安全性是它的一个最大的特点。vsftpd是一个UNIX类操作系统上运行的服务器的名字，它可以运行在诸如linux，BSD，Solaris，HP-UNIX等系统上面，是一个完全免费的，开发源码的FTP服务器软件。
+vsftpd 是“very secure FTP damon”的缩写，安全性是它的一个最大的特点。vsftpd是一个UNIX类操作系统上运行的服务器的名字，它可以运行在诸如Linux，BSD，Solaris，HP-UNIX等系统上面，是一个完全免费的，开发源码的FTP服务器软件。
 
 \begin{lstlisting}[language=Bash]
 /bin/systemctl start vsftpd.service俄
@@ -6533,7 +6542,7 @@ GSSAPIAuthentication　no
 sudo service sshd restart
 \end{lstlisting}
 
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在Linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
 
 \begin{lstlisting}[language=Bash]
 UseDNS=no
