@@ -2419,7 +2419,7 @@ yarn config set registry https://registry.npm.taobao.org
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.3]{reduxdataflow.png}
+	\includegraphics[scale=0.4]{reduxdataflow.png}
 	\caption{Redux数据流}
 	\label{fig:reduxdataflow}
 \end{figure}
@@ -3337,15 +3337,15 @@ state[0] = bookReducer;
 127.0.0.1表示ipv4的本地地址,而::1表示的时ipv6的本地地址，也就是0000:0000:0000:0000:0000:0000:0000:0001.在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装TexStudio修复此问题.
 
 \begin{lstlisting}[language=Bash]
-#列出已经安装软件
+# 列出已经安装软件
 sudo apt list --installed|grep texstudio
-#移除已经安装的软件
+# 移除已经安装的软件
 sudo apt --purge -y remove qemu-system-common 
-#删除已安装包（不保留配置文件)
+# 删除已安装包（不保留配置文件)
 sudo apt purge texstudio
-#安装TexStudio
+# 安装TexStudio
 sudo apt install texstudio -y
-#通过dpkg安装TexStudio
+# 通过dpkg安装TexStudio
 sudo dpkg -i texstudio-qt4_2.12.6-2_amd64.deb 
 \end{lstlisting}
 
@@ -3361,8 +3361,7 @@ sudo rm -rf /var/lib/dpkg/info/*
 sudo apt-get -f install 
 \end{lstlisting}
 
-f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。
-
+f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。
 
 \begin{table}
 	\caption{Linux重要文件}
@@ -3383,14 +3382,14 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 	\end{center}
 \end{table}
 
-配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。Linux系统中所有进程所能开启的总的线程数：
+Linux系统中所有进程所能开启的总的线程数：
 
 \begin{lstlisting}[language=Bash]
-#总线程数定义
+# 总线程数定义
 cat /proc/sys/kernel/threads-max
 \end{lstlisting}
 
-Linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
+Linux系统中单个进程的最大线程数有其最大的限制PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
 
 \begin{lstlisting}[language=Bash]
 /* The number of threads per process.  */
@@ -3403,11 +3402,11 @@ Linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THRE
 Linux中, 命令主要包含4种: 可执行程序(executable program),Shell的内置命令(built-in), shell函数(function), alias命令(别名).一般情况下，type命令被用于判断另外一个命令是否是内置命令，内建命令和外部命令的区别在于前者不需要使用子进程来执行。它们已经和Shell编译成了一体，作为Shell工具的组成部分存在。不需要借助外部程序文件来运行。外部命令，是存在于Bash Shell之外的程序，不是Shell程序的一部分。通常位于/bin, /usr/bin, /sbin, /usr/sbin中。
 
 \begin{lstlisting}[language=Bash]
-#启动terminal-emulator
+# 启动terminal-emulator
 x-terminal-emulator
-#启动GNOME终端
+# 启动GNOME终端
 gnome-terminal
-#启动Xfce终端
+# 启动Xfce终端
 xfce4-terminal
 \end{lstlisting}
 
@@ -3432,7 +3431,8 @@ interactive login shell\footnote{ssh(Secure Shell)连接远程主机执行脚本
 
 #
 # 一键部署后端项目到远程1台或多台服务器
-# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 发布流程为：
+# 编译构建-打包-发布包-拷贝包到指定目录-解压包
 # 注：本机需要安装Ansible并与服务器做免密登录
 #
 # 2017-05-25 增加动态读取版本号，根据版本自动发布程序
@@ -3475,8 +3475,6 @@ scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
 scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 
-ansible webservers -m command -a "date"
-
 echo "停止站点..."
 ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
 
@@ -3496,11 +3494,11 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
+set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行，能够提高Shell脚本的安全性。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{终端快捷键(Terminal Shortcut)}
 
-Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
+Shell终端中常用的快捷键如表\ref{table:terminalshortcut}所示：
 
 \begin{table}
 	\caption{终端快捷键}
@@ -3510,9 +3508,7 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 		\hline
 		\multirow{1}{*}{快捷键}
 		& \multicolumn{1}{c}{说明}  \\
-		\hline			
-		Alt + F & 向前移动一个单词 \\
-		Alt + B & 向后移动一个单词 \\
+		\hline	
 		Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
 		Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
 		Ctrl + K & 从光标当前位置向后删除所有字符\\
@@ -3524,7 +3520,7 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
 \paragraph{source}
 
-在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，只能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
 
 \paragraph{修改登录路径}
 
@@ -3536,7 +3532,7 @@ if [ -d /home/app/ ];then
 fi
 \end{lstlisting}
 
-\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+\paragraph{输入长命令}有时在Shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
 
 \begin{lstlisting}[language=Bash]
 export EDITOR=vim
@@ -3547,16 +3543,16 @@ export EDITOR=vim
 \paragraph{创建路径(Create Directory)}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
 
 \begin{lstlisting}[language=Bash]
-#新建后端开发目录
+# 新建后端开发目录
 mkdir -p /home/dolphin/hldata/backend/credit-system
-#新建开发目录树
+# 新建开发目录树
 mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
 \end{lstlisting}
 
 \paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
 
 \begin{lstlisting}[language=Bash]
-#如果目录不存在，则创建相应的目录
+# 如果目录不存在，则创建相应的目录
 cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 \end{lstlisting}
 
@@ -3602,7 +3598,7 @@ echo "set show-all-if-ambiguous on">> ~/.inputrc
 \begin{lstlisting}[language=Bash]
 # Mac OS X和Linux下皆可
 echo "set completion-ignore-case on">>/etc/inputrc
-#重启系统使之生效
+# 重启系统使之生效
 reboot
 \end{lstlisting}
 
@@ -3683,16 +3679,16 @@ ps pid
 
 \begin{lstlisting}[language=Bash]
 bash -x ./auth.sh
-#跟踪并输出执行语句
+# 跟踪并输出执行语句
 sh -x ./auth.sh
-#检查语法错误
+# 检查语法错误
 sh -n ./auth.sh
 \end{lstlisting}
 
 命令行前面的+号表示嵌套。还有一个专门调试Shell的工具bashdb\footnote{\url{http://bashdb.sourceforge.net/}}，类似于GDB的调试工具，可以完成对Shell脚本的断点设置，单步执行，变量观察等。调试Shell脚本的语句如下：
 
 \begin{lstlisting}[language=Bash]
-#安装bashdb
+# 安装bashdb
 bashdb --debug auth.sh
 \end{lstlisting}
 
@@ -3705,8 +3701,8 @@ print $CURRENT_DATE
 注意需要命令执行过当前语句时，才能使用print命令查看变量。打印文件Shell脚本内容信息：
 
 \begin{lstlisting}[language=Bash]
-#打印Shell脚本内容
-#从第3行开始打印，打印10行信息
+# 打印Shell脚本内容
+# 从第3行开始打印，打印10行信息
 l 3 10 
 \end{lstlisting}
 
@@ -3743,7 +3739,7 @@ readonly PROCESS_NAME="credit-system-web-api"
 count=`ps -ef | grep ${PROCESS_NAME} | grep -v "grep" | wc -l`
 # 进程是否存在
 if [ $count -eq 1 ]; then
-	#根据进程名称找到进程ID
+	# 根据进程名称找到进程ID
 	PROCESS_ID=$(ps x | grep ${PROCESS_NAME} | grep -v grep | awk '{print $1}')
 	if [ ${PROCESS_ID} -gt 100 ]; then
 		kill ${PROCESS_ID}
@@ -3802,6 +3798,8 @@ saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/sc
 
 \begin{lstlisting}[language=Bash]
 alias rm='saferm.sh'
+# 在.bashrc中设置别名
+alias rm=saferm.sh
 \end{lstlisting}
 
 
@@ -3826,7 +3824,7 @@ nslookup {domain}
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{nslookup.png}
+	\includegraphics[scale=0.6]{nslookup.png}
 	\caption{nslookup查看域名解析情况}
 	\label{fig:nslookup}
 \end{figure}
@@ -3850,7 +3848,7 @@ umount /dev/sdb4
 刻录:
 
 \begin{lstlisting}[language=Bash]
-sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
+sudo dd bs=4M if=/home/hldev/software/cn_windows_10.iso of=/dev/sdb4
 \end{lstlisting}
 
 \paragraph{cp}
@@ -3858,8 +3856,8 @@ sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_u
 有时使用cp命令时，强制覆盖：
 
 \begin{lstlisting}[language=Bash]
-#让管道自动输入一大堆得yes，就可以完成了强行复制
-yes | cp cp -fr src dest
+# 让管道自动输入一大堆得yes，就可以完成了强行复制
+yes | cp -fr src dest
 \end{lstlisting}
 
 
@@ -3873,18 +3871,18 @@ yes | cp cp -fr src dest
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
 
 \begin{lstlisting}[language=Bash]
-#列出指定文件的信息
+# 列出指定文件的信息
 ls -lh authorized_keys
-#只显示当前文件夹下的目录
-#方法1
+# 只显示当前文件夹下的目录
+# 方法1
 ls -al | grep "^d"
-#方法2
+# 方法2
 ls -d */
-#列出文件，按文件大小排序
+# 列出文件，按文件大小排序
 ls -alhS
-#递归列出子目录
+# 递归列出子目录
 ls -R
-#调整ls别名
+# 调整ls别名
 alias='ls -lh --color=always'
 \end{lstlisting}
 
