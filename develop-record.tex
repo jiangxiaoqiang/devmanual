@@ -31,7 +31,7 @@
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
 \usepackage{titletoc} % 目录操作
-\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\usepackage[bookmarksopen,bookmarksdepth=4]{hyperref}
 
 \makeatletter
 \def\UrlAlphabet{%
@@ -1077,10 +1077,6 @@ pageableList.add(copyPageable);
 若变量为 String 字符串，则拷贝其地址引用。但是在修改时，它会从字符串池中重新生成一个新的字符串，原有紫都城对象保持不变。
 
 
-\subsection{HttpServletRequest}
-
-
-
 \section{应用接口(Application Interface)}
 
 \subsection{接口文档(Interface Document)}
@@ -1189,7 +1185,13 @@ echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 \end{lstlisting}
 
-脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。一次性密码本是一种理论上不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。在使用shasum命令时，有时可能会没有安装，在CentOS下输入如下命令安装即可：
+
+\begin{lstlisting}[language=Bash]
+yum install perl-Digest-SHA -y
+\end{lstlisting}
+
+一次性密码本是一种理论上不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
 
 \begin{lstlisting}[language=Bash]
 #!/bin/bash
@@ -1869,7 +1871,7 @@ jmap -dump:format=b,file=heap.bin <pid>
 
 \section{MyBatis}
 
-mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
+mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本,Sping、Mybati与Spring MyBatis具体的版本对应关系可以参考这里\footnote{\url{http://www.mybatis.org/spring/}}，MyBatis他与Spring Boot的对应关系暂时未找到。
 
 
 \subsection{打印SQL(Print SQL)}
@@ -1880,7 +1882,7 @@ mybatis-spring-boot-starter 1.3.x版本对应Spring Boot 1.5.x版本。
 mybatis.config-location=classpath:mybatis-config.xml
 \end{lstlisting}
 
-在Mybatis配置文件mybatis-config.xml中，做如下配置：
+在MyBatis配置文件mybatis-config.xml中，做如下配置：
 
 \begin{lstlisting}[language=XML]
 <?xml version="1.0" encoding="UTF-8"?>
@@ -1946,7 +1948,7 @@ AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的�
 
 \subsection{多参数传递(Multi-Parameter)}
 
-在使用Mybatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
+在使用MyBatis的过程中，有时需要传递多个参数，例如既要传入机构ID列表,又要传入其他参数，那么此时Mapper如下：
 
 \begin{lstlisting}[language=Java]
 int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
@@ -1986,7 +1988,7 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 </insert>
 \end{lstlisting}
 
-参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数有限制，也就是同时一批写入的数据量不能太大。
+参数传入List即可，注意列表的数量不宜过大，一般数据库对传入的参数总个数有限制，也就是同时一批写入的数据量不能太大。
 
 \subsection{MyBatis Generator}
 
@@ -1994,7 +1996,7 @@ MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis�
 
 \begin{lstlisting}[language=XML]
 <generatorConfiguration>
-	<classPathEntry location="/home/hldev/software/genMybatis/Dm7JdbcDriver17.jar"/>
+	<classPathEntry location="/home/hldev/software/genMyBatis/Dm7JdbcDriver17.jar"/>
 </generatorConfiguration>
 \end{lstlisting}
 
@@ -2250,7 +2252,7 @@ scalap BackupRouteFunc >> BackupRouteFunc.scala
 
 \chapter{Python}
 
-Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于linux开发的Android平台！
+Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于Linux开发的Android平台！
 
 \subsection{基础}
 
@@ -2338,8 +2340,6 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
-\paragraph{海量数据}
-
 \subsection{读取Properties文件}
 
 在项目中持续集成的Python部署脚本中，需要读取Java的Properties文件，读取的方法如下：
@@ -2400,7 +2400,7 @@ def get(self, key, default_value=''):
 \begin{lstlisting}[language=Bash]
 # 安装python-devel
 sudo dnf install python-devel -y
-# 解决fatal error: Python.h: No such file or directory
+# Python.h: No such file or directory
 sudo dnf install python-devel --allowerasing
 PATH="$PATH":/usr/local/mysql/bin
 \end{lstlisting}
@@ -2435,7 +2435,7 @@ yarn config set registry https://registry.npm.taobao.org
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.3]{reduxdataflow.png}
+	\includegraphics[scale=0.4]{reduxdataflow.png}
 	\caption{Redux数据流}
 	\label{fig:reduxdataflow}
 \end{figure}
@@ -3353,15 +3353,15 @@ state[0] = bookReducer;
 127.0.0.1表示ipv4的本地地址,而::1表示的时ipv6的本地地址，也就是0000:0000:0000:0000:0000:0000:0000:0001.在使用TexStudio的过程中,出现了GUI图标无法正常显示的情况,决定重新安装TexStudio修复此问题.
 
 \begin{lstlisting}[language=Bash]
-#列出已经安装软件
+# 列出已经安装软件
 sudo apt list --installed|grep texstudio
-#移除已经安装的软件
+# 移除已经安装的软件
 sudo apt --purge -y remove qemu-system-common 
-#删除已安装包（不保留配置文件)
+# 删除已安装包（不保留配置文件)
 sudo apt purge texstudio
-#安装TexStudio
+# 安装TexStudio
 sudo apt install texstudio -y
-#通过dpkg安装TexStudio
+# 通过dpkg安装TexStudio
 sudo dpkg -i texstudio-qt4_2.12.6-2_amd64.deb 
 \end{lstlisting}
 
@@ -3377,8 +3377,7 @@ sudo rm -rf /var/lib/dpkg/info/*
 sudo apt-get -f install 
 \end{lstlisting}
 
-f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。
-
+f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。
 
 \begin{table}
 	\caption{Linux重要文件}
@@ -3399,14 +3398,14 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 	\end{center}
 \end{table}
 
-配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。linux系统中所有进程所能开启的总的线程数：
+Linux系统中所有进程所能开启的总的线程数：
 
 \begin{lstlisting}[language=Bash]
-#总线程数定义
+# 总线程数定义
 cat /proc/sys/kernel/threads-max
 \end{lstlisting}
 
-linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
+Linux系统中单个进程的最大线程数有其最大的限制PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
 
 \begin{lstlisting}[language=Bash]
 /* The number of threads per process.  */
@@ -3419,11 +3418,11 @@ linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THRE
 Linux中, 命令主要包含4种: 可执行程序(executable program),Shell的内置命令(built-in), shell函数(function), alias命令(别名).一般情况下，type命令被用于判断另外一个命令是否是内置命令，内建命令和外部命令的区别在于前者不需要使用子进程来执行。它们已经和Shell编译成了一体，作为Shell工具的组成部分存在。不需要借助外部程序文件来运行。外部命令，是存在于Bash Shell之外的程序，不是Shell程序的一部分。通常位于/bin, /usr/bin, /sbin, /usr/sbin中。
 
 \begin{lstlisting}[language=Bash]
-#启动terminal-emulator
+# 启动terminal-emulator
 x-terminal-emulator
-#启动GNOME终端
+# 启动GNOME终端
 gnome-terminal
-#启动Xfce终端
+# 启动Xfce终端
 xfce4-terminal
 \end{lstlisting}
 
@@ -3448,7 +3447,8 @@ interactive login shell\footnote{ssh(Secure Shell)连接远程主机执行脚本
 
 #
 # 一键部署后端项目到远程1台或多台服务器
-# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 发布流程为：
+# 编译构建-打包-发布包-拷贝包到指定目录-解压包
 # 注：本机需要安装Ansible并与服务器做免密登录
 #
 # 2017-05-25 增加动态读取版本号，根据版本自动发布程序
@@ -3491,8 +3491,6 @@ scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
 scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 
-ansible webservers -m command -a "date"
-
 echo "停止站点..."
 ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
 
@@ -3512,11 +3510,11 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
+set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行，能够提高Shell脚本的安全性。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{终端快捷键(Terminal Shortcut)}
 
-Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
+Shell终端中常用的快捷键如表\ref{table:terminalshortcut}所示：
 
 \begin{table}
 	\caption{终端快捷键}
@@ -3526,9 +3524,7 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 		\hline
 		\multirow{1}{*}{快捷键}
 		& \multicolumn{1}{c}{说明}  \\
-		\hline			
-		Alt + F & 向前移动一个单词 \\
-		Alt + B & 向后移动一个单词 \\
+		\hline	
 		Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
 		Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
 		Ctrl + K & 从光标当前位置向后删除所有字符\\
@@ -3540,7 +3536,7 @@ Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
 \paragraph{source}
 
-在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，只能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
 
 \paragraph{修改登录路径}
 
@@ -3552,7 +3548,7 @@ if [ -d /home/app/ ];then
 fi
 \end{lstlisting}
 
-\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+\paragraph{输入长命令}有时在Shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
 
 \begin{lstlisting}[language=Bash]
 export EDITOR=vim
@@ -3563,16 +3559,16 @@ export EDITOR=vim
 \paragraph{创建路径(Create Directory)}创建目录及目录树可以批量进行，一个命令，即可创建整个目录树。
 
 \begin{lstlisting}[language=Bash]
-#新建后端开发目录
+# 新建后端开发目录
 mkdir -p /home/dolphin/hldata/backend/credit-system
-#新建开发目录树
+# 新建开发目录树
 mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-frontend,doc/{html,info,pdf},demo/}
 \end{lstlisting}
 
 \paragraph{与控制操作符组合使用}||控制操作符分隔两个命令，并且仅当第一个命令返回非零退出状态时才运行第二个命令。换句话说，如果第一个命令成功，则第二个命令不会运行。如果第一个命令失败，则第二个命令才会运行。
 
 \begin{lstlisting}[language=Bash]
-#如果目录不存在，则创建相应的目录
+# 如果目录不存在，则创建相应的目录
 cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 \end{lstlisting}
 
@@ -3618,7 +3614,7 @@ echo "set show-all-if-ambiguous on">> ~/.inputrc
 \begin{lstlisting}[language=Bash]
 # Mac OS X和Linux下皆可
 echo "set completion-ignore-case on">>/etc/inputrc
-#重启系统使之生效
+# 重启系统使之生效
 reboot
 \end{lstlisting}
 
@@ -3699,16 +3695,16 @@ ps pid
 
 \begin{lstlisting}[language=Bash]
 bash -x ./auth.sh
-#跟踪并输出执行语句
+# 跟踪并输出执行语句
 sh -x ./auth.sh
-#检查语法错误
+# 检查语法错误
 sh -n ./auth.sh
 \end{lstlisting}
 
 命令行前面的+号表示嵌套。还有一个专门调试Shell的工具bashdb\footnote{\url{http://bashdb.sourceforge.net/}}，类似于GDB的调试工具，可以完成对Shell脚本的断点设置，单步执行，变量观察等。调试Shell脚本的语句如下：
 
 \begin{lstlisting}[language=Bash]
-#安装bashdb
+# 安装bashdb
 bashdb --debug auth.sh
 \end{lstlisting}
 
@@ -3721,8 +3717,8 @@ print $CURRENT_DATE
 注意需要命令执行过当前语句时，才能使用print命令查看变量。打印文件Shell脚本内容信息：
 
 \begin{lstlisting}[language=Bash]
-#打印Shell脚本内容
-#从第3行开始打印，打印10行信息
+# 打印Shell脚本内容
+# 从第3行开始打印，打印10行信息
 l 3 10 
 \end{lstlisting}
 
@@ -3748,6 +3744,25 @@ l 3 10
 
 \subsection{常用Bash脚本(Bash Snippnet)}
 
+如下命令可作为编写Bash时通用：
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+# 当使用未初始化的变量时，程序自动退出
+set -u
+
+# 当任何一行命令执行失败时，自动退出脚本
+set -e
+
+# 在运行结果之前，先输出执行的那一行命令
+set -x
+\end{lstlisting}
+
+编写Bash脚本时注意在Windows下编写的脚本默认是dos格式的，到Linux下执行时，需要手工调整为Unix格式。
+
+
+
 \paragraph{结束指定进程}
 
 结束指定名称的进程,在系统部署前,需要结束当前运行的进程:
@@ -3759,7 +3774,7 @@ readonly PROCESS_NAME="credit-system-web-api"
 count=`ps -ef | grep ${PROCESS_NAME} | grep -v "grep" | wc -l`
 # 进程是否存在
 if [ $count -eq 1 ]; then
-	#根据进程名称找到进程ID
+	# 根据进程名称找到进程ID
 	PROCESS_ID=$(ps x | grep ${PROCESS_NAME} | grep -v grep | awk '{print $1}')
 	if [ ${PROCESS_ID} -gt 100 ]; then
 		kill ${PROCESS_ID}
@@ -3818,6 +3833,8 @@ saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/sc
 
 \begin{lstlisting}[language=Bash]
 alias rm='saferm.sh'
+# 在.bashrc中设置别名
+alias rm=saferm.sh
 \end{lstlisting}
 
 
@@ -3842,7 +3859,7 @@ nslookup {domain}
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{nslookup.png}
+	\includegraphics[scale=0.6]{nslookup.png}
 	\caption{nslookup查看域名解析情况}
 	\label{fig:nslookup}
 \end{figure}
@@ -3866,7 +3883,7 @@ umount /dev/sdb4
 刻录:
 
 \begin{lstlisting}[language=Bash]
-sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
+sudo dd bs=4M if=/home/hldev/software/cn_windows_10.iso of=/dev/sdb4
 \end{lstlisting}
 
 \paragraph{cp}
@@ -3874,8 +3891,8 @@ sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_u
 有时使用cp命令时，强制覆盖：
 
 \begin{lstlisting}[language=Bash]
-#让管道自动输入一大堆得yes，就可以完成了强行复制
-yes | cp cp -fr src dest
+# 让管道自动输入一大堆得yes，就可以完成了强行复制
+yes | cp -fr src dest
 \end{lstlisting}
 
 
@@ -3889,18 +3906,18 @@ yes | cp cp -fr src dest
 有时一个文件夹里面的文件很多，为了避免从太多文件里面去找目标文件，而只想查看一个文件的属性：
 
 \begin{lstlisting}[language=Bash]
-#列出指定文件的信息
+# 列出指定文件的信息
 ls -lh authorized_keys
-#只显示当前文件夹下的目录
-#方法1
+# 只显示当前文件夹下的目录
+# 方法1
 ls -al | grep "^d"
-#方法2
+# 方法2
 ls -d */
-#列出文件，按文件大小排序
+# 列出文件，按文件大小排序
 ls -alhS
-#递归列出子目录
+# 递归列出子目录
 ls -R
-#调整ls别名
+# 调整ls别名
 alias='ls -lh --color=always'
 \end{lstlisting}
 
@@ -4021,6 +4038,9 @@ tar -zxcf example.tgz
 \begin{lstlisting}[language=Bash]
 tar -zcvf tomcat.tar.gz --exclude=tomcat/logs --exclude=tomcat/libs tomcat
 tar -cvf test.tgz test/ --exclude *.jpg
+# 压缩nginx文件夹到nginx.tar.gz
+# 排除日志文件
+tar -zxvf nginx.tar.gz --exclude=*.log nginx
 \end{lstlisting}
 
 
@@ -4274,6 +4294,14 @@ du -sh software
 du -sh * | sort -nr
 \end{lstlisting}
 
+有时需要排除某类文件，比如需要排除日志文件：
+
+\begin{lstlisting}[language=Bash]
+# 查看nginx文件夹大小
+# 排除日志文件
+du -sh --exclude="*.log" nginx
+\end{lstlisting}
+
 \paragraph{mount}
 
 挂载磁盘命令如下:
@@ -4287,7 +4315,7 @@ sudo umount /media/hldev/KINGSTON
 
 \paragraph{时间(Time)}
 
-有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是linux系统Kernel时间。手动设置时间命令如下:
+有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是Linux系统Kernel时间。手动设置时间命令如下:
 
 \begin{lstlisting}[language=Bash]
 #查看系统当前时间
@@ -4550,6 +4578,20 @@ sudo /etc/init.d/rc.local restart
 \section{常见操作}
 
 在Ubuntu 16.04中使用Google Chrome时,浏览器经常闪动,出现异常图形,关闭Google Chrome硬件加速(硬件加速是指在计算机中通过把计算量非常大的工作分配给专门的硬件来处理以减轻中央处理器的工作量之技术。尤其是在图像处理中这个技术经常被使用。雷神之锤3是第一个必须要求硬件加速的3D游戏。Google Chrome浏览器也设置了“硬件加速”选项，用户可根据需求开启或关闭此功能)即可.在设置->系统中关闭硬件加速\footnote{\url{https://en.wikipedia.org/wiki/Hardware_acceleration}}(Hardware Acceleration).
+
+\subsection{挂载U盘}
+
+使用如下名录挂载U盘:
+
+\begin{lstlisting}[language=Bash]
+# 列出设备
+fdisk -l
+# 创建挂载点
+mkdir -p dolphin
+# 挂载U盘
+mount /dev/sdb1 dolphin
+\end{lstlisting}
+
 
 \subsection{Linux进程}
 
@@ -4848,14 +4890,14 @@ Intellij　Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.co
 
 \subsection{Plugin}
 
-\paragraph{Free Mybatis Plugin}
+\paragraph{Free MyBatis Plugin}
 
 可以快速的从Mapper.java中的方法定位到Mapper.xml对应的方法，另外在字段写错误时也会自动给出红色的高亮提示，如图\ref{fig:intellijideapluginxmltips}所示。
 
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[scale=0.45]{intellijideapluginxmltips.png}
-	\caption{Intellij Idea Mybatis插件提示}
+	\caption{Intellij Idea MyBatis插件提示}
 	\label{fig:intellijideapluginxmltips}
 \end{figure}
 
@@ -5679,6 +5721,14 @@ wget -c https://nmap.org/dist/nmap-7.31.dmg
 
 \section{基础}
 
+制作启动盘：
+
+\begin{lstlisting}[language=Bash]
+sudo dd if=2017-01-11-raspbian-jessie.img of=/dev/sdb bs=2M
+\end{lstlisting}
+
+
+
 \subsection{连接(Connection)}
 
 Raspberry可以通过网线直接与PC连接，输入如下命令查看Raspberry的IP：
@@ -6055,6 +6105,22 @@ iostat 2 -cdxk
 \end{lstlisting}
 
 参数 -d(Device)表示，显示设备（磁盘）使用状态；-k某些使用block为单位的列强制使用Kilobytes为单位；2表示，数据显示每隔2秒刷新一次。iostat还有一个比较常用的选项-x，该选项将用于显示和io相关的扩展数据。-c用来获取cpu部分状态值。为显示更详细的io设备统计信息，可以使用-x选项。
+
+\subsection{MobaXterm}
+
+
+
+\subsection{sftp}
+
+vsftpd 是“very secure FTP damon”的缩写，安全性是它的一个最大的特点。vsftpd是一个UNIX类操作系统上运行的服务器的名字，它可以运行在诸如Linux，BSD，Solaris，HP-UNIX等系统上面，是一个完全免费的，开发源码的FTP服务器软件。
+
+\begin{lstlisting}[language=Bash]
+/bin/systemctl start vsftpd.service俄
+\end{lstlisting}
+
+
+
+
 
 \subsection{Zeal}
 
@@ -6507,7 +6573,7 @@ GSSAPIAuthentication　no
 sudo service sshd restart
 \end{lstlisting}
 
-GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
+GSSAPI ( Generic Security Services Application Programming Interface) 是一套类似Kerberos 5 的通用网络安全系统接口。该接口是对各种不同的客户端服务器安全机制的封装，以消除安全接口的不同，降低编程难度。但该接口在目标机器无域名解析时会有问题。使用strace查看后发现，ssh在验证完key之后，进行authentication gssapi-with-mic，此时先去连接DNS服务器，在这之后会进行其他操作。连接慢也可以关闭DNS反向解析，在Linux中，默认就是开启了SSH的反向DNS解析,这个会消耗大量时间，因此需要关闭\cite{book-wiresharkanalysis}。
 
 \begin{lstlisting}[language=Bash]
 UseDNS=no
@@ -6586,6 +6652,10 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 /usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
 # 接口服务器设置代理转发
 ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
+# 本地端口转发实例
+#在10.20.1.24上执行
+#访问本地10.20.1.24的8888端口就相当于访问远程10.20.1.11的8083端口
+ssh -g -L 8888:10.20.1.11:8083 10.20.1.24
 \end{lstlisting}
 
 有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
@@ -6627,6 +6697,443 @@ Facility:设施，是rsyslog引入的概念，从功能或者程序上对日志�
 LOCAL7.*	/var/log/sshd.log
 \end{lstlisting}
 
+\section{Nginx}
+
+安装配置好nginx服务器后默认目录是/usr/share/nginx/html。nginx模块一般被分成三大类：handler、filter和upstream。Mac下Nginx配置文件的路径为：/usr/local/etc/nginx/nginx.conf。
+
+\subsection{X-Forwarded-For}
+
+X-Forwarded-For是一个HTTP扩展头部。HTTP/1.1（RFC 2616）协议并没有对它的定义，它最开始是由 Squid 这个缓存代理软件引入，用来表示 HTTP 请求端真实 IP。如今它已经成为事实上的标准，被各大 HTTP 代理、负载均衡等转发服务广泛使用，并被写入 RFC 7239（Forwarded HTTP Extension）标准之中。在默认情况下，Nginx并不会对X-Forwarded-For头做任何的处理，除非用户使用proxy\_set\_header参数设置：
+
+\begin{lstlisting}[language=bash]
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+\end{lstlisting}
+
+X-Forwarded-For请求头格式:
+
+\begin{lstlisting}[language=bash]
+X-Forwarded-For: IP0, IP1, IP2
+\end{lstlisting}
+
+XFF 的内容由「英文逗号 + 空格」隔开的多个部分组成，最开始的是离服务端最远的设备 IP，然后是每一级代理设备的 IP。
+
+\subsection{Nginx获取真实IP}
+
+Nginx作为HTTP代理转发前端时，后端服务无法获知前端访问客户的IP地址。要获取客户端IP，需要将http\_realip\_module编译进入Nginx中。查看Nginx安装了哪些模块，使用如下命令：
+
+\begin{lstlisting}[language=bash]
+nginx -V
+\end{lstlisting}
+
+在命令的输出结果中，可以看到Nginx的版本，Nginx的编译参数，和Nginx已经包含有哪些模块。此处显示已经编译了http\_realip\_module模块。在服务器上的项目中使用的tengine，经过查看是没有编译http\_realip\_module模块，从tengine官网上下载好源码，输入如下命令进行编译：
+
+\begin{lstlisting}[language=bash]
+# 在Ubuntu 14.04 LTS下安装pcre依赖
+# pcre:Perl Compatible Regular Expressions
+sudo apt-get install libpcre3 libpcre3-dev
+# 指定预编译参数，仅仅指定路径
+sudo ./configure --prefix=/opt/tengine
+# 将realip模块编译进入
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module
+# 编译
+sudo make
+# 安装
+sudo make install
+./configure --prefix=/usr/local/tengine-2.1.2 --with-openssl=/Users/dolphin/source/openssl
+\end{lstlisting}
+
+不指定prefix，则可执行文件默认放在/usr/local/bin，库文件默认放在/usr/local/lib，配置文件默认放在/usr/local/etc。其它的资源文件放在/usr /local/share。
+你要卸载这个程序，要么在原来的make目录下用一次make uninstall（前提是make文件指定过uninstall）,要么去上述目录里面把相关的文件一个个手工删掉。
+指定prefix，直接删掉一个文件夹就够了，这也是制定prefix一个比较方便的地方。在编译时，还需要指定pcre的版本，因为Ubuntu 16.04 LTS里有时安装有pcre 3，而部署的电脑上不一定安装有pcre 3，而且pcre 3的源码不容易找到。所以编译命令如下：
+
+\begin{lstlisting}[language=bash]
+# 将realip模块编译进入，并指定pcre
+sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40 --with-openssl=/root/software/openssl-OpenSSL_1_1_0e --without-http_gzip_module
+
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
+
+#本机编译（不成功）
+./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
+
+#本机编译（成功）
+-prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
+
+# 构建程序
+make
+
+#安装程序
+make install
+
+#服务器
+./configure --prefix=/opt/tengine
+
+./configure: error: SSL modules require the OpenSSL library.
+You can either do not enable the modules, or install the OpenSSL library
+into the system, or build the OpenSSL library statically from the source
+with nginx by using --with-openssl=<path> option.
+
+
+\end{lstlisting}
+
+其中--with-pcre表示pcre(Perl Compatible Regular Expressions)的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --without-http_gzip_module --with-pcre=/usr/local/src/pcre-8.40/
+\end{lstlisting}
+
+这里编译的时候有一个小细节需要注意，需要将源码包存放到/usr/local/src目录下。一直没有编译成功也许是这个小小的细节，开始时是将源码包随意存放的一个目录。以上编译的命令没有包含Zlib，也没有包含http\_realip\_module模块。最终的编译命令如下：
+
+\begin{lstlisting}[language=bash]
+./configure --prefix=/opt/tengine --with-openssl=/usr/local/src/openssl-OpenSSL_1_0_2g/ --with-pcre=/usr/local/src/pcre-8.40/ --with-zlib=/usr/local/src/zlib-1.2.11 --with-http_realip_module 
+\end{lstlisting}
+
+编译完毕之后，输入如下命令：
+
+\begin{lstlisting}[language=bash]
+# 查看Tengine版本、模块信息，编译时所使用的参数
+./nginx -V
+\end{lstlisting}
+
+即可看到http\_realip\_module已经编译到Nginx中了。Nginx的http realip module等于Apache的mod\_rpaf，用于接受前端发来的IP head信息，从获取到真实的用户IP。将获取真实IP的模块编译进入Nginx后，还需要在对应的http、server、location中加入以下参数：
+
+\begin{lstlisting}[language=bash]
+#指令是告诉nginx，10.10.1.11是我们的反向代服务器
+#不是真实的用户IP
+set_real_ip_from 10.10.1.11;
+#告诉nginx真正的用户IP是存在
+#X-Forwarded-For请求头中
+real_ip_header X-Real-IP;
+\end{lstlisting}
+
+其中set\_real\_ip\_from可以指定某个网段。这个指令指定信任的代理IP，它们将会以精确的替换IP转发。0.8.22后可以指定Unix sockets。real\_ip\_header设置需要使用哪个头来确定替换的IP地址。由于项目中使用的Nginx作为反向代理，所以配置如下：
+
+\begin{lstlisting}[language=bash]
+location /inapi {
+proxy_pass http://localhost:28080;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_redirect off;
+}
+\end{lstlisting}
+
+在另一台电脑上访问服务端，在后端根据新添加的Header获取到的IP地址如图\ref{fig:nginxgetrealip}所示：
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{nginxgetrealip.png}
+	\caption{Nginx获取用户真实访问IP}
+	\label{fig:nginxgetrealip}
+\end{figure}
+
+此处获取到的IP是用户的真实IP，而不是反向代理服务器的IP。
+
+\subsection{Nginx并发(Nginx Concurrent)}
+
+如何设置能限制某个IP某一时间段的访问次数是一个让人头疼的问题，特别面对恶意的ddos攻击的时候。其中CC攻击（Challenge Collapsar）是DDOS（分布式拒绝服务）的一种，也是一种常见的网站攻击方法，攻击者通过代理服务器或者肉鸡向向受害主机不停地发大量数据包，造成对方服务器资源耗尽，一直到宕机崩溃。
+
+cc攻击一般就是使用有限的ip数对服务器频繁发送数据来达到攻击的目的，Nginx可以通过HttpLimitReqModule和HttpLimitZoneModule配置来限制ip在同一时间段的访问次数来防cc攻击。
+
+HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit\_req\_zone和limit\_req指令配合使用来达到限制。一旦并发连接超过指定数量，就会返回503错误。limit\_req\_zone 用来限制单位时间内的请求数，即速率限制,采用的漏桶算法 “leaky bucket”。
+
+\begin{lstlisting}[language=bash]
+http {
+limit_conn_log_level error;
+limit_conn_status 503;
+#Zone=one或allips表示设置了
+#名为“one”或“allips”的存储区
+#大小为10兆字节
+limit_conn_zone $binary_remote_addr zone=one:10m;
+limit_conn_zone $server_name zone=perserver:10m;
+#rate=1000r/s 的意思是允许1秒钟不超过1000个请求
+limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s; 
+#限制每分钟不超过600个请求
+limit_req_zone $binary_remote_addr zone=allips:100m rate=600r/m;
+server {
+limit_conn one 100;
+limit_conn perserver 3000;
+limit_req zone=allips  burst=5  nodelay;
+}
+}
+\end{lstlisting}
+
+HttpLimitConnModule用来限制单个ip的并发连接数，使用limit\_zone和limit\_conn指令，这两个模块的区别前一个是对一段时间内的连接数限制，后者是对同一时刻的连接数限制。
+
+\subsection{URI长度限制}
+
+在Http1.1协议中并没有提出针对URL的长度进行限制，RFC协议里面是这样描述的，HTTP协议并不对URI的长度做任何的限制，服务器端必须能够处理任何它们所提供服务多能接受的URI，并且能够处理无限长度的URI,如果服务器不能处理过长的URI,那么应该返回414状态码。接触的最多的服务器类型就是Nginx和Tomcat,对于url的长度限制，它们都是通过控制http请求头的长度来进行限制的，nginx的配置参数为large\_client\_header\_buffers，tomcat的请求配置参数为maxHttpHeaderSize。
+
+\begin{lstlisting}[language=bash]
+# Nginx配置HTTP请求头长度
+client_header_buffer_size 2048k;
+\end{lstlisting}
+
+项目采用Spring Boot，所使用的Tomcat为内嵌的Tomcat。在application.properties中，增加如下配置:
+
+\begin{lstlisting}[language=bash]
+#单位为KB,如果没有指定，默认为8192(8KB)
+server.max-http-header-size=1024
+\end{lstlisting}
+
+奇怪的是，在本机设置的1024KB可以查询，部署到服务器上，参数必须再调大才能够查询，否则提示请求头太大的错误。真的遇到鬼了。在不同的操作系统上单位不一样吗？见鬼
+
+\subsection{开启Gzip压缩}
+
+Nginx开启Gzip压缩配置如下：
+
+\begin{lstlisting}[language=Bash]
+gzip on;
+gzip_min_length 1k;
+gzip_buffers 4 16k;
+gzip_comp_level 2;
+gzip_types application/javascript application/json text/plain application/x-javascript text/css application/xml text/javascript application/x-httpd-php image/jpeg image/gif image/png;
+gzip_vary off;
+gzip_disable "MSIE [1-6]";
+\end{lstlisting}
+
+用curl测试是否开启了压缩：
+
+\begin{lstlisting}[language=Bash]
+curl -I -H "Accept-Encoding: gzip, deflate" "http://creditsystem.test/main"
+curl -I -H "Accept-Encoding: gzip, deflate" "http://10.10.1.11/main"
+\end{lstlisting}
+
+-I选项与-header选项是等价的，表示只打印出HTTP头部。开启压缩成功后，可以看到一句：Content-Encoding: gzip。
+
+\subsection{Nginx与爬虫(Nginx Anti-Spider)}
+
+Nginx限制统一IP每分钟访问的次数:
+
+\begin{lstlisting}[language=Bash]
+limit_req_zone $binary_remote_addr zone=one:3m rate=1r/s;
+limit_req_zone $binary_remote_addr $uri zone=two:3m rate=1r/s;
+limit_req_zone $binary_remote_addr $request_uri zone=thre:3m rate=1r/s;      
+\end{lstlisting}
+
+可以根据客户端的 user-agents 首部字段来阻止指定的爬虫爬取我们的网站。使用如下命令查看最近访问IP，以访问频率倒序排列：
+
+\begin{lstlisting}[language=Bash]
+awk '{print $1}' /usr/local/nginx/logs/new.xycq.gov.cn.log |sort |uniq -c|sort -nr
+\end{lstlisting}
+
+对方使用的估计是阿里云的动态IP，太多了，限制IP段访问：
+
+\begin{lstlisting}[language=Bash]
+# 屏蔽整个39.106.173.* C段IP
+deny 39.106.173.0/24；
+# 屏蔽整个39.106.0.1到39.106.255.254  
+deny 39.106.173.0/24； 
+# 封整个段
+# 从118.255.255.1到118.255.255.254的命令
+deny 118.0.0.0/8   
+\end{lstlisting}
+
+
+
+\subsection{Nginx配置}
+
+简单的配置：
+
+\begin{lstlisting}[language=bash]
+user www-data;
+worker_processes 4;
+pid /run/nginx.pid;
+
+events {
+worker_connections 768;
+}
+
+http {
+server{
+listen 80;
+# 定义网站默认根目录
+root /opt/dolphin/frontend/dist;
+
+location /api {
+proxy_pass http://localhost:8011;
+}
+
+location / {
+root /opt/dolphin/frontend/dist;
+index index.html;
+} 
+}
+}
+\end{lstlisting}
+
+Nginx部署React项目的简单配置如图\ref{fig:nginxreactconfig}所示。
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[scale=0.6]{nginxreactconfig.jpg}
+	\caption{Nginx React简单配置}
+	\label{fig:nginxreactconfig}
+\end{figure}
+
+在0.7以后的版本中加入了一个try\_files指令，配合命名location，可以部分替代原本常用的rewrite配置方式。其作用是按顺序检查文件是否存在，返回第一个找到的文件或文件夹(结尾加斜线表示为文件夹)，如果所有的文件或文件夹都找不到，会进行一个内部重定向到最后一个参数。此处配置如果\$url不存在，则内部重定向到 @fallback。
+
+\subsection{负载均衡(Load Balance)}
+
+Nginx的负载均衡配置，在主机(10.10.1.12)出现问题时，Nginx会自动切换到备机(10.10.1.13)，当主机恢复服务后，Nginx会自动切换回主机:
+
+\begin{lstlisting}[language=bash]
+upstream backend{
+server 10.10.1.12:28080;
+server 10.10.1.13:28080 backup;
+}
+\end{lstlisting}
+
+而反向代理实际意义就是把请求转发, 使用的时候用 proxy\_pass 实现.
+反向代理与正向代理都是用 proxy\_pass 来实现的, 使用起来没有太大的区别, 本质上都是转发网络请求.
+反向代理一般指服务器将请求转发到内部网络, 这样可以防范外网直接请求内网带来的网络风险。
+
+\subsection{阻止请求}
+
+项目中有一个张表有700W+数据，是采用like匹配，like匹配无法利用索引，只能全表扫描，有时会有爬虫不断的请求此接口，导致数据库压力不断增大。为了临时应对，临时限制此接口的请求。如下代码片段所示：
+
+\begin{lstlisting}[language=bash]
+location /dolphin/api {
+#匹配类似于/dolphin/api/test/reg?id=1的url
+#不阻止形如/dolphin/api/test/reg请求
+if ( $args ~ id= ) {
+return 403;
+}
+proxy_pass http://localhost:8011;
+proxy_redirect off;
+}
+\end{lstlisting}
+
+
+\subsection{超时转发}
+
+当一个请求到达后端机器，后端机器因某些原因（load高等等）响应变慢导致超时的时候，Nginx会把这个请求转发到另外的后端机器上.The proxy\_next\_upstream directive is a configuration directive to control re-request from a group of upstream servers by a proxy\_pass if request to one of them fails. 
+
+\begin{lstlisting}
+server {
+location / {
+proxy_pass http://backends;
+proxy_next_upstream error timeout http_404;
+}
+}
+\end{lstlisting}
+
+proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个参数代表如果超时，则尝试其他节点。
+
+\subsection{配置静态服务}
+
+静态文件单独配置一个服务：
+
+\begin{lstlisting}
+server {
+server_name creditstatic;
+listen 8088;
+
+root /opt/app/static;
+index index.html index.htm;
+
+location / {
+try_files $uri $uri/ =404;
+}
+}
+\end{lstlisting}
+
+\subsection{指定首页}
+
+在Nginx中指定默认首页：
+
+\begin{lstlisting}
+server {
+	location / {
+		root   /opt/app/frontend-v1.3/dist;
+		index  /main/index.html;
+	}
+}
+\end{lstlisting}
+
+\subsection{内网访问}
+
+使用Ngin绑定多个域名后，由于多个域名都是用的80端口，内网无法直接通过80端口访问。所以采取复制一份配置的方案，复制的配置单独指定一个独立的端口，配置项与公网的配置项保持一致。由于添加了安全策略会导致公网访问和内网访问的效果不一致，这样既可以公网访问，也可以内网访问，方便问题的排查。
+
+
+
+\subsection{常见问题}
+
+\paragraph{open() "/opt/tengine/conf/nginx.conf" failed (2: No such file or directory)}
+
+以上的路径是编译时Nginx配置文件的路径，如果在启动时不指定配置文件和日志文件的路径，那么Nginx默认使用的时编译时的文件路径，但是在这里已经将编译文件移动到另外的文件夹里面了，所以需要显示的指定配置文件的路径：
+
+\begin{lstlisting}[language=bash]
+#启动Nginx(测试环境)
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+#启动Nginx(正式环境)
+/home/app/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
+\end{lstlisting}
+
+也可以指定prefix文件目录，这样就会更改默认的Nginx主目录了：
+
+\begin{lstlisting}[language=bash]
+#重新加载配置(测试环境)
+/opt/app/local/tengine/sbin/nginx -s reload -p /opt/app/local/tengine
+/opt/app/local/tengine/sbin/nginx -c /opt/app/local/tengine/conf/nginx.conf -p /opt/app/local/tengine
+/opt/home/local/tengine/sbin/nginx -c /home/app/local/tengine/conf/nginx.conf -p /home/app/local/tengine
+\end{lstlisting}
+
+其中opt目录是编译时指定的目录，/opt/app/local是新的目录，用p参数指定新目录即可。同理，在刷新配置的时候也需要显示的指定Nginx的主目录：
+
+\begin{lstlisting}[language=bash]
+#重新加载配置(正式环境Nginx Reload)
+/home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
+./nginx -p /home/app/local/tengine -V
+\end{lstlisting}
+
+
+\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
+
+找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
+
+\begin{lstlisting}[language=bash]
+/lib/i386-linux-gnu/libpcre.so.3
+/lib/x86_64-linux-gnu/libpcre.so.3
+\end{lstlisting}
+
+\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
+
+有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
+
+\begin{lstlisting}[language=bash]
+ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
+ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
+\end{lstlisting}
+
+.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
+
+\begin{lstlisting}[language=bash]
+sudo apt-get install libssl1.0.0:amd64
+sudo apt-get install libssl1.0.0 libssl-dev
+
+#查看OpenSSL版本
+openssl version
+
+#查看系统中对libssl
+find ／ -name libssl.s0*
+
+# 列出openssl包
+yum list \*openssl\*
+\end{lstlisting}
+
+不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
+
+\begin{lstlisting}[language=bash]
+yum --showduplicates list openssl
+\end{lstlisting}
+
+寻找包含libssl.so.1.0.0的安装包：
+
+\begin{lstlisting}[language=bash]
+yum provides */libssl.so.1.0.0
+\end{lstlisting}
+
+在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
+
+
 \chapter{Git}
 
 \section{基础(Fundation)}
@@ -6659,6 +7166,16 @@ git diff v1.3_xiaoqiang v1_xiaoqiang filename.java
 \begin{lstlisting}[language=Bash]
 git clone -b v1.3 <url>
 \end{lstlisting}
+
+Git clone慢时，设置代理：
+
+\begin{lstlisting}[language=Bash]
+git config --global http.proxy 'socks5://127.0.0.1:1080' 
+git config --global http.proxy 'socks5://127.0.0.1:1080'
+\end{lstlisting}
+
+如果仓库太大，可以在git clone中加入参数--depth=1，只拉取最近的一个revision。
+
 
 \subsection{返回到指定版本}
 
@@ -6844,6 +7361,22 @@ git add -f cc-data/src/main/java/creditsystem/data/mapper/log/AccessLogMapper.ja
 
 解决问题将log目录重命名成了syslog。
 
+\paragraph{You are not allowed to push code to this project}
+
+push代码时，提示如下错误：
+
+\begin{lstlisting}[language=Bash]
+remote: You are not allowed to push code to this project.
+fatal: unable to access 'https://gitlab.hualongdata.com/haibo.zeng/credit-report.git/': The requested URL returned error: 403
+\end{lstlisting}
+
+运行命令：
+
+\begin{lstlisting}[language=Bash]
+rm ~/.git-credentials
+\end{lstlisting}
+
+删掉git config --global credential.helper store保存的账号和密码。
 
 \chapter{Google Chrome}
 
@@ -6865,6 +7398,24 @@ Chromium是一个由Google主导开发的网页浏览器，以BSD许可证等多
 	Ctrl+ [ / Ctrl + ]  & 左右切换DevTool面板 \\
 	\hline
 \end{tabular}
+
+\subsection{安装插件}
+
+Google Chrome版本安装插件时，提示错误Apps, Extensions and scripts cannot be added from this website，Google为了推行谷歌的扩展商店所做的限制导致了此问题。使用如下命令启动即可顺利安装插件：
+
+\begin{lstlisting}[language=Bash]
+google-chrome --enable-easy-off-store-extension-install
+# 如果要顺畅安装插件，在Google Chrome启动参数后加上
+# enable-easy-off-store-extension-install参数
+chromium-browser --enable-easy-off-store-extension-install
+\end{lstlisting}
+
+chromium没有这样限制：
+
+\begin{lstlisting}[language=Bash]
+dnf install chromium
+\end{lstlisting}
+
 
 \subsection{Console}
 
@@ -6923,10 +7474,6 @@ console.table(data);
 
 
 \subsection{Network}
-
-\paragraph{Replay XHR}
-
-有时在开发时，可以直接在Network中的网络请求列表中点击右键，在菜单中重复发送XHR请求(Replay XHR)，不需要再次进入界面模拟请求，可以提高不少效率。
 
 \paragraph{Disable cache}
 
@@ -7050,8 +7597,17 @@ ElasticSearch基础操作：
 输入如下命令安装TexLive:
 
 \begin{lstlisting}[language=Bash]
-# Ubuntu下安装Texlive
+# Ubuntu下安装TexLive
 sudo apt-get install texlive -y
+# Fedora下安装TexLive
+sudo dnf install texlive-scheme-full
+\end{lstlisting}
+
+输入如下命令安装TexStudio：
+
+\begin{lstlisting}[language=Bash]
+# Ubuntu下安装TexStudio
+sudo dnf install texstudio
 \end{lstlisting}
 
 \subsection{字体(Font)}
@@ -7079,10 +7635,10 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 \LaTeX{}生成的pdf导航默认深度是3，如果需要显示更深层次。那么可以使用hyperref包，如下代码片段。
 
 \begin{lstlisting}[language=Tex]
-\usepackage[bookmarksopen,bookmarksdepth=3]{hyperref}
+\usepackage[bookmarksopen,bookmarksdepth=4]{hyperref}
 \end{lstlisting}
 
-奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04LTS下无效。
+奇怪的是，这种方式在Mac OS X下有效，但是在Ubuntu 16.04 LTS下无效。在Fedora 28下有效果。
 
 \paragraph{换行}Latex的自动拆单词换行是依靠字典的。如果遇到\LaTeX{}不认识的单词，他就不会换行了。后面的内容就会溢出。在Url无法正确换行时,hyperref宏包提供了两个宏，\textbackslash UrlBreaks 以及\textbackslash UrlBigBreaks，用于告知 TeX，用户允许在何处截断 URL 以便换行。添加如下代码\footnote{\url{https://liam0205.me/2017/05/17/help-the-url-command-from-hyperref-to-break-at-line-wrapping-point/}},Url即可换行:
 
@@ -7363,7 +7919,7 @@ limit 0, 10
 
 \subparagraph{全文索引(Full-text Search)}
 
-全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。，该对象中必须有一唯一并且非空的列。 
+全文索引是基于要编制索引的文本中的各个标记来生成倒排序、堆积且压缩的索引结构。每个表或索引视图只允许有一个全文索引。该索引最多可包含 1024 列。 
 
 \subparagraph{联合索引}
 
