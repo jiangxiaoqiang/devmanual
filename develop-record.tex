@@ -960,6 +960,16 @@ Cron is driven by a crontab (cron table) file, a configuration file that specifi
 0 23 * * 6
 \end{lstlisting}
 
+查看任务：
+
+\begin{lstlisting}[language=Bash]
+crontab -l
+# 重新启动
+/etc/init.d/crond restart
+# 查看日志
+tail -f /var/log/cron
+\end{lstlisting}
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -7784,6 +7794,8 @@ character-set-server=utf8
 \begin{lstlisting}[language=Bash]
 #直接启动达梦
 /home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
+# 启动测试环境达梦
+/opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole
 #通过默认开机启动脚本重启达梦
 /etc/init.d/DmServiceDMSERVER restart
 #通过默认开机启动脚本启动达梦
