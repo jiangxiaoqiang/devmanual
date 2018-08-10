@@ -3959,22 +3959,13 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 
 如果希望以指定列排序(比如希望以进程号排序),在top界面中按下大写的F,选择指定列,按Esc退出后,按下R按键来排序(Using F you'd get you to the menu of fields. Using s would set what field would do the sorting. Press ESC to escape from the menu then to change Ascending/Descending mode, use R.).
 
-\paragraph{scp}
-
-在Windows上使用Putty提供的scp命令:
-
-\begin{lstlisting}[language=Bash]
-# 将本地的Windows文件夹拷贝到远程Linux服务器上
-pscp.exe -r E:\jiangxiaoqiang\deployment\webservice root@10.10.1.32:/home
-\end{lstlisting}
-
 \paragraph{find}
 
 在当前目录下查找大文件：
 
 \begin{lstlisting}[language=Bash]
 find . -type f -size +1000k
-#查找大于100MB的文件
+# 查找大于100MB的文件
 find . -type f -size +100M
 \end{lstlisting}
 
@@ -3988,8 +3979,8 @@ find / -name "*工作*"
 
 \begin{lstlisting}[language=Bash]
 sudo find ~ \( -path "/home/hldev/hldata/credit-system-document" -o -path "/home/hldev/hldata/credit-system-document" \) -prune -o -type f -name "*概要设计*"  -print
-#列出大于200MB的文件
-#排除home目录
+# 列出大于200MB的文件
+# 排除home目录
 find / \( -path "/home" \) -prune -o -type f -size +200M -print
 \end{lstlisting}
 
@@ -3999,11 +3990,12 @@ find / \( -path "/home" \) -prune -o -type f -size +200M -print
 sudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy. 
 
 \begin{lstlisting}[language=Bash]
-#切换到PostgreSQL用户
+# 切换到PostgreSQL用户
 sudo - postgresql
 sudo -i
 sudo -u dolphin -i
-在vi/vim编辑器中,编辑文件后保存时没有修改的权限时可用
+# 在vi/vim编辑器中
+# 编辑文件后保存时没有修改的权限时可用
 :w !sudo tee %
 \end{lstlisting}
 
@@ -4014,15 +4006,17 @@ sudo -u dolphin -i
 Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一个文件，打包后的文件名亦为“tar”。目前，tar文件格式已经成为POSIX标准，最初是POSIX.1-1988，目前是POSIX.1-2001。本程序最初的设计目的是将文件备份到磁带上（tape archive），因而得名tar\footnote{\url{https://zh.wikipedia.org/wiki/Tar}}。创建压缩文档：
 
 \begin{lstlisting}[language=Bash]
-#打包
+# 打包
+# c表示create,创建一个新的archive
+# z表示zip,采用zip方式压缩
 tar -czvf mybatisDemo.tar.gz mybatisDemo
-#打包（多个目录）
+# 打包（多个目录）
 tar -czvf mybatisDemo.tar.gz mybatisDemo mybatisDemo1
 # dist.tar.gz打包的目标文件,dist为要打包的目录
 tar zcf dist.tar.gz dist
 \end{lstlisting}
 
-解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。
+Phil Katz取名格式为zip格式，是表示此种压缩算法速度快的特点，单词zip本身就有表示快速移动的含义。解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。xz是一个使用LZMA压缩算法的无损数据压缩文件格式。和gzip与bzip2一样，同样支持多文件压缩，但是约定不能将多于一个的目标文件压缩进同一个档案文件。相反，xz通常作为一种归档文件自身的压缩格式，例如使用tar或cpioUnix程序创建的归档。xz格式的文件解压时较短。
 
 \begin{lstlisting}[language=Bash]
 xz -d xxx.tar.xz
@@ -4033,7 +4027,7 @@ tar xvf xxx.tar
 tar -zxcf example.tgz
 \end{lstlisting}
 
-但是有时需要排除制定目录和指定类型的文件:
+但是有时创建压缩档时，需要排除制定目录和指定类型的文件:
 
 \begin{lstlisting}[language=Bash]
 tar -zcvf tomcat.tar.gz --exclude=tomcat/logs --exclude=tomcat/libs tomcat
@@ -4133,8 +4127,8 @@ grep -Ril bash /etc/*.conf
 # 使用 --exclude 来排除特定的文件
 grep -Ril --exclude=\*.conf bash /etc/*
 grep -R 10.10.1.52 /opt --exclude=\*.log --exclude=\*.out
-#grep 也能在搜索时排除指定目录
-#使用 --exclude-dir 选项就行。
+# grep 也能在搜索时排除指定目录
+# 使用 --exclude-dir 选项就行。
 grep --exclude-dir=/etc/grub.d -Rwl stretch /etc/*
 \end{lstlisting}
 
@@ -4165,8 +4159,8 @@ sed -n '/^2018-04-03 09:50/','/^2018-04-03 11:30/p' cc-web.2018-04-03.5.log >> f
 项目中生成了100多W的测试数据,导出sql来大概有1.6GB左右,即使压缩了也有300多MB,网速很慢无法一次传输,可以通过split命令来实现文件分割，指定按行数分割和按大小分割两种模式。
 
 \begin{lstlisting}[language=Bash]
-#切割大文件,根据行分割
-#每个文件10W行
+# 切割大文件,根据行分割
+# 每个文件10W行
 split -l 100000 企业示例数据.sql enterprise_
 \end{lstlisting}
 
@@ -4249,8 +4243,6 @@ ps -p
 # 当前系统总的线程数
 ps -p | wc -l
 \end{lstlisting}
-
-
 
 \paragraph{traceroute}
 
