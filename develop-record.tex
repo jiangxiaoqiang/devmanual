@@ -960,6 +960,16 @@ Cron is driven by a crontab (cron table) file, a configuration file that specifi
 0 23 * * 6
 \end{lstlisting}
 
+查看任务：
+
+\begin{lstlisting}[language=Bash]
+crontab -l
+# 重新启动
+/etc/init.d/crond restart
+# 查看日志
+tail -f /var/log/cron
+\end{lstlisting}
+
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -1175,7 +1185,13 @@ echo -n "foobar" | shasum -a 1
 readonly TOKEN = echo -n "foobar" | openssl dgst -sha256
 \end{lstlisting}
 
-脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。一次性密码本是一种理论上不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
+脚本的目的是要使用不同的时间，随机生成的字符串，保证每次请求的Token都需要不一样，相当于一次一密。在使用shasum命令时，有时可能会没有安装，在CentOS下输入如下命令安装即可：
+
+\begin{lstlisting}[language=Bash]
+yum install perl-Digest-SHA -y
+\end{lstlisting}
+
+一次性密码本是一种理论上不可能破解的密码本\cite{secrettech}.使用如下脚本生成随机token：
 
 \begin{lstlisting}[language=Bash]
 #!/bin/bash
@@ -3728,6 +3744,25 @@ l 3 10
 
 \subsection{常用Bash脚本(Bash Snippnet)}
 
+如下命令可作为编写Bash时通用：
+
+\begin{lstlisting}[language=Bash]
+#!/usr/bin/env bash
+
+# 当使用未初始化的变量时，程序自动退出
+set -u
+
+# 当任何一行命令执行失败时，自动退出脚本
+set -e
+
+# 在运行结果之前，先输出执行的那一行命令
+set -x
+\end{lstlisting}
+
+编写Bash脚本时注意在Windows下编写的脚本默认是dos格式的，到Linux下执行时，需要手工调整为Unix格式。
+
+
+
 \paragraph{结束指定进程}
 
 结束指定名称的进程,在系统部署前,需要结束当前运行的进程:
@@ -6142,8 +6177,6 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 cat example.json | jq '.'
 \end{lstlisting}
 
-
-
 \section{Ansible}
 
 \subsection{Ansible模块}
@@ -6619,6 +6652,10 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 /usr/bin/ssh -g -L 2222:10.10.30.1:22222 127.0.0.1
 # 接口服务器设置代理转发
 ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
+# 本地端口转发实例
+#在10.20.1.24上执行
+#访问本地10.20.1.24的8888端口就相当于访问远程10.20.1.11的8083端口
+ssh -g -L 8888:10.20.1.11:8083 10.20.1.24
 \end{lstlisting}
 
 有时在本地转发会遇到一些问题，比如Connection Refused。首先要确定本地要运行有ssh服务端，使用如下命令启动sshd：
@@ -7324,6 +7361,22 @@ git add -f cc-data/src/main/java/creditsystem/data/mapper/log/AccessLogMapper.ja
 
 解决问题将log目录重命名成了syslog。
 
+\paragraph{You are not allowed to push code to this project}
+
+push代码时，提示如下错误：
+
+\begin{lstlisting}[language=Bash]
+remote: You are not allowed to push code to this project.
+fatal: unable to access 'https://gitlab.hualongdata.com/haibo.zeng/credit-report.git/': The requested URL returned error: 403
+\end{lstlisting}
+
+运行命令：
+
+\begin{lstlisting}[language=Bash]
+rm ~/.git-credentials
+\end{lstlisting}
+
+删掉git config --global credential.helper store保存的账号和密码。
 
 \chapter{Google Chrome}
 
@@ -8297,6 +8350,8 @@ character-set-server=utf8
 \begin{lstlisting}[language=Bash]
 #直接启动达梦
 /home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
+# 启动测试环境达梦
+/opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole
 #通过默认开机启动脚本重启达梦
 /etc/init.d/DmServiceDMSERVER restart
 #通过默认开机启动脚本启动达梦
