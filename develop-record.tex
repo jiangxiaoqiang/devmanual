@@ -4310,14 +4310,12 @@ sudo umount /media/hldev/KINGSTON
 有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是Linux系统Kernel时间。手动设置时间命令如下:
 
 \begin{lstlisting}[language=Bash]
-#查看系统当前时间
-date
-#设置软件时间
-#设置软件时间为2018年3月26日11点58分46秒
-#月 日 时 分 年. 秒
+# 设置软件时间
+# 设置软件时间为2018年3月26日11点58分46秒
+# 月 日 时 分 年. 秒
 date 032611582018.46
-#同步到硬件
-#Set the Hardware Clock to the current System Time
+# 同步到硬件
+# Set the Hardware Clock to the current System Time
 # System time sync to hardware
 hwclock -w
 hwclock --systohc
