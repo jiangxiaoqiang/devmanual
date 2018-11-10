@@ -25,8 +25,8 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 {\renewcommand{\bibname}{References}}
-\usepackage[backend=bibtex,style=numeric]{biblatex}
-\defbibheading{bibempty}{}
+%\usepackage[backend=bibtex,style=numeric]{biblatex}
+%\defbibheading{bibempty}{}
 \usepackage{calc} % 简单的计算功能
 \usepackage{makeidx} % 创建索引
 \makeindex % Tells LaTeX to create the files required for indexing
@@ -120,7 +120,7 @@
 }
 
 % Part text styling
-\titlecontents{part}[0cm]{\addvspace{20pt}\centering\large\sffamily}{}{}{}
+%%%\titlecontents{part}[0cm]{\addvspace{20pt}\centering\large\sffamily}{}{}{}
 
 % Chapter text styling
 \titlecontents{chapter}[1.25cm] % Indentation
@@ -419,6 +419,7 @@ innerbottommargin=5pt]{cBox}
 \setlength\ecart{1.2cm-\esp}
 \newcommand{\thepartimage}{}%
 \newcommand{\partimage}[1]{\renewcommand{\thepartimage}{#1}}%
+
 \def\@part[#1]#2{%
 	\ifnum \c@secnumdepth >-2\relax%
 	\refstepcounter{part}%
@@ -436,10 +437,10 @@ innerbottommargin=5pt]{cBox}
 			\node[anchor=south east] at (\paperwidth-1cm,-\paperheight+1cm){\parbox[t][][t]{8.5cm}{
 					\printcontents{l}{0}{\setcounter{tocdepth}{1}}%
 			}};
-			\node[anchor=north east] at (\paperwidth-1.5cm,-3.25cm){\parbox[t][][t]{15cm}{\strut\raggedleft\color{white}\fontsize{30}{30}\sffamily\bfseries#2}};
-			\end{tikzpicture}};
-\end{tikzpicture}}%
+			\node[anchor=north east] at (\paperwidth-1.5cm,-3.25cm){\parbox[t][][t]{15cm}{\strut\raggedleft\color{white}\fontsize{30}{30}\sffamily\bfseries#2}};\end{tikzpicture}};
+	\end{tikzpicture}}
 \@endpart}
+
 \def\@spart#1{%
 \startcontents%
 \phantomsection
@@ -532,7 +533,7 @@ addtohook={%
 }
 }
 
-\addbibresource{Bronvermelding.bib} 
+%\addbibresource{Bronvermelding.bib} 
 
 \begin{document}
 
@@ -609,6 +610,7 @@ addtohook={%
 % PART
 %----------------------------------------------------------------------------------------
 
+
 \part{Framework}
 
 %----------------------------------------------------------------------------------------
@@ -619,24 +621,8 @@ addtohook={%
 
 \chapter{Spring}
 
+
 \section{Common Sense}\index{Common Sense}
-
-Java 8 (codename: Spider) was released on 18 March 2014,and included some features that were planned for Java 7 but later deferred.
-
-\subsection{Spring事务(Spring Transaction)}
-
-默认情况下，如果在事务中抛出了未检查异常（继承自 RuntimeException 的异常）或者 Error，则 Spring 将回滚事务；除此之外，Spring 不会回滚事务。rollbackFor是一组异常类的实例，遇到时必须进行回滚。
-
-\begin{lstlisting}[language=Java,basicstyle=\small\ttfamily]
-/**
-* 对所有异常事务都进行回滚操作
-**/
-@Transactional(rollbackFor = {Exception.class})
-/**
-* 对所有异常事务都不进行回滚操作
-**/
-@Transactional(noRollbackFor=Exception.class)
-\end{lstlisting}
 
 \subsection{classpath}\index{classpath}
 
@@ -725,7 +711,7 @@ public class DataSourceConfig {
 	\item {如果类有任何可变对象属性，那么当它们在类和类的调用者间传递的时候必须被保护性拷贝。如果某一个类成员不是原始变量(primitive)或者不可变类，必须通过在成员初始化(in)或者get方法(out)时通过深度clone方法，来确保类的不可变。}
 \end{enumerate}
 
-不可变对象有几个优点：线程安全、易于理解、比可变对象有更高的安全性。
+不可变对象有几个优点：线程安全、易于理解、不可变对象有更高的安全性。
 
 
 \subsection{集合操作(Collection Operate)}
@@ -734,15 +720,15 @@ public class DataSourceConfig {
 
 \begin{lstlisting}[language=Java]
 JSONObject json = new JSONObject(responseContent);
-String total = json.getString("totalElementsCondition1");
+String total = json.getString("totalElements");
 \end{lstlisting}
 
 去除List元素中的特殊字符：
 
 \begin{lstlisting}[language=Java]
 List<AccessLog> logs = operationLogs.stream()
-		.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-		.collect(Collectors.toList());
+.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
+.collect(Collectors.toList());
 \end{lstlisting}
 
 peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
@@ -754,7 +740,7 @@ peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List�
 \begin{lstlisting}[language=Java]
 Integer[] integers = new Integer[] {1,2,3,4,5};
 /*
-	可以采用此方法填充数组，初始化数组
+可以采用此方法填充数组，初始化数组
 */
 Arrays.fill(integers,1);
 // Cannot modify returned list
@@ -773,8 +759,8 @@ List<Integer> list23 = Arrays.stream(integers).collect(Collectors.toList());
 
 \begin{lstlisting}[language=Java]
 Map<String, List<FeedbackRecord>> groupByLists = feedbackRecords
-		.stream()
-		.collect(Collectors.groupingBy(FeedbackRecord::getResponsekey));
+.stream()
+.collect(Collectors.groupingBy(FeedbackRecord::getResponsekey));
 \end{lstlisting}
 
 如果需要在创建List时对其初始化：
@@ -814,24 +800,12 @@ public int hashCode() {
 * 去重
 */
 unitedAPMapper.pageUnitedAPList(paramsMap)
-				.stream()
-				.forEach(element -> {
+.stream()
+.forEach(element -> {
 	if (!distinctUnitedAwardsPenaltiesList.contains(element)) {
 		distinctUnitedAwardsPenaltiesList.add(element);
 	}
 });
-\end{lstlisting}
-
-判断集合是否为空：
-
-\begin{lstlisting}[language=Java]
-if(CollectionUtils.isEmpty(corpLists)){
-	/**
-	* 需要引用commons-collections包
-	* compile("commons-collection: commons-collections: 3.5")
-	* 实际是list == null || list.isEmpty()的简单封装
-	*/
-}
 \end{lstlisting}
 
 \paragraph{查找(Search)}
@@ -841,7 +815,7 @@ if(CollectionUtils.isEmpty(corpLists)){
 \begin{lstlisting}[language=Java]
 //更加直接的方式判断是否有符合条件的元素
 boolean isChild = users.stream()
-						.anyMatch(t->t.age<18);
+.anyMatch(t->t.age<18);
 \end{lstlisting}
 
 \paragraph{parallelStream}
@@ -865,12 +839,15 @@ for (int i = 0; i < 10000; i++) {
 }
 \end{lstlisting}
 
-运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法要么是把pageable做成不可变的对象，并只能在初始化的时候改变其内容，要么将之移动到局部，每次循环的时候创建新的pageable对象。
+运行此段代码，会发现和字符串a相等的元素输出有可能为b、c、d。为什么会出现这样的现象呢，是由于使用了全局的可变对象pageable，当执行到输出语句时，pageable可能已经被其他线程设置成了另外的值。解决的办法之一是序列化后再反序列化，此时会生成新的对象：
 
-\paragraph{Peek}
-
-Peek属于中间操作(intermediate operation)，Stream中使用Peek始终不运行，非常纳闷，原来是Stream中间操作需要执行结果才会真的运行，需要流水线上触发一个终端操作(terminal operation)，否则中间操作不会执行任何处理\cite{java8inaction}。Peek操作类似于forEach操作，该方法可用于调试。Java 8流中所有的操作都是蓄而不发的，只有执行foreach，collect等终结操作时，流的操作才会执行。
-
+\begin{lstlisting}[language=Java]
+String json = JSON.toJSONString(pageable);
+/*
+* 通过JSON序列化变相深拷贝对象
+*/
+Pageable copyPageable = JSON.parseObject(json, Pageable.class);
+\end{lstlisting}
 
 \paragraph{Object转为Map}
 
@@ -913,14 +890,14 @@ let paramList = value.split(/\n+|\s+/);
 
 \begin{lstlisting}[language=Javascript]
 /*
- 其实不能替换空格
- \s匹配任何不可见字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]
- \f:form feed character
- \n:new line character
- \r:carriage return character
- \t:tab character
- \v:vertical tab character
- \S匹配任何可见字符。等价于[^ \f\n\r\t\v]
+其实不能替换空格
+\s匹配任何不可见字符，包括空格、制表符、换页符等等。等价于[ \f\n\r\t\v]
+\f:form feed character
+\n:new line character
+\r:carriage return character
+\t:tab character
+\v:vertical tab character
+\S匹配任何可见字符。等价于[^ \f\n\r\t\v]
 */
 values.replace(/\s/g, '').split(/\n+/);
 // 方式三
@@ -947,29 +924,6 @@ values.replace(/[ ]/g, '').split(/\n+/);
 
 这样就不会看到定时请求的XHR来扰乱视线了。
 
-\subsection{Crontab}
-
-Cron is driven by a crontab (cron table) file, a configuration file that specifies shell commands to run periodically on a given schedule. 
-
-\begin{lstlisting}[language=Bash]
-# 每晚9：30执行
-30 21 * * * *
-# 每5秒执行一次
-0/5 * * * * ?
-#每周星期六的11:00执行
-0 23 * * 6
-\end{lstlisting}
-
-查看任务：
-
-\begin{lstlisting}[language=Bash]
-crontab -l
-# 重新启动
-/etc/init.d/crond restart
-# 查看日志
-tail -f /var/log/cron
-\end{lstlisting}
-
 \subsection{Code Snippets}
 
 有时想测试某段代码的运行效果，代码足够短也不太需要使用IDE来运行，相当于一个代码草稿本类似的功能。那么此时可以使用Visual Studio Code中使用Code Runner插件，此插件可以支持多种语言，测试草稿代码，如图\ref{fig:visualstudiocodesnippet}所示，想要查看对一个空字符串做toString()操作会有什么效果：
@@ -991,11 +945,11 @@ Optional避免空指针：
 
 \begin{lstlisting}[language=Java]
 public static String getChampionName(Competition comp) throws IllegalArgumentException {
-	return Optional.ofNullable(comp)
-		.map(c->c.getResult())
-		.map(r->r.getChampion())
-		.map(u->u.getName())
-		.orElseThrow(()->new IllegalArgumentException("The value of param comp isn't available."));
+return Optional.ofNullable(comp)
+.map(c->c.getResult())
+.map(r->r.getChampion())
+.map(u->u.getName())
+.orElseThrow(()->new IllegalArgumentException("The value of param comp isn't available."));
 }
 \end{lstlisting}
 
@@ -1004,8 +958,8 @@ Optional参数验证：
 \begin{lstlisting}[language=Java]
 public void setName(String name) throws IllegalArgumentException{
 	this.name = Optional.ofNullable(name)
-				.filter(User::isNameValid)
-				.orElseThrow(()->new IllegalArgumentException("Invalid username."));
+	.filter(User::isNameValid)
+	.orElseThrow(()->new IllegalArgumentException("Invalid username."));
 }
 \end{lstlisting}
 
@@ -1013,14 +967,14 @@ Optional返回默认值，避免空指针：
 
 \begin{lstlisting}[language=Java]
 String provinceOrgName = allOrgs.stream()
-	.filter(orgItem -> orgItem.getOrgId().equals(subDeptOrgId))
-	.findFirst()
-	.orElseGet(() -> {
-		Org defaultOrg = new Org();
-		defaultOrg.setOrgName("未知部门");
-		return defaultOrg;
-	})
-	.getOrgName();
+.filter(orgItem -> orgItem.getOrgId().equals(subDeptOrgId))
+.findFirst()
+.orElseGet(() -> {
+	Org defaultOrg = new Org();
+	defaultOrg.setOrgName("未知部门");
+	return defaultOrg;
+})
+.getOrgName();
 \end{lstlisting}
 
 String.ValueOf()的坑:
@@ -1038,7 +992,7 @@ CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组
 
 \subsection{Java时间}
 
-Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为Sysytem.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11，变态吧！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
+Java的Date类在返回时，日期总是被减去一天，调整为LocalDateTime即可。这是因为System.out.println函数在打印时间时，会取操作系统当前所设置的时区，然后根据这个时区将同毫秒数解释成该时区的时间。java.util.Date月份从0开始，一月是0，十二月是11，变态吧！java.time.LocalDate月份和星期都改成了enum，就不可能再用错了。java.util.Date和SimpleDateFormatter都不是线程安全的，而LocalDate和LocalTime和最基本的String一样，是不变类型，不但线程安全，而且不能修改。java.util.Date是一个“万能接口”，它包含日期、时间，还有毫秒数，如果你只想用java.util.Date存储日期，或者只存储时间，那么，只有你知道哪些部分的数据是有用的，哪些部分的数据是不能用的。在新的Java 8中，日期和时间被明确划分为LocalDate和LocalTime，LocalDate无法包含时间，LocalTime无法包含日期。当然，LocalDateTime才能同时包含日期和时间。
 
 \subsection{Java版本}
 
@@ -1135,8 +1089,8 @@ Content type 'application/x-www-form-urlencoded;charset=UTF-8' not supported
 \begin{lstlisting}[language=Java]
 @RequestMapping("books")
 public RestApiResponse<List<Book>> getUserShelfBooks(long userId){
-	List<Book> userShelfBooks = bookShelfComposite.getUserShelfBooks(userId);
-	return new RestApiResponse<>(ResponseCode.REQUEST_SUCCESS_MESSAGE, ResponseCode.REQUEST_SUCCESS, userShelfBooks);
+List<Book> userShelfBooks = bookShelfComposite.getUserShelfBooks(userId);
+return new RestApiResponse<>(ResponseCode.REQUEST_SUCCESS_MESSAGE, ResponseCode.REQUEST_SUCCESS, userShelfBooks);
 }
 \end{lstlisting}
 
@@ -1166,7 +1120,7 @@ BufferedReader read = new BufferedReader(isr);
 private MapperFacade corporationMapperFacade;
 
 public XydmResponse mapToCorporationResponse(Corporation corporation) {
-	return corporationMapperFacade.map(corporation, XydmResponse.class);
+return corporationMapperFacade.map(corporation, XydmResponse.class);
 }
 \end{lstlisting}
 
@@ -1272,24 +1226,24 @@ aSEQUENCE_TOKEN=`echo -n ${CURRENT_TIME}_${APP_ID}_${APP_KEY}_${CONST_STR}|tr '_
 
 \begin{lstlisting}[language=Java]
 public String getResponseContent(HttpServletResponse response) throws IOException, NoSuchFieldException, IllegalAccessException {
-	String responseContent = null;
-	CoyoteOutputStream outputStream = (CoyoteOutputStream) response.getOutputStream();
-	Class<CoyoteOutputStream> coyoteOutputStreamClass = CoyoteOutputStream.class;
-	Field obField = coyoteOutputStreamClass.getDeclaredField("ob");
-	if (obField.getType().toString().endsWith("OutputBuffer")) {
-		obField.setAccessible(true);
-		OutputBuffer outputBuffer = (OutputBuffer) obField.get(outputStream);
-		Class<OutputBuffer> opb = OutputBuffer.class;
-		Field outputChunkField = opb.getDeclaredField("outputChunk");
-		outputChunkField.setAccessible(true);
-		if (outputChunkField.getType().toString().endsWith("ByteChunk")) {
-			// 取到byte流
-			ByteChunk bc = (ByteChunk) outputChunkField.get(outputBuffer);
-			// 最终的值
-			responseContent = new String(bc.getBytes(), "UTF-8");
-		}
-	}
-	return responseContent;
+String responseContent = null;
+CoyoteOutputStream outputStream = (CoyoteOutputStream) response.getOutputStream();
+Class<CoyoteOutputStream> coyoteOutputStreamClass = CoyoteOutputStream.class;
+Field obField = coyoteOutputStreamClass.getDeclaredField("ob");
+if (obField.getType().toString().endsWith("OutputBuffer")) {
+obField.setAccessible(true);
+OutputBuffer outputBuffer = (OutputBuffer) obField.get(outputStream);
+Class<OutputBuffer> opb = OutputBuffer.class;
+Field outputChunkField = opb.getDeclaredField("outputChunk");
+outputChunkField.setAccessible(true);
+if (outputChunkField.getType().toString().endsWith("ByteChunk")) {
+// 取到byte流
+ByteChunk bc = (ByteChunk) outputChunkField.get(outputBuffer);
+// 最终的值
+responseContent = new String(bc.getBytes(), "UTF-8");
+}
+}
+return responseContent;
 }
 \end{lstlisting}
 
@@ -1297,14 +1251,14 @@ OutputBuffer的命名空间为：org.apache.catalina.connector。在获取响应
 
 \begin{lstlisting}[language=Java]
 public ServletOutputStream getOutputStream() throws IOException {
-	if (usingWriter) {
-		throw new IllegalStateException(sm.getString("coyoteResponse.getOutputStream.ise"));
-	}
-	usingOutputStream = true;
-	if (outputStream == null) {
-		outputStream = new CoyoteOutputStream(outputBuffer);
-	}
-	return outputStream;
+if (usingWriter) {
+throw new IllegalStateException(sm.getString("coyoteResponse.getOutputStream.ise"));
+}
+usingOutputStream = true;
+if (outputStream == null) {
+outputStream = new CoyoteOutputStream(outputBuffer);
+}
+return outputStream;
 }
 \end{lstlisting}
 
@@ -1338,12 +1292,12 @@ response.setBufferSize(2048 * 20);
 @ControllerAdvice(basePackages = "creditsystem.web.controllers")
 public class CreditsystemControllerAdvice extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(HlValidateException.class)
-	@ResponseBody
-	ResponseEntity<?> handleValidateException(HttpServletRequest request, HlBaseException ex) {
-		HttpStatus status = HttpStatus.OK;
-		return new ResponseEntity<>(ApiResult.error(ex.getErrCode(), ex.getErrMsg(), ex.getData()), status);
-	}
+@ExceptionHandler(HlValidateException.class)
+@ResponseBody
+ResponseEntity<?> handleValidateException(HttpServletRequest request, HlBaseException ex) {
+HttpStatus status = HttpStatus.OK;
+return new ResponseEntity<>(ApiResult.error(ex.getErrCode(), ex.getErrMsg(), ex.getData()), status);
+}
 }
 \end{lstlisting}
 
@@ -1365,17 +1319,17 @@ http://example.com/api/user?version=v1.1.30
 
 \begin{lstlisting}
 server{
-	location /api {
-		if($query_string ~ version=v1.1.30){
-			//如果query string中包含"version=v1.1.30"
-			//流量转发到18081端口
-			proxy_pass http://10.10.1.12:18081;
-			proxy_redirect off;
-		}else{
-			proxy_pass http://10.10.1.12:18082;
-			proxy_redirect off;
-		}
-	}
+location /api {
+if($query_string ~ version=v1.1.30){
+//如果query string中包含"version=v1.1.30"
+//流量转发到18081端口
+proxy_pass http://10.10.1.12:18081;
+proxy_redirect off;
+}else{
+proxy_pass http://10.10.1.12:18082;
+proxy_redirect off;
+}
+}
 }
 \end{lstlisting}
 
@@ -1445,24 +1399,24 @@ spring.datasource.maximumPoolSize=200
 	\caption{常见数据库连接池}
 	\label{table:databaseconnectionpool}
 	\begin{center}
-	\begin{tabular}{|c|c|p{7cm}|}
-		\hline
-		\multirow{1}{*}{名称}
-		%\multirow{1}{c|}{名称}  
-		& \multicolumn{1}{c|}{协议} 
-		& \multicolumn{1}{c|}{备注}\\			
-		\cline{1-3}
-		c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
-		\hline
-		HikariCP & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
-		\hline
-		Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
-		\hline
-		DBCP & Apache 2.0 & DBCP(DataBase connection pool),是 apache 上的一个 java 连接池项目，也是 tomcat 使用的连接池组件。单独使用dbcp需要2个包：commons-dbcp.jar,commons-pool.jar \\
-		\hline
-		BoneCP & Apache 2.0 & 使用HikariCP替代\\
-		\hline
-	\end{tabular}	
+		\begin{tabular}{|c|c|p{7cm}|}
+			\hline
+			\multirow{1}{*}{名称}
+			%\multirow{1}{c|}{名称}  
+			& \multicolumn{1}{c|}{协议} 
+			& \multicolumn{1}{c|}{备注}\\			
+			\cline{1-3}
+			c3p0 &  LGPL v.2.1  & C3P0是一个开源数据连接池，Hibernate3.0默认自带的数据连接池，性能比较稳定。\\
+			\hline
+			HikariCP & Apache 2.0 & Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. At roughly 130Kb, the library is very light. \\
+			\hline
+			Druid & Apache 2.0 & Druid是Java语言中最好的数据库连接池。Druid能够提供强大的监控和扩展功能。 \\
+			\hline
+			DBCP & Apache 2.0 & DBCP(DataBase connection pool),是 apache 上的一个 java 连接池项目，也是 tomcat 使用的连接池组件。单独使用dbcp需要2个包：commons-dbcp.jar,commons-pool.jar \\
+			\hline
+			BoneCP & Apache 2.0 & 使用HikariCP替代\\
+			\hline
+		\end{tabular}	
 	\end{center}
 \end{table}
 
@@ -1508,6 +1462,7 @@ org.apache.tomcat.jdbc.pool.DataSource
 
 \begin{lstlisting}[language=Bash]
 nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
+sudo ./DmServiceGRP1_RWW_01 start
 \end{lstlisting}
 
 在反复研究后发现，程序并未使用HikariCP连接池，而是使用的Spring JDBC连接池，所以在初始化Datasource时指定连接池，如下代码片段所示：
@@ -1518,32 +1473,32 @@ nohup sudo /opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole &
 @ConfigurationProperties(prefix = "spring.datasource")
 public class DataSourceConfig {
 
-	private String jdbcUrl;
-	
-	private String username;
-	
-	private String driverClassName;
-	
-	private String password;
-	
-	@Bean
-	@Primary
-	public DataSource primaryDataSource() {
-		HikariConfig hikariConfig = new HikariConfig();
-		hikariConfig.setDriverClassName(driverClassName);
-		hikariConfig.setJdbcUrl(jdbcUrl);
-		hikariConfig.setUsername(username);
-		hikariConfig.setPassword(password);
-		hikariConfig.setMaximumPoolSize(5);
-		hikariConfig.setConnectionTestQuery("SELECT 1");
-		hikariConfig.setPoolName("springHikariCP");
-		hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
-		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
-		hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
-		hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
-		HikariDataSource dataSource = new HikariDataSource(hikariConfig);
-		return dataSource;
-	}
+private String jdbcUrl;
+
+private String username;
+
+private String driverClassName;
+
+private String password;
+
+@Bean
+@Primary
+public DataSource primaryDataSource() {
+HikariConfig hikariConfig = new HikariConfig();
+hikariConfig.setDriverClassName(driverClassName);
+hikariConfig.setJdbcUrl(jdbcUrl);
+hikariConfig.setUsername(username);
+hikariConfig.setPassword(password);
+hikariConfig.setMaximumPoolSize(5);
+hikariConfig.setConnectionTestQuery("SELECT 1");
+hikariConfig.setPoolName("springHikariCP");
+hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+return dataSource;
+}
 }
 \end{lstlisting}
 
@@ -1571,7 +1526,7 @@ spring.datasource.hikari.driver-class-name=com.mysql.jdbc.Driver
 \begin{lstlisting}
 hikariConfig.setConnectionTestQuery("SELECT 1");
 \end{lstlisting}
-        
+
 This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。它会先检测连接是否可用。
 
 
@@ -1600,29 +1555,6 @@ Using a DataSource object is the preferred alternative to using the DriverManage
 \subsection{用户重复登录问题}
 
 在服务端维护登录用户与其SessionID的对应关系。同一用户，后登陆者将前登陆者的SessionID替换，这样，前者如果再请求服务器资源，无法与新生成的Session ID匹配，此时服务端会返回一个错误码，前端捕获到此错误码，就会认为其未登录，要求重新登录。这样，即使出现断电等无法注销的情况，也会在他下次登陆时自动取代掉，同时也解决了用户登陆的唯一性问题。
-
-\subsection{读取properties属性}
-
-\paragraph{读取自定义属性}
-
-有时需要读取自定义属性，以配置HikariCP连接池为例，在application.properties文件指定指定配置：
-
-\begin{lstlisting}
-spring.datasource.hikari.jdbc-url=jdbc:dm://dn4:5236/DMSERVER
-\end{lstlisting}
-
-在类中获取配置相应的值，注意需要添加Data注解，否则需要手写get和set方法：
-
-\begin{lstlisting}[language=Java]
-@Configuration
-@Data
-@ConfigurationProperties(prefix = "spring.datasource.hikari")
-public class DataSourceConfig {
-	private String jdbcUrl;
-}
-\end{lstlisting}
-
-由于此处注解是默认写在application.properties配置文件中，所以在ConfigurationProperties中可以不指定路径。否则需要使用locations指定配置文件路径。
 
 \section{单元测试(Unit Test)}
 
@@ -1695,10 +1627,10 @@ public class BookControllerTest {
 	@Test
 	public void getBooksByName() throws Exception {
 		String responseString = mockMvc.perform(
-										get("/api/book?name=小学生")
-										).andExpect(status().isOk())    
-										.andDo(print())         
-										.andReturn().getResponse().getContentAsString();
+		get("/api/book?name=小学生")
+		).andExpect(status().isOk())    
+		.andDo(print())         
+		.andReturn().getResponse().getContentAsString();
 		System.out.println("--------返回的json = " + responseString);
 	}
 }
@@ -1775,7 +1707,7 @@ Orika是一个Java Bean映射框架递，递归复制数据从一个对象到另
 ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 URL[] urls = ((URLClassLoader) classLoader).getURLs();
 for (URL url : urls) {
-	System.out.println(url.getFile());
+System.out.println(url.getFile());
 }
 \end{lstlisting}
 
@@ -1890,10 +1822,10 @@ mybatis.config-location=classpath:mybatis-config.xml
 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-	<settings>
-		<!-- 打印查询语句 -->
-		<setting name="logImpl" value="STDOUT_LOGGING" />
-	</settings>
+<settings>
+<!-- 打印查询语句 -->
+<setting name="logImpl" value="STDOUT_LOGGING" />
+</settings>
 </configuration>
 \end{lstlisting}
 
@@ -1919,20 +1851,6 @@ private JdbcTemplate jdbcTemplate1;
 那么采用jdbcTemplate1执行的SQL都在数据源secondaryJdbcTemplate上操作，不过麻烦的地方是需要手动写SQL，但是由于有时采用的Mapper操作的数据库，如果可以直接通过注解来指定数据源岂不更加方便。如下是采用自定义注解 + AOP的方式实现数据源动态切换。
 动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。
 
-\paragraph{Spring Boot AOP多数据源(未成功)}
-
-动态数据源能进行自动切换的核心就是spring底层提供了AbstractRoutingDataSource类进行数据源的路由的，我们主要继承这个类，实现里面的方法即可实现我们想要的，这里主要是实现方法：determineCurrentLookupKey()，而此方法只需要返回一个数据库的名称即可，所以我们核心的是有一个类来管理数据源的线程池，这个类才是动态数据源的核心处理类。还有另外就是我们使用AOP技术在执行事务方法前进行数据源的切换。AbstractRoutingDataSource获取数据源之前会先调用determineCurrentLookupKey方法查找当前的lookupKey，这个lookupKey就是数据源标识。因此通过重写这个查找数据源标识的方法就可以让spring切换到指定的数据源了。
-
-\begin{itemize}
-	\item {xml<aop>拦截到数据源名称}
-	\item {执行切面DataSourceAspect中的before方法，将数据源名称放入 DynamicDataSourceHolder中}
-	\item {Spring JDBC调用determineCurrentLookupKey()方法<DynamicDataSource中重写AbstractRoutingDataSource类中的方法> ，从DynamicDataSourceHolder取出当前的数据库名称，并返回}	
-	\item {AbstractRoutingDataSource类中determineTargetDataSource()方法调用determineCurrentLookupKey()匹配到指定的数据库，并建立链接，即为切换到相应的数据库；}
-	\item {在指定的数据库中执行相应的sql}
-\end{itemize}
-
-AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的不同请求去转换不同的数据源。若service没有启动事务机制，则执行的顺序为：切面——>determineCurrentLookupKey——>Dao方法。数据源真正切换的关键是AbstractRoutingDataSource的determineCurrentLookupKey()被调用，此方法是在open connection时触发。
-
 \subsection{不同配置文件}
 
 使用不同源配置文件的方式需要多个datasource、多个SqlSessionFactory、多个config文件。连接不同数据库的Mapper文件存放在不同的文件夹下，如何确定配置使用的不同数据源？可以直接查看Mapper的sqlSession配置，如图\ref{fig:seemapperdatasource}所示。
@@ -1943,8 +1861,6 @@ AbstractRoutingDataSource，它的一个作用就是可以根据用户发起的�
 	\caption{查看Mapper使用的Datasource}
 	\label{fig:seemapperdatasource}
 \end{figure}
-
-
 
 \subsection{多参数传递(Multi-Parameter)}
 
@@ -1958,12 +1874,12 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 
 \begin{lstlisting}[language=XML]
 <update id="batchUpdate" parameterType="java.util.List">
-	UPDATE TD_S_ORG
-	SET STATUS = #{status}
-	WHERE ORG_ID IN
-	<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
-		#{item}
-	</foreach>
+UPDATE TD_S_ORG
+SET STATUS = #{status}
+WHERE ORG_ID IN
+<foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+#{item}
+</foreach>
 </update>
 \end{lstlisting}
 
@@ -1973,18 +1889,18 @@ int batchUpdate(@Param("ids") List<String> ids,@Param("status") String status);
 
 \begin{lstlisting}[language=SQL]
 <insert id="createBatch" parameterType="system.data.model.Reporting">
-	insert into TI_B_XZXK_REPORTING (
-		ID,
-		SFGK,
-		BGKYY
-	) values
-	<foreach collection="list" item="item" index="index" separator=",">
-	(
-		#{item.id},
-		#{item.sfgk},
-		#{item.bgkyy}
-	)
-	</foreach>
+insert into TI_B_XZXK_REPORTING (
+ID,
+SFGK,
+BGKYY
+) values
+<foreach collection="list" item="item" index="index" separator=",">
+(
+#{item.id},
+#{item.sfgk},
+#{item.bgkyy}
+)
+</foreach>
 </insert>
 \end{lstlisting}
 
@@ -1996,7 +1912,7 @@ MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis�
 
 \begin{lstlisting}[language=XML]
 <generatorConfiguration>
-	<classPathEntry location="/home/hldev/software/genMyBatis/Dm7JdbcDriver17.jar"/>
+<classPathEntry location="/home/hldev/software/genMyBatis/Dm7JdbcDriver17.jar"/>
 </generatorConfiguration>
 \end{lstlisting}
 
@@ -2005,10 +1921,10 @@ MBG\footnote{\url{http://www.mybatis.org/generator/index.html}}是一个MyBatis�
 \begin{lstlisting}[language=XML]
 <!--使用%通配符-->
 <table tableName="TS_%" enableCountByExample="false"
-	enableDeleteByExample="false"
-	enableSelectByExample="false"
-	enableUpdateByExample="false">
-	<generatedKey column="id" sqlStatement="MySql" identity="true"/>
+enableDeleteByExample="false"
+enableSelectByExample="false"
+enableUpdateByExample="false">
+<generatedKey column="id" sqlStatement="MySql" identity="true"/>
 </table>
 \end{lstlisting}
 
@@ -2040,14 +1956,14 @@ MyBatis的XML文件在写空判断时,需要注意一点细节:
 
 \begin{lstlisting}[language=XML]
 <select id="findList" parameterType="Pageable" resultMap="Corporation">
-	SELECT *
-	FROM CORPORATION
-	<trim prefix="WHERE" prefixOverrides="AND|OR">
-		<!--企业名称要做''判断,否则无法利用索引-->
-		<if test="params.qymc != null and params.qymc != ''">
-			AND QYMC like 
-		</if>
-	</trim>
+SELECT *
+FROM CORPORATION
+<trim prefix="WHERE" prefixOverrides="AND|OR">
+<!--企业名称要做''判断,否则无法利用索引-->
+<if test="params.qymc != null and params.qymc != ''">
+AND QYMC like 
+</if>
+</trim>
 </select>
 \end{lstlisting}
 
@@ -2112,21 +2028,6 @@ hibernate.format_sql=true
 log4j.logger.org.hibernate.type.descriptor.sql.BasicBinder=TRACE 
 \end{lstlisting}
 
-\section{FreeMaker模板引擎}
-
-FreeMarker 是一个模板引擎，一个基于模板生成文本输出的通用工具，使用纯Java编写。FreeMarker被设计用来生成HTML Web页面，特别是基于MVC模式的应用程序。虽然FreeMarker具有一些编程的能力，但通常由Java程序准备要显示的数据，由FreeMarker生成页面，通过模板显示准备的数据 。
-
-\subsection{常用写法}
-
-获取List的索引:
-
-\begin{lstlisting}[language=HTML]
-<#list toplist as toplists>
-	${toplists_index}
-</#list>
-\end{lstlisting}
-
-
 \chapter{Scala}
 
 截至2017年，采用Scala编写的主要有Spark、Akka。许多企业非关键性组件也会使用Scala构建，Scala相对于Java的优势在语法更加简洁，采用完成相同功能代码量更少，综合来看Scala生产力相对较高。随着硬件性能不断的提升，性能已经不是主要的考虑因素。启动脚本:
@@ -2170,17 +2071,17 @@ val dstArray: Array[String] = errorCode.toString.split(',')
 
 \begin{lstlisting}[language=Scala]
 case class User(  
-	id: Int,  
-	firstName: String,  
-	lastName: String,  
-	age: Int,  
-	gender: Option[String])  
-	
-	object UserRepository {  
-	private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
-		2 -> User(2, "Johanna", "Doe", 30, None))  
-		def findById(id: Int): Option[User] = users.get(id)  
-		def findAll = users.values  
+id: Int,  
+firstName: String,  
+lastName: String,  
+age: Int,  
+gender: Option[String])  
+
+object UserRepository {  
+private val users = Map(1 -> User(1, "John", "Doe", 32, Some("male")),  
+2 -> User(2, "Johanna", "Doe", 30, None))  
+def findById(id: Int): Option[User] = users.get(id)  
+def findAll = users.values  
 }  
 \end{lstlisting}
 
@@ -2204,11 +2105,11 @@ Scala集合操作如下：
 
 \begin{lstlisting}[language=Scala]
 processResult = errorCode.get.split(',')
-		.filter(s => StringUtils.isNoneBlank(s))
-		.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
-		.filter(_ != null)
-		.map(eet => eet.getErrDesc)
-		.mkString("；")
+.filter(s => StringUtils.isNoneBlank(s))
+.map(code => etlErrorTypeService.findByIntegerId(code.toInt))
+.filter(_ != null)
+.map(eet => eet.getErrDesc)
+.mkString("；")
 \end{lstlisting}
 
 mkString把集合元素转化为字符串，可以添加分隔符，前缀，后缀。
@@ -2227,8 +2128,8 @@ Its the repository cache thats causing the issue. There are possibilities where 
 
 \begin{lstlisting}
 [repositories]  
-	local  
-	nexus-aliyun:http://maven.aliyun.com/nexus/content/groups/public 
+local  
+nexus-aliyun:http://maven.aliyun.com/nexus/content/groups/public 
 \end{lstlisting}
 
 \subsection{系统操作}
@@ -2281,47 +2182,6 @@ sudo easy_install -U requests
 
 pip 改善了不少 easy\_install 的缺點，如此说來 pip 應該是略勝一籌，不過它還不能完全取代對方，因为目前有很多套件還是得用 easy\_install 安裝。easy\_insall的作用和perl中的cpan，ruby中的gem类似，都提供了在线一键安装模块的傻瓜方便方式，而pip是easy\_install的改进版，提供更好的提示信息，删除package等功能。老版本的python中只有easy\_install，没有pip。
 
-\subsection{Beautiful Soup}
-
-Beautiful Soup 是用Python写的一个HTML/XML的解析器，它可以很好的处理不规范标记并生成剖析树(parse tree)。 它提供简单又常用的导航（navigating），搜索以及修改剖析树的操作。Beautiful Soup提供一些简单的、python式的函数用来处理导航、搜索、修改分析树等功能。它是一个工具箱，通过解析文档为用户提供需要抓取的数据，因为简单，所以不需要多少代码就可以写出一个完整的应用程序。如下代码片段展示爬取豆瓣书籍详情页的书籍信息：
-
-\begin{lstlisting}[language=Bash]
-def get_single_book_detail_info(url):
-try:
-req = urllib2.Request(url, headers=hds[np.random.randint(0, len(hds))])
-source_code = urllib2.urlopen(req).read()
-plain_text = str(source_code)
-except (urllib2.HTTPError, urllib2.URLError), e:
-print e
-soup = BeautifulSoup(plain_text)
-list_soup = soup.find('div', {'id': 'info'}).findAll('span')
-return list_soup
-\end{lstlisting}
-
-find方法直接返回结果，findAll方法返回符合条件的结果。Python在使用前，可以不需要初始化变量，在外层可以直接使用内层函数的变量。
-
-\subsection{爬取豆瓣书籍}
-
-向数据库中保存数据：
-
-\begin{lstlisting}[language=Python]
-def save_to_mysql():
-	try:
-		conn = MySQLdb.connect(host='localhost', user='root', passwd='123456', port=3306)
-		cur = conn.cursor()
-		conn.select_db('dolphin')
-		value = ['hi rollen']
-		cur.execute('insert into book(name) values(%s)', value)
-		conn.commit()
-		cur.close()
-		conn.close()
-	
-	except MySQLdb.Error, e:
-		print "Mysql Error %d: %s" % (e.args[0], e.args[1])
-\end{lstlisting}
-
-在根据标签爬取的书籍列表中，信息不够全面，比如ISBN号码就没有。所以需要爬到每本书籍的详情页面。
-
 \subsection{抓取技巧}
 
 \paragraph{防止IP被封}在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
@@ -2346,17 +2206,17 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 \begin{lstlisting}[language=Python]
 def getVersion():
-	#
-	#动态从版本配置文件中读取当前最新版本号
-	#
-	file_path = VERSION_CONFIG_PATH
-	props = parse(file_path)   #读取文件
-	print('version:'+props.get('VERSION'))
-	#根据key读取value
-	return props.get('VERSION')            
+#
+# 动态从版本配置文件中读取当前最新版本号
+#
+file_path = VERSION_CONFIG_PATH
+props = parse(file_path)   #读取文件
+print('version:'+props.get('VERSION'))
+# 根据key读取value
+return props.get('VERSION')            
 
 def parse(file_name):
-	return Properties(file_name)
+return Properties(file_name)
 \end{lstlisting}
 
 Propertise类的代码如下：
@@ -2369,19 +2229,19 @@ import tempfile
 class Properties:
 
 def __init__(self, file_name):
-	self.file_name = file_name
-	self.properties = {}
-	try:
-		fopen = open(self.file_name, 'r')
-		for line in fopen:
-		line = line.strip()
-		if line.find('=') > 0 and not line.startswith('#'):
-		strs = line.split('=')
-		self.properties[strs[0].strip()] = strs[1].strip()
-	except Exception, e:
-		raise e
-	else:
-		fopen.close()
+self.file_name = file_name
+self.properties = {}
+try:
+	fopen = open(self.file_name, 'r')
+	for line in fopen:
+	line = line.strip()
+	if line.find('=') > 0 and not line.startswith('#'):
+	strs = line.split('=')
+	self.properties[strs[0].strip()] = strs[1].strip()
+except Exception, e:
+	raise e
+else:
+	fopen.close()
 
 def has_key(self, key):
 	return key in self.properties
@@ -2413,14 +2273,12 @@ sudo pip install mysql-python
 
 \chapter{前端(Front End)}
 
-
 查看yarn使用的源:
 
-
 \begin{lstlisting}[language=Bash]
-//查看下载源
+# 查看下载源
 yarn config get registry
-//更换为淘宝源
+# 更换为淘宝源
 yarn config set registry https://registry.npm.taobao.org
 \end{lstlisting}
 
@@ -2435,7 +2293,7 @@ yarn config set registry https://registry.npm.taobao.org
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{reduxdataflow.png}
+	\includegraphics[scale=0.3]{reduxdataflow.png}
 	\caption{Redux数据流}
 	\label{fig:reduxdataflow}
 \end{figure}
@@ -2527,7 +2385,7 @@ Route 的 onEnter 钩子将用于在渲染对象的组件前做拦截操作，�
 
 \begin{lstlisting}[language=Javascript]
 if (this.props.location.query.operation === "init") {
-	//第一次进入页面
+//第一次进入页面
 }
 \end{lstlisting}
 
@@ -2537,8 +2395,8 @@ Provider方法会在react组件外边包一层名为provider的组件，使其�
 
 \begin{lstlisting}[language=Javascript]
 ReactDOM.render(
-	<Provider store={store}>{routes}</Provider>,
-	document.getElementById('root')
+<Provider store={store}>{routes}</Provider>,
+document.getElementById('root')
 );
 \end{lstlisting}
 
@@ -2574,7 +2432,7 @@ const mapDispatchToProps = (dispatch) =>{
 }
 
 connect(mapStateToProps, mapDispatchToProps)
-	class BookContainer extends Component {
+class BookContainer extends Component {
 	render() {
 		return React.cloneElement(this.props.children, {...this.props});
 	}
@@ -2625,12 +2483,12 @@ const action = {
 
 \begin{lstlisting}[language=Javascript]
 export function findPage(params) {
-	return dispatch =>
-		requestJSON(
-			dispatch,
-			{method: 'get', url: '/pubapi/article/page', params: {...params}},
-			{type: articleTYPE.ARTICLE_PAGE},
-			{type: articleTYPE.ARTICLE_PAGE_ERROR, message: '获取文章列表失败'});
+return dispatch =>
+	requestJSON(
+	dispatch,
+	{method: 'get', url: '/pubapi/article/page', params: {...params}},
+	{type: articleTYPE.ARTICLE_PAGE},
+	{type: articleTYPE.ARTICLE_PAGE_ERROR, message: '获取文章列表失败'});
 }
 \end{lstlisting}
 
@@ -2646,9 +2504,9 @@ const reducer = (state, action) => {
 	switch (action.type) {
 		case "ADD":
 			state = state + action.payload;
-			break;
-		case "SUBTRACT":
-			break;
+		break;
+			case "SUBTRACT":
+		break;
 	}
 	return state;
 };
@@ -2669,12 +2527,12 @@ Redux有且只有一个State状态树，为了避免这个状态树变得越来�
 State (也称为 state tree) 是一个宽泛的概念，但是在 Redux API 中，通常是指一个唯一的 state 值，由 store 管理且由 getState() 方法获得。它表示了 Redux 应用的全部状态，通常为一个多层嵌套的对象。约定俗成，顶层 state 或为一个对象，或像 Map 那样的键-值集合，也可以是任意的数据类型。然而你应尽可能确保 state 可以被序列化，而且不要把什么数据都放进去，导致无法轻松地把 state 转换成 JSON\footnote{来源：\url{http://cn.redux.js.org/docs/Glossary.html}}。state是React中组件的一个对象.React把用户界面当做是状态机,想象它有不同的状态然后渲染这些状态,可以轻松让用户界面与数据保持一致.React中,更新组件的state,会导致重新渲染用户界面(不要操作DOM).
 
 \begin{lstlisting}[language=Javascript]
-//会重新渲染页面
+// 会重新渲染页面
 this.setState({query: query});
 /*
- * 不会重新渲染页面
- * 调用this.forceUpdate()手动强制重新渲染页面
- */
+* 不会重新渲染页面
+* 调用this.forceUpdate()手动强制重新渲染页面
+*/
 this.setState.query = query;
 this.forceUpdate();
 \end{lstlisting}
@@ -2682,7 +2540,7 @@ this.forceUpdate();
 一般情况下应该用setState来设置state值，不应该对state直接赋值\footnote{\url{参考：https://reactjs.org/docs/state-and-lifecycle.html}}(It is better to use this.setState because it is init native check-state mecanizm of React engine which is better then force update.If you just update any param of this.state directly without setState react render mecanizm will not know that some params of state is updated.)，对state直接赋值可以在构造方法中(The only place where you can assign this.state is the constructor)。还有一点需要注意的是setState方法是异步的，可以使用回调(Callback)函数来获取最终结果：
 
 \begin{lstlisting}[language=Javascript]
-//使用回调函数获取设置的值
+// 使用回调函数获取设置的值
 this.setState({data: data}, function(){
 	console.log(this.state.data);
 }.bind(this));
@@ -2714,10 +2572,10 @@ import {createLogger} from 'redux-logger';
 
 if (process.env.NODE_ENV === 'development') {
 	const logger = createLogger({
-	stateTransformer: (state) => {
-		let newState = {};
-		for (let i of Object.keys(state)) {
-			if (Iterable.isIterable(state[i])) {
+		stateTransformer: (state) => {
+			let newState = {};
+			for (let i of Object.keys(state)) {
+				if (Iterable.isIterable(state[i])) {
 					newState[i] = state[i].toJS();
 				} else {
 					newState[i] = state[i];
@@ -2751,13 +2609,13 @@ if (process.env.NODE_ENV === 'development') {
 
 \begin{lstlisting}[language=Javascript]
 const routes = (
-<BrowserRouter>
-	<BookContainer>
-		<switch>
-			<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
-		</switch>
-	</BookContainer>
-</BrowserRouter>
+	<BrowserRouter>
+		<BookContainer>
+			<switch>
+				<Route path="/book/:id" render={() => <Book bookService={bookService}/>}/>
+			</switch>
+		</BookContainer>
+	</BrowserRouter>
 );
 \end{lstlisting}
 
@@ -2791,9 +2649,9 @@ class BookContainer extends Component {
 * refreshFetch是父组件定义的函数
 */
 return <FeedbackPanel query={query}
-						refreshFetch={this.refreshFetch}
-						creditFormTable={creditFormTable}
-						key={i}/>
+refreshFetch={this.refreshFetch}
+creditFormTable={creditFormTable}
+key={i}/>
 \end{lstlisting}
 
 \subsection{Immutable}
@@ -2824,18 +2682,6 @@ camelCase = (input) => {
 };
 \end{lstlisting}
 
-
-\subsection{yarn}
-
-再使用npm的时候，部署的时候遇到开发版本和实际部署版本的细微差异导致的问题。而yarn为了避免包版本的错误匹配，一个确定的安装版本被固定在一个锁文件中。每次模块被添加时，Yarn 就会创建（或更新）yarn.lock 文件，这样你就可以保证其它机子也安装相同版本的包，同时包含了 package.json 中定义的一系列允许的版本。级
-
-
-\section{MobX}
-
-\subsection{简介}
-
-mobx 是一个库 (library)，不是一个框架 (framework)。可以和React组合使用，MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming (TFRP). React and MobX together are a powerful combination. redux 管理的是 (STORE -> VIEW -> ACTION) 的整个闭环，而 mobx 只关心 STORE -> VIEW 的部分。
-
 \section{gulp}
 
 Gulp基于Node.js的前端构建工具，通过Gulp的插件可以实现前端代码的编译（sass、less）、压缩、测试；图片的压缩；浏览器自动刷新。比起Grunt不仅配置简单而且更容易阅读和维护。gulpjs是一个前端构建工具，与gruntjs相比，gulpjs无需写一大堆繁杂的配置参数，API也非常简单，学习起来很容易，而且gulpjs使用的是nodejs中stream来读取和操作数据，其速度更快。使用 browserify 进行打包， gulp 进行任务构建。由于使用了 ES2015 和 JSX 语法，因此使用 Babel 进行转换。
@@ -2852,9 +2698,9 @@ Gulp基于Node.js的前端构建工具，通过Gulp的插件可以实现前端�
 \begin{lstlisting}[language=JavaScript]
 gulp.task('images', function() {
 	return gulp.src('src/images/**/*')
-			.pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
-			.pipe(gulp.dest('dist/assets/img'))
-			.pipe(notify({ message: 'Images task complete' }));
+	.pipe(imagemin({ optimizationLevel: 3, progressive: true, interlaced: true }))
+	.pipe(gulp.dest('dist/assets/img'))
+	.pipe(notify({ message: 'Images task complete' }));
 });
 \end{lstlisting}
 
@@ -2932,8 +2778,8 @@ const uniqOrgList = lodashUniqBy(orgList, 'dfName');
 * 将部门按照10个1组组成一个新数组返回
 */
 return lodashChunk(dfbmList, 10).map((dfbms, rowNo) => {
-		const items = this.renderItems(groups, dfbms);
-		return (
+const items = this.renderItems(groups, dfbms);
+return (
 });
 \end{lstlisting}
 
@@ -2980,7 +2826,7 @@ export function request() {
 			console.log(response)
 		}
 		).catch(
-			error => {
+		error => {
 			console.error(error);
 		}
 	);
@@ -2999,7 +2845,7 @@ export function request() {
 * axios响应拦截器
 */
 axios.interceptors.response.use(
-		response =>{
+	response =>{
 		return response;
 	},
 	error => {
@@ -3130,9 +2976,9 @@ isFixedNumber = (rule, value, callback) => {
 
 \begin{lstlisting}[language=Javascript]
 function camelCase(input) {
-		return input.toLowerCase().replace(/_(.)/g, function (match, group1) {
-		return group1.toUpperCase();
-	});
+	return input.toLowerCase().replace(/_(.)/g, function (match, group1) {
+	return group1.toUpperCase();
+});
 }
 //XDR\_SHXYM转换结果xdrShxym
 const camelName =camelCase("XDR_SHXYM");
@@ -3147,9 +2993,9 @@ f = Math.round(x / 10000 * Math.pow(10, y)) / Math.pow(10, y);
 Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
 
 \begin{lstlisting}[language=HTML]
-#默认会执行一次
+# 默认会执行一次
 <button onClick={this.getBookInfo()}>查询</button>
-#默认不会执行
+# 默认不会执行
 <button onClick={() => this.getBookInfo()}>查询</button>
 \end{lstlisting}
 
@@ -3157,8 +3003,8 @@ Math.pow计算10的y次幂，Math.round计算与round函数最接近的整数。
 
 \begin{lstlisting}[language=Javascript]
 const books = this.props.books;
-	let arr = [];
-	for(let i in books){
+let arr = [];
+for(let i in books){
 	arr.push(books[i]);
 }
 \end{lstlisting}
@@ -3223,14 +3069,14 @@ const date = moment().weekday(0);
 查看前端的不同版本的包:
 
 \begin{lstlisting}[language=Bash]
-#查看antd的版本(需要到开发程序对应的目录下)
+# 查看antd的版本(需要到开发程序对应的目录下)
 npm ls antd
 \end{lstlisting}
 
 有时在使用npm安装包的过程中,需要等待很长时间,此时就非常需要查看安装进度,可以做如下设置:
 
 \begin{lstlisting}[language=Bash]
-#显示所有的HTTP请求
+# 显示所有的HTTP请求
 npm config set loglevel=http
 npm install -dd
 \end{lstlisting}
@@ -3377,7 +3223,8 @@ sudo rm -rf /var/lib/dpkg/info/*
 sudo apt-get -f install 
 \end{lstlisting}
 
-f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。
+f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文件如下表\ref{table:linuxconfigfile}所示。
+
 
 \begin{table}
 	\caption{Linux重要文件}
@@ -3398,14 +3245,14 @@ f(fix)参数表示尝试修正系统依赖损坏处。在Linux常用的重要文
 	\end{center}
 \end{table}
 
-Linux系统中所有进程所能开启的总的线程数：
+配置文件存放的目录名etc，本意为“etcetera”(附加物)的意思。Linux系统中所有进程所能开启的总的线程数：
 
 \begin{lstlisting}[language=Bash]
 # 总线程数定义
 cat /proc/sys/kernel/threads-max
 \end{lstlisting}
 
-Linux系统中单个进程的最大线程数有其最大的限制PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
+Linux 系统中单个进程的最大线程数有其最大的限制 PTHREAD\_THREADS\_MAX,这个限制可以在 /usr/include/bits/local\_lim.h 中查看:
 
 \begin{lstlisting}[language=Bash]
 /* The number of threads per process.  */
@@ -3447,8 +3294,7 @@ interactive login shell\footnote{ssh(Secure Shell)连接远程主机执行脚本
 
 #
 # 一键部署后端项目到远程1台或多台服务器
-# 发布流程为：
-# 编译构建-打包-发布包-拷贝包到指定目录-解压包
+# 发布流程为：编译构建-打包-发布包-拷贝包到指定目录-解压包
 # 注：本机需要安装Ansible并与服务器做免密登录
 #
 # 2017-05-25 增加动态读取版本号，根据版本自动发布程序
@@ -3491,6 +3337,8 @@ scp $LOCAL_PATH/$PROGRAM_NAME $LOGIN_USER@$SERVER_IP:~/app-soft/
 scp start.sh $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 scp version.properies $LOGIN_USER@$SERVER_IP:$PROGRAM_PATH_INFORMATION_CENTER
 
+ansible webservers -m command -a "date"
+
 echo "停止站点..."
 ansible webservers -m command -a "chdir=$PROGRAM_PATH_INFORMATION_CENTER bash ./stop.sh"
 
@@ -3510,33 +3358,35 @@ ansible webservers -m shell -a "bash ./start.sh chdir=$PROGRAM_PATH_INFORMATION_
 echo "部署完成"
 \end{lstlisting}
 
-set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行，能够提高Shell脚本的安全性。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
+set\footnote{\url{http://www.ruanyifeng.com/blog/2017/11/bash-set.html?utm_source=tool.lu}}命令用来修改 Shell 环境的运行参数，也就是可以定制环境。一共有十几个参数可以定制。set -u用来改变脚本的行为。脚本在头部加上它，遇到不存在的变量等情况就会报错，并停止执行。start.sh和stop.sh为启动脚本，通过Ansible远程调用执行。服务器程序路径和启动脚本路径固定。另外编写了一个用于API授权测试、API调用的脚本(接口根据密钥和随机字符动态生成Token，没有找到现成的工具)，用于动态生成API Token，提高API测试的方便性和API交互的安全性，具体可以参见\ref{sec:authorization}节。
 
 \paragraph{终端快捷键(Terminal Shortcut)}
 
-Shell终端中常用的快捷键如表\ref{table:terminalshortcut}所示：
+Shell终端中常用的快捷键如表\ref{table:terminalshortcut}：
 
 \begin{table}
 	\caption{终端快捷键}
 	\label{table:terminalshortcut}
 	\begin{center}
-	\begin{tabular}{cp{12cm}c}
-		\hline
-		\multirow{1}{*}{快捷键}
-		& \multicolumn{1}{c}{说明}  \\
-		\hline	
-		Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
-		Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
-		Ctrl + K & 从光标当前位置向后删除所有字符\\
-		Ctrl + U & 从光标当前位置向前删除所有字符\\
-		\hline
-	\end{tabular}
+		\begin{tabular}{cp{12cm}c}
+			\hline
+			\multirow{1}{*}{快捷键}
+			& \multicolumn{1}{c}{说明}  \\
+			\hline			
+			Alt + F & 向前移动一个单词 \\
+			Alt + B & 向后移动一个单词 \\
+			Ctrl + ; & 打开剪贴板历史，默认显示5个历史记录，选择相应的数字粘贴(Ubuntu下有效) \\
+			Ctrl + R & 查找历史命令(输入过滤条件之后，再次按Ctrl + R可以往回搜索上一条符合过滤条件的命令)\\
+			Ctrl + K & 从光标当前位置向后删除所有字符\\
+			Ctrl + U & 从光标当前位置向前删除所有字符\\
+			\hline
+		\end{tabular}
 	\end{center}
 \end{table}
 
 \paragraph{source}
 
-在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，只能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
+在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。source filename其实只是简单地读取脚本里面的语句依次在当前Shell里面执行，没有建立新的子Shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。所以为什么修改了.bashrc文件之后都会使用source命令加文件名来让设置生效。但是source命令生效也有局限，就是智能在当前的Shell中生效，比如在/etc/profile中修改了全局环境变量，使用source命令生效只是在当前的Shell，如果需要全局生效，还是需要重新登陆当前用户。
 
 \paragraph{修改登录路径}
 
@@ -3548,7 +3398,7 @@ if [ -d /home/app/ ];then
 fi
 \end{lstlisting}
 
-\paragraph{输入长命令}有时在Shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
+\paragraph{输入长命令}有时在shell中，会输入比较长的命令，直接在shell中输入可能不太方便。可以直接使用快捷键Ctrl+X,E，即可调出默认编辑器。因为自己习惯使用vim，所以使用如下命令设置vim为默认的编辑器:
 
 \begin{lstlisting}[language=Bash]
 export EDITOR=vim
@@ -3833,8 +3683,6 @@ saferm.sh\footnote{\url{https://github.com/lagerspetz/linux-stuff/tree/master/sc
 
 \begin{lstlisting}[language=Bash]
 alias rm='saferm.sh'
-# 在.bashrc中设置别名
-alias rm=saferm.sh
 \end{lstlisting}
 
 
@@ -3859,7 +3707,7 @@ nslookup {domain}
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{nslookup.png}
+	\includegraphics[scale=0.4]{nslookup.png}
 	\caption{nslookup查看域名解析情况}
 	\label{fig:nslookup}
 \end{figure}
@@ -3883,7 +3731,7 @@ umount /dev/sdb4
 刻录:
 
 \begin{lstlisting}[language=Bash]
-sudo dd bs=4M if=/home/hldev/software/cn_windows_10.iso of=/dev/sdb4
+sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_updated_dec_2017_x64_dvd_100406696.iso of=/dev/sdb4
 \end{lstlisting}
 
 \paragraph{cp}
@@ -3892,7 +3740,7 @@ sudo dd bs=4M if=/home/hldev/software/cn_windows_10.iso of=/dev/sdb4
 
 \begin{lstlisting}[language=Bash]
 # 让管道自动输入一大堆得yes，就可以完成了强行复制
-yes | cp -fr src dest
+yes | cp cp -fr src dest
 \end{lstlisting}
 
 
@@ -3915,7 +3763,7 @@ ls -al | grep "^d"
 ls -d */
 # 列出文件，按文件大小排序
 ls -alhS
-# 递归列出子目录
+#递归列出子目录
 ls -R
 # 调整ls别名
 alias='ls -lh --color=always'
@@ -3929,22 +3777,22 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 	\caption{Top列含义}
 	\label{table:topcolumns}
 	\begin{center}
-	\begin{tabular}{cp{10cm}c}
-		\hline
-		\multirow{1}{*}{序号}
-		& \multicolumn{1}{c}{名称}  \\
-		\hline			
-		NI & nice值。负值表示高优先级，正值表示低优先级 \\
-		\hline	
-		VIRT & 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES \\
-		\hline
-		RES & 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA \\
-		\hline
-		TIME+ & 进程使用的CPU时间总计，单位1/100秒 \\
-		\hline
-		S & 进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程 \\
-		\hline		
-	\end{tabular}	
+		\begin{tabular}{cp{10cm}c}
+			\hline
+			\multirow{1}{*}{序号}
+			& \multicolumn{1}{c}{名称}  \\
+			\hline			
+			NI & nice值。负值表示高优先级，正值表示低优先级 \\
+			\hline	
+			VIRT & 进程使用的虚拟内存总量，单位kb。VIRT=SWAP+RES \\
+			\hline
+			RES & 进程使用的、未被换出的物理内存大小，单位kb。RES=CODE+DATA \\
+			\hline
+			TIME+ & 进程使用的CPU时间总计，单位1/100秒 \\
+			\hline
+			S & 进程状态。D=不可中断的睡眠状态 R=运行 S=睡眠 T=跟踪/停止 Z=僵尸进程 \\
+			\hline		
+		\end{tabular}	
 	\end{center}
 \end{table}
 
@@ -3958,6 +3806,15 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 \end{itemize}
 
 如果希望以指定列排序(比如希望以进程号排序),在top界面中按下大写的F,选择指定列,按Esc退出后,按下R按键来排序(Using F you'd get you to the menu of fields. Using s would set what field would do the sorting. Press ESC to escape from the menu then to change Ascending/Descending mode, use R.).
+
+\paragraph{scp}
+
+在Windows上使用Putty提供的scp命令:
+
+\begin{lstlisting}[language=Bash]
+# 将本地的Windows文件夹拷贝到远程Linux服务器上
+pscp.exe -r E:\jiangxiaoqiang\deployment\webservice root@10.10.1.32:/home
+\end{lstlisting}
 
 \paragraph{find}
 
@@ -3994,8 +3851,7 @@ sudo allows a permitted user to execute a command as the superuser or another us
 sudo - postgresql
 sudo -i
 sudo -u dolphin -i
-# 在vi/vim编辑器中
-# 编辑文件后保存时没有修改的权限时可用
+在vi/vim编辑器中,编辑文件后保存时没有修改的权限时可用
 :w !sudo tee %
 \end{lstlisting}
 
@@ -4007,8 +3863,6 @@ Unix和类Unix系统上的压缩打包工具，可以将多个文件合并为一
 
 \begin{lstlisting}[language=Bash]
 # 打包
-# c表示create,创建一个新的archive
-# z表示zip,采用zip方式压缩
 tar -czvf mybatisDemo.tar.gz mybatisDemo
 # 打包（多个目录）
 tar -czvf mybatisDemo.tar.gz mybatisDemo mybatisDemo1
@@ -4016,7 +3870,7 @@ tar -czvf mybatisDemo.tar.gz mybatisDemo mybatisDemo1
 tar zcf dist.tar.gz dist
 \end{lstlisting}
 
-Phil Katz取名格式为zip格式，是表示此种压缩算法速度快的特点，单词zip本身就有表示快速移动的含义。解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。xz是一个使用LZMA压缩算法的无损数据压缩文件格式。和gzip与bzip2一样，同样支持多文件压缩，但是约定不能将多于一个的目标文件压缩进同一个档案文件。相反，xz通常作为一种归档文件自身的压缩格式，例如使用tar或cpioUnix程序创建的归档。xz格式的文件解压时较短。
+解压tar.xz压缩文件，先xz -d xxx.tar.xz将xxx.tar.xz解压成xxx.tar.然后，再用tar xvf xxx.tar来解包。
 
 \begin{lstlisting}[language=Bash]
 xz -d xxx.tar.xz
@@ -4027,7 +3881,7 @@ tar xvf xxx.tar
 tar -zxcf example.tgz
 \end{lstlisting}
 
-但是有时创建压缩档时，需要排除制定目录和指定类型的文件:
+但是有时需要排除制定目录和指定类型的文件:
 
 \begin{lstlisting}[language=Bash]
 tar -zcvf tomcat.tar.gz --exclude=tomcat/logs --exclude=tomcat/libs tomcat
@@ -4066,12 +3920,12 @@ for name in file.namelist():
 	pathname = os.path.dirname(utf8name)
 	if not os.path.exists(pathname) and pathname!= "":
 		os.makedirs(pathname)
-	data = file.read(name)
-	if not os.path.exists(utf8name):
-		fo = open(utf8name, "w")
-		fo.write(data)
-		fo.close
-file.close()
+		data = file.read(name)
+		if not os.path.exists(utf8name):
+			fo = open(utf8name, "w")
+			fo.write(data)
+			fo.close
+			file.close()
 \end{lstlisting}
 
 使用如下语句完成解压.
@@ -4092,7 +3946,7 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{grepfilterreturnvalue.png}
+	\includegraphics[scale=0.5]{grepfilterreturnvalue.png}
 	\caption{Grep过滤Json结果}
 	\label{fig:grepfilterreturnvalue}
 \end{figure}
@@ -4159,8 +4013,8 @@ sed -n '/^2018-04-03 09:50/','/^2018-04-03 11:30/p' cc-web.2018-04-03.5.log >> f
 项目中生成了100多W的测试数据,导出sql来大概有1.6GB左右,即使压缩了也有300多MB,网速很慢无法一次传输,可以通过split命令来实现文件分割，指定按行数分割和按大小分割两种模式。
 
 \begin{lstlisting}[language=Bash]
-# 切割大文件,根据行分割
-# 每个文件10W行
+#切割大文件,根据行分割
+#每个文件10W行
 split -l 100000 企业示例数据.sql enterprise_
 \end{lstlisting}
 
@@ -4171,16 +4025,16 @@ split -l 100000 企业示例数据.sql enterprise_
 
 for VAR in /home/hldev/Downloads/bigfile/*
 do
-	if test -f $VAR
-	then
-		echo "压缩文件${VAR}..."
-		#echo $(basename $VAR .sh)
-		#压缩为tar.gz文件
-		#tar czfP $VAR.tar.gz $VAR
-		#压缩为zip(方便在Windows下解压)
-		#用7zip压缩还有一个好处是可以看到进度
-		7za a ${VAR}.zip ${VAR}
-	fi    
+if test -f $VAR
+then
+echo "压缩文件${VAR}..."
+# echo $(basename $VAR .sh)
+# 压缩为tar.gz文件
+# tar czfP $VAR.tar.gz $VAR
+# 压缩为zip(方便在Windows下解压)
+# 用7zip压缩还有一个好处是可以看到进度
+7za a ${VAR}.zip ${VAR}
+fi    
 done
 \end{lstlisting}
 
@@ -4206,7 +4060,7 @@ ENABLED="true"
 # 重启sysstat
 sudo service sysstat restart
 \end{lstlisting}
-	
+
 在定时任务配置文件/etc/cron.d/sysstat中定义数据搜集的频率:
 
 \begin{lstlisting}[language=Bash]
@@ -4243,6 +4097,8 @@ ps -p
 # 当前系统总的线程数
 ps -p | wc -l
 \end{lstlisting}
+
+
 
 \paragraph{traceroute}
 
@@ -4310,6 +4166,8 @@ sudo umount /media/hldev/KINGSTON
 有时,会遇到Linux时间错误的问题,此时就需要手动设置时间或者自动从时间服务器上同步时间.由于服务器是物理内网,所以手动设置时间. Linux系统时钟有两个，一个是硬件时钟，即BIOS时间，就是我们进行CMOS设置时看到的时间，另一个是系统时钟，是Linux系统Kernel时间。手动设置时间命令如下:
 
 \begin{lstlisting}[language=Bash]
+# 查看系统当前时间
+date
 # 设置软件时间
 # 设置软件时间为2018年3月26日11点58分46秒
 # 月 日 时 分 年. 秒
@@ -4331,16 +4189,16 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 	\caption{tmux快捷键}
 	\label{table:tmuxshortcut}
 	\begin{center}
-	\begin{tabular}{|c|p{8cm}|c|}
-		\hline
-		\multirow{1}{*}{键}
-		& \multicolumn{1}{c|}{作用}  \\			
-		\cline{1-2}
-		Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
-		\hline
-		C-b ? & 显示快捷键帮助\\
-		\hline
-	\end{tabular}
+		\begin{tabular}{|c|p{8cm}|c|}
+			\hline
+			\multirow{1}{*}{键}
+			& \multicolumn{1}{c|}{作用}  \\			
+			\cline{1-2}
+			Ctrl + b d  & 返回主 shell ，detach, tmux 依旧在后台运行，里面的命令也保持运行状态\\
+			\hline
+			C-b ? & 显示快捷键帮助\\
+			\hline
+		\end{tabular}
 	\end{center}
 \end{table}
 
@@ -4374,22 +4232,22 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\caption{Linux profile配置文件}
 	\label{table:linuxconfigfile}
 	\begin{center}
-	\begin{tabular}{cp{10cm}c}
-		\hline
-		\multirow{1}{*}{序号}
-		& \multicolumn{1}{c}{名称}  \\
-		\hline			
-		/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
-		\hline	
-		/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
-		\hline
-		/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
-		\hline
-		~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
-		\hline
-		~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
-		\hline
-	\end{tabular}	
+		\begin{tabular}{cp{10cm}c}
+			\hline
+			\multirow{1}{*}{序号}
+			& \multicolumn{1}{c}{名称}  \\
+			\hline			
+			/etc/profile  & 此文件为系统的每个用户设置环境信息,当用户第一次登录时,该文件被执行.并从/etc/profile.d目录的配置文件中搜集shell的设置 \\
+			\hline	
+			/etc/environment & 在登录时操作系统使用的第二个文件,系统在读取你自己的profile前,设置环境文件的环境变量 \\
+			\hline
+			/etc/bashrc & 为每一个运行bash shell的用户执行此文件.当bash shell被打开时,该文件被读取\\
+			\hline
+			~/.profile & 每个用户都可使用该文件输入专用于自己使用的shell信息，当用户登录时，该文件仅仅执行一次！默认情况下,它设置一些环境变量,执行用户的.bashrc文件\\
+			\hline
+			~/.bashrc &  该文件包含专用于你的bash shell的bash信息,当登录时以及每次打开新的shell时,该文件被读取\\
+			\hline
+		\end{tabular}	
 	\end{center}
 \end{table}
 
@@ -4426,17 +4284,17 @@ shopt -s histappend
 	\caption{Linux变量}
 	\label{table:linuxenvironmentvariable}
 	\begin{center}
-	\begin{tabular}{cp{10cm}c}
-		\hline
-		\multirow{1}{*}{序号}
-		& \multicolumn{1}{c}{名称}  \\
-		\hline			
-		PS1  & PS1 stands for "Prompt String One" or "Prompt Statement One", the first prompt string (that you see at a command line) \\
-		\$\# & 传递给脚本或函数的参数个数 \\
-		\$0 & 当前脚本的文件名 \\
-		\$EUID & UID一般表示进程的创建者（属于哪个用户创建），而EUID表示进程对于文件和资源的访问权限（具备等同于哪个用户的权限） \\
-		\hline
-	\end{tabular}	
+		\begin{tabular}{cp{10cm}c}
+			\hline
+			\multirow{1}{*}{序号}
+			& \multicolumn{1}{c}{名称}  \\
+			\hline			
+			PS1  & PS1 stands for "Prompt String One" or "Prompt Statement One", the first prompt string (that you see at a command line) \\
+			\$\# & 传递给脚本或函数的参数个数 \\
+			\$0 & 当前脚本的文件名 \\
+			\$EUID & UID一般表示进程的创建者（属于哪个用户创建），而EUID表示进程对于文件和资源的访问权限（具备等同于哪个用户的权限） \\
+			\hline
+		\end{tabular}	
 	\end{center}
 \end{table}
 
@@ -4448,9 +4306,9 @@ shopt -s histappend
 export NODE_HOME=/opt/node-v8.9.4-linux-x64
 export PATH=$PATH:$NODE_HOME/bin
 export NODE_PATH=$NODE_HOME/lib/node_modules
-#使环境变量设置生效
+# 使环境变量设置生效
 source /etc/profile
-#验证profile的node设置生效
+# 验证profile的node设置生效
 node -v
 \end{lstlisting}
 
@@ -4481,16 +4339,16 @@ screen -r 12865
 uname命令用于打印当前系统相关信息（内核版本号、硬件架构、主机名称和操作系统类型等）。
 
 \begin{lstlisting}[language=Bash]
-#Linux查看版本当前操作系统内核信息
-#unix name的意思
-uname －a 
-#LSB（Linux 标准库Linux Standard Base）
-#能够打印发行版的具体信息
-#包括发行版名称、版本号、代号等
+# Linux查看版本当前操作系统内核信息
+# unix name的意思
+uname -a
+# LSB（Linux 标准库Linux Standard Base）
+# 能够打印发行版的具体信息
+# 包括发行版名称、版本号、代号等
 lsb_release -a
-#这个文件记录了Linux内核的版本
-#用于编译内核的 gcc 的版本
-#内核编译的时间，以及内核编译者的用户名
+# 这个文件记录了Linux内核的版本
+# 用于编译内核的 gcc 的版本
+# 内核编译的时间，以及内核编译者的用户名
 cat /proc/version
 \end{lstlisting}
 
@@ -4507,9 +4365,9 @@ cat /etc/centos-release
 计算机无法自动解析DNS,每次开机都要手动设置DNS解析服务器:
 
 \begin{lstlisting}[language=Bash]
-#建立resolvconf文件夹
+# 建立resolvconf文件夹
 sudo mkdir /run/resolvconf
-#建立resolv.conf文件
+# 建立resolv.conf文件
 sudo touch /run/resolvconf/resolv.conf
 \end{lstlisting}
 
@@ -4586,10 +4444,6 @@ mount /dev/sdb1 dolphin
 \subsection{Linux进程}
 
 查看程序的目录，需要找到进程的PID,进入到PID对应的目录，使用ll命令,exe文件对应的链接即为包含了正在进程中运行的程序链接。
-
-
-
-
 
 \subsection{Xfce桌面}
 
@@ -4776,7 +4630,7 @@ ulimit -a
 
 \begin{lstlisting}[language=Bash]
 lsof | wc -l  
-#查看某一进程的打开文件数量
+# 查看某一进程的打开文件数量
 lsof -p pid | wc -l 
 \end{lstlisting}
 
@@ -4786,7 +4640,7 @@ Linux使用vim编辑文件保存时报E514:write error (file system full).Just t
 
 \begin{lstlisting}[language=Bash]
 sudo du -hsx /* | sort -rh | head -n 40
-#查找大于800MB的文件,并由大到小排序
+# 查找大于800MB的文件,并由大到小排序
 sudo find . -type f -size +800M  -print0 | xargs -0 du -h | sort -nr
 \end{lstlisting}
 
@@ -4796,17 +4650,6 @@ sudo find . -type f -size +800M  -print0 | xargs -0 du -h | sort -nr
 \part{Tool}
 
 \newpage
-
-\chapter{Eclipse}
-
-\section{配置(Configuration)}
-
-\subsection{eclipse.ini}
-
-eclipse.ini是一个文本文件，其内容相当于在Eclipse运行时添加到 Eclipse.exe之后的命令行参数。所有在-vmargs之后的参数将会被传输给JVM，所有如果所有对Eclipse 设置的参数必须写在-vmargs之前.-vm选项的格式有严格的要求：1：-vm选项和它的值（路径）必须在单独的一行.2：其值必须严格地指向Java可执行文件，而不仅仅只是Java home目录。
-3：-vm选项必须在-vmargs选项之前，之前已经说过，所有在-vmargs之后的选项将会直接被传递给JVM.eclipse -clean，有时插件显示不出来是因为Eclipse将插件进行了缓存以加速启动过程，若指定此参数则会清空缓存，从头加载.
-
-
 
 \chapter{Intellij Idea}
 
@@ -4839,10 +4682,6 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 这样就不会阻断其他用户的正常请求了。
 
-\subsection{Intellij Idea启动慢}
-
-在使用Intellij Idea时调试Spring Boot项目时，启动时突然变慢了，原来启动10几秒，后来启动莫名其妙需要1分钟左右。经过排查是由于打了过多的断点的缘故，删除断点后，启动立即变快了。所以在项目中不能标记太多断点，调试后立即将断点删除。
-
 \subsection{无法查看Scala变量}
 
 在Intellij Idea调试Scala时，无法查看Scala的Vector等变量，提示Unable to evaluate the expression java.lang.UnsupportedOperationException。解决方案是，重新安装Intellij Idea:
@@ -4863,7 +4702,7 @@ sudo find / -name "idea.sh"
 
 \subsection{图标释疑}
 
-Intellij　Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.com/help/idea/symbols.html}}查看，有时出现了橘黄色小图标，中间带一个J符号，选择项目启动类时也无法选择，因为图标含义表示此文件不是Source文件，自然无法选择．原因是由于项目未把该路径指定为源码路径。解决方法：在Project Structure中（快捷键Ctrl+Alt+Shift+S）选Modules将你带红圈的文件添加上，将你带红圈的文件夹设为Sources。一般是src文件夹，点Sources文件夹，然后点击OK。
+Intellij Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.com/help/idea/symbols.html}}查看，有时出现了橘黄色小图标，中间带一个J符号，选择项目启动类时也无法选择，因为图标含义表示此文件不是Source文件，自然无法选择．原因是由于项目未把该路径指定为源码路径。解决方法：在Project Structure中（快捷键Ctrl+Alt+Shift+S）选Modules将你带红圈的文件添加上，将你带红圈的文件夹设为Sources。一般是src文件夹，点Sources文件夹，然后点击OK。
 
 \subsection{常见设置}
 
@@ -4891,10 +4730,7 @@ Intellij　Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.co
 	\label{fig:intellijideapluginxmltips}
 \end{figure}
 
-
-
 \subsection{Tips}
-
 
 Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 
@@ -4922,7 +4758,6 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 	\end{center}
 \end{table}
 
-
 遇到错误提示:Could not autowire. No beans of 'xxxx' type found,如下图所示,但是实际的代码没有问题,运行也是OK的.调整错误检测级别,在Settings->Editor->Inspecgtions->Spring->Spring Core->Code中的Autowiring for Bean Class,将Serverity的级别调整为警告即可.
 
 \begin{figure}[htbp]
@@ -4942,7 +4777,6 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/bin/java (0x10d19c4c0) and /Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/libinstrument.dylib (0x10ea194e0). One of the two will be used. Which one is undefined.
 \end{lstlisting}
 
-
 检查启动配置里启动模块是否选择正确。
 
 \paragraph{列编辑模式}
@@ -4955,8 +4789,6 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 	\caption{Intellij Idea SQL编辑时列匹配成功提示}
 	\label{fig:intellijideasqltips}
 \end{figure}
-
-
 
 \paragraph{自动换行}有时候，代码太长，滚动滑块不是非常方便。需要设置代码自动换行。
 
@@ -4986,18 +4818,6 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 public class ${NAME} {
 }
 \end{lstlisting}
-
-\chapter{Apache Tomcat}
-
-\section{基础问题}
-
-查看CATALINA\_HOME:
-
-\begin{lstlisting}[language=Bash]
-/path/to/tomcat/catalina.sh version
-\end{lstlisting}
-
-appBase:可以指定绝对目录,也可以指定相对于<CATALINA\_HOME>的相对目录.如果没有此项,默认为<CATALINA\_HOME>/webapps
 
 \chapter{Maven}
 
@@ -5090,10 +4910,10 @@ scope必须填写为system，而systemPath为引用jar包的绝对路径，注�
 	</configuration>
 	<dependencies>
 		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-compiler-eclipse</artifactId>
-			<!--指定编译版本，避免兼容性问题-->
-			<version>2.8.4</version>
+		<groupId>org.codehaus.plexus</groupId>
+		<artifactId>plexus-compiler-eclipse</artifactId>
+		<!--指定编译版本，避免兼容性问题-->
+		<version>2.8.4</version>
 		</dependency>	
 	</dependencies>
 </plugin>
@@ -5127,12 +4947,12 @@ scope必须填写为system，而systemPath为引用jar包的绝对路径，注�
 <settings xmlns="http://maven.apache.org/POM/4.0.0"    
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    
 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"> 
-	<mirrors>
-		<mirror>
-			<id>nexus-aliyun</id>
-			<mirrorOf>*</mirrorOf>
-			<name>Nexus aliyun</name>
-			<url>http://maven.aliyun.com/nexus/content/groups/public</url>
+<mirrors>
+	<mirror>
+		<id>nexus-aliyun</id>
+		<mirrorOf>*</mirrorOf>
+		<name>Nexus aliyun</name>
+		<url>http://maven.aliyun.com/nexus/content/groups/public</url>
 		</mirror>        
 	</mirrors>
 </settings>
@@ -5399,11 +5219,11 @@ task copyfile(){
 \begin{lstlisting}[language=Java]
 def ccCommonBuildScript = file("$rootDir/gradle/common.gradle")
 apply from: ccCommonBuildScript
-/**
-* 复制一份接口的部署包
-* 接口与平台单独部署，避免互相影响
-*/
-task copyTask(type: Copy) {
+	/**
+	* 复制一份接口的部署包
+	* 接口与平台单独部署，避免互相影响
+	*/
+	task copyTask(type: Copy) {
 	from 'build/libs/credit-system-web-boot-' + version + '.jar'
 	into 'build/libs/api'
 	rename 'credit-system-web-boot-' + version + '.jar','credit-system-web-api-' + version + '.jar'
@@ -5423,20 +5243,6 @@ task copyTask(type: Copy) {
 
 在这里，version变量是来自另外一个gradle文件。version变量在common.gradle中定义，在build.gradle文件中使用。
 
-\chapter{OWASP ZAP}
-
-\section{基础}
-
-\subsection{调整}
-
-OWASP消息体太长默认无法显示，可在Option/Display下调整消息体的长度。
-
-\subsection{分析}
-
-
-
-
-
 \subsection{Mac Book客户端配置}
 
 在Mac下连接OpenVPN需要安装Tunnelblick，Tunnelblick是Mac OS X上的一个OpenVPN的图形化前端界面。Tunnelblick is free software licensed under the GNU General Public License, version 2 and may be distributed only in accordance with the terms of that license.安装好Tunnelblick之后，直接导入相应的设置即可。如下是Mac Book下一个OpenVPN客户端可用配置的示例。
@@ -5448,7 +5254,8 @@ client
 dev tun
 # 用TCP协议
 proto tcp
-# 指定服务器的IP地址和端口，可以用多行指定多台服务器，实现负载均衡
+# 指定服务器的IP地址和端口
+# 可以用多行指定多台服务器，实现负载均衡
 remote 106.14.30.1 1194
 ;remote-random
 resolv-retry infinite
@@ -5573,9 +5380,9 @@ grep "Status: Up" Discovery.gnmap | cut -f 2 -d ' ' > LiveHosts.txt
 	比默认模式扫描更少的端口（Scan fewer ports than the default scan），
 	如果需要扫描更多的端口，指定p参数，如下命令行片段所示：
 	
-\begin{lstlisting}[language=Bash]
-nmap -p 0-10000 -A -v <Host>
-\end{lstlisting}
+	\begin{lstlisting}[language=Bash]
+	nmap -p 0-10000 -A -v <Host>
+	\end{lstlisting}
 	
 	端口号最好分段指定，否则扫描的速度会非常缓慢，
 	例如需要扫描0-65535端口，可以先扫描0-10000端口，
@@ -5611,10 +5418,10 @@ nmap -sS -P0 -sV -O <target>
 端口扫描简单示例如下代码片段所示：
 
 \begin{lstlisting}[language=Bash]
-#服务扫描
+# 服务扫描
 nmap-T4 -sV targetip 
 
-#扫描淘宝IP
+# 扫描淘宝IP
 nmap -p 0-1000 -v 218.201.46.124
 nmap -T4 -A -v 218.201.46.124
 
@@ -5693,20 +5500,6 @@ Only ethernet devices can be used for raw scans on Windows, and "ppp0" is not an
 -sV: Probe open ports to determine service/version info
 \end{lstlisting}
 
-\subsection{Zenmap}
-
-Zenmap是Nmap的官方GUI，可以运行在Linux, Windows, Mac OS X, BSD等操作系统上。
-
-\begin{lstlisting}[language=Bash]
-# Mac下获取Zenmap安装文件
-wget -c https://nmap.org/dist/nmap-7.31.dmg
-\end{lstlisting}
-
-
-
-
-
-
 \chapter{Raspberry Pi}
 
 \section{基础}
@@ -5731,10 +5524,10 @@ arp -a
 
 \begin{lstlisting}[language=Bash]
 network={
-  ssid="爱生活"
-  scan_ssid=1
-  psk="15023396614"
-  priority=3
+	ssid="爱生活"
+	scan_ssid=1
+	psk="15023396614"
+	priority=3
 }
 \end{lstlisting}
 
@@ -5760,8 +5553,6 @@ Raspberry Pi的网络配置，需要编辑/etc/wpa\_supplicant/wpa\_suppliant.co
 \begin{lstlisting}[language=Bash]
 /etc/init.d/networking restart
 \end{lstlisting}
-
-\subsection{挂机下载}
 
 \subsection{搭建家庭多媒体中心}
 
@@ -5892,17 +5683,6 @@ you-get <url>
 you-get http://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society
 \end{lstlisting}
 
-有时在听虾米音乐时，需要下载某些歌曲，可以直接抓取Media地址下载在线试听版本的歌曲，如图\ref{fig:scratchxiamidownloadurl}所示。
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.5]{scratchxiamidownloadurl.png}
-	\caption{获取试听下载地址}
-	\label{fig:scratchxiamidownloadurl}
-\end{figure}
-
-将地址粘贴到浏览器下载即可，遗憾的不是高品质音乐，而且文件名也全是数字，需要手动修改。
-
 \subsection{aria2c}
 
 aria2\footnote{https://aria2.github.io/} is a utility for downloading files. The supported protocols are HTTP(S), FTP, SFTP, BitTorrent, and Metalink. aria2 can download a file from multiple sources/protocols and tries to utilize your maximum download bandwidth. 下载aria2配置文件:
@@ -5947,10 +5727,6 @@ curl -O http://192.168.0.14/assets/templatefile/haishu.tar.gz
 
 7-Zip is open source software. Most of the source code is under the GNU LGPL license. 
 
-\subsection{transmission}
-
-在使用磁力链接下载元素据时，如果下载时间太长，一般是网络的问题，电信的网络普遍优于长城等。
-
 \subsection{rsync}
 
 rsync命令是一个远程数据同步工具，可通过LAN/WAN快速同步多台主机间的文件。rsync使用所谓的“rsync算法”来使本地和远程两个主机之间的文件达到同步，这个算法只传送两个文件的不同部分，而不是每次都整份传送，因此速度相当快。使用一个远程shell程序(如rsh、ssh)来实现将本地机器的内容拷贝到远程机器。当DST路径地址包含单个冒号":"分隔符时启动该模式。
@@ -5984,10 +5760,6 @@ rsync -avzPh WEB-INF resource root@192.168.1.11:/usr/local/xycq/daily-pub/diff-p
 \end{lstlisting}
 
 P参数表示显示拷贝的进度。h参数会以友好的方式(Human Readable)显示已经拷贝文件总大小。在使用SFTP工具拷贝时，总是会因为文件太大，拷贝的时间过长而导致超时，使用rsync则不存在此问题。
-
-\subsection{sftp}
-
-SFTP ，即SSH 文件传输协议（ SSH File Transfer Protocol ），或者说是安全文件传输协议（ Secure File Transfer Protocol ）。 SFTP 是一个独立的SSH 封装协议包，通过安全连接以相似的方式工作。
 
 \subsection{ag}
 
@@ -6096,21 +5868,13 @@ iostat 2 -cdxk
 
 参数 -d(Device)表示，显示设备（磁盘）使用状态；-k某些使用block为单位的列强制使用Kilobytes为单位；2表示，数据显示每隔2秒刷新一次。iostat还有一个比较常用的选项-x，该选项将用于显示和io相关的扩展数据。-c用来获取cpu部分状态值。为显示更详细的io设备统计信息，可以使用-x选项。
 
-\subsection{MobaXterm}
-
-
-
 \subsection{sftp}
 
 vsftpd 是“very secure FTP damon”的缩写，安全性是它的一个最大的特点。vsftpd是一个UNIX类操作系统上运行的服务器的名字，它可以运行在诸如Linux，BSD，Solaris，HP-UNIX等系统上面，是一个完全免费的，开发源码的FTP服务器软件。
 
 \begin{lstlisting}[language=Bash]
-/bin/systemctl start vsftpd.service俄
+/bin/systemctl start vsftpd.service
 \end{lstlisting}
-
-
-
-
 
 \subsection{Zeal}
 
@@ -6133,11 +5897,6 @@ Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerpri
 	\caption{Thunderbird配置企业邮箱}
 	\label{fig:tencententerprisemailbox}
 \end{figure}
-
-\subsection{Visual Studio Code}
-
-打开快捷键面板：Ctrl + K,S。
-
 
 \subsection{jq}
 
@@ -6166,6 +5925,8 @@ curl -H "APPID:" -H "TIMESTAMP:2016-12-19 16 (tel:2016121916):58:02" -H "ECHOSTR
 # 从文件中读取Json格式化
 cat example.json | jq '.'
 \end{lstlisting}
+
+
 
 \section{Ansible}
 
@@ -6335,7 +6096,7 @@ service jenkins restart
 默认密码路径：
 
 \begin{lstlisting}[language=bash]
-#密码默认路径
+# 密码默认路径
 vim /var/lib/jenkins/secrets/initialAdminPassword
 vim {$home}/.jenkins/secrets/initialAdminPassword
 \end{lstlisting}
@@ -6381,9 +6142,9 @@ vim /var/lib/jenkins/jenkins.config
 Jenkins中使用gradlew时，Gradle版本始终是某一个，但是build.gradle中和Jenkins中指定的却是另一个版本。
 
 \begin{lstlisting}[language=bash]
-#查看gradlew版本
+# 查看gradlew版本
 ./gradlew -v
-#更新版本
+# 更新版本
 gradle wrapper
 \end{lstlisting}
 
@@ -6406,15 +6167,15 @@ Jenkins后台运行脚本时,需要使用setsid和设置BUILD\_ID=dontKillMe\foo
 \begin{lstlisting}[language=bash]
 count=`ps -ef | grep dolphin-web-${VERSION} | grep -v "grep" | wc -l`
 if [ $count -lt 1 ]; then
-#使用setsid启动app
-#setsid在一个新的会话中运行命令
-#从而可以避开当前终端发出的HUP信号
-setsid ${JAVA_HOME}/bin/java -Xmx512M -Xms256M \
--jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005	\
-${APP_PATH}/dolphin-web-${VERSION}.jar \
---spring.config.location=${APP_PATH}/application.properties>/dev/null &
+	# 使用setsid启动app
+	# setsid在一个新的会话中运行命令
+	# 从而可以避开当前终端发出的HUP信号
+	setsid ${JAVA_HOME}/bin/java -Xmx512M -Xms256M \
+	-jar -Xdebug -Xrunjdwp:transport=dt_socket,suspend=n,server=y,address=5005	\
+	${APP_PATH}/dolphin-web-${VERSION}.jar \
+	--spring.config.location=${APP_PATH}/application.properties > /dev/null &
 else
-echo "process aready exists!"
+	echo "process aready exists!"
 fi
 \end{lstlisting}
 
@@ -6490,7 +6251,6 @@ digraph G {
 		fillcolor = darkslategray;
 		"平台用户" -> "浏览器";
 	}
-
 }
 \end{lstlisting}
 
@@ -6518,7 +6278,7 @@ AuthorizedKeysFile      .ssh/authorized_keys
 拷贝公钥到服务器：
 
 \begin{lstlisting}[language=Bash]
-ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> .ssh/authorized_keys' < ~/.ssh/id_rsa.pub
+ssh -p 22 pi@192.168.31.25 'mkdir -p .ssh && cat >> ~/.ssh/authorized_keys' < ~/.ssh/id_rsa.pub
 # 如果本地没有生成过ssh key
 # 使用如下命令生成ssh key
 ssh-keygen -t rsa -C "a@gmail.com"
@@ -6643,8 +6403,9 @@ When used in conjunction with ControlMaster, specifies that the master connectio
 # 接口服务器设置代理转发
 ssh -g -L 7805:192.168.250.100:7805 10.10.1.32
 # 本地端口转发实例
-#在10.20.1.24上执行
-#访问本地10.20.1.24的8888端口就相当于访问远程10.20.1.11的8083端口
+# 在10.20.1.24上执行
+# 访问本地10.20.1.24的8888端口就相当于访问远程
+# 10.20.1.11的8083端口
 ssh -g -L 8888:10.20.1.11:8083 10.20.1.24
 \end{lstlisting}
 
@@ -6742,16 +6503,16 @@ sudo ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/ro
 
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/root/software/pcre-8.40  --without-http_gzip_module
 
-#本机编译（不成功）
+# 本机编译（不成功）
 ./configure --prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/Downloads/openssl-OpenSSL_1_0_1e --without-http_gzip_module
 
-#本机编译（成功）
+# 本机编译（成功）
 -prefix=/opt/tengine --with-http_realip_module --with-pcre=/home/hldev/Downloads/pcre-8.40 --with-openssl=/home/hldev/software/openssl-OpenSSL_1_0_2g --without-http_gzip_module
 
 # 构建程序
 make
 
-#安装程序
+# 安装程序
 make install
 
 #服务器
@@ -6761,8 +6522,6 @@ make install
 You can either do not enable the modules, or install the OpenSSL library
 into the system, or build the OpenSSL library statically from the source
 with nginx by using --with-openssl=<path> option.
-
-
 \end{lstlisting}
 
 其中--with-pcre表示pcre(Perl Compatible Regular Expressions)的源代码目录。在编译时，还需要注意openssl的版本，本地电脑版本是1.0.2g，服务端的版本是1.0.1e。服务器端编译Nginx的一个命令：
@@ -6799,9 +6558,9 @@ real_ip_header X-Real-IP;
 
 \begin{lstlisting}[language=bash]
 location /inapi {
-proxy_pass http://localhost:28080;
-proxy_set_header X-Real-IP $remote_addr;
-proxy_redirect off;
+	proxy_pass http://localhost:28080;
+	proxy_set_header X-Real-IP $remote_addr;
+	proxy_redirect off;
 }
 \end{lstlisting}
 
@@ -6826,22 +6585,22 @@ HttpLimitReqModule用来限制连单位时间内连接数的模块，使用limit
 
 \begin{lstlisting}[language=bash]
 http {
-limit_conn_log_level error;
-limit_conn_status 503;
-#Zone=one或allips表示设置了
-#名为“one”或“allips”的存储区
-#大小为10兆字节
-limit_conn_zone $binary_remote_addr zone=one:10m;
-limit_conn_zone $server_name zone=perserver:10m;
-#rate=1000r/s 的意思是允许1秒钟不超过1000个请求
-limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s; 
-#限制每分钟不超过600个请求
-limit_req_zone $binary_remote_addr zone=allips:100m rate=600r/m;
-server {
-limit_conn one 100;
-limit_conn perserver 3000;
-limit_req zone=allips  burst=5  nodelay;
-}
+	limit_conn_log_level error;
+	limit_conn_status 503;
+	# Zone=one或allips表示设置了
+	# 名为“one”或“allips”的存储区
+	# 大小为10兆字节
+	limit_conn_zone $binary_remote_addr zone=one:10m;
+	limit_conn_zone $server_name zone=perserver:10m;
+	#rate=1000r/s 的意思是允许1秒钟不超过1000个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=1000r/s; 
+	# 限制每分钟不超过600个请求
+	limit_req_zone $binary_remote_addr zone=allips:100m rate=600r/m;
+	server {
+		limit_conn one 100;
+		limit_conn perserver 3000;
+		limit_req zone=allips  burst=5  nodelay;
+	}
 }
 \end{lstlisting}
 
@@ -6901,7 +6660,7 @@ limit_req_zone $binary_remote_addr $request_uri zone=thre:3m rate=1r/s;
 可以根据客户端的 user-agents 首部字段来阻止指定的爬虫爬取我们的网站。使用如下命令查看最近访问IP，以访问频率倒序排列：
 
 \begin{lstlisting}[language=Bash]
-awk '{print $1}' /usr/local/nginx/logs/new.xycq.gov.cn.log |sort |uniq -c|sort -nr
+awk '{print $1}' /home/nginx/logs/new.xycq.gov.cn.log |sort |uniq -c|sort -nr|head -n 20
 \end{lstlisting}
 
 对方使用的估计是阿里云的动态IP，太多了，限制IP段访问：
@@ -6928,24 +6687,24 @@ worker_processes 4;
 pid /run/nginx.pid;
 
 events {
-worker_connections 768;
+	worker_connections 768;
 }
 
 http {
-server{
-listen 80;
-# 定义网站默认根目录
-root /opt/dolphin/frontend/dist;
-
-location /api {
-proxy_pass http://localhost:8011;
-}
-
-location / {
-root /opt/dolphin/frontend/dist;
-index index.html;
-} 
-}
+	server{
+		listen 80;
+		# 定义网站默认根目录
+		root /opt/dolphin/frontend/dist;
+		
+		location /api {
+			proxy_pass http://localhost:8011;
+		}
+		
+		location / {
+			root /opt/dolphin/frontend/dist;
+			index index.html;
+		} 
+	}
 }
 \end{lstlisting}
 
@@ -6966,8 +6725,8 @@ Nginx的负载均衡配置，在主机(10.10.1.12)出现问题时，Nginx会自�
 
 \begin{lstlisting}[language=bash]
 upstream backend{
-server 10.10.1.12:28080;
-server 10.10.1.13:28080 backup;
+	server 10.10.1.12:28080;
+	server 10.10.1.13:28080 backup;
 }
 \end{lstlisting}
 
@@ -6981,13 +6740,13 @@ server 10.10.1.13:28080 backup;
 
 \begin{lstlisting}[language=bash]
 location /dolphin/api {
-#匹配类似于/dolphin/api/test/reg?id=1的url
-#不阻止形如/dolphin/api/test/reg请求
-if ( $args ~ id= ) {
-return 403;
-}
-proxy_pass http://localhost:8011;
-proxy_redirect off;
+	#匹配类似于/dolphin/api/test/reg?id=1的url
+	#不阻止形如/dolphin/api/test/reg请求
+	if ( $args ~ id= ) {
+		return 403;
+	}
+	proxy_pass http://localhost:8011;
+	proxy_redirect off;
 }
 \end{lstlisting}
 
@@ -6998,10 +6757,10 @@ proxy_redirect off;
 
 \begin{lstlisting}
 server {
-location / {
-proxy_pass http://backends;
-proxy_next_upstream error timeout http_404;
-}
+	location / {
+		proxy_pass http://backends;
+		proxy_next_upstream error timeout http_404;
+	}
 }
 \end{lstlisting}
 
@@ -7013,15 +6772,15 @@ proxy\_next\_upstream在nginx中是默认打开的。参数值timeout，这个�
 
 \begin{lstlisting}
 server {
-server_name creditstatic;
-listen 8088;
-
-root /opt/app/static;
-index index.html index.htm;
-
-location / {
-try_files $uri $uri/ =404;
-}
+	server_name creditstatic;
+	listen 8088;
+	
+	root /opt/app/static;
+	index index.html index.htm;
+	
+	location / {
+		try_files $uri $uri/ =404;
+	}
 }
 \end{lstlisting}
 
@@ -7073,55 +6832,6 @@ server {
 /home/app/local/tengine/sbin/nginx -p /home/app/local/tengine -s reload
 ./nginx -p /home/app/local/tengine -V
 \end{lstlisting}
-
-
-\paragraph{error while loading shared libraries: libpcre.so.3: cannot open shared object file}
-
-找不到libpcre.so.3文件，在本机搜索了之后，发现文件在目录下：
-
-\begin{lstlisting}[language=bash]
-/lib/i386-linux-gnu/libpcre.so.3
-/lib/x86_64-linux-gnu/libpcre.so.3
-\end{lstlisting}
-
-\paragraph{error while loading shared libraries: libssl.so.1.0.0: cannot open shared object file}
-
-有可能是由于openssl库的位置不对导致的，可以尝试创建软链接解决：
-
-\begin{lstlisting}[language=bash]
-ln -s /usr/local/lib64/libssl.so.1.1 /usr/lib64/libssl.so.1.1  
-ln -s /usr/local/lib64/libcrypto.so.1.1 /usr/lib64/libcrypto.so.1.1  
-\end{lstlisting}
-
-.so 为共享库,是shared object,用于动态连接的,和dll差不多。openssl：多用途的命令行工具，各功能分别使用子命令实现，libcrypto：公共加密库（存放了各种加密算法），libssl：ssl协议的实现。在Ubuntu下可以通过如下命令安装libssl.so.1.0.0:
-
-\begin{lstlisting}[language=bash]
-sudo apt-get install libssl1.0.0:amd64
-sudo apt-get install libssl1.0.0 libssl-dev
-
-#查看OpenSSL版本
-openssl version
-
-#查看系统中对libssl
-find ／ -name libssl.s0*
-
-# 列出openssl包
-yum list \*openssl\*
-\end{lstlisting}
-
-不过此处不能通过命令安装，只能通过源码编译安装。这里有包： \url{https://pkgs.org/download/libssl1.0.0}。查看当前操作系统支持的openssl：
-
-\begin{lstlisting}[language=bash]
-yum --showduplicates list openssl
-\end{lstlisting}
-
-寻找包含libssl.so.1.0.0的安装包：
-
-\begin{lstlisting}[language=bash]
-yum provides */libssl.so.1.0.0
-\end{lstlisting}
-
-在http://rpm.pbone.net/上搜索 openssl1-1.0.0 ,搜到openssl1-1.0.0-4.fc24.x86\_64.rpm。
 
 
 \chapter{Git}
@@ -7250,9 +6960,9 @@ git log有两个用法：一是自定义提交的输出格式，二是过滤输�
 
 \begin{lstlisting}[language=Bash]
 [alias]
-	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
-	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
-	lg = !"git lg1"
+lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+lg = !"git lg1"
 \end{lstlisting}
 
 
@@ -7610,10 +7320,10 @@ Computer Modern是自由软件TeX的默认字体，为美国计算机科学家�
 
 \begin{lstlisting}[language=Tex]
 \lstset{
-	% 设定代码的基本字体为等宽字体（类似于Courier）
-	basicstyle=\ttfamily,
-	% 设定注释部分字体为等宽字体，用深绿色显示    
-	commentstyle=\ttfamily\color{green!40!black},    
+% 设定代码的基本字体为等宽字体（类似于Courier）
+basicstyle=\ttfamily,
+% 设定注释部分字体为等宽字体，用深绿色显示    
+commentstyle=\ttfamily\color{green!40!black},    
 }
 \end{lstlisting}
 
@@ -7678,18 +7388,18 @@ Latex原生不支持JavaScript语言，添加如下定义：
 \begin{lstlisting}[language=Tex]
 %lstlisting包JavaScript语言设置
 \lstdefinelanguage{JavaScript}{
-	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
-	keywordstyle=\color{blue}\bfseries,
-	ndkeywords={class, export, boolean, throw, implements, import, this},
-	ndkeywordstyle=\color{darkgray}\bfseries,
-	identifierstyle=\color{black},
-	sensitive=false,
-	comment=[l]{//},
-	morecomment=[s]{/*}{*/},
-	commentstyle=\color{purple}\ttfamily,
-	stringstyle=\color{red}\ttfamily,
-	morestring=[b]',
-	morestring=[b]"
+keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+keywordstyle=\color{blue}\bfseries,
+ndkeywords={class, export, boolean, throw, implements, import, this},
+ndkeywordstyle=\color{darkgray}\bfseries,
+identifierstyle=\color{black},
+sensitive=false,
+comment=[l]{//},
+morecomment=[s]{/*}{*/},
+commentstyle=\color{purple}\ttfamily,
+stringstyle=\color{red}\ttfamily,
+morestring=[b]',
+morestring=[b]"
 }
 \end{lstlisting}
 
@@ -7984,23 +7694,6 @@ drop context index qymcindex on user_xycq.TS_F_CORPORATION_TEST;
 
 如果有主备机器,可以考虑在备机上执行耗时的SQL统计语句,在备机上建立索引.这样既可以执行耗时的统计查询,同时也不影响Insert操作\cite{highperformancesql}.也可以不建立索引,直接定时执行日志统计语句,但是会牺牲日志统计的实时性.针对日志逐步增长的问题,也可以建立一张日志统计汇总表,定时统计指定时间范围的日志记录.比如增量统计过去一小时的日志到汇总表.实时日志单独记录到流水表中.
 
-
-
-\section{Redis}
-
-\subsection{安装}
-
-这里是在Raspberry Pi上安装Redis：
-
-\begin{lstlisting}[language=Bash]
-# 下载源码
-wget -c http://download.redis.io/releases/redis-3.2.9.tar.gz
-# 编译安装
-make
-make test
-\end{lstlisting}
-
-
 \chapter{PostgreSQL}
 
 PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统），在灵活的BSD-风格许可证下发行。它在其他开放源代码数据库系统（比如MySQL和Firebird），和专有系统比如Oracle、Sybase、IBM的DB2和Microsoft SQL Server之外，为用户又提供了一种选择。
@@ -8010,34 +7703,34 @@ PostgreSQL是自由的对象-关系型数据库服务器（数据库管理系统
 PostgreSQL的基础操作：
 
 \begin{lstlisting}[language=Bash]
-#52pg　data路径:/opt/haishu/var/pgsql
+# 52pg　data路径:/opt/haishu/var/pgsql
 initdb --encoding=UTF-8 --no-locale -D /var/lib/pgsql/data/
-#初始化pg
-#指定数据存放路径/opt/app/local/pgsql/data/
-#pg版本9.5.12
+# 初始化pg
+# 指定数据存放路径/opt/app/local/pgsql/data/
+# pg版本9.5.12
 ./initdb --encoding=UTF-8 --no-locale -D /opt/app/local/pgsql/data/
-#启动PostgreSQL
+# 启动PostgreSQL
 /opt/haishu/local/pgsql/10.1/bin/pg_ctl -D /opt/haishu/var/pgsql/10.1 -l logfile start
-#启动PostgreSQL(测试环境)
+# 启动PostgreSQL(测试环境)
 ./pg_ctl -D /opt/haishu/var/pgsql/10.1 -l logfile start
-#停止PostgreSQL
+# 停止PostgreSQL
 ./pg_ctl -D /opt/app/local/pgsql/data stop
-#列出Database
+# 列出Database
 pgsql -l
-#登录pg
+# 登录pg
 /opt/haishu/local/pgsql/10.1/bin/psql -h localhost -U haishu -d auth_xycq
-#在本地可以访问
+# 在本地可以访问
 #远程机器无法访问，绑定的端口是0.0.0.0
-#CentOS 7关闭防火墙
+# CentOS 7关闭防火墙
 systemctl stop firewalld.service
-#禁止firewall开机启动
+# 禁止firewall开机启动
 systemctl disable firewalld.service
-#查看默认防火墙状态
-#关闭后显示notrunning，开启后显示running
+# 查看默认防火墙状态
+# 关闭后显示notrunning，开启后显示running
 firewall-cmd --state
-#添加20201端口到public域
+# 添加20201端口到public域
 firewall-cmd --zone=public --add-port=20201/tcp --permanent
-#防火墙生效
+# 防火墙生效
 firewall-cmd --reload
 \end{lstlisting}
 
@@ -8104,13 +7797,13 @@ PostgreSQL新建列时，列名推荐使用小写，列名使用小写时，sele
 下载安装包后,运行命令:
 
 \begin{lstlisting}[language=Bash]
-#安装PostgreSQL
+# 安装PostgreSQL
 sudo pip2 install pgadmin4-2.1-py2.py3-none-any.whl
-#切换到安装目录5a5c7c70290000e927486750
+# 切换到安装目录5a5c7c70290000e927486750
 cd /usr/local/lib/python2.7/dist-packages/pgadmin4
-#启动pgAdmin4
-#初次启动需要设置用户名密码
-#暂时设置用户名为jiangtingqiang@gmail.com
+# 启动pgAdmin4
+# 初次启动需要设置用户名密码
+# 暂时设置用户名为jiangtingqiang@gmail.com
 sudo python pgAdmin4.py
 \end{lstlisting}
 
@@ -8156,7 +7849,6 @@ select * from ig_app_user_201805121436;
 \end{lstlisting}
 
 
-
 \subsection{登录}
 
 输入如下命令登录Postgres数据库：
@@ -8164,11 +7856,6 @@ select * from ig_app_user_201805121436;
 \begin{lstlisting}[language=Bash]
 ./psql postgres -h 127.0.0.1 -d postgres
 \end{lstlisting}
-
-
-
-
-
 
 
 \chapter{MySQL}
@@ -8258,17 +7945,11 @@ default-character-set=utf8
 修改后，重新启动数据库。但是以前新建的表有可能还是采用的原来的编码，使用如下语句进行修改：
 
 \begin{lstlisting}[language=SQL]
---检查数据表所有字段的状态	
+-- 检查数据表所有字段的状态	
 show full columns from book; 
---发现address字段的Collation项非utf8，改成utf8
+-- 发现address字段的Collation项非utf8，改成utf8
 alter table book change publisher publisher varchar(512) character set utf8 collate utf8_unicode_ci not null;
 \end{lstlisting}
-
-\subsection{备份}
-
-netstat -ln | grep mysql
-
-mysqldump --sock=/var/run/mysqld/mysqld.sock -u root -p dolphin>dolphin.sql
 
 \subsection{存储过程}
 
@@ -8278,17 +7959,16 @@ DELIMITER $$
 CREATE DEFINER=`root`@`%` PROCEDURE `insert_initial_id`()
 BEGIN  
 
-DECLARE i INT DEFAULT 1;# can not be 0  
-DECLARE j INT DEFAULT 10000000;# can not be 0  
-
-
-WHILE i<99999999 && j < 10000050
-DO  
-insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
-SET i=i+1;  
-set j=j+1;
-END WHILE ;  
-commit;  
+	DECLARE i INT DEFAULT 1;# can not be 0  
+	DECLARE j INT DEFAULT 10000000;# can not be 0  
+	
+	WHILE i<99999999 && j < 10000050
+	DO  
+		insert into douban_book_id(isscapy,douban_book_id) values (0,j);  
+		SET i=i+1;  
+		set j=j+1;
+	END WHILE ;  
+	commit;  
 
 END$$
 DELIMITER ;
@@ -8330,25 +8010,19 @@ mysql使用unix socket或者tcp来连接数据库进行通讯，默认不加 -h�
 character-set-server=utf8
 \end{lstlisting}
 
-
-
-
 \chapter{达梦}
 
 启动达梦：
 
 \begin{lstlisting}[language=Bash]
-#直接启动达梦
-/home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole
-# 启动测试环境达梦
-/opt/dmdbms/bin/dmserver /opt/dmdbms/data/DAMENG/dm.ini -noconsole
-#通过默认开机启动脚本重启达梦
+# 直接启动达梦
+nohup /home/hldev/dmdbms/bin/dmserver /home/hldev/dmdbms/data/DAMENG/dm.ini -noconsole &
+./dmserver ../data/DAMENG/dm.ini
+# 通过默认开机启动脚本重启达梦
 /etc/init.d/DmServiceDMSERVER restart
-#通过默认开机启动脚本启动达梦
+# 通过默认开机启动脚本启动达梦
 /etc/init.d/DmServiceDMSERVER restart
 \end{lstlisting}
-
-
 
 
 \section{SQL}
@@ -8374,11 +8048,11 @@ create index "TS_C500035_JBXX_DJXX_GTJBXX_ID" on "USER_XYCQ_ZS"."TS_C500035_JBXX
 
 \begin{lstlisting}[language=SQL]
 SELECT ORG_ID,
-ORG_NAME,
-INTERFACE_NAME,
-COUNT(*) AS TOTAL,
-SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
-ROUND(CONVERT(DOUBLE,SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END))/CONVERT(DOUBLE,COUNT(*)),3) AS RATIO
+	ORG_NAME,
+	INTERFACE_NAME,
+	COUNT(*) AS TOTAL,
+	SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
+	ROUND(CONVERT(DOUBLE,SUM(CASE WHEN RETURN_COUNT > 0 THEN 1 ELSE 0 END))/CONVERT(DOUBLE,COUNT(*)),3) AS RATIO
 FROM TD_M_APPACCESS_LOG
 GROUP BY ORG_ID,ORG_NAME,INTERFACE_NAME
 
@@ -8394,33 +8068,33 @@ from v$sql_history;
 
 \begin{lstlisting}[language=SQL]
 select org_id,
-	max(org_name) org_name,
-	sum(using_times) using_times,
-	sum(valid_times) valid_times,
-	sum(feedback_count) feedback_count,
-	sum(handle_type_count) handle_type_count
-	from (
-		select 
-		b.org_id,b.org_name,
-		SUM(count(b.responsekey)) over(partition by b.responsekey) using_times,--使用次数
-		SUM(CASE WHEN b.isokred > 0 OR b.isokblack > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,--触发反馈次数
-		sum(case when b.is_feedback = 1 then 1 else 0 end) FEEDBACK_COUNT, --反馈次数
-		sum(case when b.handle_type = 1 then 1 else 0 end) HANDLE_TYPE_COUNT --已实施奖惩次数
-		from (
-			--表联合基础信息
-			select  a.org_id,
-			a.org_name,
-			cxnr,--相对人
-			a.responsekey responsekey,--responsekey一次查询标记，统计查询次数
-			a.ISOKRED isokred,--红名单个数，统计触发次数
-			a.ISOKBALCK isokblack,--黑名单个数，统计触发次数
-			a.is_feedback, --是否反馈标志，统计反馈次数
-			c.handle_type --已实施奖惩数
-			from TI_B_REDBALCKLOG a,TI_B_FEEDBACK_LOG c
-			where c.responsekey = a.responsekey
-			and a.cxnr = c.xdr --反馈根据相对人反馈，以相对人粒度进行统计
-	) as b
-	group by b.org_id,b.org_name,b.responsekey,b.cxnr
+max(org_name) org_name,
+sum(using_times) using_times,
+sum(valid_times) valid_times,
+sum(feedback_count) feedback_count,
+sum(handle_type_count) handle_type_count
+from (
+select 
+b.org_id,b.org_name,
+SUM(count(b.responsekey)) over(partition by b.responsekey) using_times,--使用次数
+SUM(CASE WHEN b.isokred > 0 OR b.isokblack > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,--触发反馈次数
+sum(case when b.is_feedback = 1 then 1 else 0 end) FEEDBACK_COUNT, --反馈次数
+sum(case when b.handle_type = 1 then 1 else 0 end) HANDLE_TYPE_COUNT --已实施奖惩次数
+from (
+--表联合基础信息
+select  a.org_id,
+a.org_name,
+cxnr,--相对人
+a.responsekey responsekey,--responsekey一次查询标记，统计查询次数
+a.ISOKRED isokred,--红名单个数，统计触发次数
+a.ISOKBALCK isokblack,--黑名单个数，统计触发次数
+a.is_feedback, --是否反馈标志，统计反馈次数
+c.handle_type --已实施奖惩数
+from TI_B_REDBALCKLOG a,TI_B_FEEDBACK_LOG c
+where c.responsekey = a.responsekey
+and a.cxnr = c.xdr --反馈根据相对人反馈，以相对人粒度进行统计
+) as b
+group by b.org_id,b.org_name,b.responsekey,b.cxnr
 ) d
 group by org_id
 \end{lstlisting}
@@ -8432,7 +8106,7 @@ group by org_id
 查看最大会话：
 
 \begin{lstlisting}[language=SQL]
---查看DM会话配置
+-- 查看DM会话配置
 SELECT *
 FROM V$DM_INI
 WHERE PARA_NAME = 'MAX_SESSIONS'
@@ -8488,13 +8162,13 @@ select * from v$version;
 
 \begin{lstlisting}[language=SQL]
 select GNMK,
-max(ORG_NAME) as ORG_NAME,
-ORG_ID,
-COUNT(*) AS USING_TIMES,
-SUM(CASE WHEN ISOKRED > 0 OR ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
-SUM(CASE WHEN ISOKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_RED,
-SUM(CASE WHEN ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_BLACK
-from (
+	max(ORG_NAME) as ORG_NAME,
+	ORG_ID,
+	COUNT(*) AS USING_TIMES,
+	SUM(CASE WHEN ISOKRED > 0 OR ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_TIMES,
+	SUM(CASE WHEN ISOKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_RED,
+	SUM(CASE WHEN ISBLACKRED > 0 THEN 1 ELSE 0 END) AS VALID_COUNT_BLACK
+	from (
 	SELECT GNMK,
 	MAX(ORG_NAME) AS ORG_NAME,
 	ORG_ID,
@@ -8545,10 +8219,6 @@ and b.name!='SYSOBJECTS'
 sp_close_session(140326983703408)
 \end{lstlisting}
 
-
-
-
-
 \subsection{命令行操作}
 
 
@@ -8564,11 +8234,6 @@ sp_close_session(140326983703408)
 \begin{lstlisting}[language=Bash]
 call sp_tabledef('USER_XYCQ','TD_M_CREDENTIAL');
 \end{lstlisting}
-
-
-
-
-
 
 \section{通用知识}
 
@@ -8719,8 +8384,8 @@ plugins: [
 	// <-- key to reducing React's size
 	new webpack.DefinePlugin({ 
 		'process.env': {
-			'NODE_ENV': JSON.stringify('production')
-		}
+		'NODE_ENV': JSON.stringify('production')
+	}
 	}),
 	//dedupe similar code
 	new webpack.optimize.DedupePlugin(),
@@ -8833,7 +8498,7 @@ PAC是proxy auto-config的缩写。PAC文件是纯文本格式的，实际上就
 
 \begin{lstlisting}[language=JavaScript]
 function FindProxyForURL(url,host){
-	return "DIRECT";
+return "DIRECT";
 }
 \end{lstlisting}
 
@@ -8847,27 +8512,27 @@ function FindProxyForURL(url,host){
 
 \begin{lstlisting}[language=VBScript]
 var FindProxyForURL = function(init, profiles) {
-	return function(url, host) {
-		"use strict";
-		var result = init, scheme = url.substr(0, url.indexOf(":"));
-		do {
-			result = profiles[result];
-			if (typeof result === "function") result = result(url, host, scheme);
-		} while (typeof result !== "string" || result.charCodeAt(0) === 43);
-			return result;
-		};
-		}("+dolphin2", {
-		"+dolphin2": function(url, host, scheme) {
-			"use strict";
-			if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
-			if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
-			return "DIRECT";
-		},
-		"+dolphin-proxy": function(url, host, scheme) {
-		"use strict";
-		if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
-		return "PROXY 10.55.10.2:8888";
-	}
+return function(url, host) {
+"use strict";
+var result = init, scheme = url.substr(0, url.indexOf(":"));
+do {
+result = profiles[result];
+if (typeof result === "function") result = result(url, host, scheme);
+} while (typeof result !== "string" || result.charCodeAt(0) === 43);
+return result;
+};
+}("+dolphin2", {
+"+dolphin2": function(url, host, scheme) {
+"use strict";
+if (/^59\.214\.215\.6$/.test(host)) return "+dolphin-proxy";
+if (/^10\.10\.1\.11$/.test(host)) return "+dolphin-proxy";
+return "DIRECT";
+},
+"+dolphin-proxy": function(url, host, scheme) {
+"use strict";
+if (/^127\.0\.0\.1$/.test(host) || /^::1$/.test(host) || /^localhost$/.test(host)) return "DIRECT";
+return "PROXY 10.55.10.2:8888";
+}
 });
 \end{lstlisting}
 
@@ -9137,13 +8802,8 @@ def getVersionCode() {
 		def Properties versionProps = new Properties()
 		versionProps.load(new FileInputStream(versionFile))
 		def versionCode = versionProps['VERSION_CODE'].toString()
-		/*def runTasks = gradle.startParameter.taskNames        //仅在assembleRelease任务是增加版本号
-		if ('assembleRelease' in runTasks) {
-			versionProps['VERSION_CODE'] = (++versionCode).toString()
-			versionProps.store(versionFile.newWriter(), null)
-		}*/
 		return versionCode
-		} else {
+	} else {
 		throw new GradleException("Could not find version.properties!")
 	}
 }
@@ -9225,10 +8885,10 @@ as.config.loginPage=http://ip:port/auth/signon
 \addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}}
 \section*{Books}
 \addcontentsline{toc}{section}{Books}
-\printbibliography[heading=bibempty,type=book]
+%\printbibliography[heading=bibempty,type=book]
 \section*{Articles}
 \addcontentsline{toc}{section}{Articles}
-\printbibliography[heading=bibempty,type=article]
+%\printbibliography[heading=bibempty,type=article]
 
 %----------------------------------------------------------------------------------------
 %	INDEX
