@@ -1319,17 +1319,17 @@ http://example.com/api/user?version=v1.1.30
 
 \begin{lstlisting}
 server{
-location /api {
-if($query_string ~ version=v1.1.30){
-//如果query string中包含"version=v1.1.30"
-//流量转发到18081端口
-proxy_pass http://10.10.1.12:18081;
-proxy_redirect off;
-}else{
-proxy_pass http://10.10.1.12:18082;
-proxy_redirect off;
-}
-}
+	location /api {
+	if($query_string ~ version=v1.1.30){
+		//如果query string中包含"version=v1.1.30"
+		//流量转发到18081端口
+		proxy_pass http://10.10.1.12:18081;
+			proxy_redirect off;
+		}else{
+			proxy_pass http://10.10.1.12:18082;
+			proxy_redirect off;
+		}
+	}
 }
 \end{lstlisting}
 
@@ -1358,22 +1358,17 @@ x-ms-version:2017-04-17
 
 \section{数据库操作(Database Operate)}
 
-\subsection{Thread starvation or clock leap detected}
-
-程序运行过程中HikariCP出现警告:Thread starvation or clock leap detected,并停止响应和接收请求.HikariCP有一个线程会去回收空闲的连接,出现此警告表示已经长时间未运行此线程,使用sar命令查看系统历史负载,在出现警告的时间段里面,内存使用情况稳定,但是CPU使用率在此时间段内急剧飙升.推测有可能是此时间段内CPU使用率过高导致此问题.there was actually a 2+ minute starvation event. In which case, you need to monitor the CPU and figure out what is creating the load\footnote{\url{https://github.com/brettwooldridge/HikariCP/issues/679}},输出此条错误信息在源码的HikariPool类中.
-
-
 \subsection{Could not get JDBC connection}
 
 接口有时会查询不出数据，总是报超时错误。查看程序日志，提示Could not get JDBC Connection。查看了数据库的Session数量(40)远远未到达最大限制数量(500)。
 
 \begin{lstlisting}[language=SQL]
-#达梦DB查看最大会话数量
+-- 达梦DB查看最大会话数量
 select *
 from v$dm_ini
 where para_name ='MAX_SESSIONS'
 
-#达梦DB查看当前会话数量
+-- 达梦DB查看当前会话数量
 SELECT count(*)
 FROM v$sessions;
 \end{lstlisting}
@@ -1528,28 +1523,6 @@ hikariConfig.setConnectionTestQuery("SELECT 1");
 \end{lstlisting}
 
 This is the query that will be executed just before a connection is given to you from the pool to validate that the connection to the database is still alive。它会先检测连接是否可用。
-
-
-\paragraph{DataSource跟DriverManager区别及联系}
-
-In basic terms, a data source is a facility for storing data. It can be as sophisticated as a complex database for a large corporation or as simple as a file with rows and columns. A data source can reside on a remote server, or it can be on a local desktop machine. Applications access a data source using a connection, and aDataSource object can be thought of as a factory for connections to the particular data source that theDataSource instance represents.
-
-两者相同点：
-Using a DataSource object is the preferred alternative to using the DriverManager for establishing a connection to a data source. They are similar to the extent that the DriverManager class and DataSource interface both have methods for creating a connection, methods for getting and setting a timeout limit for making a connection, and methods for getting and setting a stream for logging.
-
-两者不同点：
-1.Unlike the DriverManager, a DataSource object has properties that identify and describe the data source it represents. Also, a DataSource object works with a Java Naming and Directory InterfaceTM (JNDI) naming service and is created, deployed, and managed separately from the applications that use it. A driver vendor will provide a class that is a basic implementation of the DataSource interface as part of its JDBC 2.0 or 3.0 driver product.
-
-2.The second major advantage is that the DataSource facility allows developers to implement a DataSourceclass to take advantage of features like connection pooling and distributed transactions.
-
-传统的数据库连接方式（指通过DriverManager和基本实现DataSource进行连接）中，一个数据库连接对象均对应一个物理数据库连接，数据库连接的建立以及关闭对系统而言是耗费系统资源的操作，在多层结构的应用程序环境中这种耗费资源的动作对系统的性能影响尤为明显。
-
-在多层结构的应用程序中通过连接池（connection pooling）技术可以使系统的性能明显得到提到，连接池意味着当应用程序需要调用一个数据库连接的时，数据库相关的接口通过返回一个通过重用数据库连接来代替重新创建一个数据库连接。通过这种方式，应用程序可以减少对数据库连接操作，尤其在多层环境中多个客户端可以通过共享少量的物理数据库连接来满足系统需求。通过连接池技术Java应用程序不仅可以提高系统性能同时也为系统提高了可测量性。
-
-数据库连接池是运行在后台的而且应用程序的编码没有任何的影响。此中状况存在的前提是应用程序必须通过DataSource对象（一个实现javax.sql.DataSource接口的实例）的方式代替原有通过DriverManager类来获得数据库连接的方式。一个实现javax.sql.DataSource接口的类可以支持也可以不支持数据库连接池，但是两者获得数据库连接的代码基本是相同的。
-
-
-
 
 
 \subsection{用户重复登录问题}
@@ -1822,10 +1795,10 @@ mybatis.config-location=classpath:mybatis-config.xml
 PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-<settings>
-<!-- 打印查询语句 -->
-<setting name="logImpl" value="STDOUT_LOGGING" />
-</settings>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+	</settings>
 </configuration>
 \end{lstlisting}
 
@@ -2132,14 +2105,6 @@ local
 nexus-aliyun:http://maven.aliyun.com/nexus/content/groups/public 
 \end{lstlisting}
 
-\subsection{系统操作}
-
-系统操作：
-
-\begin{lstlisting}
-nohup ./bin/ig-file &
-\end{lstlisting}
-
 \subsection{Scala反编译(Scala Decompile)}
 
 项目中某一个特性出现错误,请求服务端时提示404错误,推测可能是请求的Url对应的类没有编译到目标部署文件中.由于项目是用基于JVM规范的Scala编写的(可以较容易的逆向),使用JD-GUI工具反编译出来的效果不是很理想.采用手动解压对应的jar包,找到对应的目标class文件,使用scalap命令来反编译对应的class文件.
@@ -2198,7 +2163,6 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.
 
 在HTTP请求头中，添加浏览器相关标识，让服务器认定为来自浏览器的请求。
 
-\paragraph{避免重复抓取}豆瓣采用Restful风格来设计的API，最后的值就相当于每本书籍的唯一标识，在数据库中预先生成所有的ID集合，每抓取了一个ID的数据，都会更新ID的状态，表示此数据已经抓取。这样的方式来确保每本书籍只被抓取一次。
 
 \subsection{读取Properties文件}
 
@@ -2252,24 +2216,6 @@ def get(self, key, default_value=''):
 	return default_value
 \end{lstlisting}
 
-
-\subsection{sh: mysql\_config: command not found解决办法}
-
-首先需要安装MySQL，安装完成后，打开终端，输入下方语句修改环境变量：
-
-\begin{lstlisting}[language=Bash]
-# 安装python-devel
-sudo dnf install python-devel -y
-# Python.h: No such file or directory
-sudo dnf install python-devel --allowerasing
-PATH="$PATH":/usr/local/mysql/bin
-\end{lstlisting}
-
-设置完成之后，输入如下语句安装MySQL Python：
-
-\begin{lstlisting}[language=Bash]
-sudo pip install mysql-python
-\end{lstlisting}
 
 \chapter{前端(Front End)}
 
@@ -2894,17 +2840,6 @@ secure: 安全标志，指定后，只有在使用SSL链接时候才能发送到
 
 \paragraph{Max Age}查看Cookie类的setMaxAge(int expiry)方法说明：这个类用于给Cookie设置最大的年龄，以秒为单位。expiry - an integer specifying the maximum age of the cookie in seconds; if negative, means the cookie is not stored; if zero, deletes the cookie.如果这个方法的参数给的是正值，表明cookie在超过指定的年龄时间后会消亡。负值意味着cookie不是永久性存储的，在浏览器关闭的时候将会被删除。这个方法的参数如果是零值将会导致cookie被删除。Expire指定了cookie的生存期，默认情况下cookie是暂时存在的，他们存储的值只在浏览器会话期间存在，当用户推出浏览器后这些值也会丢失，如果想让cookie存在一段时间，就要为expires属性设置为未来的一个过期日期。现在已经被max-age属性所取代，max-age用秒来设置cookie的生存期。
 
-\section{Javascript}
-
-\begin{tabular}{cp{8cm}c}
-	\hline
-	\multirow{1}{*}{快捷键}
-	& \multicolumn{1}{c}{说明}  \\
-	\hline			
-	nbsp & " " \\
-	\hline
-\end{tabular}
-
 \subsection{export vs export default}
 
 \begin{itemize}
@@ -3147,7 +3082,8 @@ key屬性幫助react確定項目是否已經更新(Keys help React identify whic
 "devDependencies": {
 	"babel-core": "^6.25.0",
 	"babel-loader": "^7.1.0",
-	"babel-preset-es2015": "^6.24.1",//ES2015转码规则
+	//ES2015转码规则
+	"babel-preset-es2015": "^6.24.1",
 	"babel-preset-react": "^6.24.1",
 	//ES7不同阶段语法提案的转码规则（共有4个阶段）
 	//从stage-0到stage-3
@@ -7275,21 +7211,6 @@ Javascript是单线程，从图中看出，只有一个main线程。
 	\label{fig:pagepainting}
 \end{figure}
 
-\subsection{Audits}
-
-\subsection{Google Chrome SSH}
-
-\chapter{ElasticSearch}
-
-\section{基础操作}
-
-ElasticSearch基础操作：
-
-\begin{lstlisting}[language=Bash]
-#启动ElasticSearch
-./elasticsearch
-\end{lstlisting}
-
 \chapter{LaTex}
 
 \section{安装}
@@ -7406,31 +7327,6 @@ morestring=[b]"
 即可在文档中定义JavaScript，并支持关键字颜色区分。
 
 \subsection{常见问题}
-
-\paragraph{infoBulle.sty not found}
-
-一般的，.cls和.sty文件是用来提高LaTeX的排版效果的补充文件。它们分别用命令\textbackslash documentclass\{...\}和命令\textbackslash usepackage\{...\}来装载到LaTeX文件。.cls文件通常被称为“classes”（也就是“类”），而.sty文件被称为“style files”（样式文件）,或者就简单地称其为“packages”（包）。
-
-下载下来的宏包，有的直接包含.sty 文件（.sty文件就是package的最终形式）;有的下载下来只包含了.ins, .dtx，以及一个readme文件，这时需要自己编译生成.sty文件，以及生成相应的manual。
-,你可以在这个路径下建立一个文件夹，譬如qrcode，然后把qrcode.sty放到这里，接着在你的电脑里找到MikTex的settings这个程序，settings有两个，选择后面括号里有admin的那个,打开以后，在general选项卡下有Refresh FNDB按钮，点击，过一会，这个package就会加入MikTex的路径中，然后在你的tex文件中就可以使用这个package了。
-
-infoBulle可能是作者自己写的一个宏包，系统里默认没有自带，此时就需要找到默认宏包的存放目录，将作者自己写的sty文件放进去。在Mac OS X下，路径为：
-
-\begin{lstlisting}
-/usr/local/texlive/2016/texmf-dist/tex/latex
-\end{lstlisting}
-
-sty文件拷贝到指定目录后，运行命令：
-
-\begin{lstlisting}[language=Bash]
-sudo texhash
-\end{lstlisting}
-
-即可使用命令引用包。有时会提示缺少sty文件,遇到一次是因为没有完全安装latex,输入完整包安装命令:
-
-\begin{lstlisting}[language=Bash]
-sudo apt-get install texlive-full -y
-\end{lstlisting}
 
 \paragraph{中文支持}
 
@@ -7908,7 +7804,8 @@ step3.
 \begin{lstlisting}[language=Bash]
 mysqld
 
-# Mac中启动MySQL，同理停止的参数为stop，重启的参数为restart
+# Mac中启动MySQL，同理停止的参数为stop
+# 重启的参数为restart
 sudo /usr/local/MySQL/support-files/mysql.server start
 
 # 防火墙添加端口
@@ -7969,7 +7866,6 @@ BEGIN
 		set j=j+1;
 	END WHILE ;  
 	commit;  
-
 END$$
 DELIMITER ;
 \end{lstlisting}
