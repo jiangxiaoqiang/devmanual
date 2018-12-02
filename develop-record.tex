@@ -1,4 +1,4 @@
-\documentclass[a5paper,12pt]{book}
+\documentclass[a5paper,9pt]{book}
 
 \usepackage{xeCJK}
 \usepackage{listings}
@@ -6,7 +6,7 @@
 \usepackage{longtable}
 \usepackage{fontspec}
 \usepackage{ctex}
-\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a4paper]{geometry} % Page margins
+\usepackage[top=3cm,bottom=3cm,left=3cm,right=3cm, headsep=10pt,a5paper]{geometry} % Page margins
 \usepackage{graphicx} % Required for including pictures
 \graphicspath{{Pictures/}{Image/common/}} % Specifies the directory where pictures are stored
 \usepackage{lipsum} % Inserts dummy text
@@ -114,8 +114,8 @@
 	framexbottommargin=2pt,
 	abovecaptionskip=-3pt,
 	belowcaptionskip=3pt,  
-	xleftmargin=4em,
-	xrightmargin=4em, % 设定listing左右的空白  
+	xleftmargin=1em,
+	xrightmargin=1em, % 设定listing左右的空白  
 	texcl=true
 }
 
@@ -716,23 +716,6 @@ public class DataSourceConfig {
 
 \subsection{集合操作(Collection Operate)}
 
-获取Json单个值：
-
-\begin{lstlisting}[language=Java]
-JSONObject json = new JSONObject(responseContent);
-String total = json.getString("totalElements");
-\end{lstlisting}
-
-去除List元素中的特殊字符：
-
-\begin{lstlisting}[language=Java]
-List<AccessLog> logs = operationLogs.stream()
-.peek(log -> log.setQueryResult(log.getQueryResult().replaceAll("\u0000", "")))
-.collect(Collectors.toList());
-\end{lstlisting}
-
-peek()-->对每个遇到的元素执行一些操作。如上方法会遍历List列表operationLogs中的每个元素，将特殊字符\textbackslash u0000去掉。
-
 \paragraph{数组转换为ArrayList}
 
 数组转List有如下方式：
@@ -930,7 +913,7 @@ values.replace(/[ ]/g, '').split(/\n+/);
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{visualstudiocodesnippet.png}
+	\includegraphics[scale=0.4]{visualstudiocodesnippet.png}
 	\caption{Visual Studio Code代码草稿}
 	\label{fig:visualstudiocodesnippet}
 \end{figure}
@@ -985,10 +968,6 @@ String categoryId = String.valueOf(article.getCategory());
 \end{lstlisting}
 
 String.valueOf中如果对象为空，就返回字符串的"null"，注意不是null对象，是字符串、字符串、字符串。
-
-\subsection{安全(Security)}
-
-CBC(Cipher-block Chaining)模式是将前一个密文分组与当前明文分组的内容混合起来进行加密的，这样就可以避免ECB模式的弱点。在CBC模式中，首先将明文分组与前一个密文分组进行XOR运算，然后再进行加密.
 
 \subsection{Java时间}
 
