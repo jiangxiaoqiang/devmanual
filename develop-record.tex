@@ -2097,35 +2097,6 @@ scalap BackupRouteFunc >> BackupRouteFunc.scala
 
 \chapter{Python}
 
-Python是FLOSS（自由/开放源码软件）之一。你可以自由地发布这个软件的拷贝、阅读它的源代码、对它做改动、把它的一部分用于新的自由软件中。Python希望看到一个更加优秀的人创造并经常改进。由于它的开源本质，Python已经被移植在许多平台上（经过改动使它能够工作在不同平台上）。如果你小心地避免使用依赖于系统的特性，那么你的所有Python程序无需修改就可以在下述任何平台上面运行。这些平台包括Linux、Windows、FreeBSD、Macintosh、Solaris、OS/2、Amiga、AROS、AS/400、BeOS、OS/390、z/OS、Palm OS、QNX、VMS、Psion、Acom RISC OS、VxWorks、PlayStation、Sharp Zaurus、Windows CE甚至还有PocketPC、Symbian以及Google基于Linux开发的Android平台！
-
-\subsection{基础}
-
-查看Python已经安装了哪些模块，可以直接在Python环境中输入help('modules')命令。在Pycharm中设置Python路径在Preference->Project Interpreter中。
-
-\begin{lstlisting}[language=Bash]
-# 安装MySQL
-sudo apt-get install mysql-server -y
-# 安装pip
-sudo apt-get install python-pip python-dev build-essential
-# 安装MySQL驱动
-sudo pip install mysql-python
-# 安装beautifulsoup4
-sudo pip install beautifulsoup4
-# openpyxl来处理xml文件
-sudo pip install openpyxl
-# 安装Redis支持模块
-sudo pip install redis
-\end{lstlisting}
-
-在Mac OS X上，提示No Module named requests，使用pip安装requests模块也无法解决，输入如下命令此问题消失：
-
-\begin{lstlisting}[language=Bash]
-sudo easy_install -U requests
-\end{lstlisting}
-
-pip 改善了不少 easy\_install 的缺點，如此说來 pip 應該是略勝一籌，不過它還不能完全取代對方，因为目前有很多套件還是得用 easy\_install 安裝。easy\_insall的作用和perl中的cpan，ruby中的gem类似，都提供了在线一键安装模块的傻瓜方便方式，而pip是easy\_install的改进版，提供更好的提示信息，删除package等功能。老版本的python中只有easy\_install，没有pip。
-
 \subsection{抓取技巧}
 
 \paragraph{防止IP被封}在爬取豆瓣的页面时，如果一分钟请求超过一定次数(一说40次)，豆瓣会将请求的IP加入黑名单。所以一是爬取的频率不要太高，而是可以使用代理来爬取。服务端对IP访问对阈值也有限制，因为按照正常情况下，一个用户不会大批量对请求一个网站的，所以超过了规定的请求次数也会触发封锁。还可以让请求不那么有规律，让服务器无法通过请求的频率判断是机器还是人类，一般人类访问请求的频率是不固定的。
@@ -3337,7 +3308,6 @@ mkdir -p /home/dolphin/hldata/{backend/credit-system,frontend/credit-system-fron
 cd /home/hldev/app-soft || mkdir -p /home/hldev/app-soft
 \end{lstlisting}
 
-\paragraph{source文件路径}在使用source命令时，提示找不到文件。如果filename不包含斜杠（/），那么从PATH环境变量指定的那些路径搜索filename，这个文件不必是可执行 的。（If filename does not contain a slash, file names in  PATH  are used  to  find the directory containing filename.  The file searched for in PATH need not be executable.）如果在PATH中找不到指定文件，当bash不是posix模式时，将在当前目录下搜索该文件。（When bash is not in posix mode, the current directory is searched if no file is found in PATH.）如果shopt里的sourcepath关闭，则不在PATH中搜索指定文件。（If  the sourcepath  option  to  the shopt builtin command is turned off, the PATH is not searched.）直接写文件的绝对路径解决。
 
 \paragraph{读取配置文件(Read Config File)}
 
@@ -3420,7 +3390,7 @@ lsof（list open files）是一个列出当前系统打开文件的工具。FD(F
 	\caption{文件描述符}
 	\label{table:filedescriptor}
 	\bigskip
-	\begin{tabular}{cp{12cm}c}
+	\begin{tabular}{cp{6cm}c}
 		\hline
 		\multirow{1}{*}{文件描述符}
 		& \multicolumn{1}{c}{说明}  \\
@@ -3556,7 +3526,7 @@ Linux下常用快捷键如下表所示：
 	\caption{Linux下快捷键}
 	\label{table:terminalshortcut}
 	\begin{center}
-		\begin{tabular}{cp{12cm}c}
+		\begin{tabular}{cp{6cm}c}
 			\hline
 			\multirow{1}{*}{快捷键}
 			& \multicolumn{1}{c}{说明}  \\
@@ -3577,20 +3547,6 @@ alias pubtest='bash /home/hldev/hldata/backend/credit-system-v1.3/script/deploy/
 
 设置完成后在任意路径下直接执行pubtest命令即可发布项目.
 
-\subsection{命令(Command)}
-
-which命令用于查找并显示给定命令的绝对路径，环境变量PATH中保存了查找命令时需要遍历的目录。which指令会在环境变量\$PATH设置的目录里查找符合条件的文件。也就是说，使用which命令，就可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。查看软件运行目录：
-
-
-\begin{lstlisting}[language=Bash]
-which scala
-\end{lstlisting}
-
-根据名称结束进程:
-
-\begin{lstlisting}[language=Bash]
-ps -ef|grep -w 'dolphin-web'|grep -v grep|cut -c 9-15|xargs kill 9
-\end{lstlisting}
 
 \paragraph{rm(remove)}
 
@@ -3654,7 +3610,8 @@ sudo dd bs=4M if=/home/hldev/software/cn_windows_10_multi-edition_version_1709_u
 有时使用cp命令时，强制覆盖：
 
 \begin{lstlisting}[language=Bash]
-# 让管道自动输入一大堆得yes，就可以完成了强行复制
+# 让管道自动输入一大堆得yes
+# 就可以完成了强行复制
 yes | cp cp -fr src dest
 \end{lstlisting}
 
@@ -3692,7 +3649,7 @@ top是table of process的缩写\footnote{\url{https://en.wikipedia.org/wiki/Top_
 	\caption{Top列含义}
 	\label{table:topcolumns}
 	\begin{center}
-		\begin{tabular}{cp{10cm}c}
+		\begin{tabular}{cp{7cm}c}
 			\hline
 			\multirow{1}{*}{序号}
 			& \multicolumn{1}{c}{名称}  \\
@@ -4030,7 +3987,7 @@ tracert 10.55.10.9
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{wiresharkcaptureping.png}
+	\includegraphics[scale=0.3]{wiresharkcaptureping.png}
 	\caption{Wireshark监听Ping}
 	\label{fig:wiresharkcaptureping}
 \end{figure}
@@ -4104,7 +4061,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 	\caption{tmux快捷键}
 	\label{table:tmuxshortcut}
 	\begin{center}
-		\begin{tabular}{|c|p{8cm}|c|}
+		\begin{tabular}{|c|p{6cm}|c|}
 			\hline
 			\multirow{1}{*}{键}
 			& \multicolumn{1}{c|}{作用}  \\			
@@ -4121,7 +4078,7 @@ tmux是一个优秀的终端复用软件，类似GNU Screen，但来自于OpenBS
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{fonttexgyrecursor.png}
+	\includegraphics[scale=0.6]{fonttexgyrecursor.png}
 	\caption{终端使用Tex Gyre Cursor字体}
 	\label{fig:fonttexgyrecursor}
 \end{figure}
@@ -4147,7 +4104,7 @@ set命令显示(设置)shell变量 包括的私有变量以及用户变量，不
 	\caption{Linux profile配置文件}
 	\label{table:linuxconfigfile}
 	\begin{center}
-		\begin{tabular}{cp{10cm}c}
+		\begin{tabular}{cp{6cm}c}
 			\hline
 			\multirow{1}{*}{序号}
 			& \multicolumn{1}{c}{名称}  \\
@@ -4199,7 +4156,7 @@ shopt -s histappend
 	\caption{Linux变量}
 	\label{table:linuxenvironmentvariable}
 	\begin{center}
-		\begin{tabular}{cp{10cm}c}
+		\begin{tabular}{cp{6cm}c}
 			\hline
 			\multirow{1}{*}{序号}
 			& \multicolumn{1}{c}{名称}  \\
@@ -4519,7 +4476,7 @@ Linux内存不足时自动结束进程如图\ref{fig:linuxkillprocess}所示。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{linuxkillprocess.jpg}
+	\includegraphics[scale=0.3]{linuxkillprocess.jpg}
 	\caption{内存不足时自动结束进程}
 	\label{fig:linuxkillprocess}
 \end{figure}
@@ -4536,7 +4493,7 @@ ulimit -a
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{toomayfiles.png}
+	\includegraphics[scale=0.5]{toomayfiles.png}
 	\caption{查看每个用户允许打开的文件数量}
 	\label{fig:toomayfiles}
 \end{figure}
@@ -4599,7 +4556,7 @@ nohup /home/app/local/jdk1.8.0_111/bin/java -Xmx8192M -Xms4096M -jar -Xdebug -Xr
 
 \subsection{无法查看Scala变量}
 
-在Intellij Idea调试Scala时，无法查看Scala的Vector等变量，提示Unable to evaluate the expression java.lang.UnsupportedOperationException。解决方案是，重新安装Intellij Idea:
+在Intellij Idea调试Scala时，无法查看Scala的Vector等变量，提示Unable to evaluate the expression UnsupportedOperationException。解决方案是，重新安装Intellij Idea:
 
 \begin{lstlisting}[language=Bash]
 #找到Idea的安装目录
@@ -4625,7 +4582,7 @@ Intellij Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.com/
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.45]{intellijideaaddlibraries.png}
+	\includegraphics[scale=0.3]{intellijideaaddlibraries.png}
 	\caption{Intellij Idea添加项目Library路径}
 	\label{fig:intellijideaaddlibraries}
 \end{figure}
@@ -4640,7 +4597,7 @@ Intellij Idea图标含义可以在官网\footnote{\url{http://www.jetbrains.com/
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.45]{intellijideapluginxmltips.png}
+	\includegraphics[scale=0.35]{intellijideapluginxmltips.png}
 	\caption{Intellij Idea MyBatis插件提示}
 	\label{fig:intellijideapluginxmltips}
 \end{figure}
@@ -4654,10 +4611,10 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 		\caption{Intellj Idea快捷键}
 		\bigskip
 		\label{table:intellijideashortkeys}
-		\begin{tabular}{cp{8cm}c}
+		\begin{tabular}{cp{5cm}c}
 			\hline
 			\multirow{1}{*}{快捷键}
-			& \multicolumn{1}{c}{作用}  \\
+			& \multicolumn{1}{p{5cm}}{作用}  \\
 			\hline			
 			Ctrl + Left/Right & 到行首/尾 \\
 			Command + Shift + A(Mac) & Find Action \\
@@ -4677,7 +4634,7 @@ Intellij Idea常用快捷键，如表\ref{table:intellijideashortkeys}。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.45]{autowiredcheckerror.png}
+	\includegraphics[scale=0.3]{autowiredcheckerror.png}
 	\caption{Intellij Idea注入检查错误}
 	\label{fig:autowiredcheckerror}
 \end{figure}
@@ -4700,7 +4657,7 @@ objc[3648]: Class JavaLaunchHelper is implemented in both /Library/Java/JavaVirt
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.45]{intellijideasqltips.png}
+	\includegraphics[scale=0.4]{intellijideasqltips.png}
 	\caption{Intellij Idea SQL编辑时列匹配成功提示}
 	\label{fig:intellijideasqltips}
 \end{figure}
@@ -4963,7 +4920,7 @@ Gradle默认每次编译或者刷新(Refresh)都会Resolve Dependencies，每次
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{wiresharkcapturegradlerequest.jpg}
+	\includegraphics[scale=0.35]{wiresharkcapturegradlerequest.jpg}
 	\caption{Wireshark查看Gradle Resolve请求}
 	\label{fig:wiresharkcapturegradlerequest}
 \end{figure}
@@ -5265,7 +5222,7 @@ By default, OpenVPN only sends some traffic through the VPN — traffic that is 
 
 An alternative to putting "redirect gateway def1" in the configuration file is to "push" it from the VPN server to the client.
 
-\chapter{Nmap(GNU General Public License)}
+\chapter{Nmap}
 
 Nmap(Network Mapper)，网络映射器，是一款开放源代码的网络探测和安全审核的工具。
 它的设计目标是快速地扫描大型网络，当然用它扫描单个主机也没有问题。
@@ -5797,7 +5754,7 @@ Zeal是一个离线的文档浏览工具。查看Nginx Stream相关文档信息�
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{zealsearch}
+	\includegraphics[scale=0.3]{zealsearch}
 	\caption{Zeal文档搜索示例}
 	\label{fig:zealsearch}
 \end{figure}
@@ -5808,7 +5765,7 @@ Thunderbird邮件客户端配置腾讯企业邮箱如图\ref{fig:tencententerpri
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{tencententerprisemailbox.png}
+	\includegraphics[scale=0.3]{tencententerprisemailbox.png}
 	\caption{Thunderbird配置企业邮箱}
 	\label{fig:tencententerprisemailbox}
 \end{figure}
@@ -6069,7 +6026,7 @@ Jenkins中Gradle需要添加全局变量GRADLE\_USER\_HOME,在Jenkins->系统管
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{gradleuserhome.png}
+	\includegraphics[scale=0.35]{gradleuserhome.png}
 	\caption{指定Jenkins的Gradle用户路径}
 	\label{fig:gradleuserhome}
 \end{figure}
@@ -6098,7 +6055,7 @@ fi
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{jenkinsbuildidsetting.jpg}
+	\includegraphics[scale=0.35]{jenkinsbuildidsetting.jpg}
 	\caption{Jeknins全局变量}
 	\label{fig:jenkinsbuildidsetting}
 \end{figure}
@@ -6483,7 +6440,7 @@ location /inapi {
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{nginxgetrealip.png}
+	\includegraphics[scale=0.5]{nginxgetrealip.png}
 	\caption{Nginx获取用户真实访问IP}
 	\label{fig:nginxgetrealip}
 \end{figure}
@@ -6627,7 +6584,7 @@ Nginx部署React项目的简单配置如图\ref{fig:nginxreactconfig}所示。
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{nginxreactconfig.jpg}
+	\includegraphics[scale=0.4]{nginxreactconfig.jpg}
 	\caption{Nginx React简单配置}
 	\label{fig:nginxreactconfig}
 \end{figure}
@@ -6924,7 +6881,7 @@ git difftool -t meld -y v1.3_xiaoqiang v1_xiaoqiang
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{gitdiffusingmeldtool.png}
+	\includegraphics[scale=0.3]{gitdiffusingmeldtool.png}
 	\caption{Git使用Meld工具对比和并不同分支文件}
 	\label{fig:gitdiffusingmeldtool}
 \end{figure}
@@ -6939,10 +6896,6 @@ git config --global push.default simple
 
 当 push.default 的值设置成 ‘matching’ ，Git 将会推送所有本地已存在的同名分支到远程仓库。
 从 Git 2.0 开始，Git 采用更加保守的值'simple'，只会推送当前分支到相应的远程仓库，'git pull' 也将值更新当前分支。
-
-\subsection{Git Hook}
-
-项目的v1分支可以合并到v1.3分支，而v1.3分支不能够合并到v1分支。为了保护有时分支失误合并，采用钩子的方式来解决，每次推送的时候验证：
 
 \subsection{Git使用常见问题}
 
@@ -6999,7 +6952,7 @@ Chromium是一个由Google主导开发的网页浏览器，以BSD许可证等多
 
 \section{DevTools}
 
-\begin{tabular}{|c|p{6cm}|}
+\begin{tabular}{|c|p{4cm}|}
 	\hline
 	\multirow{1}{*}{快捷键}
 	& \multicolumn{1}{c|}{备注}\\			
@@ -7052,7 +7005,7 @@ dnf install chromium
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.9]{chromeasyncdebugging.png}
+	\includegraphics[scale=0.7]{chromeasyncdebugging.png}
 	\caption{Google Chrome异步调试}
 	\label{fig:chromeasyncdebugging}
 \end{figure}
@@ -7141,7 +7094,7 @@ DOMContentLoaded和load这两个事件会高亮显示。DOMContentLoaded事件�
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.3]{chromeperformancegraph.png}
+	\includegraphics[scale=0.2]{chromeperformancegraph.png}
 	\caption{Google Chrome Performance查看FPS、CPU、NET}
 	\label{fig:chromeperformancegraph}
 \end{figure}
@@ -7611,17 +7564,8 @@ firewall-cmd --reload
 
 initdb 的时候会指定一个 PGDATA 目录，这就是 PostgresQL 存储数据的地方。典型的位置是在 /var/lib/postgres/data 或 /home/postgres/data。base 目录是最重要的一个目录，放的是每一个 database 的数据。base 目录里的每一个数字目录对于一个 database 的 oid， 可以通过 查看 pg\_database 这张表查看每一个 数据库的 oid 。
 
-
 \subsection{安装(Install)}
 
-由于OS发行版本特殊，没有现成Binary包，所以从源码手动编译安装，选择的是9.6.5版本，运行configure的时候出现如下错误：
-
-configure: error: readline library not found
-If you have readline already installed, see config.log for details on the
-failure.  It is possible the compiler isn't looking in the proper directory.
-Use --without-readline to disable readline support.
-
-提示缺失readline\footnote{\url{https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html}}包，GNU Readline 是一个开源的程序库，可以实现交互式的文本编辑功能。网上说安装readline-devel包和libtermcap-devel包可以解决这个问题\footnote{\url{http://www.thegeekstuff.com/2009/04/linux-postgresql-install-and-configure-from-source}}(Install the readline-devel and libtermcap-devel\footnote{\url{https://centos.pkgs.org/5/centos-x86_64/libtermcap-devel-2.0.8-46.1.x86_64.rpm.html}} to solve the above issue).
 
 由于是内网，无法连接互联网，手动安装依赖太复杂(包的依赖复杂，A包依赖B包，B包依赖C包，安装几个包之后整个人都不好了，这才真的真的体会到包管理工具的方便)。所以考虑了2个方案，一是在内网搭建一个离线yum(Yellowdog Updater, Modified\footnote{\url{https://en.wikipedia.org/wiki/Yum_(.rpm)}})源服务器，二是在可以连接互联网的机器上采用yum下载好包之后，在另一台内网机器上手动安装。使用如下命令下载依赖包：
 
@@ -8191,7 +8135,7 @@ sbu.append(entry.getKey() + "=" + URLEncoder.encode((String) entry.getValue(), "
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{wiresharkcapturecurlrequest.png}
+	\includegraphics[scale=0.3]{wiresharkcapturecurlrequest.png}
 	\caption{Wireshark捕捉cUrl终端请求}
 	\label{fig:wiresharkcapturecurlrequest}
 \end{figure}
@@ -8289,7 +8233,7 @@ plugins: [
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.7]{webpackcheckingfilesize.png}
+	\includegraphics[scale=0.6]{webpackcheckingfilesize.png}
 	\caption{Webpack查看输出文件大小}
 	\label{fig:webpackcheckingfilesize}
 \end{figure}
@@ -8301,7 +8245,7 @@ plugins: [
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.45]{scriptusingdiskcache.png}
+	\includegraphics[scale=0.35]{scriptusingdiskcache.png}
 	\caption{Javascript脚本利用浏览器缓存}
 	\label{fig:scriptusingdiskcache}
 \end{figure}
@@ -8327,7 +8271,7 @@ gzip_disable "MSIE [1-6]\.";
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{openservercompress.png}
+	\includegraphics[scale=0.4]{openservercompress.png}
 	\caption{开启服务端压缩效果}
 	\label{fig:openservercompress}
 \end{figure}
@@ -8344,7 +8288,7 @@ gzip_disable "MSIE [1-6]\.";
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.6]{longtimerequest.png}
+	\includegraphics[scale=0.5]{longtimerequest.png}
 	\caption{耗时长的请求}
 	\label{fig:longtimerequest}
 \end{figure}
@@ -8459,7 +8403,7 @@ netstat -nr
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.5]{route-table.jpg}
+	\includegraphics[scale=0.35]{route-table.jpg}
 	\caption{查看Linux Kernel路由表}
 	\label{fig:routetable}
 \end{figure}
@@ -8477,7 +8421,7 @@ IP路由选择主要完成以下这些步骤：
 		\caption{flag含义}
 		\bigskip
 		\label{table:flagmeaning}
-		\begin{tabular}{cp{10cm}c}
+		\begin{tabular}{cp{7cm}c}
 			\hline
 			\multirow{1}{*}{序号}
 			& \multicolumn{1}{c}{名称}  \\
@@ -8723,7 +8667,7 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{allsystemcookies.png}
+	\includegraphics[scale=0.35]{allsystemcookies.png}
 	\caption{各个系统的加密Cookie}
 	\label{fig:allsystemcookies}
 \end{figure}
@@ -8732,7 +8676,7 @@ File versionFile = file("$rootDir/cc-web-boot/src/main/resource/version.properti
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[scale=0.4]{traceloginusercookie.png}
+	\includegraphics[scale=0.35]{traceloginusercookie.png}
 	\caption{跟踪登录的用户Cookie信息}
 	\label{fig:traceloginusercookie}
 \end{figure}
